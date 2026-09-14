@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Games Shelf</title>
+<meta name="description" content="Pick a game and play it on your own screen.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --paper:#FFF8EF; --paper-2:#FBEBD8; --card:#FFFFFF;
+  --ink:#2B2233; --ink-2:#5E5169; --ink-3:#958AA0;
+  --rule:#EBDCC8;
+  --berry:#B8365C; --berry-soft:#FBE3EB;
+  --leaf:#2E7D5B; --leaf-soft:#DDF0E6;
+  --sun:#C9860E; --sun-soft:#FCEFD2;
+  --sea:#2A6F94; --sea-soft:#DEEDF5;
+  --d:"Baloo 2",system-ui,sans-serif;
+  --b:"Figtree",system-ui,-apple-system,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#1A141F; --paper-2:#241B2B; --card:#241B2B;
+    --ink:#F5EDF8; --ink-2:#C4B5CC; --ink-3:#8D7F96;
+    --rule:#3A2D44;
+    --berry:#F0819F; --berry-soft:#3A1A26;
+    --leaf:#72C79D; --leaf-soft:#142D22;
+    --sun:#EBB859; --sun-soft:#33270F;
+    --sea:#7CB8D6; --sea-soft:#132833;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#1A141F; --paper-2:#241B2B; --card:#241B2B;
+  --ink:#F5EDF8; --ink-2:#C4B5CC; --ink-3:#8D7F96;
+  --rule:#3A2D44;
+  --berry:#F0819F; --berry-soft:#3A1A26;
+  --leaf:#72C79D; --leaf-soft:#142D22;
+  --sun:#EBB859; --sun-soft:#33270F;
+  --sea:#7CB8D6; --sea-soft:#132833;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--b);
+  font-size:18px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(120% 70% at 50% -10%, var(--paper-2) 0%, transparent 60%)}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:4px solid var(--sun);outline-offset:4px;border-radius:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.wrap{max-width:940px;margin:0 auto;padding:clamp(22px,5vw,46px) clamp(16px,4vw,28px) 70px}
+
+header{text-align:center;margin-bottom:clamp(22px,4vw,36px)}
+.kick{font-family:var(--b);font-weight:700;font-size:13px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--berry);margin-bottom:6px}
+h1{font-family:var(--d);font-weight:800;font-size:clamp(38px,8vw,66px);line-height:.98;
+  letter-spacing:-.02em;text-wrap:balance}
+.lede{font-size:clamp(17px,2.4vw,20px);color:var(--ink-2);margin:10px auto 0;max-width:30ch;font-weight:500}
+
+.shelf{display:grid;gap:clamp(12px,2.4vw,18px);grid-template-columns:1fr}
+@media (min-width:620px){.shelf{grid-template-columns:1fr 1fr}}
+
+.game{background:var(--card);border:3px solid var(--rule);border-radius:22px;
+  padding:clamp(18px,3vw,26px);display:flex;flex-direction:column;align-items:center;
+  text-align:center;gap:9px;transition:transform .12s,border-color .12s,box-shadow .12s;
+  box-shadow:0 5px 0 var(--rule)}
+.game:hover{transform:translateY(-4px);box-shadow:0 9px 0 var(--rule)}
+.game:active{transform:translateY(2px);box-shadow:0 2px 0 var(--rule)}
+.game .pic{font-size:clamp(56px,11vw,76px);line-height:1}
+.game .nm{font-family:var(--d);font-weight:800;font-size:clamp(23px,3.6vw,29px);line-height:1.08}
+.game .ln{font-size:clamp(15px,2vw,16.5px);color:var(--ink-2);line-height:1.4;max-width:26ch}
+.game .tag{font-family:var(--b);font-weight:700;font-size:12px;letter-spacing:.1em;
+  text-transform:uppercase;border-radius:999px;padding:5px 13px;margin-top:2px}
+
+.game.a{border-color:var(--berry)} .game.a{box-shadow:0 5px 0 var(--berry)}
+.game.a:hover{box-shadow:0 9px 0 var(--berry)} .game.a:active{box-shadow:0 2px 0 var(--berry)}
+.game.a .nm{color:var(--berry)} .game.a .tag{background:var(--berry-soft);color:var(--berry)}
+
+.game.b{border-color:var(--leaf)} .game.b{box-shadow:0 5px 0 var(--leaf)}
+.game.b:hover{box-shadow:0 9px 0 var(--leaf)} .game.b:active{box-shadow:0 2px 0 var(--leaf)}
+.game.b .nm{color:var(--leaf)} .game.b .tag{background:var(--leaf-soft);color:var(--leaf)}
+
+footer{margin-top:clamp(30px,6vw,52px);text-align:center;color:var(--ink-3);
+  font-size:15px;border-top:3px solid var(--rule);padding-top:20px}
+footer b{color:var(--ink-2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="kick">Pick one</p>
+    <h1>The Games Shelf</h1>
+    <p class="lede">Tap a game. It opens on <em>your</em> screen, and you are the one playing it.</p>
+  </header>
+
+  <main class="shelf">
+
+    <a class="game a" href="camper.html">
+      <span class="pic">🚐</span>
+      <span class="nm">My Dream Camper</span>
+      <span class="ln">Build the camper that takes you where you are going.</span>
+      <span class="tag">Just you</span>
+    </a>
+
+    <a class="game b" href="animal-rescue.html">
+      <span class="pic">🐾</span>
+      <span class="nm">Animal Rescue</span>
+      <span class="ln">Ten animals need you. Grab the right kit and go.</span>
+      <span class="tag">You and a partner</span>
+    </a>
+
+  </main>
+
+  <footer>
+    <p>Your work saves on <b>your own computer</b>, so come back to the same link any time.</p>
+  </footer>
+
+</div>
+</body>
+</html>

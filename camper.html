@@ -1,0 +1,1499 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>My Dream Camper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Figtree:wght@400;500;600;700&display=swap">
+
+<style>
+:root{
+  --paper:#F1EEF9; --card:#FFFFFF; --sunk:#E5E0F2;
+  --ink:#231B3D; --ink-2:#544A72; --ink-3:#8B81A6;
+  --rule:#D6CEE8;
+  --plum:#5A3A86; --plum-soft:#EBE2F6;
+  --gold:#9A6B0F; --gold-soft:#FAEECF;
+  --coral:#CE4E3A; --coral-soft:#FBE2DC;
+  --moss:#2C6349; --moss-soft:#DCEDE4;
+  --ff-d:'Baloo 2',system-ui,sans-serif;
+  --ff-b:'Figtree',system-ui,-apple-system,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#14101F; --card:#1C1730; --sunk:#241D3C;
+    --ink:#EFEAF9; --ink-2:#BCB1D4; --ink-3:#847AA0;
+    --rule:#352B4E;
+    --plum:#C3A4E6; --plum-soft:#2A1D40;
+    --gold:#E2B45E; --gold-soft:#332811;
+    --coral:#F0947F; --coral-soft:#3A1E17;
+    --moss:#7FC8A0; --moss-soft:#14291F;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14101F; --card:#1C1730; --sunk:#241D3C;
+  --ink:#EFEAF9; --ink-2:#BCB1D4; --ink-3:#847AA0;
+  --rule:#352B4E;
+  --plum:#C3A4E6; --plum-soft:#2A1D40;
+  --gold:#E2B45E; --gold-soft:#332811;
+  --coral:#F0947F; --coral-soft:#3A1E17;
+  --moss:#7FC8A0; --moss-soft:#14291F;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper); color:var(--ink); font-family:var(--ff-b);
+  font-size:18px; line-height:1.5; -webkit-font-smoothing:antialiased}
+button{font-family:var(--ff-b); color:inherit; background:none; border:0; cursor:pointer; text-align:left}
+:focus-visible{outline:3px solid var(--gold); outline-offset:2px; border-radius:8px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+
+.wrap{max-width:960px; margin:0 auto; padding:16px 16px 90px}
+.brand{font-family:var(--ff-d); font-weight:800; font-size:14px; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--ink-3); margin-bottom:9px}
+
+/* chapters */
+.chhead{display:flex; align-items:baseline; gap:10px; margin-bottom:7px}
+.chlabel{font-family:var(--ff-d); font-weight:800; font-size:13px; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--ink-3)}
+.savedot{margin-left:auto; font-size:12px; font-weight:700; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--moss)}
+.chstrip{display:flex; gap:6px; flex-wrap:wrap}
+.ch{display:flex; align-items:center; gap:7px; border:2px solid var(--rule); background:var(--card);
+  border-radius:999px; padding:6px 14px 6px 8px; font-size:14.5px; font-weight:700; color:var(--ink-2)}
+.ch:hover{border-color:var(--plum); color:var(--plum)}
+.ch .chn{display:grid; place-items:center; width:21px; height:21px; border-radius:99px;
+  background:var(--sunk); font-size:12px; font-weight:800; color:var(--ink-3)}
+.ch.on{background:var(--ink); color:var(--paper); border-color:var(--ink)}
+.ch.on .chn{background:rgba(255,255,255,.2); color:var(--paper)}
+.ch.done{border-color:var(--moss); color:var(--moss)}
+.ch.done .chn{background:var(--moss-soft); color:var(--moss)}
+.ch.going{border-style:dashed}
+.chsub{display:flex; gap:6px; flex-wrap:wrap; margin-top:8px}
+.pg{border:2px solid var(--rule); background:var(--card); border-radius:999px;
+  padding:4px 13px; font-size:13.5px; font-weight:700; color:var(--ink-3)}
+.pg.on{background:var(--plum); color:var(--paper); border-color:var(--plum)}
+.pg.done{border-color:var(--moss); color:var(--moss)}
+
+/* the dream leader bar — always visible, never hidden behind a toggle */
+.dlbar{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:13px 0 4px;
+  background:var(--plum-soft); border:2px solid var(--plum); border-radius:15px; padding:10px 14px}
+.dltag{font-size:11.5px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--plum)}
+.dlname{font-family:var(--ff-d); font-weight:800; font-size:21px; color:var(--ink)}
+.dlspin{font-family:var(--ff-d); font-weight:800; font-size:16px; background:var(--plum);
+  color:var(--paper); border-radius:999px; padding:8px 18px}
+.dlspin:hover{filter:brightness(1.12)}
+.dledit{font-size:13px; font-weight:700; color:var(--plum); border:2px solid var(--plum);
+  border-radius:999px; padding:6px 13px; background:transparent}
+.dlnames{flex:1 1 100%; display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:4px}
+.dlnames input{flex:1 1 220px; font-size:16px; font-weight:600; color:var(--ink);
+  background:var(--card); border:2px solid var(--rule); border-radius:11px; padding:9px 12px}
+.dlnames input:focus{outline:none; border-color:var(--plum)}
+.dlled{flex:1 1 100%; font-size:13.5px; color:var(--ink-2); line-height:1.45}
+
+h1{font-family:var(--ff-d); font-weight:800; font-size:clamp(26px,4.4vw,40px);
+  line-height:1; letter-spacing:-.02em; color:var(--plum); margin-bottom:2px}
+.chnow{font-family:var(--ff-d); font-weight:800; font-size:14px; letter-spacing:.04em;
+  text-transform:uppercase; color:var(--gold); margin-bottom:1px}
+.sub{font-size:16.5px; color:var(--ink-2); margin-bottom:14px}
+
+.mc{background:var(--gold-soft); border:3px solid var(--gold); border-radius:18px;
+  padding:clamp(15px,2.8vw,24px); margin-bottom:14px}
+.mc .tag{display:inline-block; font-size:11.5px; font-weight:800; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--gold); border:2px solid var(--gold);
+  border-radius:99px; padding:3px 11px; margin-bottom:9px}
+.mc .say{font-family:var(--ff-d); font-weight:800; color:var(--ink);
+  font-size:clamp(21px,3.6vw,32px); line-height:1.16}
+.mc .then{font-size:15.5px; color:var(--ink-2); margin-top:8px}
+
+.panel{background:var(--card); border:2px solid var(--rule); border-radius:18px;
+  padding:clamp(14px,2.6vw,22px); margin-bottom:13px}
+.panel h2{font-family:var(--ff-d); font-weight:700; font-size:clamp(19px,3vw,25px); margin-bottom:8px}
+.note{font-size:14.5px; color:var(--ink-3); margin-top:9px}
+.pickhint{font-size:14.5px; color:var(--ink-3); margin-bottom:9px}
+
+.cats{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:11px}
+.cat{border:2px solid var(--rule); border-radius:999px; padding:6px 14px;
+  font-size:14.5px; font-weight:700; color:var(--ink-2); background:var(--card)}
+.cat.on{background:var(--ink); color:var(--paper); border-color:var(--ink)}
+.grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(112px,1fr)); gap:8px}
+.grid.wide{grid-template-columns:repeat(auto-fill,minmax(152px,1fr))}
+.opt{border:2px solid var(--rule); border-radius:15px; padding:11px 8px; background:var(--card);
+  text-align:center; transition:transform .1s; position:relative}
+.opt:hover{border-color:var(--plum); transform:translateY(-2px)}
+.opt.on{border-color:var(--gold); background:var(--gold-soft)}
+.opt.on::after{content:"✓"; position:absolute; top:5px; right:8px; color:var(--gold); font-weight:800; font-size:14px}
+.opt .em{display:block; font-size:clamp(30px,5.6vw,39px); line-height:1.05}
+.opt b{display:block; font-family:var(--ff-d); font-weight:700; font-size:15.5px; margin-top:3px}
+.opt span{display:block; font-size:12.5px; color:var(--ink-3); margin-top:2px; line-height:1.27}
+.opt.been{border-color:var(--moss); background:var(--moss-soft)}
+
+.chosen{display:flex; gap:7px; flex-wrap:wrap; margin-top:12px}
+.chip{display:flex; align-items:center; gap:6px; border:2px solid var(--moss);
+  background:var(--moss-soft); border-radius:999px; padding:5px 12px; font-weight:600; font-size:15px}
+.chip .e{font-size:20px; line-height:1}
+.chip .x{color:var(--ink-3); font-weight:800}
+.chip .x:hover{color:var(--coral)}
+
+.ownhead{font-size:14.5px; color:var(--ink-3); margin-top:15px}
+.own{margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+.own input{flex:1 1 240px; font-family:var(--ff-d); font-weight:700; font-size:19px; color:var(--ink);
+  background:var(--sunk); border:2px solid transparent; border-radius:12px; padding:11px 14px}
+.own input:focus{outline:none; border-color:var(--plum)}
+.own input::placeholder{color:var(--ink-3); font-weight:600; font-family:var(--ff-b); font-size:16.5px}
+.yet{font-size:14px; font-weight:700; color:var(--coral); border:2px solid var(--coral-soft);
+  background:var(--coral-soft); border-radius:999px; padding:9px 15px}
+.yet:hover{border-color:var(--coral)}
+
+.hero{background:linear-gradient(180deg,var(--card),var(--plum-soft)); border-color:var(--plum)}
+.heroart{border-radius:14px; overflow:hidden; margin-bottom:14px}
+.heroart svg{display:block; width:100%; height:auto}
+.quote{text-align:center; margin-bottom:18px}
+.qline{font-family:var(--ff-d); font-weight:800; color:var(--plum);
+  font-size:clamp(21px,4vw,32px); line-height:1.16; max-width:22ch; margin:0 auto}
+.qsub{font-size:16px; color:var(--ink-2); margin-top:7px}
+
+.paints{display:flex; gap:8px; flex-wrap:wrap}
+.paint{width:46px; height:46px; border-radius:99px; border:4px solid transparent}
+.paint.on{border-color:var(--ink)}
+.avs{display:grid; grid-template-columns:repeat(auto-fill,minmax(62px,1fr)); gap:8px; margin-top:11px}
+.avs button{font-size:33px; text-align:center; border:2px solid var(--rule);
+  border-radius:14px; padding:7px 0; background:var(--card)}
+.avs button:hover{border-color:var(--plum)}
+.avs button.on{border-color:var(--gold); background:var(--gold-soft)}
+.nameline{font-family:var(--ff-d); font-weight:700; font-size:23px; color:var(--ink);
+  background:var(--sunk); border:2px solid transparent; border-radius:12px; padding:11px 14px; width:100%}
+.nameline:focus{outline:none; border-color:var(--plum)}
+
+/* the camper */
+.viewtabs{display:flex; gap:5px; margin-bottom:9px; justify-content:center}
+.viewtab{border:2px solid var(--rule); border-radius:999px; padding:5px 15px;
+  font-size:14px; font-weight:700; color:var(--ink-2); background:var(--card)}
+.viewtab.on{background:var(--ink); color:var(--paper); border-color:var(--ink)}
+.van{position:relative; width:100%; max-width:540px; margin:0 auto 6px}
+.van svg{display:block; width:100%; height:auto}
+.vancap{max-width:540px; margin:0 auto 12px; text-align:center;
+  font-family:var(--ff-d); font-weight:800; font-size:clamp(15px,2.6vw,19px); color:var(--ink)}
+.vancap .cl{display:block; font-family:var(--ff-b); font-weight:600; font-size:13px;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3)}
+.room{position:relative; width:100%; max-width:560px; margin:0 auto 6px; aspect-ratio:8/5;
+  border-radius:16px; overflow:hidden; border:3px solid var(--rule)}
+.room svg{position:absolute; inset:0; width:100%; height:100%; display:block}
+.rshelf{position:absolute; left:62.5%; top:14%; width:35.5%; height:35%;
+  display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(2,1fr); gap:6% 4%}
+.slotbox{display:flex; align-items:center; justify-content:center; border-radius:5px;
+  font-size:clamp(12px,2.4vw,20px); line-height:1; background:rgba(255,255,255,.6);
+  border:1.5px dashed rgba(35,27,61,.18)}
+.slotbox.has{background:rgba(255,255,255,.9); border-style:solid; border-color:rgba(35,27,61,.14)}
+.stylepick{display:grid; grid-template-columns:repeat(auto-fill,minmax(104px,1fr)); gap:7px; margin:2px 0 11px}
+.sty{border:2px solid var(--rule); border-radius:13px; padding:9px 6px; background:var(--card); text-align:center}
+.sty:hover{border-color:var(--plum)}
+.sty.on{border-color:var(--gold); background:var(--gold-soft)}
+.sty .em{display:block; font-size:25px; line-height:1.1}
+.sty b{display:block; font-family:var(--ff-d); font-weight:700; font-size:14.5px; margin-top:2px}
+.sty span{display:block; font-size:11.5px; color:var(--ink-3); line-height:1.25; margin-top:1px}
+
+/* map */
+.worldmap{margin:0 auto 12px; max-width:600px}
+.worldmap svg{display:block; width:100%; height:auto; border-radius:16px; border:3px solid var(--rule)}
+.minimap{margin-top:9px}
+.minimap svg{display:block; width:100%; height:auto; border-radius:13px;
+  border:3px dashed var(--plum); cursor:crosshair}
+.custom{margin-top:12px; background:var(--sunk); border-radius:14px; padding:13px 15px}
+.pins{display:flex; flex-direction:column; gap:7px; margin-top:10px}
+.pin2{display:flex; gap:11px; align-items:center; border:2px solid var(--moss);
+  background:var(--moss-soft); border-radius:13px; padding:9px 12px}
+.pin2 .pp{font-size:26px; line-height:1}
+.pin2 .pb{flex:1; min-width:0}
+.pin2 .pm{font-family:var(--ff-d); font-weight:800; font-size:16px}
+.pin2 .pw{font-size:14.5px; color:var(--ink-2); line-height:1.3}
+.pin2 .x{color:var(--ink-3); font-size:18px; font-weight:800; padding:0 4px}
+.pin2 .x:hover{color:var(--coral)}
+
+.areas{display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:8px}
+.area{border:2px solid var(--rule); border-radius:14px; padding:11px 10px; background:var(--sunk); text-align:center}
+.area .em{display:block; font-size:29px; line-height:1.05}
+.area b{display:block; font-family:var(--ff-d); font-weight:700; font-size:15px; margin-top:3px}
+.area span{display:block; font-size:12.5px; color:var(--ink-3); margin-top:2px; line-height:1.26}
+
+.fillrow{display:flex; gap:9px; align-items:center; flex-wrap:wrap; margin-top:9px}
+.fillk{font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--ink-3); min-width:96px}
+.fillrow input{flex:1 1 200px; font-family:var(--ff-d); font-weight:700; font-size:18px;
+  color:var(--ink); background:var(--sunk); border:2px solid transparent;
+  border-radius:11px; padding:9px 13px}
+.fillrow input:focus{outline:none; border-color:var(--plum)}
+.needs{font-size:14px; color:var(--coral); font-weight:600; margin-top:9px}
+
+.frames{display:grid; gap:8px}
+@media (min-width:640px){.frames{grid-template-columns:1fr 1fr}}
+.frame{border:2px solid var(--rule); border-radius:15px; padding:13px 15px; background:var(--card)}
+.frame:hover{border-color:var(--plum)}
+.frame.on{border-color:var(--gold); background:var(--gold-soft)}
+.fline{font-family:var(--ff-d); font-weight:700; font-size:clamp(16px,2.6vw,20px); line-height:1.3}
+.blank{display:inline-block; border-bottom:3px solid var(--gold); color:var(--ink-3);
+  font-style:italic; padding:0 5px; min-width:56px; margin:0 4px}
+.mpreview{margin-top:15px; background:var(--plum-soft); border:2px solid var(--plum);
+  border-radius:15px; padding:14px 17px}
+.mpreview .k{font-size:11.5px; font-weight:800; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--plum); display:block; margin-bottom:5px}
+.mline{font-family:var(--ff-d); font-weight:800; font-size:clamp(21px,3.8vw,30px);
+  line-height:1.18; color:var(--ink)}
+.remind{display:flex; gap:10px; align-items:baseline; flex-wrap:wrap;
+  background:var(--sunk); border-radius:12px; padding:10px 14px; margin-bottom:13px}
+.remind .k{font-size:11.5px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3)}
+.remind .v{font-family:var(--ff-d); font-weight:700; font-size:17px}
+
+.showcard{background:var(--gold-soft); border:3px solid var(--gold); border-radius:18px;
+  padding:clamp(15px,2.8vw,24px); margin-bottom:13px}
+.showcard h2{font-family:var(--ff-d); font-weight:800; font-size:clamp(22px,3.6vw,30px); margin-bottom:10px}
+.showlist{display:flex; flex-direction:column; gap:9px}
+.showrow{display:flex; gap:10px; align-items:baseline; flex-wrap:wrap}
+.showrow .k{font-size:11.5px; font-weight:800; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--gold); min-width:118px}
+.showrow .v{font-family:var(--ff-d); font-weight:700; font-size:18px; line-height:1.3; flex:1 1 200px}
+.showrow .v.none{font-family:var(--ff-b); font-weight:600; font-style:italic; color:var(--ink-3); font-size:16px}
+.showrow .v.big{font-size:clamp(20px,3.4vw,26px)}
+.mantrarow{border-bottom:2px solid var(--gold); padding-bottom:9px}
+.keep{margin-top:16px; border-top:2px solid var(--gold); padding-top:13px}
+.keep .k{font-size:11.5px; font-weight:800; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--gold); display:block; margin-bottom:4px}
+.keep .kl{font-size:15px; color:var(--ink-2); line-height:1.4}
+.linkbox{width:100%; margin-top:10px; font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:12px; padding:9px 11px; border-radius:10px; border:2px solid var(--rule);
+  background:var(--card); color:var(--ink-2); resize:vertical}
+
+.bar{display:flex; gap:9px; flex-wrap:wrap; align-items:center; margin-top:16px}
+.btn{font-family:var(--ff-d); font-weight:800; font-size:17px; border-radius:999px;
+  padding:11px 24px; background:var(--plum); color:var(--paper); display:inline-block}
+.btn:hover{filter:brightness(1.12)}
+.btn.big{font-size:21px; padding:14px 32px}
+.btn.ghost{background:transparent; color:var(--ink-2); border:2px solid var(--rule)}
+.btn.ghost:hover{border-color:var(--plum); color:var(--plum); filter:none}
+.btn.sm{font-size:15px; padding:8px 16px}
+.btn.off{opacity:.45}
+.toast{position:fixed; left:50%; bottom:24px; transform:translateX(-50%);
+  background:var(--ink); color:var(--paper); font-weight:700; font-size:15px;
+  padding:11px 20px; border-radius:999px; z-index:9}
+</style>
+
+<div class="wrap">
+  <div class="brand">🚐 My Dream Camper</div>
+  <div id="rail"></div>
+  <div id="body"></div>
+</div>
+
+<script>
+/* =====================================================================
+   One camper, one child, her own computer.
+   Every page can hold MORE THAN ONE answer — a dream is not one thing.
+   ===================================================================== */
+
+var AVATARS=["🦊","🐉","🚀","🐈","🦁","🐢","🦄","🐙","🦉","🐝","🐬","🦖"];
+var PAINTS=["#E4572E","#F2A93B","#3C9D6E","#3B7DD8","#8155C6","#D9548C","#2B9EB3","#6B4F3A"];
+var MONTHS=["January","February","March","April","May","June",
+            "July","August","September","October","November","December"];
+
+var STYLES=[
+  {id:"cosy", wood:"#A9703F", tex:"#C8643F", met:"#C9A227", em:"🕯️", n:"Cosy",
+   l:"blankets and warm lamps", wall:"#F4E0C6", floor:"#B8875A", glow:"#F2A93B"},
+  {id:"boho", wood:"#8A5A3B", tex:"#8B5E83", met:"#B98A5E", em:"🪶", n:"Bohemian",
+   l:"patterns and hanging plants", wall:"#E8CCB0", floor:"#9C6B4A", glow:"#D9548C"},
+  {id:"modern", wood:"#D9DEE4", tex:"#3C4652", met:"#8A939C", em:"🤍", n:"Modern",
+   l:"clean and simple, nothing extra", wall:"#EDF0F4", floor:"#9AA3AD", glow:"#3B7DD8"},
+  {id:"woodland", wood:"#6B4F32", tex:"#3F6F4A", met:"#9BA88F", em:"🌲", n:"Woodland",
+   l:"wood and green, like a cabin", wall:"#D8E4CF", floor:"#7A5C3C", glow:"#3C9D6E"},
+  {id:"starry", wood:"#3B3A66", tex:"#6E5AC0", met:"#A99BE0", em:"🌠", n:"Starry",
+   l:"dark and sparkly, like night", wall:"#2C2B52", floor:"#1B1A36", glow:"#C3A4E6"},
+  {id:"seaside", wood:"#EBE4D4", tex:"#2F7E9B", met:"#9FB6BE", em:"🐚", n:"Seaside",
+   l:"blues and sand, windows open", wall:"#D7ECF3", floor:"#E3D3A8", glow:"#2B9EB3"}
+];
+function styleOf(){
+  for(var i=0;i<STYLES.length;i++){ if(STYLES[i].id===me.style) return STYLES[i]; }
+  return STYLES[0];
+}
+
+/* ---------------- the option lists ---------------- */
+var DREAMS=[
+  {e:"🐾", s:"Animals",     l:"looking after them, or knowing everything about them"},
+  {e:"💃", s:"Dancing",     l:"any kind, on a stage or in your room"},
+  {e:"🎨", s:"Drawing",     l:"drawing, painting, making things look good"},
+  {e:"⚽", s:"Sport",       l:"a game, a team, or just getting faster"},
+  {e:"🏊", s:"Swimming",    l:"pools, lakes, rivers, the sea"},
+  {e:"🎵", s:"Music",       l:"singing, playing, writing it"},
+  {e:"📚", s:"Reading",     l:"stories, or reading out loud without stopping"},
+  {e:"✍️", s:"Writing",     l:"making up stories of my own"},
+  {e:"🔧", s:"Building",    l:"making something real that works"},
+  {e:"🔬", s:"Finding out", l:"how things work, why things happen"},
+  {e:"🍳", s:"Cooking",     l:"actually feeding people something good"},
+  {e:"🎮", s:"Games",       l:"playing them, or making your own"},
+  {e:"🤝", s:"Helping",     l:"being the one people come to"},
+  {e:"😂", s:"Being funny", l:"making the room laugh on purpose"},
+  {e:"🌊", s:"Adventures",  l:"going places and doing big things outside"},
+  {e:"🗣️", s:"Speaking up", l:"saying what I think in front of people"}
+];
+var LOVES=[
+  {e:"🌊", s:"Being outside",  l:"the air, the water, the weather"},
+  {e:"💪", s:"Getting stronger", l:"feeling myself get better at it"},
+  {e:"🤩", s:"When it works",  l:"the moment it finally goes right"},
+  {e:"🧘", s:"It's peaceful",  l:"everything goes quiet while I do it"},
+  {e:"👏", s:"People see it",  l:"other people watching and liking it"},
+  {e:"😂", s:"It's fun",       l:"it just makes me happy, that's all"},
+  {e:"🫶", s:"It helps",       l:"somebody is better off because of it"},
+  {e:"🎉", s:"Sharing it",     l:"doing it with people I like"},
+  {e:"🔥", s:"Going again",    l:"I never want to stop"},
+  {e:"🧠", s:"Working it out", l:"the puzzle of it, figuring it out"},
+  {e:"🌅", s:"The quiet bit",  l:"early, before anyone else is up"},
+  {e:"🏅", s:"Being good",     l:"knowing I am actually good at it"},
+  {e:"🦋", s:"Feeling free",   l:"nothing holding me still"},
+  {e:"🎯", s:"Losing track",   l:"hours go past and I don't notice"}
+];
+var DAYS=[
+  {e:"🌅", s:"Early",        l:"up before everyone, out at sunrise"},
+  {e:"🌙", s:"Late",         l:"the best bit happens at night"},
+  {e:"🏞️", s:"Outside",      l:"most of it happens out of doors"},
+  {e:"🏠", s:"At home",      l:"my own space, my own things"},
+  {e:"👫", s:"With people",  l:"a team, a group, my friends"},
+  {e:"🤫", s:"On my own",    l:"just me, getting on with it"},
+  {e:"🐾", s:"With animals", l:"they are there every day"},
+  {e:"🎧", s:"Music on",     l:"headphones in the whole time"},
+  {e:"🔁", s:"Every day",    l:"a bit of it, every single day"},
+  {e:"✈️", s:"Travelling",   l:"different places, not the same one"},
+  {e:"🧑‍🏫", s:"Being taught", l:"someone good is showing me how"},
+  {e:"🛠️", s:"Making things",l:"my hands are busy all day"},
+  {e:"💧", s:"In the water",  l:"a lot of it happens wet"},
+  {e:"🌤️", s:"Whatever the weather", l:"rain or shine, I still go"}
+];
+var HARD=[
+  {e:"😴", s:"Starting",       l:"getting going in the first place"},
+  {e:"🧊", s:"Not feeling it", l:"doing it when I don't feel like it"},
+  {e:"😬", s:"Being scared",   l:"having a go when I might be bad at it"},
+  {e:"🙈", s:"People watching",l:"doing it in front of anyone"},
+  {e:"😤", s:"Going wrong",    l:"when it doesn't work and I want to stop"},
+  {e:"🥱", s:"The boring bit", l:"the part that is just practice"},
+  {e:"⏳", s:"It takes ages",  l:"it is so slow I can't see it working"},
+  {e:"🤯", s:"Too hard",       l:"it is harder than I thought it would be"},
+  {e:"📵", s:"Distractions",   l:"something else is always more fun"},
+  {e:"😔", s:"Comparing",      l:"other people are better than me"},
+  {e:"🫠", s:"Being tired",    l:"I run out of energy before I finish"},
+  {e:"🔁", s:"Again and again",l:"having to do it over and over"},
+  {e:"🌧️", s:"Bad days",       l:"some days everything is heavier"},
+  {e:"⏰", s:"No time",        l:"the day fills up and it gets squeezed out"}
+];
+var ALLIES=[
+  {e:"⭐", s:"A star",        l:"company in the dark, before anyone else is up"},
+  {e:"🌙", s:"The moon",      l:"there whether it is very early or very late"},
+  {e:"🌊", s:"The sea",       l:"bigger than whatever is bothering me"},
+  {e:"🐕", s:"My dog",        l:"never once asks me why I am doing it"},
+  {e:"🐈", s:"My cat",        l:"sits with me the whole time"},
+  {e:"🦉", s:"An owl",        l:"awake when everybody else is asleep"},
+  {e:"🧓", s:"Someone older", l:"who already did the thing I am trying to do"},
+  {e:"🪞", s:"Future me",     l:"the one who has already got there"},
+  {e:"📖", s:"A character",   l:"out of a book or a film, who does not give up"},
+  {e:"🌳", s:"A tree",        l:"standing there long before me and long after"},
+  {e:"🎵", s:"A song",        l:"the one that gets me going every time"},
+  {e:"🕯️", s:"A small light", l:"something little that keeps going in the dark"},
+  {e:"👟", s:"My kit",        l:"the thing I put on and then I have to go"},
+  {e:"💛", s:"Someone at home", l:"who notices and says well done"}
+];
+var INSPIRE=[
+  {e:"📖", s:"Stories",   l:"books I read over and over"},
+  {e:"🧜", s:"Myths",     l:"legends, folk tales, mermaids, monsters"},
+  {e:"🎵", s:"Songs",     l:"music that makes me feel like doing it"},
+  {e:"🎬", s:"Films",     l:"something I have watched a hundred times"},
+  {e:"🖼️", s:"Pictures",  l:"art, drawings, photographs"},
+  {e:"🌍", s:"Places",    l:"somewhere real I want to go"},
+  {e:"🧑", s:"A real person", l:"somebody who actually did it"},
+  {e:"🐋", s:"Animals",   l:"creatures and how they live"},
+  {e:"🏛️", s:"History",   l:"people from a long time ago"},
+  {e:"🌌", s:"The sky",   l:"space, stars, weather, the sea at night"},
+  {e:"👑", s:"Heroes",    l:"someone brave, real or made up"},
+  {e:"💭", s:"Daydreams", l:"the things I think about when I am bored"}
+];
+
+var PACK=[
+  {n:"Animals", items:[["🐴","horse"],["🐶","dog"],["🐱","cat"],["🐰","rabbit"],["🐦","bird"],["🐠","fish"],["🐬","dolphin"],["🦁","lion"],["🐢","turtle"],["🦄","unicorn"],["🦖","dinosaur"],["🦋","butterfly"]]},
+  {n:"Outside", items:[["🌊","the sea"],["🏔️","mountains"],["🌲","forest"],["🏖️","the beach"],["⛺","camping"],["🌅","sunrise"],["🌻","flowers"],["🔥","a fire"],["🌈","rainbows"],["❄️","snow"],["🍃","fresh air"],["🗺️","a map"]]},
+  {n:"Sport",   items:[["⚽","football"],["🏀","basketball"],["🎾","tennis"],["🏊","swimming"],["🏃","running"],["🤸","gymnastics"],["🚲","my bike"],["⛸️","skating"],["🧗","climbing"],["🥇","a medal"],["🏐","volleyball"],["🥊","boxing"]]},
+  {n:"Making",  items:[["🎨","paints"],["🖌️","a brush"],["✍️","writing"],["📷","a camera"],["🎬","films"],["🔧","tools"],["🔨","a hammer"],["🧵","thread"],["💡","ideas"],["🧪","experiments"],["🔬","a microscope"],["📐","measuring"]]},
+  {n:"Music",   items:[["🎸","guitar"],["🎹","piano"],["🥁","drums"],["🎻","violin"],["🎤","singing"],["🎵","songs"],["🎧","headphones"],["💃","dancing"],["🎭","acting"],["🪕","banjo"],["🎼","music I wrote"],["📯","a horn"]]},
+  {n:"Food",    items:[["🥤","plant-powered smoothies"],["☕","warm drinks"],["🍵","tea"],["💧","lots of water"],["🥗","big salads"],["🍲","proper hot meals"],["🥣","porridge"],["🥜","protein"],["🫐","berries"],["🍎","fruit"],["🍞","fresh bread"],["🍫","something sweet"]]},
+  {n:"People",  items:[["🙋","myself"],["💛","my family"],["🧑‍🤝‍🧑","my friends"],["👵","my nan"],["👴","my grandad"],["🐾","my pet"],["🫂","a hug"],["👫","my team"],["🧑‍🏫","my teacher"],["👏","people cheering"],["🏠","home"],["❤️","someone I love"]]},
+  {n:"Getting ready", items:[["⏰","early mornings"],["😴","going to bed early"],["💪","training"],["🧘","being calm"],["📖","reading about it"],["🥛","eating well"],["📝","a plan"],["🔁","practising"],["🗓️","a routine"],["🎯","paying attention"],["🧠","not giving up"],["🚿","getting up in the dark"]]}
+];
+
+/* twelve places, and the kinds of win we bring back */
+var PLACES=[
+  {e:"🏞️", s:"The Grand Canyon", l:"a crack in the earth a mile deep",        x:74,  y:56},
+  {e:"🌴", s:"The Amazon",       l:"the biggest forest there is",             x:118, y:120},
+  {e:"🧊", s:"Patagonia",        l:"glaciers, wind and empty mountains",      x:107, y:172},
+  {e:"🌌", s:"Northern Norway",  l:"the sky goes green and pink at night",    x:196, y:37},
+  {e:"🌻", s:"Provence",         l:"fields of purple all the way to the hills", x:188, y:53},
+  {e:"🏛️", s:"Petra",            l:"a whole city carved into a pink cliff",   x:226, y:71},
+  {e:"🦁", s:"The Serengeti",    l:"grass, and everything that lives in it",  x:214, y:119},
+  {e:"💧", s:"Victoria Falls",   l:"so loud they call it the smoke that thunders", x:205, y:139},
+  {e:"🏔️", s:"The Himalayas",    l:"the highest mountains in the world",      x:288, y:69},
+  {e:"🗻", s:"Mount Fuji",       l:"a perfect snowy cone you can see for miles", x:340, y:57},
+  {e:"🐠", s:"The Great Barrier Reef", l:"the biggest living thing on the planet", x:352, y:150},
+  {e:"🐧", s:"Antarctica",       l:"ice in every direction, and penguins",    x:200, y:206},
+  {e:"📍", s:"Somewhere else",   l:"take the squad anywhere you like",        x:200, y:110, custom:true}
+];
+var AREAS=[
+  {k:"choice",  e:"🧭", s:"A choice I made",     l:"I picked one thing over another"},
+  {k:"obstacle",e:"🪨", s:"Something in the way",l:"it got hard and here is what I did"},
+  {k:"step",    e:"👣", s:"A step I took",       l:"I actually did a bit of it"},
+  {k:"ally",    e:"🤝", s:"Someone who helped",  l:"I found a person or a thing that helps"},
+  {k:"spark",   e:"✨", s:"Something that fired me up", l:"a story, a song, a person, a place"}
+];
+var KINDC={choice:"c",obstacle:"o",step:"s",ally:"a",spark:"k"};
+var KINDU={c:"choice",o:"obstacle",s:"step",a:"ally",k:"spark"};
+function areaOf(k){ for(var i=0;i<AREAS.length;i++) if(AREAS[i].k===k) return AREAS[i]; return null; }
+function placeOf(nm){ for(var i=0;i<PLACES.length;i++) if(PLACES[i].s===nm) return PLACES[i]; return null; }
+
+var FRAMES=[
+  {id:"even",  parts:["Even when ",", I still ","."],        hints:["it's cold and dark","get in"]},
+  {id:"later", parts:["","  now. ","  later."],              hints:["Hard","Waterfalls"]},
+  {id:"yet",   parts:["I don't have to be good at it yet. I just have to ","."], hints:["start"]},
+  {id:"one",   parts:["One ","  at a time."],                hints:["length"]},
+  {id:"someone",parts:["I'm someone who ","."],              hints:["gets up"]},
+  {id:"anyway",parts:["","  is hard. I'm doing it anyway."], hints:["Getting up"]}
+];
+
+/* ---------------- pages and chapters ---------------- */
+var PAGES=[
+  {id:"me",    n:"You",
+   say:"Type your name, then pick your traveller.",
+   then:"That is you for the rest of the term. Nobody else can have the same one."},
+  {id:"paint", n:"Your van",
+   say:"Pick the colour of your camper.",
+   then:"This is yours. You can change it any week you like."},
+  {id:"dream", n:"Your dream",
+   say:"What do you want to be really good at?",
+   then:"Pick as many as you like — a dream is hardly ever one thing. It does not have to be school and nobody is going to check.",
+   list:"DREAMS", ph:"anything that is not up there"},
+  {id:"love",  n:"What you love",
+   say:"When you are doing it — how does it feel? What do you love about it?",
+   then:"Not how it feels to finish. How it feels while you are in the middle of it. Pick all the ones that are true.",
+   list:"LOVES", ph:"in your own words"},
+  {id:"days",  n:"Your days",
+   say:"What would your days look like?",
+   then:"Where are you, what time is it, who is with you? Pick as many as fit.",
+   list:"DAYS", ph:"in your own words"},
+  {id:"pack",  n:"What you take",
+   say:"What do you need to take with you?",
+   then:"Things, people, or things you do. Eight fit in your camper — one is plenty today."},
+  {id:"style", n:"Inside",
+   say:"Pick how the inside of your camper feels.",
+   then:"Cosy, starry, seaside — whatever feels like yours."},
+  {id:"hard",  n:"The hard bit",
+   say:"What is the hard bit going to be, for you?",
+   then:"Everybody has one, and most people have a few. Saying them out loud is not giving up — it is what your mantra is for.",
+   list:"HARD", ph:"in your own words"},
+  {id:"mantra",n:"Your mantra",
+   say:"Now make yourself a line to say when the hard bit shows up.",
+   then:"Pick a shape and fill in your own words. Short is better. You will say this to yourself when nobody else is there."},
+  {id:"ally",  n:"Who rides with you",
+   say:"Who is coming with you? It does not have to be a person.",
+   then:"Anything that keeps you company when the hard bit turns up. Pick as many as you like, then say what they do for you.",
+   list:"ALLIES", ph:"in your own words"},
+  {id:"inspire", n:"What fills you up",
+   say:"Where does your dream come from? What fills you up?",
+   then:"Stories, myths, songs, people, places — pick as many as you like, then say exactly which ones.",
+   list:"INSPIRE", ph:"mermaid stories, myths and songs…"},
+  {id:"trips", n:"Where we went",
+   say:"This month the whole squad drives somewhere new.",
+   then:"Talk about how your dream is going — then bring back one win. As small as you like. Small is the whole point."},
+  {id:"show",  n:"Show us",
+   say:"Turn your camera round and show us your camper.",
+   then:"Say where you are heading and one thing you are taking. Everyone else: look, and say one thing you like about it."}
+];
+var LISTS={DREAMS:DREAMS, LOVES:LOVES, DAYS:DAYS, HARD:HARD, ALLIES:ALLIES, INSPIRE:INSPIRE};
+
+var CHAPTERS=[
+  {n:"Your camper",    pages:["me","paint"]},
+  {n:"Your dream",     pages:["dream","love"]},
+  {n:"Your days",      pages:["days"]},
+  {n:"What you take",  pages:["pack","style"]},
+  {n:"When it's hard", pages:["hard","mantra"]},
+  {n:"Who's with you", pages:["ally","inspire"]},
+  {n:"Where we go",    pages:["trips"], on:true},
+  {n:"Show us",        pages:["show"],  on:true}
+];
+var MULTI=["dream","love","days","hard","ally","inspire"];
+function chapterOf(pid){ for(var i=0;i<CHAPTERS.length;i++) if(CHAPTERS[i].pages.indexOf(pid)>=0) return i; return 0; }
+function pageIndexOf(pid){ for(var i=0;i<PAGES.length;i++) if(PAGES[i].id===pid) return i; return 0; }
+
+/* ---------------- state ---------------- */
+var KEY="mycamper.v2", SQKEY="mycamper.squad.v1";
+var page=0, cat=0, view="out", editNames=false;
+var newTrip={month:"",place:"",pic:"",kind:"",win:"",x:null,y:null,custom:false};
+
+function blankPick(){ return {picks:[], text:""}; }
+function blank(){
+  return {name:"", av:"", paint:PAINTS[0], style:"cosy",
+          dream:blankPick(), love:blankPick(), days:blankPick(),
+          hard:blankPick(), ally:blankPick(), inspire:blankPick(),
+          allyDoes:"", mantra:null, pack:[], trips:[]};
+}
+
+function packUp(str){
+  try{ return btoa(unescape(encodeURIComponent(str)))
+    .replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }catch(e){ return ""; }
+}
+function unpack(str){
+  try{ return decodeURIComponent(escape(atob(String(str).replace(/-/g,"+").replace(/_/g,"/")))); }
+  catch(e){ return ""; }
+}
+function squeeze(){
+  var o={};
+  if(me.name) o.n=me.name;
+  if(me.av) o.a=me.av;
+  if(me.paint) o.p=me.paint;
+  if(me.style&&me.style!=="cosy") o.s=me.style;
+  MULTI.forEach(function(id,i){
+    var v=me[id];
+    if(v&&(v.picks.length||(v.text||"").trim())){
+      o[["d","l","y","h","w","i"][i]]=[v.picks.map(function(x){ return x.e; }).join(""), v.text||""];
+    }
+  });
+  if((me.allyDoes||"").trim()) o.wd=me.allyDoes;
+  if(me.mantra){
+    if((me.mantra.own||"").trim()) o.m=["",me.mantra.own];
+    else if(me.mantra.frame) o.m=[me.mantra.frame].concat(me.mantra.blanks||[]);
+  }
+  if(me.pack.length) o.k=me.pack.map(function(x){ return [x.e,x.w]; });
+  if(me.trips.length) o.t=me.trips.map(function(t){
+    var r=[t.month||"",t.place||"",t.pic||"",KINDC[t.kind]||"",t.win||""];
+    if(typeof t.x==="number") r.push(t.x,t.y);
+    return r;
+  });
+  return o;
+}
+/* emoji can be several code units, so split by picking off known options */
+function picksFrom(str,list){
+  var out=[];
+  if(!str) return out;
+  list.forEach(function(o){ if(str.indexOf(o.e)>=0) out.push({e:o.e,s:o.s}); });
+  return out;
+}
+function swell(o){
+  if(!o||typeof o!=="object") return null;
+  if(o.dream&&o.dream.picks) return o;                 /* already full */
+  var b=blank();
+  if(o.n) b.name=o.n; if(o.a) b.av=o.a;
+  if(o.p) b.paint=o.p; if(o.s) b.style=o.s;
+  ["d","l","y","h","w","i"].forEach(function(k,i){
+    var id=MULTI[i], src=o[k];
+    if(src&&src.length){
+      b[id]={picks:picksFrom(src[0],LISTS[PAGES[pageIndexOf(id)].list]||[]), text:src[1]||""};
+    }
+  });
+  if(o.wd) b.allyDoes=o.wd;
+  if(o.m&&o.m.length){
+    b.mantra = o.m[0]==="" ? {frame:"",blanks:[],own:o.m[1]||""}
+                           : {frame:o.m[0],blanks:o.m.slice(1),own:""};
+  }
+  if(o.k&&o.k.length) b.pack=o.k.map(function(x){ return {e:x[0],w:x[1]||""}; });
+  if(o.t&&o.t.length) b.trips=o.t.map(function(r){
+    var t={month:r[0]||"",place:r[1]||"",pic:r[2]||"",kind:KINDU[r[3]]||"",win:r[4]||""};
+    if(r.length>5){ t.x=r[5]; t.y=r[6]; }
+    return t;
+  });
+  return b;
+}
+
+var me=null, cameFromLink=false;
+try{
+  var hm=(location.hash||"").match(/[#&]c=([A-Za-z0-9\-_]+)/);
+  if(hm){
+    var txt=unpack(hm[1]);
+    if(txt){ var g=swell(JSON.parse(txt)); if(g){ me=g; cameFromLink=true; } }
+  }
+}catch(e){ me=null; }
+if(!me){ try{ me=swell(JSON.parse(localStorage.getItem(KEY)||"null")); }catch(e){ me=null; } }
+if(!me||typeof me!=="object") me=blank();
+(function(){
+  var b=blank();
+  b.name=typeof me.name==="string"?me.name:"";
+  b.av=typeof me.av==="string"?me.av:"";
+  b.paint=typeof me.paint==="string"?me.paint:PAINTS[0];
+  b.style=typeof me.style==="string"?me.style:"cosy";
+  b.allyDoes=typeof me.allyDoes==="string"?me.allyDoes:"";
+  MULTI.forEach(function(id){
+    var v=me[id];
+    if(v&&typeof v==="object"){
+      b[id]={picks:Array.isArray(v.picks)?v.picks.filter(function(x){return x&&x.e;})
+               .map(function(x){ return {e:String(x.e),s:String(x.s||"")}; }):[],
+             text:typeof v.text==="string"?v.text:""};
+    }
+  });
+  if(me.mantra&&typeof me.mantra==="object"){
+    b.mantra={frame:String(me.mantra.frame||""),
+              blanks:Array.isArray(me.mantra.blanks)?me.mantra.blanks.map(String):[],
+              own:String(me.mantra.own||"")};
+  }
+  if(Array.isArray(me.pack)) b.pack=me.pack.filter(function(x){ return x&&x.e; })
+    .slice(0,8).map(function(x){ return {e:String(x.e),w:String(x.w||"")}; });
+  if(Array.isArray(me.trips)) b.trips=me.trips.filter(function(t){ return t&&t.place; })
+    .map(function(t){
+      var r={month:String(t.month||""),place:String(t.place||""),pic:String(t.pic||""),
+             kind:String(t.kind||""),win:String(t.win||"")};
+      if(typeof t.x==="number"){ r.x=t.x; r.y=t.y; }
+      return r;
+    });
+  me=b;
+})();
+
+var storageWorks=true, linkLen=0;
+function save(){
+  try{ localStorage.setItem(KEY,JSON.stringify(me)); }catch(e){ storageWorks=false; }
+  try{
+    var enc=packUp(JSON.stringify(squeeze()));
+    if(enc){ history.replaceState(null,"","#c="+enc); linkLen=enc.length; }
+  }catch(e){}
+  var d=document.getElementById("savedot");
+  if(d) d.textContent = storageWorks ? "Saved" : "Saved in the link";
+}
+function camperLink(){
+  var enc=packUp(JSON.stringify(squeeze()));
+  return location.href.split("#")[0]+(enc?"#c="+enc:"");
+}
+
+/* the squad list, for the Dream Leader */
+var squad;
+try{ squad=JSON.parse(localStorage.getItem(SQKEY)||"null"); }catch(e){ squad=null; }
+if(!squad||typeof squad!=="object") squad={names:[],led:[],now:""};
+squad.names=Array.isArray(squad.names)?squad.names.map(String):[];
+squad.led=Array.isArray(squad.led)?squad.led.map(String):[];
+squad.now=typeof squad.now==="string"?squad.now:"";
+function saveSquad(){ try{ localStorage.setItem(SQKEY,JSON.stringify(squad)); }catch(e){} }
+function spinLeader(){
+  var pool=squad.names.filter(function(x){ return x.trim() && squad.led.indexOf(x)<0; });
+  if(!pool.length){ squad.led=[]; pool=squad.names.filter(function(x){ return x.trim(); }); }
+  if(!pool.length){ toast("Add the squad's names first"); editNames=true; render(); return; }
+  squad.now=pool[Math.floor(Math.random()*pool.length)];
+  squad.led.push(squad.now);
+  saveSquad(); render();
+}
+
+/* ---------------- helpers ---------------- */
+function el(t,c,x){ var n=document.createElement(t); if(c)n.className=c; if(x!=null)n.textContent=x; return n; }
+function toast(m){ var t=el("div","toast",m); document.body.appendChild(t); setTimeout(function(){t.remove();},1700); }
+function filled(id){ var v=me[id]; return !!(v&&(v.picks.length||(v.text||"").trim())); }
+function mantraOf(){
+  var m=me.mantra; if(!m) return "";
+  if(m.own) return m.own;
+  var f=null; FRAMES.forEach(function(x){ if(x.id===m.frame) f=x; });
+  if(!f) return "";
+  var out="", bl=m.blanks||[];
+  for(var j=0;j<f.parts.length;j++){ out+=f.parts[j]; if(j<f.parts.length-1) out+=(bl[j]||"").trim()||"______"; }
+  return out.replace(/\s+/g," ").trim();
+}
+function done(id){
+  if(id==="me") return !!(me.name||"").trim() && !!me.av;
+  if(id==="paint"||id==="style") return true;
+  if(id==="pack") return me.pack.length>0;
+  if(id==="mantra") return !!mantraOf() && mantraOf().indexOf("______")<0;
+  if(id==="trips") return me.trips.length>0;
+  if(id==="show") return false;
+  return filled(id);
+}
+function chapterDone(c){ return c.pages.every(function(p){ return done(p); }); }
+function goPage(i){ page=Math.max(0,Math.min(PAGES.length-1,i)); view=(PAGES[page].id==="style")?"in":view;
+  render(); window.scrollTo(0,0); }
+function label(id){
+  var v=me[id]; if(!v) return "";
+  var bits=v.picks.map(function(p){ return p.s; });
+  if((v.text||"").trim()) bits.push(v.text.trim());
+  return bits.join(", ");
+}
+function firstPic(id){ var v=me[id]; return (v&&v.picks.length)?v.picks[0].e:""; }
+
+/* ---------------- the world ---------------- */
+var SVGNS="http://www.w3.org/2000/svg";
+function sAdd(svg,t,a,x){ var e=document.createElementNS(SVGNS,t);
+  for(var p in a) e.setAttribute(p,a[p]); if(x!=null) e.textContent=x; svg.appendChild(e); return e; }
+var LANDS=[
+  {n:"NORTH AMERICA", lx:70, ly:44,
+   d:"M18,30 L54,22 L96,26 L122,22 L128,36 L114,48 L98,46 L106,58 L94,70 L86,68 L82,58 L68,56 L50,48 L32,44 Z"},
+  {n:"", lx:0, ly:0, d:"M92,72 L102,82 L112,92 L106,98 L94,88 L84,78 Z"},
+  {n:"SOUTH AMERICA", lx:116, ly:132,
+   d:"M110,98 L126,96 L136,108 L132,126 L126,144 L118,160 L110,178 L103,188 L98,176 L104,152 L100,130 L104,112 Z"},
+  {n:"EUROPE", lx:192, ly:46,
+   d:"M174,32 L196,28 L214,34 L218,46 L206,56 L190,58 L180,50 L172,40 Z"},
+  {n:"AFRICA", lx:206, ly:104,
+   d:"M184,66 L212,62 L230,72 L234,90 L228,110 L218,130 L208,148 L200,158 L193,144 L190,122 L181,102 L178,82 Z"},
+  {n:"ASIA", lx:288, ly:50,
+   d:"M220,28 L262,20 L302,24 L338,32 L360,46 L354,62 L338,72 L318,78 L300,88 L280,86 L260,78 L238,70 L224,54 Z"},
+  {n:"AUSTRALIA", lx:340, ly:160,
+   d:"M318,142 L342,136 L360,146 L364,160 L352,174 L332,176 L320,164 Z"},
+  {n:"ANTARCTICA", lx:200, ly:212,
+   d:"M14,202 L120,194 L220,198 L320,192 L386,198 L386,218 L14,218 Z"}
+];
+function worldBase(aria){
+  var svg=document.createElementNS(SVGNS,"svg");
+  svg.setAttribute("viewBox","0 0 400 224");
+  svg.setAttribute("role","img");
+  svg.setAttribute("aria-label",aria||"Map of the world");
+  sAdd(svg,"rect",{x:0,y:0,width:400,height:224,fill:"#CDE4EF"});
+  LANDS.forEach(function(L){
+    sAdd(svg,"path",{d:L.d,fill:(L.n==="ANTARCTICA")?"#F2F8FB":"#B9D3A8",
+      stroke:(L.n==="ANTARCTICA")?"#CFE3EC":"#8FB07C","stroke-width":1.6,"stroke-linejoin":"round"});
+  });
+  LANDS.forEach(function(L){
+    if(!L.n) return;
+    sAdd(svg,"text",{x:L.lx,y:L.ly,"text-anchor":"middle","font-size":7.5,
+      "font-family":"Figtree, sans-serif","font-weight":"700","letter-spacing":"0.6",
+      fill:"#3E5B33",opacity:".75"},L.n);
+  });
+  return svg;
+}
+function spotOf(t){
+  if(typeof t.x==="number") return {x:t.x,y:t.y};
+  var p=placeOf(t.place); return p?{x:p.x,y:p.y}:{x:200,y:110};
+}
+
+/* The welcome picture. Bunting, hills, a road going somewhere, and a camper
+   already on it — colour first, before a single question gets asked. */
+function heroArt(){
+  var wrap=el("div","heroart");
+  var svg=document.createElementNS(SVGNS,"svg");
+  svg.setAttribute("viewBox","0 0 400 140");
+  svg.setAttribute("role","img");
+  svg.setAttribute("aria-label","A little camper on a winding road, under bunting and stars");
+  function a(t,at,x){ return sAdd(svg,t,at,x); }
+
+  var defs=document.createElementNS(SVGNS,"defs");
+  var g=document.createElementNS(SVGNS,"linearGradient");
+  g.setAttribute("id","sky"); g.setAttribute("x1","0"); g.setAttribute("y1","0");
+  g.setAttribute("x2","0"); g.setAttribute("y2","1");
+  [["0%","#FFD9A8"],["45%","#F7B7C8"],["100%","#C9B6ED"]].forEach(function(st){
+    var s2=document.createElementNS(SVGNS,"stop");
+    s2.setAttribute("offset",st[0]); s2.setAttribute("stop-color",st[1]);
+    g.appendChild(s2);
+  });
+  defs.appendChild(g); svg.appendChild(defs);
+
+  a("rect",{x:0,y:0,width:400,height:140,fill:"url(#sky)"});
+  a("circle",{cx:330,cy:36,r:19,fill:"#FFF2B8",opacity:".95"});
+  a("circle",{cx:330,cy:36,r:27,fill:"#FFF2B8",opacity:".35"});
+  [[42,22],[76,38],[118,18],[168,30],[214,16],[262,32],[292,20],[366,58],[22,52]].forEach(function(p,i){
+    a("text",{x:p[0],y:p[1],"text-anchor":"middle","font-size":(i%3===0?11:8),opacity:".85"},
+      i%4===0?"✦":(i%4===1?"✧":"·"));
+  });
+
+  /* hills, back to front */
+  a("path",{d:"M0,96 Q60,60 118,88 Q176,116 236,80 Q300,44 400,86 L400,140 L0,140 Z",fill:"#8FBF9F"});
+  a("path",{d:"M0,112 Q70,84 140,108 Q210,132 280,104 Q340,80 400,110 L400,140 L0,140 Z",fill:"#6FA98A"});
+  a("path",{d:"M0,128 Q90,110 180,126 Q270,142 400,124 L400,140 L0,140 Z",fill:"#4E8C72"});
+
+  /* the road */
+  a("path",{d:"M-10,140 Q90,118 168,126 Q250,134 330,112 Q370,102 410,104",
+    fill:"none",stroke:"#F4EDE2","stroke-width":11,"stroke-linecap":"round",opacity:".95"});
+  a("path",{d:"M-10,140 Q90,118 168,126 Q250,134 330,112 Q370,102 410,104",
+    fill:"none",stroke:"#C8B9A6","stroke-width":1.6,"stroke-dasharray":"7 9",opacity:".8"});
+
+  /* a small camper, already going */
+  var c=document.createElementNS(SVGNS,"g");
+  c.setAttribute("transform","translate(150,92) scale(0.46)");
+  function ca(t,at,x){ return sAdd(c,t,at,x); }
+  ca("rect",{x:0,y:8,width:78,height:28,rx:7,fill:"#E4572E"});
+  ca("path",{d:"M0,20 q0-12 12-12 h14 v28 h-26 z",fill:"#E4572E",opacity:".9"});
+  ca("rect",{x:10,y:3,width:58,height:5,rx:2.5,fill:"#231B3D",opacity:".25"});
+  ca("rect",{x:5,y:14,width:15,height:11,rx:3,fill:"#EAF3FB"});
+  ca("circle",{cx:44,cy:21,r:8,fill:"#FAEECF",stroke:"#fff","stroke-width":2});
+  ca("circle",{cx:20,cy:38,r:7,fill:"#231B3D"});
+  ca("circle",{cx:62,cy:38,r:7,fill:"#231B3D"});
+  ca("circle",{cx:20,cy:38,r:2.6,fill:"#EFEAF9"});
+  ca("circle",{cx:62,cy:38,r:2.6,fill:"#EFEAF9"});
+  ca("line",{x1:40,y1:8,x2:40,y2:-12,stroke:"#9A6B0F","stroke-width":2.4,"stroke-linecap":"round"});
+  ca("path",{d:"M40,-11 L64,-5 L40,1 Z",fill:"#9A6B0F"});
+  svg.appendChild(c);
+
+  /* bunting */
+  a("path",{d:"M0,10 Q100,26 200,12 Q300,-2 400,14",fill:"none",stroke:"#fff","stroke-width":1.6,opacity:".9"});
+  var cols=["#E4572E","#F2A93B","#3C9D6E","#3B7DD8","#8155C6","#D9548C","#2B9EB3"];
+  for(var i=0;i<12;i++){
+    var x=14+i*33, y=11+Math.sin(i/1.7)*7;
+    a("path",{d:"M"+(x-6)+","+y+" L"+(x+6)+","+y+" L"+x+","+(y+13)+" Z",
+      fill:cols[i%cols.length],opacity:".92"});
+  }
+  wrap.appendChild(svg);
+  return wrap;
+}
+
+/* ---------------- the camper ---------------- */
+function vanSVG(){
+  var lit=filled("love"), side=filled("days")?(firstPic("days")||"🌅"):"";
+  var svg=document.createElementNS(SVGNS,"svg");
+  svg.setAttribute("viewBox","0 0 320 190");
+  svg.setAttribute("role","img"); svg.setAttribute("aria-label","My camper");
+  function a(t,at,x){ return sAdd(svg,t,at,x); }
+  a("line",{x1:166,y1:18,x2:166,y2:58,stroke:"#8B81A6","stroke-width":3,"stroke-linecap":"round"});
+  a("path",{d:"M166 20 L214 30 L166 40 Z",fill:"#9A6B0F",opacity:".9"});
+  if(filled("dream")) a("text",{x:190,y:35,"text-anchor":"middle","font-size":13},firstPic("dream"));
+  a("rect",{x:14,y:56,width:292,height:96,rx:18,fill:me.paint});
+  a("path",{d:"M14 90 q0-34 34-34 h40 v96 h-74 z",fill:me.paint,opacity:".88"});
+  a("rect",{x:40,y:48,width:240,height:10,rx:5,fill:"#231B3D",opacity:".22"});
+  a("rect",{x:24,y:68,width:56,height:38,rx:9,fill:"#EAF3FB",opacity:".93"});
+  if(filled("ally")) a("text",{x:52,y:96,"text-anchor":"middle","font-size":24},firstPic("ally")||"⭐");
+  a("circle",{cx:112,cy:92,r:25,fill:lit?"#FAEECF":"#EAF3FB",stroke:lit?"#9A6B0F":"#ffffff","stroke-width":4,opacity:".97"});
+  if(lit) a("text",{x:112,y:101,"text-anchor":"middle","font-size":24},firstPic("love")||"✨");
+  var mt=mantraOf();
+  if(mt){
+    a("rect",{x:132,y:130,width:170,height:20,rx:10,fill:"#ffffff",opacity:".9"});
+    a("text",{x:217,y:144,"text-anchor":"middle","font-size":9.5,"font-family":"Baloo 2, sans-serif",
+      "font-weight":"700",fill:"#231B3D"}, mt.length>38?mt.slice(0,36)+"…":mt);
+  }
+  if(side){ a("circle",{cx:286,cy:76,r:15,fill:"#ffffff",opacity:".82"});
+            a("text",{x:286,y:83,"text-anchor":"middle","font-size":17},side); }
+  [78,252].forEach(function(cx){
+    a("circle",{cx:cx,cy:154,r:21,fill:"#231B3D"});
+    a("circle",{cx:cx,cy:154,r:8,fill:"#EFEAF9"});
+  });
+  me.trips.slice(0,6).forEach(function(t,i){
+    a("circle",{cx:40+i*23,cy:170,r:9,fill:"#ffffff",opacity:".9"});
+    a("text",{x:40+i*23,y:175,"text-anchor":"middle","font-size":11},t.pic||"📍");
+  });
+  a("rect",{x:0,y:182,width:320,height:5,rx:2.5,fill:"#231B3D",opacity:".12"});
+  return svg;
+}
+function roomSVG(){
+  var st=styleOf(), lit=filled("love");
+  var svg=document.createElementNS(SVGNS,"svg");
+  svg.setAttribute("viewBox","0 0 400 250");
+  svg.setAttribute("preserveAspectRatio","none");
+  svg.setAttribute("role","img"); svg.setAttribute("aria-label","Inside my camper");
+  function a(t,at,x){ return sAdd(svg,t,at,x); }
+  a("rect",{x:0,y:0,width:400,height:250,fill:st.wall});
+  a("rect",{x:0,y:196,width:400,height:54,fill:st.floor});
+  a("rect",{x:150,y:212,width:110,height:28,rx:6,fill:st.tex,opacity:".55"});
+  a("rect",{x:14,y:150,width:132,height:48,rx:5,fill:st.wood});
+  a("rect",{x:20,y:136,width:120,height:18,rx:8,fill:st.tex});
+  a("rect",{x:26,y:124,width:34,height:19,rx:8,fill:"#fff",opacity:".92"});
+  a("rect",{x:62,y:126,width:30,height:17,rx:8,fill:"#fff",opacity:".78"});
+  a("rect",{x:26,y:30,width:96,height:62,rx:7,fill:"#fff",opacity:".93"});
+  a("rect",{x:26,y:30,width:96,height:62,rx:7,fill:"none",stroke:st.wood,"stroke-width":4});
+  if(filled("dream")){
+    a("circle",{cx:74,cy:58,r:23,fill:st.glow,opacity:".3"});
+    me.dream.picks.slice(0,3).forEach(function(p,i,arr){
+      var w=arr.length, x=74-(w-1)*15+i*30;
+      a("text",{x:x,y:68,"text-anchor":"middle","font-size":arr.length>2?20:28},p.e);
+    });
+    if(!me.dream.picks.length) a("text",{x:74,y:68,"text-anchor":"middle","font-size":26},"🏁");
+  } else {
+    a("text",{x:74,y:66,"text-anchor":"middle","font-size":26,opacity:".28"},"☆");
+  }
+  if(me.inspire&&me.inspire.picks.length){
+    me.inspire.picks.slice(0,3).forEach(function(p,i){
+      a("rect",{x:26+i*33,y:98,width:28,height:22,rx:4,fill:"#fff",opacity:".88"});
+      a("text",{x:40+i*33,y:115,"text-anchor":"middle","font-size":14},p.e);
+    });
+  }
+  a("circle",{cx:200,cy:78,r:34,fill:lit?st.glow:"#EAF3FB",opacity:lit?".95":".85"});
+  a("circle",{cx:200,cy:78,r:34,fill:"none",stroke:"#fff","stroke-width":6,opacity:".85"});
+  if(lit) a("text",{x:200,y:90,"text-anchor":"middle","font-size":28},firstPic("love")||"✨");
+  a("path",{d:"M158 40 q10 40 0 78 q-14-38 0-78z",fill:st.tex,opacity:".9"});
+  a("path",{d:"M242 40 q-10 40 0 78 q14-38 0-78z",fill:st.tex,opacity:".9"});
+  a("rect",{x:154,y:36,width:92,height:5,rx:2.5,fill:st.met});
+  var mt=mantraOf();
+  if(mt){
+    a("rect",{x:116,y:8,width:168,height:19,rx:9,fill:"#fff",opacity:".92"});
+    a("text",{x:200,y:21,"text-anchor":"middle","font-size":9,"font-family":"Baloo 2, sans-serif",
+      "font-weight":"700",fill:"#231B3D"}, mt.length>36?mt.slice(0,34)+"…":mt);
+  }
+  a("rect",{x:166,y:150,width:66,height:6,rx:3,fill:st.wood});
+  if(filled("ally")) a("text",{x:199,y:147,"text-anchor":"middle","font-size":20},firstPic("ally")||"⭐");
+  a("rect",{x:196,y:156,width:6,height:42,rx:3,fill:st.met});
+  a("rect",{x:130,y:162,width:28,height:5,rx:2.5,fill:st.wood});
+  a("rect",{x:130,y:130,width:5,height:34,rx:2.5,fill:st.wood});
+  a("rect",{x:130,y:167,width:5,height:30,rx:2.5,fill:st.wood});
+  a("rect",{x:153,y:167,width:5,height:30,rx:2.5,fill:st.wood});
+  a("rect",{x:250,y:150,width:140,height:48,rx:5,fill:st.wood});
+  a("rect",{x:250,y:145,width:140,height:9,rx:4,fill:"#fff",opacity:".6"});
+  a("rect",{x:252,y:70,width:138,height:5,rx:2.5,fill:st.wood});
+  a("rect",{x:252,y:114,width:138,height:5,rx:2.5,fill:st.wood});
+  return svg;
+}
+function mapEl(){
+  var w=el("div","worldmap");
+  var svg=worldBase("Everywhere the squad has been");
+  PLACES.forEach(function(p){
+    if(p.custom) return;
+    if(me.trips.some(function(t){ return t.place===p.s; })) return;
+    sAdd(svg,"circle",{cx:p.x,cy:p.y,r:3,fill:"#231B3D",opacity:".25"});
+  });
+  me.trips.forEach(function(t){
+    var sp=spotOf(t);
+    sAdd(svg,"circle",{cx:sp.x,cy:sp.y,r:11,fill:"#9A6B0F",opacity:".18"});
+    sAdd(svg,"text",{x:sp.x,y:sp.y+6,"text-anchor":"middle","font-size":16},t.pic||"📍");
+  });
+  w.appendChild(svg);
+  var pins=el("div","pins");
+  if(me.trips.length){
+    me.trips.forEach(function(t,i){
+      var a=areaOf(t.kind), row=el("div","pin2");
+      row.appendChild(el("span","pp",t.pic||"📍"));
+      var b=el("div","pb");
+      b.appendChild(el("div","pm",t.month+" · "+t.place));
+      b.appendChild(el("div","pw",(a?a.e+" ":"")+(t.win||"")));
+      row.appendChild(b);
+      var x=el("button","x","×");
+      x.addEventListener("click",function(){ me.trips.splice(i,1); save(); render(); });
+      row.appendChild(x);
+      pins.appendChild(row);
+    });
+  } else pins.appendChild(el("p","note","No pins yet. The first one goes in this month."));
+  w.appendChild(pins);
+  return w;
+}
+function slotButton(i){
+  var it=me.pack[i];
+  var b=el("button","slotbox"+(it?" has":""), it?it.e:"");
+  b.title=it?it.w:"";
+  b.addEventListener("click",function(){ if(it){ me.pack.splice(i,1); save(); render(); } });
+  return b;
+}
+function camperView(){
+  var w=el("div");
+  var vt=el("div","viewtabs");
+  [["Outside","out"],["Inside","in"],["Map","map"]].forEach(function(p){
+    var b=el("button","viewtab"+((view===p[1])?" on":""),p[0]);
+    b.addEventListener("click",function(){ view=p[1]; render(); });
+    vt.appendChild(b);
+  });
+  w.appendChild(vt);
+  if(view==="map"){ w.appendChild(mapEl()); return w; }
+  if(view==="in"){
+    var r=el("div","room");
+    r.appendChild(roomSVG());
+    var sh=el("div","rshelf");
+    for(var i=0;i<8;i++) sh.appendChild(slotButton(i));
+    r.appendChild(sh);
+    w.appendChild(r);
+  } else {
+    var v=el("div","van"); v.appendChild(vanSVG()); w.appendChild(v);
+  }
+  /* the dream is written UNDER the camper now, never across it */
+  var cap=el("div","vancap");
+  if(filled("dream")){
+    cap.appendChild(el("span","cl","Heading for"));
+    cap.appendChild(document.createTextNode(label("dream")));
+  } else {
+    cap.appendChild(el("span","cl","Heading for"));
+    cap.appendChild(document.createTextNode("— not yet —"));
+  }
+  w.appendChild(cap);
+  return w;
+}
+
+/* ---------------- a page you can pick many things on ---------------- */
+function multiPage(id){
+  var P=PAGES[pageIndexOf(id)], opts=LISTS[P.list]||[];
+  var v=me[id];
+  var p=el("div","panel");
+  p.appendChild(el("p","pickhint","Tap as many as you like. Tap again to take one off."));
+  var g=el("div","grid wide");
+  opts.forEach(function(o){
+    var on=v.picks.some(function(x){ return x.e===o.e; });
+    var b=el("button","opt"+(on?" on":""));
+    b.appendChild(el("span","em",o.e));
+    b.appendChild(el("b",null,o.s));
+    b.appendChild(el("span",null,o.l));
+    b.addEventListener("click",function(){
+      if(on) v.picks=v.picks.filter(function(x){ return x.e!==o.e; });
+      else v.picks.push({e:o.e,s:o.s});
+      save(); render();
+    });
+    g.appendChild(b);
+  });
+  p.appendChild(g);
+
+  if(v.picks.length){
+    var ch=el("div","chosen");
+    v.picks.forEach(function(x,i){
+      var c=el("div","chip");
+      c.appendChild(el("span","e",x.e));
+      c.appendChild(el("span",null,x.s));
+      var rm=el("button","x","×");
+      rm.addEventListener("click",function(){ v.picks.splice(i,1); save(); render(); });
+      c.appendChild(rm);
+      ch.appendChild(c);
+    });
+    p.appendChild(ch);
+  }
+
+  p.appendChild(el("p","ownhead","Anything else, in your own words —"));
+  var own=el("div","own");
+  var inp=document.createElement("input");
+  inp.value=v.text||""; inp.placeholder=P.ph||"in your own words";
+  inp.addEventListener("input",function(){ v.text=inp.value; save(); });
+  own.appendChild(inp);
+  if(id==="hard"){
+    var yet=el("button","yet","add “— yet”");
+    yet.title="Turn a put-down round";
+    yet.addEventListener("click",function(){
+      var t=(inp.value||"").trim();
+      if(!t||/—\s*yet$/.test(t)) return;
+      inp.value=t+" — yet"; v.text=inp.value; save(); inp.focus();
+    });
+    own.appendChild(yet);
+  }
+  p.appendChild(own);
+
+  if(id==="ally"&&(v.picks.length||(v.text||"").trim())){
+    p.appendChild(el("p","ownhead","And what do they do for you? This is the important half —"));
+    var dw=el("div","own");
+    var di=document.createElement("input");
+    di.value=me.allyDoes||"";
+    di.placeholder="keeps me company in the dark before sunrise…";
+    di.addEventListener("input",function(){ me.allyDoes=di.value; save(); });
+    dw.appendChild(di);
+    p.appendChild(dw);
+  }
+  return p;
+}
+
+/* ---------------- the other pages ---------------- */
+function pageBody(id){
+  if(MULTI.indexOf(id)>=0) return multiPage(id);
+
+  if(id==="me"){
+    var p=el("div","panel hero");
+    p.appendChild(heroArt());
+    var q=el("div","quote");
+    q.appendChild(el("div","qline","A dream is just a place you haven’t driven to yet."));
+    q.appendChild(el("div","qsub","So let’s build you something to get there in."));
+    p.appendChild(q);
+    var nm=document.createElement("input");
+    nm.className="nameline"; nm.value=me.name||""; nm.placeholder="Your name";
+    nm.addEventListener("input",function(){ me.name=nm.value; save(); });
+    p.appendChild(nm);
+    var g=el("div","avs");
+    AVATARS.forEach(function(a){
+      var b=el("button",(me.av===a?"on":""),a);
+      b.addEventListener("click",function(){ me.av=a; save(); render(); });
+      g.appendChild(b);
+    });
+    p.appendChild(g);
+    return p;
+  }
+  if(id==="paint"){
+    var p2=el("div","panel"), row=el("div","paints");
+    PAINTS.forEach(function(c){
+      var b=el("button","paint"+(me.paint===c?" on":""));
+      b.style.background=c;
+      b.addEventListener("click",function(){ me.paint=c; save(); render(); });
+      row.appendChild(b);
+    });
+    p2.appendChild(row);
+    return p2;
+  }
+  if(id==="style"){
+    var p3=el("div","panel"), g3=el("div","stylepick");
+    STYLES.forEach(function(o){
+      var b=el("button","sty"+(me.style===o.id?" on":""));
+      b.appendChild(el("span","em",o.em));
+      b.appendChild(el("b",null,o.n));
+      b.appendChild(el("span",null,o.l));
+      b.addEventListener("click",function(){ me.style=o.id; view="in"; save(); render(); });
+      g3.appendChild(b);
+    });
+    p3.appendChild(g3);
+    return p3;
+  }
+  if(id==="pack"){
+    var p4=el("div","panel");
+    p4.appendChild(el("p","pickhint","Tap as many as you like, from any of the groups. Eight fit in the camper."));
+    var cats=el("div","cats");
+    PACK.forEach(function(c,i){
+      var b=el("button","cat"+(cat===i?" on":""),c.n);
+      b.addEventListener("click",function(){ cat=i; render(); });
+      cats.appendChild(b);
+    });
+    p4.appendChild(cats);
+    var g4=el("div","grid");
+    PACK[cat].items.forEach(function(it){
+      var on=me.pack.some(function(x){ return x.e===it[0]; });
+      var b=el("button","opt"+(on?" on":""));
+      b.appendChild(el("span","em",it[0]));
+      b.appendChild(el("b",null,it[1]));
+      b.addEventListener("click",function(){
+        if(on) me.pack=me.pack.filter(function(x){ return x.e!==it[0]; });
+        else { if(me.pack.length>=8){ toast("The camper is full — take something out first"); return; }
+               me.pack.push({e:it[0],w:it[1]}); }
+        save(); render();
+      });
+      g4.appendChild(b);
+    });
+    p4.appendChild(g4);
+    if(me.pack.length){
+      var ch4=el("div","chosen");
+      me.pack.forEach(function(x,i){
+        var c=el("div","chip");
+        c.appendChild(el("span","e",x.e));
+        c.appendChild(el("span",null,x.w));
+        var rm=el("button","x","×");
+        rm.addEventListener("click",function(){ me.pack.splice(i,1); save(); render(); });
+        c.appendChild(rm);
+        ch4.appendChild(c);
+      });
+      p4.appendChild(ch4);
+    }
+    return p4;
+  }
+  if(id==="mantra"){
+    var pm=el("div","panel");
+    if(filled("hard")){
+      var re=el("div","remind");
+      re.appendChild(el("span","k","You said the hard bit is"));
+      re.appendChild(el("span","v",label("hard")));
+      pm.appendChild(re);
+    }
+    var cur=me.mantra||{frame:"",blanks:[],own:""};
+    var gm=el("div","frames");
+    FRAMES.forEach(function(f){
+      var on=cur.frame===f.id&&!cur.own;
+      var b=el("button","frame"+(on?" on":""));
+      var line=el("div","fline");
+      f.parts.forEach(function(part,i){
+        if(part.trim()) line.appendChild(el("span",null,part.trim()));
+        if(i<f.parts.length-1) line.appendChild(el("span","blank",f.hints[i]||"…"));
+      });
+      b.appendChild(line);
+      b.addEventListener("click",function(){
+        me.mantra={frame:f.id,blanks:(cur.frame===f.id?cur.blanks:[]),own:""}; save(); render();
+      });
+      gm.appendChild(b);
+    });
+    pm.appendChild(gm);
+    if(cur.frame&&!cur.own){
+      var f2=null; FRAMES.forEach(function(x){ if(x.id===cur.frame) f2=x; });
+      if(f2) for(var bi=0;bi<f2.parts.length-1;bi++){
+        (function(bi){
+          var row=el("div","fillrow");
+          row.appendChild(el("span","fillk","Your word"+(f2.parts.length>2?" "+(bi+1):"")));
+          var inp=document.createElement("input");
+          inp.value=(cur.blanks&&cur.blanks[bi])||""; inp.placeholder=f2.hints[bi]||"";
+          inp.addEventListener("input",function(){
+            var bl=(me.mantra.blanks||[]).slice(); bl[bi]=inp.value;
+            me.mantra.blanks=bl; save();
+            var pv=document.getElementById("mpv"); if(pv) pv.textContent=mantraOf();
+          });
+          row.appendChild(inp);
+          pm.appendChild(row);
+        })(bi);
+      }
+    }
+    var pv=el("div","mpreview");
+    pv.appendChild(el("span","k","Your mantra"));
+    var pl=el("div","mline",mantraOf()||"pick a shape above"); pl.id="mpv";
+    pv.appendChild(pl); pm.appendChild(pv);
+    pm.appendChild(el("p","ownhead","Or write the whole thing yourself —"));
+    var ow=el("div","own");
+    var oi=document.createElement("input");
+    oi.value=cur.own||""; oi.placeholder="my own line";
+    oi.addEventListener("input",function(){ me.mantra={frame:"",blanks:[],own:oi.value}; save();
+      var pv2=document.getElementById("mpv"); if(pv2) pv2.textContent=mantraOf(); });
+    ow.appendChild(oi); pm.appendChild(ow);
+    return pm;
+  }
+  if(id==="trips") return tripsPage();
+  if(id==="show") return showPage();
+  return el("div");
+}
+
+function tripsPage(){
+  var pt=el("div","panel");
+  pt.appendChild(el("h2",null,"Talk about it first"));
+  var tg=el("div","areas");
+  AREAS.forEach(function(a){
+    var c=el("div","area");
+    c.appendChild(el("span","em",a.e));
+    c.appendChild(el("b",null,a.s));
+    c.appendChild(el("span",null,a.l));
+    tg.appendChild(c);
+  });
+  pt.appendChild(tg);
+  pt.appendChild(el("p","note","Go round the squad. Then everybody brings back one win from one of those."));
+
+  pt.appendChild(el("h2",null,"Where did the squad go this month?"));
+  var gp=el("div","grid wide");
+  PLACES.forEach(function(p2){
+    var been=me.trips.some(function(t){ return t.place===p2.s; });
+    var on=p2.custom?newTrip.custom:(newTrip.place===p2.s&&!newTrip.custom);
+    var b=el("button","opt"+(on?" on":"")+(been&&!p2.custom?" been":""));
+    b.appendChild(el("span","em",p2.e));
+    b.appendChild(el("b",null,p2.s));
+    b.appendChild(el("span",null, been&&!p2.custom?"you have been here":p2.l));
+    b.addEventListener("click",function(){
+      newTrip.pic=p2.e; newTrip.custom=!!p2.custom;
+      newTrip.place=p2.custom?"":p2.s;
+      newTrip.x=null; newTrip.y=null;
+      render();
+    });
+    gp.appendChild(b);
+  });
+  pt.appendChild(gp);
+
+  if(newTrip.custom){
+    var cw=el("div","custom");
+    var crow=el("div","fillrow");
+    crow.appendChild(el("span","fillk","Where?"));
+    var ci=document.createElement("input");
+    ci.value=newTrip.place||""; ci.placeholder="the name of the place";
+    ci.addEventListener("input",function(){ newTrip.place=ci.value; });
+    crow.appendChild(ci); cw.appendChild(crow);
+    cw.appendChild(el("p","note","Now tap the map to show us roughly where it is."));
+    var mini=el("div","minimap"), ms=worldBase("Tap to choose where in the world");
+    if(typeof newTrip.x==="number"){
+      sAdd(ms,"circle",{cx:newTrip.x,cy:newTrip.y,r:11,fill:"#9A6B0F",opacity:".2"});
+      sAdd(ms,"text",{x:newTrip.x,y:newTrip.y+6,"text-anchor":"middle","font-size":16},"📍");
+    }
+    ms.addEventListener("click",function(ev){
+      var r=ms.getBoundingClientRect();
+      newTrip.x=Math.round((ev.clientX-r.left)/r.width*400);
+      newTrip.y=Math.round((ev.clientY-r.top)/r.height*224);
+      render();
+    });
+    mini.appendChild(ms); cw.appendChild(mini);
+    pt.appendChild(cw);
+  }
+
+  pt.appendChild(el("h2",null,"Your win — where did it come from?"));
+  var kg=el("div","grid wide");
+  AREAS.forEach(function(a){
+    var b=el("button","opt"+(newTrip.kind===a.k?" on":""));
+    b.appendChild(el("span","em",a.e));
+    b.appendChild(el("b",null,a.s));
+    b.addEventListener("click",function(){ newTrip.kind=a.k; render(); });
+    kg.appendChild(b);
+  });
+  pt.appendChild(kg);
+
+  var mrow=el("div","fillrow");
+  mrow.appendChild(el("span","fillk","Month"));
+  var mi=document.createElement("input");
+  mi.value=newTrip.month||MONTHS[new Date().getMonth()];
+  mi.addEventListener("input",function(){ newTrip.month=mi.value; });
+  mrow.appendChild(mi); pt.appendChild(mrow);
+
+  var wrow=el("div","fillrow");
+  wrow.appendChild(el("span","fillk","The win"));
+  var wi=document.createElement("input");
+  wi.value=newTrip.win||""; wi.placeholder="as small as you like — small is the point";
+  wi.addEventListener("input",function(){ newTrip.win=wi.value;
+    var nd=document.getElementById("needs"); if(nd) nd.textContent=missing(); });
+  wrow.appendChild(wi); pt.appendChild(wrow);
+
+  function missing(){
+    var need=[];
+    if(!newTrip.place||!newTrip.place.trim()) need.push(newTrip.custom?"name the place":"pick where you went");
+    if(newTrip.custom&&typeof newTrip.x!=="number") need.push("tap the map");
+    if(!(newTrip.win||"").trim()) need.push("write your win");
+    return need.length?("Still to do: "+need.join(", ")):"";
+  }
+  var nd=el("p","needs",missing()); nd.id="needs";
+  pt.appendChild(nd);
+
+  var bar=el("div","bar");
+  var add=el("button","btn"+(missing()?" off":""),"Put a pin in the map →");
+  add.addEventListener("click",function(){
+    var m=missing();
+    if(m){ toast(m); return; }
+    var rec={month:(newTrip.month||"").trim()||MONTHS[new Date().getMonth()],
+             place:newTrip.place.trim(), pic:newTrip.pic, kind:newTrip.kind,
+             win:(newTrip.win||"").trim()};
+    if(newTrip.custom){ rec.x=newTrip.x; rec.y=newTrip.y; }
+    me.trips.push(rec);
+    newTrip={month:"",place:"",pic:"",kind:"",win:"",x:null,y:null,custom:false};
+    view="map"; save(); render(); window.scrollTo(0,0); toast("Pinned");
+  });
+  bar.appendChild(add);
+  pt.appendChild(bar);
+  return pt;
+}
+
+function showPage(){
+  var p=el("div","showcard");
+  p.appendChild(el("h2",null,(me.av?me.av+" ":"")+((me.name||"My")+"’s camper")));
+  var list=el("div","showlist");
+  var mt=mantraOf();
+  if(mt){
+    var mr=el("div","showrow mantrarow");
+    mr.appendChild(el("span","k","My mantra"));
+    mr.appendChild(el("span","v big",mt));
+    list.appendChild(mr);
+  }
+  [["Heading for","dream"],["What I love","love"],["My days","days"],["The hard bit","hard"]].forEach(function(pr){
+    var row=el("div","showrow");
+    row.appendChild(el("span","k",pr[0]));
+    var t=label(pr[1]);
+    row.appendChild(el("span","v"+(t?"":" none"), t||"not yet"));
+    list.appendChild(row);
+  });
+  if(filled("ally")){
+    var ar=el("div","showrow");
+    ar.appendChild(el("span","k","Riding with me"));
+    ar.appendChild(el("span","v",label("ally")+((me.allyDoes||"").trim()?" — "+me.allyDoes.trim():"")));
+    list.appendChild(ar);
+  }
+  if(filled("inspire")){
+    var ir=el("div","showrow");
+    ir.appendChild(el("span","k","Fills me up"));
+    ir.appendChild(el("span","v",label("inspire")));
+    list.appendChild(ir);
+  }
+  var pr2=el("div","showrow");
+  pr2.appendChild(el("span","k","Taking with me"));
+  pr2.appendChild(el("span","v"+(me.pack.length?"":" none"),
+    me.pack.length?me.pack.map(function(x){ return x.e+" "+x.w; }).join("  ·  "):"nothing yet"));
+  list.appendChild(pr2);
+  if(me.trips.length){
+    var tr=el("div","showrow");
+    tr.appendChild(el("span","k","Been to"));
+    tr.appendChild(el("span","v",me.trips.map(function(t){ return t.pic+" "+t.place; }).join("  ·  ")));
+    list.appendChild(tr);
+    var wr=el("div","showrow");
+    wr.appendChild(el("span","k","Wins so far"));
+    wr.appendChild(el("span","v",me.trips.filter(function(t){ return (t.win||"").trim(); })
+      .map(function(t){ var a=areaOf(t.kind); return (a?a.e+" ":"")+t.win; }).join("  ·  ")||"none yet"));
+    list.appendChild(wr);
+  }
+  p.appendChild(list);
+
+  var keep=el("div","keep");
+  keep.appendChild(el("span","k","Keeping it safe"));
+  keep.appendChild(el("p","kl","Your camper saves itself as you go. Send this link to your coach at the end — it is your camper in a link, so you can always get it back."));
+  var kb=el("div","bar");
+  var cp=el("button","btn sm","Copy my camper link");
+  cp.addEventListener("click",function(){
+    var link=camperLink();
+    function fallback(){
+      var ta=document.createElement("textarea");
+      ta.className="linkbox"; ta.value=link; ta.rows=3; ta.readOnly=true;
+      keep.appendChild(ta); ta.focus(); ta.select(); toast("Copy the text in the box");
+    }
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(link).then(function(){ toast("Copied — paste it to your coach"); },fallback);
+    } else fallback();
+  });
+  kb.appendChild(cp); keep.appendChild(kb);
+  p.appendChild(keep);
+  return p;
+}
+
+/* ---------------- chrome ---------------- */
+function renderRail(){
+  var r=document.getElementById("rail"); r.innerHTML="";
+  var here=chapterOf(PAGES[page].id);
+
+  var head=el("div","chhead");
+  head.appendChild(el("span","chlabel","The chapters of your dream"));
+  var d=el("span","savedot", storageWorks?"Saved":"Saved in the link"); d.id="savedot";
+  head.appendChild(d); r.appendChild(head);
+
+  var strip=el("div","chstrip");
+  CHAPTERS.forEach(function(c,i){
+    var b=el("button","ch"+(i===here?" on":(chapterDone(c)?" done":""))+(c.on?" going":""));
+    b.appendChild(el("span","chn", c.on?"·":String(i+1)));
+    b.appendChild(el("span",null,c.n));
+    b.addEventListener("click",function(){ goPage(pageIndexOf(c.pages[0])); });
+    strip.appendChild(b);
+  });
+  r.appendChild(strip);
+
+  var cur=CHAPTERS[here];
+  if(cur.pages.length>1){
+    var sub=el("div","chsub");
+    cur.pages.forEach(function(pid){
+      var i=pageIndexOf(pid);
+      var b=el("button","pg"+(i===page?" on":(done(pid)?" done":"")),PAGES[i].n);
+      b.addEventListener("click",function(){ goPage(i); });
+      sub.appendChild(b);
+    });
+    r.appendChild(sub);
+  }
+
+  /* the Dream Leader, always on screen */
+  var dl=el("div","dlbar");
+  dl.appendChild(el("span","dltag","Dream Leader"));
+  dl.appendChild(el("span","dlname", squad.now || "— nobody yet —"));
+  var sp=el("button","dlspin","Spin 🎲");
+  sp.addEventListener("click",spinLeader);
+  dl.appendChild(sp);
+  var ed=el("button","dledit", editNames?"Done":"Squad");
+  ed.addEventListener("click",function(){ editNames=!editNames; render(); });
+  dl.appendChild(ed);
+  if(editNames){
+    var nb=el("div","dlnames");
+    var inp=document.createElement("input");
+    inp.value=squad.names.join(", ");
+    inp.placeholder="everyone's names, separated by commas";
+    inp.addEventListener("input",function(){
+      squad.names=inp.value.split(",").map(function(x){ return x.trim(); }).filter(Boolean);
+      squad.led=squad.led.filter(function(x){ return squad.names.indexOf(x)>=0; });
+      saveSquad();
+      var t=document.getElementById("dlled"); if(t) t.textContent=ledText();
+    });
+    nb.appendChild(inp);
+    var rs=el("button","btn ghost sm","New round");
+    rs.addEventListener("click",function(){ squad.led=[]; squad.now=""; saveSquad(); render(); });
+    nb.appendChild(rs);
+    dl.appendChild(nb);
+    var ll=el("div","dlled",ledText()); ll.id="dlled";
+    dl.appendChild(ll);
+  }
+  r.appendChild(dl);
+}
+function ledText(){
+  if(!squad.names.length) return "Nobody added yet.";
+  var left=squad.names.filter(function(x){ return squad.led.indexOf(x)<0; });
+  return "Led so far: "+(squad.led.length?squad.led.join(", "):"nobody")
+       +"   ·   Still to lead: "+(left.length?left.join(", "):"everybody has had a turn");
+}
+
+function render(){
+  renderRail();
+  var body=document.getElementById("body"); body.innerHTML="";
+  var pg=PAGES[page], ci=chapterOf(pg.id), ch=CHAPTERS[ci];
+
+  body.appendChild(el("p","chnow", ch.on ? ch.n : "Chapter "+(ci+1)+" · "+ch.n));
+  body.appendChild(el("h1",null,pg.n));
+  body.appendChild(el("p","sub","Page "+(page+1)+" of "+PAGES.length
+    +(me.name?"  ·  "+(me.av?me.av+" ":"")+me.name:"")));
+
+  var mc=el("div","mc");
+  mc.appendChild(el("span","tag",(squad.now?squad.now+" — ":"Dream Leader — ")+"read this out"));
+  mc.appendChild(el("div","say",pg.say));
+  mc.appendChild(el("div","then",pg.then));
+  body.appendChild(mc);
+
+  body.appendChild(pageBody(pg.id));
+  if(pg.id!=="show") body.appendChild(camperView());
+
+  var bar=el("div","bar");
+  if(page>0){
+    var back=el("button","btn ghost sm","← back");
+    back.addEventListener("click",function(){ goPage(page-1); });
+    bar.appendChild(back);
+  }
+  if(page<PAGES.length-1){
+    var next=el("button","btn big","Next →");
+    next.addEventListener("click",function(){ goPage(page+1); });
+    bar.appendChild(next);
+  } else {
+    var again=el("button","btn ghost sm","Start again");
+    again.addEventListener("click",function(){
+      if(!confirm("Clear your camper and start again?")) return;
+      me=blank(); page=0; save(); render(); window.scrollTo(0,0);
+    });
+    bar.appendChild(again);
+  }
+  body.appendChild(bar);
+}
+
+if(cameFromLink) save();
+render();
+</script>
+
+</body></html>

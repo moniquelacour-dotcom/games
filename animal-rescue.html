@@ -1,0 +1,2223 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Fernbrook Animal Rescue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Figtree:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap">
+
+<style>
+/* ============================================================
+   TOKENS — light is the bare :root, dark redefines only tokens
+   ============================================================ */
+:root{
+  --bench:#D9E0D7;      --bench-2:#C4CFC3;
+  --shell:#2C3B34;      --shell-hi:#3E5148;   --shell-lo:#1D2823;
+  --bezel:#131C18;      --chassis-ink:#B9C9BF; --chassis-ink-2:#7D9488;
+  --screen:#EDF2EC;     --screen-2:#FFFFFF;   --screen-3:#DFE8DE;
+  --ink:#17251F;        --ink-2:#4E6359;      --ink-3:#7D9188;
+  --line:#C3D0C4;       --line-2:#D8E2D8;
+  --flare:#E4572E;      --flare-2:#C4441F;    --flare-soft:#FBE3DA;
+  --signal:#1E9B7E;     --signal-soft:#D8EFE7;
+  --sun:#E0A125;        --sun-soft:#FBEDD2;   --sun-ink:#8A5F10;    --signal-ink:#0F6A55;
+  --sky:#BFD9E2;        --stone:#CFCCC0;      --soil:#B99A72;
+  --key:#EAE3D2;        --key-2:#CFC6B0;      --key-ink:#2A3730;
+  --key-off:#37473F;    --key-off-ink:#63796E;
+  --shadow:rgba(18,32,26,.20);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bench:#0A100D;    --bench-2:#131B17;
+    --shell:#25322C;    --shell-hi:#36453D;   --shell-lo:#141D19;
+    --bezel:#080D0B;    --chassis-ink:#AFC2B7; --chassis-ink-2:#71877C;
+    --screen:#0F1A16;   --screen-2:#17251F;   --screen-3:#1E302A;
+    --ink:#DEEAE3;      --ink-2:#9DB3A8;      --ink-3:#6F857B;
+    --line:#2B3D36;     --line-2:#223029;
+    --flare:#FF6E45;    --flare-2:#E4572E;    --flare-soft:#3A2019;
+    --signal:#45CBA8;   --signal-soft:#132E27;
+    --sun:#F5C45E;      --sun-soft:#332816;   --sun-ink:#F5C45E;    --signal-ink:#45CBA8;
+    --sky:#26414B;      --stone:#3A3C36;      --soil:#5C4831;
+    --key:#2F3C35;      --key-2:#212C26;      --key-ink:#DCE8E0;
+    --key-off:#1E2823;  --key-off-ink:#54675D;
+    --shadow:rgba(0,0,0,.55);
+  }
+}
+:root[data-theme="dark"]{
+  --bench:#0A100D;      --bench-2:#131B17;
+  --shell:#25322C;      --shell-hi:#36453D;   --shell-lo:#141D19;
+  --bezel:#080D0B;      --chassis-ink:#AFC2B7; --chassis-ink-2:#71877C;
+  --screen:#0F1A16;     --screen-2:#17251F;   --screen-3:#1E302A;
+  --ink:#DEEAE3;        --ink-2:#9DB3A8;      --ink-3:#6F857B;
+  --line:#2B3D36;       --line-2:#223029;
+  --flare:#FF6E45;      --flare-2:#E4572E;    --flare-soft:#3A2019;
+  --signal:#45CBA8;     --signal-soft:#132E27;
+  --sun:#F5C45E;        --sun-soft:#332816;   --sun-ink:#F5C45E;    --signal-ink:#45CBA8;
+  --sky:#26414B;        --stone:#3A3C36;      --soil:#5C4831;
+  --key:#2F3C35;        --key-2:#212C26;      --key-ink:#DCE8E0;
+  --key-off:#1E2823;    --key-off-ink:#54675D;
+  --shadow:rgba(0,0,0,.55);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bench);
+  background-image:radial-gradient(120% 90% at 50% 0%, var(--bench-2) 0%, var(--bench) 62%);
+  color:var(--ink);
+  font-family:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:16px; line-height:1.55;
+  min-height:100vh;
+  display:flex;
+  padding:clamp(10px,2.4vw,32px);
+}
+:focus-visible{outline:3px solid var(--flare);outline-offset:2px;border-radius:4px}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+h1,h2,h3{font-family:"Baloo 2",system-ui,sans-serif;font-weight:700;line-height:1.15;text-wrap:balance}
+.mono{font-family:"Space Mono",ui-monospace,monospace}
+
+/* ============================================================
+   THE DEVICE
+   ============================================================ */
+.pager{
+  /* margin:auto centres in both axes AND lets the page scroll instead of
+     clipping when the device is taller than the viewport */
+  margin:auto;
+  /* last term keeps the whole device inside short viewports (screen is 16/9.6,
+     chassis + rails + keypad ≈ 215px), with a floor so it can never collapse */
+  width:min(1080px,100%,max(320px,calc((100vh - 215px) * 1.667 + 52px)));
+  background:linear-gradient(178deg,var(--shell-hi),var(--shell) 22%,var(--shell-lo));
+  border-radius:30px;
+  padding:16px 16px 14px;
+  box-shadow:
+    0 2px 0 rgba(255,255,255,.07) inset,
+    0 -3px 0 rgba(0,0,0,.35) inset,
+    0 26px 60px -20px var(--shadow),
+    0 4px 14px -6px var(--shadow);
+  display:flex; flex-direction:column; gap:12px;
+  transform-origin:center;
+}
+/* --- ringing ------------------------------------------------------------ */
+.pager[data-state="idle"]{
+  width:min(360px,92vw);
+  position:relative;
+  animation:buzz 3s ease-in-out infinite;
+}
+/* two waves radiating off the chassis, one delayed half a cycle */
+.pager[data-state="idle"]::before,
+.pager[data-state="idle"]::after{
+  content:"";position:absolute;inset:0;z-index:-1;
+  border-radius:30px;border:2px solid var(--flare);
+  animation:wave 3s ease-out infinite;
+}
+.pager[data-state="idle"]::after{animation-delay:.45s}
+@keyframes wave{
+  0%   {transform:scale(1);   opacity:0}
+  8%   {opacity:.55}
+  38%  {transform:scale(1.16);opacity:0}
+  100% {transform:scale(1.16);opacity:0}
+}
+/* the double-ring shudder, timed to the two audio bursts */
+@keyframes buzz{
+  0%,34%,100%{transform:rotate(0) translateY(0)}
+  2% {transform:rotate(-1.4deg) translateY(-4px)}
+  5% {transform:rotate(1.4deg)  translateY(3px)}
+  8% {transform:rotate(-1.1deg) translateY(-3px)}
+  11%{transform:rotate(.9deg)   translateY(2px)}
+  14%{transform:rotate(0)       translateY(0)}
+  18%{transform:rotate(-1.4deg) translateY(-4px)}
+  21%{transform:rotate(1.4deg)  translateY(3px)}
+  24%{transform:rotate(-1.1deg) translateY(-3px)}
+  27%{transform:rotate(.9deg)   translateY(2px)}
+  30%{transform:rotate(0)       translateY(0)}
+}
+
+/* --- top rail --- */
+.rail{display:flex;align-items:center;gap:14px;padding:0 8px;min-height:26px}
+.badge{
+  font-family:"Space Mono",monospace;font-size:11px;font-weight:700;letter-spacing:.14em;
+  color:var(--shell-lo); background:var(--flare);
+  padding:3px 9px;border-radius:5px;text-transform:uppercase;white-space:nowrap;
+}
+.org{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--chassis-ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rail-spacer{flex:1}
+.tally{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.12em;color:var(--chassis-ink);white-space:nowrap}
+.tally b{color:var(--signal);font-weight:700}
+.bars{display:flex;align-items:flex-end;gap:2px;height:13px}
+.bars i{width:3px;background:var(--chassis-ink-2);border-radius:1px;display:block}
+.bars i:nth-child(1){height:4px}.bars i:nth-child(2){height:7px}
+.bars i:nth-child(3){height:10px}.bars i:nth-child(4){height:13px;background:var(--signal)}
+.icobtn{
+  width:28px;height:28px;border-radius:8px;display:grid;place-items:center;
+  color:var(--chassis-ink-2);background:var(--shell-lo);
+  box-shadow:0 1px 0 rgba(255,255,255,.06) inset;font-size:13px;
+  transition:color .15s,background .15s;
+}
+.icobtn:hover{color:var(--chassis-ink);background:var(--bezel)}
+.icobtn[aria-pressed="true"]{color:var(--sun)}
+
+/* --- screen --- */
+.bezel{
+  background:var(--bezel);border-radius:20px;padding:10px;
+  box-shadow:0 2px 5px rgba(0,0,0,.4) inset;
+}
+.screen{
+  position:relative;overflow:hidden;
+  /* the panels inside respond to the DEVICE width, not the viewport width —
+     the device can be narrow on a wide-but-short screen */
+  container-type:inline-size; container-name:scr;
+  background:var(--screen);border-radius:12px;
+  aspect-ratio:16/9.6;
+  min-height:340px;
+  color:var(--ink);
+}
+.pager[data-state="idle"] .screen{aspect-ratio:1/1.2;min-height:0}
+/* the ringing pager is only 360px wide — anything extra in the top rail
+   overflows the chassis, so the room control waits until the device wakes */
+.pager[data-state="idle"] .kit,
+.pager[data-state="idle"] .kitnote,
+.pager[data-state="idle"] .roompill{display:none}
+.view{position:absolute;inset:0;display:none;flex-direction:column}
+.screen[data-view="call"]  #v-call,
+.screen[data-view="map"]   #v-map,
+.screen[data-view="scene"] #v-scene,
+.screen[data-view="care"]  #v-care,
+.screen[data-view="roster"] #v-roster{display:flex;animation:wake .32s ease-out}
+@keyframes wake{from{opacity:0;transform:translateY(6px) scale(.995)}to{opacity:1;transform:none}}
+
+/* --- keypad --- */
+.kit{
+  display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:7px;
+  padding:2px 6px 0;
+}
+.key{
+  position:relative;
+  background:linear-gradient(180deg,var(--key-off),var(--key-off));
+  color:var(--key-off-ink);
+  border-radius:10px;padding:8px 4px 6px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  box-shadow:0 3px 0 var(--shell-lo),0 1px 0 rgba(255,255,255,.05) inset;
+  transition:transform .09s,box-shadow .09s,background .18s,color .18s;
+  cursor:not-allowed;
+}
+.key .glyph{font-size:clamp(15px,2vw,21px);line-height:1;filter:grayscale(1) opacity(.45)}
+.key .lab{font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;max-width:100%;overflow:hidden}
+.kit[data-live="1"] .key{
+  background:linear-gradient(180deg,var(--key),var(--key-2));
+  color:var(--key-ink);cursor:pointer;
+  box-shadow:0 3px 0 rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.35) inset;
+}
+.kit[data-live="1"] .key .glyph{filter:none}
+.kit[data-live="1"] .key:hover{transform:translateY(-1px);box-shadow:0 4px 0 rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.35) inset}
+.kit[data-live="1"] .key:active,.key.press{transform:translateY(3px);box-shadow:0 0 0 rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.35) inset}
+/* selected = held down and lit; used = already did its job this rescue.
+   These sit after :hover so they win the specificity tie. */
+.kit[data-live="1"] .key.sel{
+  background:linear-gradient(180deg,var(--sun),#CC9220);color:#2B1E06;
+  transform:translateY(3px);
+  box-shadow:0 0 0 rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.4) inset,0 0 0 2px var(--sun);
+}
+.kit[data-live="1"] .key.done{
+  background:linear-gradient(180deg,var(--signal),var(--signal));color:#04231B;
+  cursor:default;transform:none;
+  box-shadow:0 3px 0 rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.3) inset;
+}
+.kit[data-live="1"] .key.done .lab::after{content:" ✓"}
+.key.wrong{animation:nope .38s}
+@keyframes nope{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+.kitnote{
+  font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--chassis-ink);text-align:center;padding:2px 0 0;
+}
+/* --- play together --- */
+.roompill{
+  font-family:"Space Mono",monospace;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--chassis-ink);background:var(--shell-lo);padding:5px 11px;border-radius:99px;white-space:nowrap;
+  box-shadow:0 1px 0 rgba(255,255,255,.06) inset;transition:color .15s,background .15s;
+}
+.roompill:hover{color:var(--screen);background:var(--flare)}
+.roompill[data-on="1"]{background:var(--signal);color:#04231B}
+.roomwrap{
+  position:absolute;inset:0;z-index:20;display:none;place-items:center;padding:18px;
+  background:color-mix(in srgb,var(--screen) 86%,transparent);backdrop-filter:blur(3px);
+}
+.roomwrap.on{display:grid}
+.roomcard{
+  background:var(--screen-2);border:1px solid var(--line);border-radius:14px;
+  max-width:420px;width:100%;padding:20px;box-shadow:0 20px 40px -18px var(--shadow);
+}
+.roomcard .eyebrow{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--flare-2)}
+.roomcard h2{font-size:23px;margin:2px 0 7px}
+.roomcard p{color:var(--ink-2);font-size:14.5px}
+.codebox{
+  font-family:"Space Mono",monospace;font-weight:700;font-size:38px;letter-spacing:.22em;
+  text-align:center;color:var(--ink);background:var(--screen-3);border-radius:11px;
+  padding:14px 10px;margin:14px 0 6px;
+}
+.joinrow{display:flex;gap:8px;margin-top:12px}
+.joinrow input{
+  flex:1;min-width:0;font-family:"Space Mono",monospace;font-weight:700;font-size:22px;
+  letter-spacing:.2em;text-align:center;text-transform:uppercase;
+  background:var(--screen);color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:9px;
+}
+.joinrow input:focus{outline:none;border-color:var(--flare)}
+.roomcard .row{display:flex;gap:9px;margin-top:14px}
+.status{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.1em;color:var(--ink-3);margin-top:10px;text-align:center}
+.status b{color:var(--signal)}
+.status i{color:var(--flare-2);font-style:normal}
+.chin{display:flex;align-items:center;justify-content:center;gap:5px;padding-bottom:2px}
+.chin i{width:32px;height:3px;border-radius:2px;background:var(--shell-lo);display:block;box-shadow:0 1px 0 rgba(255,255,255,.05)}
+
+/* ============================================================
+   VIEW: incoming call
+   ============================================================ */
+#v-call{align-items:center;justify-content:center;text-align:center;gap:4px;padding:42px 20px 20px;cursor:pointer}
+.incoming{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:6px;
+  font-family:"Space Mono",monospace;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  color:#fff;background:var(--flare);padding:4px 11px;border-radius:99px;
+}
+.incoming i{width:6px;height:6px;border-radius:50%;background:#fff;display:block;animation:blink 1s steps(1,end) infinite}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:.15}}
+.ring{
+  position:relative;
+  width:76px;height:76px;border-radius:50%;display:grid;place-items:center;
+  background:var(--flare-soft);color:var(--flare);font-size:34px;margin-bottom:6px;
+  animation:handset 3s ease-in-out infinite;
+}
+/* handset rocks in its cradle on each burst */
+@keyframes handset{
+  0%,32%,100%{transform:rotate(0)}
+  3%{transform:rotate(-13deg)}  7%{transform:rotate(11deg)}
+  11%{transform:rotate(-8deg)}  14%{transform:rotate(0)}
+  19%{transform:rotate(-13deg)} 23%{transform:rotate(11deg)}
+  27%{transform:rotate(-8deg)}  30%{transform:rotate(0)}
+}
+.ring::before,.ring::after{
+  content:"";position:absolute;inset:-6px;border-radius:50%;
+  border:2px solid var(--flare);animation:ping 3s ease-out infinite;
+}
+.ring::after{animation-delay:.45s}
+@keyframes ping{
+  0%{transform:scale(.86);opacity:0}
+  6%{opacity:.6}
+  36%{transform:scale(1.55);opacity:0}
+  100%{transform:scale(1.55);opacity:0}
+}
+.call-from{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-3)}
+#v-call h1{font-size:clamp(26px,4.4vw,40px);color:var(--ink)}
+#v-call p{color:var(--ink-2);max-width:42ch;margin:2px auto 14px}
+.tap{
+  font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--screen);background:var(--flare);padding:10px 20px;border-radius:99px;
+}
+
+/* ============================================================
+   VIEW: map
+   ============================================================ */
+#v-map{flex-direction:row}
+.mapwrap{position:relative;flex:1;min-width:0;background:var(--screen-3)}
+.mapwrap svg{position:absolute;inset:0;width:100%;height:100%}
+.pinlayer{position:absolute;inset:0}
+.pin{
+  position:absolute;transform:translate(-50%,-50%);
+  width:32px;height:32px;border-radius:50%;display:grid;place-items:center;
+  background:var(--flare);color:#fff;font-size:15px;
+  box-shadow:0 3px 8px -2px rgba(0,0,0,.45),0 0 0 3px var(--screen);
+  transition:transform .16s;
+}
+.pin::after{
+  content:"";position:absolute;inset:-6px;border-radius:50%;
+  border:2px solid var(--flare);opacity:.7;animation:pulse 2.1s ease-out infinite;
+}
+@keyframes pulse{0%{transform:scale(.75);opacity:.75}100%{transform:scale(1.5);opacity:0}}
+.pin:hover,.pin.hi{transform:translate(-50%,-50%) scale(1.18);z-index:3}
+.pin[data-done="1"]{background:var(--signal);box-shadow:0 2px 6px -2px rgba(0,0,0,.4),0 0 0 3px var(--screen)}
+.pin[data-done="1"]::after{display:none}
+.mlabel{
+  position:absolute;transform:translate(-50%,-50%);pointer-events:none;white-space:nowrap;
+  font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);
+}
+.mzone{
+  position:absolute;transform:translate(-50%,-50%);pointer-events:none;white-space:nowrap;
+  font-family:"Baloo 2",sans-serif;font-size:clamp(14px,2vw,20px);font-weight:600;color:var(--ink-3);opacity:.55;
+}
+.mgrid{
+  position:absolute;bottom:6px;pointer-events:none;
+  font-family:"Space Mono",monospace;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);opacity:.6;
+}
+
+.calls{
+  width:clamp(230px,31%,320px);border-left:1px solid var(--line);
+  background:var(--screen);display:flex;flex-direction:column;min-height:0;
+}
+.calls-head{padding:12px 14px 8px;border-bottom:1px solid var(--line-2);display:flex;align-items:baseline;gap:8px}
+.calls-head h2{font-size:16px;letter-spacing:.01em}
+.calls-head .n{font-family:"Space Mono",monospace;font-size:10px;color:var(--flare-2);letter-spacing:.14em;margin-left:auto}
+.calls-list{overflow-y:auto;flex:1;padding:6px}
+.callrow{
+  width:100%;text-align:left;display:flex;gap:10px;align-items:center;
+  padding:8px 9px;border-radius:9px;transition:background .14s;
+}
+.callrow:hover{background:var(--screen-3)}
+.callrow .dot{width:8px;height:8px;border-radius:50%;background:var(--flare);flex:none}
+.callrow[data-done="1"] .dot{background:var(--signal)}
+.callrow[data-done="1"]{opacity:.55}
+.callrow .txt{min-width:0}
+.callrow .who{display:block;font-family:"Baloo 2",sans-serif;font-weight:600;font-size:14.5px;line-height:1.2;color:var(--ink)}
+.callrow .where{display:block;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.06em;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.calls-foot{padding:9px 12px;border-top:1px solid var(--line-2);display:flex;gap:8px}
+
+/* brief card over the map */
+.brief{
+  position:absolute;inset:0;background:color-mix(in srgb,var(--screen) 82%,transparent);
+  backdrop-filter:blur(3px);display:none;place-items:center;padding:18px;z-index:6;
+}
+.brief.on{display:grid}
+.briefcard{
+  background:var(--screen-2);border:1px solid var(--line);border-radius:14px;
+  max-width:430px;width:100%;padding:18px 20px 16px;
+  box-shadow:0 20px 40px -18px var(--shadow);
+  animation:wake .24s ease-out;
+}
+.briefcard .eyebrow{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--flare-2)}
+.briefcard h2{font-size:24px;margin:2px 0 6px}
+.briefcard p{color:var(--ink-2);font-size:14.5px}
+.briefcard .row{display:flex;gap:9px;margin-top:14px}
+
+.btn{
+  font-family:"Space Mono",monospace;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  background:var(--flare);color:#fff;padding:10px 16px;border-radius:8px;
+  transition:filter .15s,transform .09s;
+}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--ink-2);box-shadow:0 0 0 1px var(--line) inset}
+.btn.ghost:hover{color:var(--ink);background:var(--screen-3)}
+.btn.go{background:var(--signal);color:#04231B}
+.btn[disabled]{opacity:.4;cursor:not-allowed;filter:none}
+
+/* ============================================================
+   VIEW: rescue scene
+   ============================================================ */
+#v-scene{flex-direction:row}
+.stagewrap{position:relative;flex:1;min-width:0;overflow:hidden}
+.stagewrap svg.backdrop{position:absolute;inset:0;width:100%;height:100%}
+/* the thing the animal is stuck behind — sits ABOVE the critter, clears when freed */
+.fg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3;transition:opacity .8s ease}
+.fg.off{opacity:0}
+.critterbox{position:absolute;width:34%;left:33%;top:38%;transition:all .9s cubic-bezier(.22,1,.36,1)}
+.critterbox svg{width:100%;height:auto;display:block;filter:drop-shadow(0 6px 10px rgba(0,0,0,.22))}
+.bob{animation:bob 3.1s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.toolfx{position:absolute;font-size:40px;opacity:0;pointer-events:none;z-index:4}
+.toolfx.play{animation:fx 1.15s ease-out forwards}
+@keyframes fx{0%{opacity:0;transform:translate(-50%,-50%) scale(.5) rotate(-18deg)}
+  30%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(6deg)}
+  70%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0)}
+  100%{opacity:0;transform:translate(-50%,-60%) scale(1) rotate(0)}}
+
+.side{
+  width:clamp(250px,34%,340px);border-left:1px solid var(--line);
+  background:var(--screen);display:flex;flex-direction:column;min-height:0;
+}
+.side-head{padding:13px 15px 10px;border-bottom:1px solid var(--line-2)}
+.side-head .eyebrow{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--flare-2)}
+.side-head h2{font-size:20px;margin-top:1px}
+.side-body{padding:13px 15px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:11px}
+.brieftext{font-size:14px;color:var(--ink-2)}
+.ask{
+  background:var(--screen-3);border-left:3px solid var(--flare);
+  padding:10px 12px;border-radius:0 9px 9px 0;font-size:14.5px;font-weight:500;
+}
+.ask.done{border-left-color:var(--signal);background:var(--signal-soft)}
+.feedback{font-size:13.5px;color:var(--ink-2);min-height:1.2em}
+.feedback.bad{color:var(--flare-2)}
+.feedback.good{color:var(--signal);font-weight:600}
+/* what this job needs out of the kit — slots fill as gear does its work */
+.traywrap{display:flex;flex-direction:column;gap:6px}
+.traylab{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.tray{display:flex;gap:7px;flex-wrap:wrap}
+.slot{
+  width:40px;height:40px;border-radius:11px;display:grid;place-items:center;font-size:20px;
+  background:var(--screen-3);box-shadow:0 0 0 1.5px var(--line) inset;
+  transition:background .3s,box-shadow .3s;
+}
+.slot.filled{background:var(--signal-soft);box-shadow:0 0 0 2px var(--signal) inset}
+.picks{
+  font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.04em;
+  color:var(--ink-3);min-height:1.3em;
+}
+.picks b{color:var(--sun-ink);font-weight:700}
+
+/* whose turn it is at this station */
+.turn{
+  display:inline-flex;align-items:center;gap:6px;margin-top:6px;
+  font-family:"Baloo 2",sans-serif;font-weight:700;font-size:15px;
+  background:var(--sun-soft);color:var(--sun-ink);
+  padding:3px 11px;border-radius:99px;
+}
+.turn[hidden]{display:none}
+.turn span{font-family:"Space Mono",monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.8}
+.crewgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0 4px}
+.crewgrid input{
+  font-family:"Baloo 2",sans-serif;font-size:16px;font-weight:600;min-width:0;
+  background:var(--screen);color:var(--ink);border:1px solid var(--line);
+  border-radius:9px;padding:7px 11px;
+}
+.crewgrid input:focus{outline:none;border-color:var(--flare)}
+.privacy{
+  display:flex;gap:7px;align-items:flex-start;
+  font-size:12px;line-height:1.45;color:var(--ink-2);
+  background:var(--screen-3);border-radius:9px;padding:9px 11px;margin-top:4px;
+}
+.side-foot{padding:11px 15px;border-top:1px solid var(--line-2);display:flex;gap:8px}
+
+/* ============================================================
+   VIEW: shelter care
+   ============================================================ */
+#v-care{flex-direction:row}
+.carestage{
+  position:relative;flex:1;min-width:0;overflow:hidden;
+  background:linear-gradient(180deg,var(--screen-3) 0%,var(--screen-3) 62%,var(--screen) 62%,var(--screen) 100%);
+  touch-action:none;
+}
+.carestage.scrub{cursor:none}
+.tiles{position:absolute;left:0;right:0;bottom:0;height:38%;opacity:.5}
+.carecritter{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:56%;max-width:330px;transition:transform .6s cubic-bezier(.22,1,.36,1),width .6s}
+.carecritter svg{width:100%;height:auto;display:block;filter:drop-shadow(0 8px 12px rgba(0,0,0,.18))}
+.carecritter.sleep{transform:translate(-50%,-46%) rotate(-4deg) scale(.92)}
+.spot{position:absolute;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none}
+.dirt{background:var(--soil);opacity:.85;filter:blur(.4px)}
+.dirt.soot{background:#4A4740}
+.dirt.dust{background:#A79878}
+.sud{background:#fff;box-shadow:0 0 0 1px rgba(120,160,190,.5) inset;opacity:.9}
+.ail{
+  pointer-events:auto;cursor:pointer;background:transparent;
+  width:34px;height:34px;border:2.5px solid var(--flare);
+  animation:pulse2 1.6s ease-in-out infinite;
+}
+@keyframes pulse2{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--flare) 45%,transparent)}50%{box-shadow:0 0 0 9px transparent}}
+.ail.fixed{border-color:var(--signal);animation:none;background:var(--signal-soft);display:grid;place-items:center;font-size:15px;cursor:default}
+.bug{
+  pointer-events:auto;cursor:pointer;width:24px;height:24px;font-size:14px;
+  display:grid;place-items:center;background:transparent;border-radius:50%;
+  transition:transform .3s linear;
+}
+.bug:hover{transform:translate(-50%,-50%) scale(1.3)}
+.bug.gone{animation:fly .5s ease-in forwards;pointer-events:none}
+@keyframes fly{to{transform:translate(-50%,-260%) scale(.3);opacity:0}}
+.brush{
+  position:absolute;left:-300px;top:-300px;font-size:34px;pointer-events:none;transform:translate(-50%,-58%) rotate(-16deg);
+  z-index:5;display:none;filter:drop-shadow(0 3px 4px rgba(0,0,0,.3));
+}
+.carestage.scrub .brush{display:block}
+.bowl{position:absolute;transform:translate(-50%,-50%);font-size:38px;animation:wake .35s ease-out;filter:drop-shadow(0 4px 5px rgba(0,0,0,.25))}
+.bowl.empty{opacity:.45}
+.bedart{position:absolute;left:50%;top:64%;transform:translate(-50%,-50%);font-size:clamp(70px,13vw,120px);animation:wake .4s}
+.zzz{position:absolute;left:63%;top:30%;font-family:"Baloo 2",sans-serif;font-weight:700;color:var(--ink-3);font-size:22px;animation:zz 2.6s ease-in-out infinite}
+@keyframes zz{0%{opacity:0;transform:translate(0,0) scale(.7)}25%{opacity:1}100%{opacity:0;transform:translate(16px,-40px) scale(1.2)}}
+.sparkle{position:absolute;font-size:22px;pointer-events:none;animation:spk 1.1s ease-out forwards}
+@keyframes spk{0%{opacity:0;transform:scale(.3)}40%{opacity:1;transform:scale(1.1)}100%{opacity:0;transform:scale(.9) translateY(-18px)}}
+
+.dots{display:flex;gap:5px;margin-bottom:8px}
+.dots i{flex:1;height:5px;border-radius:3px;background:var(--line);display:block;transition:background .3s}
+.dots i.on{background:var(--flare)}
+.dots i.ok{background:var(--signal)}
+.meter{height:9px;border-radius:5px;background:var(--line);overflow:hidden}
+.meter b{display:block;height:100%;width:0;background:var(--signal);transition:width .18s;border-radius:5px}
+.found{display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.06em;
+  background:var(--signal-soft);color:var(--signal-ink);padding:4px 8px;border-radius:99px;
+}
+.chip.warn{background:var(--sun-soft);color:var(--sun-ink)}
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.choice{
+  background:var(--screen-3);border-radius:10px;padding:12px 6px 9px;text-align:center;
+  box-shadow:0 0 0 1px var(--line) inset;transition:box-shadow .15s,transform .12s;
+}
+.choice:hover{transform:translateY(-2px);box-shadow:0 0 0 2px var(--flare) inset}
+.choice .g{font-size:26px;display:block}
+.choice .n{font-family:"Space Mono",monospace;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin-top:3px;display:block}
+.namer{display:flex;gap:7px}
+.namer input{
+  flex:1;min-width:0;font-family:"Baloo 2",sans-serif;font-size:18px;font-weight:600;
+  background:var(--screen-2);color:var(--ink);border:1px solid var(--line);
+  border-radius:9px;padding:7px 11px;
+}
+.namer input:focus{outline:none;border-color:var(--flare-2)}
+.dice{width:40px;flex:none;background:var(--screen-3);border-radius:9px;font-size:17px;box-shadow:0 0 0 1px var(--line) inset}
+
+/* ============================================================
+   VIEW: roster
+   ============================================================ */
+#v-roster{padding:0}
+.roster-head{padding:14px 18px 10px;border-bottom:1px solid var(--line-2);display:flex;align-items:center;gap:12px}
+.roster-head h2{font-size:21px}
+.roster-head .btn{margin-left:auto}
+.roster-grid{
+  flex:1;overflow-y:auto;padding:14px 18px 18px;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(146px,1fr));gap:12px;align-content:start;
+}
+.card{
+  background:var(--screen-2);border:1px solid var(--line);border-radius:13px;
+  padding:10px 11px 12px;text-align:center;
+}
+.card .art{width:100%;aspect-ratio:5/4;display:grid;place-items:center;background:var(--screen-3);border-radius:9px;margin-bottom:8px;position:relative;overflow:hidden}
+.card .art svg{width:82%;height:auto}
+.card .art .bd{position:absolute;bottom:2px;font-size:34px;opacity:.9}
+.card .nm{font-family:"Baloo 2",sans-serif;font-weight:700;font-size:17px;line-height:1.2}
+.card .sp{font-family:"Space Mono",monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+.card .tg{font-size:12px;color:var(--ink-2);margin-top:5px}
+.empty-roster{grid-column:1/-1;color:var(--ink-3);text-align:center;padding:40px 10px;font-size:15px}
+.finale{
+  grid-column:1/-1;background:var(--sun-soft);border-radius:13px;padding:16px 18px;text-align:center;
+}
+.finale h3{font-size:22px;color:var(--sun-ink)}
+.finale p{font-size:14px;color:var(--ink-2);margin-top:3px}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+/* stack the two panels once the DEVICE screen is too narrow to sit them side by side */
+@container scr (max-width:720px){
+  #v-map,#v-scene,#v-care{flex-direction:column}
+  .mapwrap,.stagewrap,.carestage{flex:1 1 46%;min-width:0;min-height:0}
+  .calls,.side{width:auto;border-left:none;border-top:1px solid var(--line);flex:1 1 54%;min-width:0;min-height:0}
+  .roster-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+}
+@media (max-width:860px){
+  .screen{aspect-ratio:auto;height:min(72vh,560px);min-height:400px}
+  .pager[data-state="idle"] .screen{height:auto;aspect-ratio:1/1.2;min-height:0}
+  .kit{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .key .lab{font-size:8.5px}
+  .org{display:none}
+}
+@media (max-width:480px){
+  .pager{border-radius:22px;padding:12px 10px 10px}
+  .bezel{border-radius:15px;padding:7px}
+  .screen{height:min(66vh,520px)}
+  .choices{grid-template-columns:repeat(3,1fr)}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
+</style>
+
+<div class="pager" id="pager" data-state="idle">
+
+  <div class="rail rail-top">
+    <span class="badge">Unit 7</span>
+    <span class="org">Fernbrook Animal Rescue</span>
+    <span class="rail-spacer"></span>
+    <button class="roompill" id="roomBtn">Play together</button>
+    <span class="tally mono" id="tally">Rescued <b>0</b>/10</span>
+    <button class="icobtn" id="sound" aria-pressed="true" title="Sound on/off">🔊</button>
+    <span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+  </div>
+
+  <div class="bezel">
+    <div class="screen" id="screen" data-view="call">
+
+      <!-- ============ INCOMING CALL ============ -->
+      <div class="view" id="v-call" role="button" tabindex="0" aria-label="Answer the incoming call">
+        <div class="incoming mono"><i></i>Incoming call</div>
+        <div class="ring">📞</div>
+        <div class="call-from mono">Fernbrook Dispatch · mobile</div>
+        <h1>Animals need you</h1>
+        <p id="callSub">Ten calls came in overnight. Pick up your pager and go get them.</p>
+        <span class="tap mono" id="callTap">Tap the pager to answer</span>
+      </div>
+
+      <!-- ============ MAP ============ -->
+      <div class="view" id="v-map">
+        <div class="mapwrap" id="mapwrap">
+          <div class="pinlayer" id="pinlayer"></div>
+          <div class="brief" id="brief"><div class="briefcard" id="briefcard"></div></div>
+        </div>
+        <div class="calls">
+          <div class="calls-head">
+            <h2>Open calls</h2>
+            <span class="n mono" id="openN">0 waiting</span>
+          </div>
+          <div class="calls-list" id="callsList"></div>
+          <div class="calls-foot">
+            <button class="btn" id="toRoom" style="flex:1">Play together</button>
+            <button class="btn ghost" id="toCrew">Crew</button>
+            <button class="btn ghost" id="toRoster">Roster</button>
+          </div>
+        </div>
+        <div class="brief" id="crew"><div class="briefcard" id="crewcard"></div></div>
+      </div>
+
+      <!-- ============ RESCUE SCENE ============ -->
+      <div class="view" id="v-scene">
+        <div class="stagewrap" id="stagewrap"></div>
+        <div class="side">
+          <div class="side-head">
+            <div class="eyebrow mono" id="sceneWhere">—</div>
+            <h2 id="sceneTitle">—</h2>
+          </div>
+          <div class="side-body">
+            <p class="brieftext" id="sceneBrief"></p>
+            <div class="ask" id="sceneAsk"></div>
+            <div class="traywrap">
+              <span class="traylab" id="sceneTrayLab"></span>
+              <div class="tray" id="sceneTray"></div>
+            </div>
+            <p class="picks" id="scenePicks"></p>
+            <p class="feedback" id="sceneFeed"></p>
+          </div>
+          <div class="side-foot">
+            <button class="btn ghost" id="sceneBack">Map</button>
+            <button class="btn" id="useKit" style="flex:1" disabled>Use the kit</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ SHELTER CARE ============ -->
+      <div class="view" id="v-care">
+        <div class="carestage" id="carestage">
+          <div class="brush" id="brush">🧽</div>
+        </div>
+        <div class="side">
+          <div class="side-head">
+            <div class="eyebrow mono" id="careStep">Fernbrook · Care bay</div>
+            <h2 id="careTitle">—</h2>
+            <div class="turn" id="careTurn" hidden></div>
+          </div>
+          <div class="side-body">
+            <div class="dots" id="careDots"></div>
+            <p class="brieftext" id="careHint"></p>
+            <div id="careCtl"></div>
+          </div>
+          <div class="side-foot">
+            <button class="btn go" id="careNext" style="flex:1" disabled>Next</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ ROSTER ============ -->
+      <div class="view" id="v-roster">
+        <div class="roster-head">
+          <h2>The Fernbrook roster</h2>
+          <button class="btn ghost" id="newShift">New shift</button>
+          <button class="btn" id="rosterBack">Back to map</button>
+        </div>
+        <div class="roster-grid" id="rosterGrid"></div>
+      </div>
+
+      <div class="roomwrap" id="roomWrap"><div class="roomcard" id="roomCard"></div></div>
+    </div>
+  </div>
+
+  <div class="kit" id="kit" data-live="0"></div>
+  <div class="kitnote mono" id="kitnote">Rescue kit — locked until you're on a call</div>
+  <div class="chin" aria-hidden="true"><i></i><i></i><i></i></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   RESCUE KIT
+   ============================================================ */
+const KIT = [
+  {id:"rope",   g:"🪢", lab:"Rope"},
+  {id:"ladder", g:"🪜", lab:"Ladder"},
+  {id:"basket", g:"🧺", lab:"Basket"},
+  {id:"net",    g:"🥅", lab:"Net"},
+  {id:"snips",  g:"✂️", lab:"Snips"},
+  {id:"tools",  g:"🛠️", lab:"Tools"},
+  {id:"blanket",g:"🧣", lab:"Blanket"},
+  {id:"gloves", g:"🧤", lab:"Gloves"},
+  {id:"torch",  g:"🔦", lab:"Torch"},
+  {id:"treats", g:"🍖", lab:"Treats"}
+];
+const KITMAP = {}; KIT.forEach(k=>KITMAP[k.id]=k);
+
+/* ============================================================
+   THE TEN CALLS
+   backdrop kinds: high | tangle | hole | ground | shut
+   ============================================================ */
+const CALLS = [
+  {
+    id:"kitten", species:"Kitten", art:{kind:"quad",body:"#E8A44C",belly:"#FBE7C8",ear:"point",tail:"fluff"},
+    where:"Baker Street roof", x:20, y:26, kind:"high", tint:"#C9B79C",
+    title:"A voice on the ledge",
+    brief:"The baker heard mewing above her sign all morning. Three storeys up, on a ledge the width of a book, there is a very small orange cat.",
+    steps:[
+      {need:"rope", ask:"The ledge is three storeys up and there's nothing to climb. What gets you up there?", win:"You loop the rope over the chimney, test it twice, and walk yourself up the brickwork.",
+       miss:{ladder:"Your ladder is nowhere near three storeys.",treats:"Treats won't help — she's too frightened to move at all.",net:"Never net a cat on a ledge. One flinch and she falls."}},
+      {need:"basket", ask:"She's shaking too hard to be carried in your arms. How do you get her down?", win:"You tuck her into the basket, close the flap, and lower it hand over hand to the pavement.",
+       miss:{rope:"You've already got the rope. She can't hold on to one.",blanket:"A blanket calms her, but you need something with sides."}}
+    ],
+    care:{dirt:"soot", dirtN:8, bath:"soot streaks",
+      ails:[{x:33,y:78,found:"Scraped front paw",fix:"🩹"},{x:63,y:38,found:"Torn left ear",fix:"🩹"}],
+      bugs:2, bugKind:"flea"},
+    names:["Marmalade","Biscuit","Pumpkin","Sixpence"]
+  },
+  {
+    id:"puppy", species:"Puppy", art:{kind:"quad",body:"#7E6046",belly:"#E4D3BC",ear:"flop",tail:"thin"},
+    where:"Dog park fence", x:63, y:19, kind:"tangle", tint:"#8FA772",
+    title:"Caught in the wire",
+    brief:"He crawled under the fence after a ball and came out the other side with the wire wrapped twice around his back leg. He's been there long enough to stop struggling.",
+    steps:[
+      {need:"snips", ask:"The wire is tight around his leg. What do you reach for first?", win:"You slide the snips under the wire, snip, snip — and the loop falls away.",
+       miss:{tools:"Too heavy. You'd hurt him before you cut anything.",gloves:"Good instinct, but gloves won't get the wire off.",treats:"He's too scared to eat while he's held down."}},
+      {need:"blanket", ask:"He's free but shivering and won't stand up. What now?", win:"You wrap him in the blanket like a parcel, and the shivering slows right down.",
+       miss:{basket:"He's too long for the basket — he needs wrapping, not stacking.",net:"He's already free. A net would only scare him again."}}
+    ],
+    care:{dirt:"mud", dirtN:9, bath:"dried mud",
+      ails:[{x:70,y:74,found:"Wire cut on hind leg",fix:"🩹"},{x:40,y:60,found:"Very thin — underfed",fix:"🍖"}],
+      bugs:3, bugKind:"tick"},
+    names:["Biscuit","Rocket","Waffle","Tumble"]
+  },
+  {
+    id:"bunny", species:"Rabbit", art:{kind:"quad",body:"#9A9384",belly:"#EDE8DC",ear:"long",tail:"puff"},
+    where:"Willow Lane drain", x:33, y:56, kind:"hole", tint:"#9EA6A8",
+    title:"Two eyes in the drain",
+    brief:"A child on Willow Lane says something moved in the storm drain. The grate is off. It is very dark down there and something is definitely breathing.",
+    steps:[
+      {need:"torch", ask:"You can't rescue what you can't see. What comes out of the kit first?", win:"The beam finds her on a ledge above the water — a young rabbit, wet through, wedged in a corner.",
+       miss:{net:"You'd be swinging blind. You could hurt her.",rope:"Nothing down there to tie to yet.",basket:"You need to find her before you can lift her."}},
+      {need:"net", ask:"She's on a ledge just out of arm's reach and she bolts when you get close. How do you catch her?", win:"One slow sweep of the net and she's caught — kicking, but safe.",
+       miss:{treats:"A frightened rabbit won't eat. She just presses further into the corner.",gloves:"Your arm is still too short.",torch:"You've already got the light on her."}}
+    ],
+    care:{dirt:"dust", dirtN:7, bath:"drain grime",
+      ails:[{x:50,y:35,found:"Cold to the touch",fix:"🔥"},{x:36,y:70,found:"Cracked claw",fix:"🩹"}],
+      bugs:1, bugKind:"flea"},
+    names:["Pip","Willow","Thimble","Clover"]
+  },
+  {
+    id:"crow", species:"Fledgling crow", art:{kind:"bird",body:"#3B4048",belly:"#5A626D",beak:"#C0A24C",wing:"#2B3038"},
+    where:"Library steps", x:47, y:37, kind:"ground", tint:"#B7AE96",
+    title:"Down from the nest",
+    brief:"A young crow is hopping along the library steps with one wing held out wrong. Mum is in the plane tree above, shouting at everyone who walks past.",
+    steps:[
+      {need:"gloves", ask:"That beak is sharp and she'll use it. What do you put on before you touch her?", win:"Gloves on. She lands one good jab on your thumb and it doesn't even sting.",
+       miss:{net:"You'd catch the wing wrong. Never net an injured wing.",basket:"You'll need it — but not before your hands are protected.",treats:"She's not interested in food. She wants her mother."}},
+      {need:"basket", ask:"Her wing hangs wrong and can't be squashed. What do you carry her in?", win:"You settle her in the basket with the wing supported, and she goes quiet at once.",
+       miss:{blanket:"Wrapping presses on the bad wing. She needs space around it.",gloves:"You've got them on already."}}
+    ],
+    care:{dirt:"dust", dirtN:6, bath:"street dust",
+      ails:[{x:66,y:44,found:"Bruised right wing",fix:"🩹"},{x:44,y:78,found:"Dehydrated",fix:"💧"}],
+      bugs:2, bugKind:"mite"},
+    names:["Twig","Inkcap","Soot","Corvid"]
+  },
+  {
+    id:"turtle", species:"Pond turtle", art:{kind:"turtle",body:"#6C8A5A",shell:"#5A4A34",shell2:"#7A6748"},
+    where:"Marsh Flats gate", x:81, y:63, kind:"shut", tint:"#7E8C63",
+    title:"Under the fallen gate",
+    brief:"The old marsh gate came down in the wind and landed across the mud path. Underneath it, not squashed but thoroughly stuck, is a turtle who was only trying to get to the water.",
+    steps:[
+      {need:"tools", ask:"The gate is heavy timber and iron, pinned by its own hinge. What do you use?", win:"You get the pry bar under the hinge, lean your weight on it, and the gate lifts just enough.",
+       miss:{rope:"Nothing to anchor to out here on the flats.",snips:"Snips won't cut through an iron hinge.",gloves:"You could lift all day and it wouldn't budge."}},
+      {need:"basket", ask:"He's free, and he is a lot heavier than he looks. How do you move him?", win:"Both hands under the shell, into the basket, and off to the van.",
+       miss:{net:"A shell just slides straight out of a net.",blanket:"He doesn't need warming — he needs carrying."}}
+    ],
+    care:{dirt:"mud", dirtN:9, bath:"marsh mud",
+      ails:[{x:62,y:32,found:"Chipped shell edge",fix:"🩹"},{x:34,y:66,found:"Dry, cracked skin",fix:"💧"}],
+      bugs:2, bugKind:"leech"},
+    names:["Sherman","Pebble","Admiral","Slowcoach"]
+  },
+  {
+    id:"raccoon", species:"Raccoon", art:{kind:"quad",body:"#8C8C90",belly:"#D9D8D2",ear:"round",tail:"ringed",mask:true},
+    where:"Depot shed", x:74, y:34, kind:"shut", tint:"#8F7C6A",
+    title:"Locked in the shed",
+    brief:"Something has been crashing around inside the depot shed since Tuesday. The padlock is rusted solid and nobody can find the key. The crashing has got quieter, which is worse.",
+    steps:[
+      {need:"tools", ask:"The padlock is rusted into one lump. How do you get in?", win:"Two good pulls on the bar and the hasp tears out of the door frame.",
+       miss:{snips:"That padlock is far too thick for snips.",torch:"You can already see. You just can't get in.",treats:"He can't reach a treat through a locked door."}},
+      {need:"net", ask:"He's cornered behind the mower and he is not pleased to see you. How do you handle him safely?", win:"One clean sweep of the net. He grumbles the whole way to the carrier, but nobody gets bitten.",
+       miss:{gloves:"Gloves won't stop a frightened raccoon. Keep your distance.",basket:"You'd have to pick him up bare-handed to do that.",blanket:"Too close, too slow. He'd be past you in a second."}}
+    ],
+    care:{dirt:"soot", dirtN:8, bath:"engine oil",
+      ails:[{x:56,y:36,found:"Weak from hunger",fix:"🍖"},{x:70,y:70,found:"Sore, split pad",fix:"🩹"}],
+      bugs:3, bugKind:"flea"},
+    names:["Bandit","Rascal","Domino","Trouble"]
+  },
+  {
+    id:"fox", species:"Fox cub", art:{kind:"quad",body:"#C7622C",belly:"#F2E4D2",ear:"point",tail:"tip"},
+    where:"Orchard row 4", x:15, y:73, kind:"tangle", tint:"#A0803C",
+    title:"The snare in the orchard",
+    brief:"An old wire snare nobody remembers setting has caught a fox cub by the back leg. She is small enough to fit in your two hands and she has been pulling against it all night.",
+    steps:[
+      {need:"snips", ask:"The snare wire has pulled tight and it will only get tighter. First move?", win:"You steady the wire with one hand and cut it clean with the other. The loop drops off.",
+       miss:{tools:"Far too rough this close to her leg.",rope:"More rope is the last thing this needs.",treats:"She's beyond eating. She just wants the wire gone."}},
+      {need:"blanket", ask:"She's loose but she can't put weight on the leg and she's snapping at everything. What now?", win:"The blanket goes over her head first. In the dark she goes still, and you scoop her up in one bundle.",
+       miss:{net:"She's already free — a net now would tangle the bad leg again.",gloves:"She'd bite through them. Cover her eyes first."}}
+    ],
+    care:{dirt:"mud", dirtN:8, bath:"orchard mud",
+      ails:[{x:70,y:76,found:"Snare wound, hind leg",fix:"🩹"},{x:46,y:38,found:"Exhausted",fix:"🔥"}],
+      bugs:3, bugKind:"tick"},
+    names:["Ember","Sorrel","Fennec","Kindle"]
+  },
+  {
+    id:"duckling", species:"Duckling", art:{kind:"bird",body:"#E8CE6A",belly:"#F8EDC0",beak:"#E8934A",wing:"#D9BC55"},
+    where:"Canal Road", x:55, y:80, kind:"ground", tint:"#9CA6A0",
+    title:"On the wrong side of the road",
+    brief:"The rest of the family made it across. One duckling didn't, and now she's sitting in the gutter on Canal Road with the traffic going past, too panicked to move an inch.",
+    steps:[
+      {need:"treats", ask:"Every time you step towards her she bolts further into the road. How do you get her to come to you?", win:"You crouch down and scatter a little food. Curiosity beats fear, and she waddles right over.",
+       miss:{net:"You'd chase her straight into the traffic.",torch:"It's the middle of the afternoon.",gloves:"Grabbing at her sends her the wrong way."}},
+      {need:"basket", ask:"She's close now and calm. How do you get her off this road?", win:"You lift her in both hands, into the basket, and she settles in the dark like it was made for her.",
+       miss:{blanket:"She'd wriggle straight out of a blanket.",treats:"She's already come to you. Now she needs somewhere safe."}}
+    ],
+    care:{dirt:"dust", dirtN:6, bath:"road grit",
+      ails:[{x:52,y:74,found:"Grazed webbed foot",fix:"🩹"},{x:60,y:40,found:"Separated from family",fix:"💧"}],
+      bugs:1, bugKind:"mite"},
+    names:["Puddle","Custard","Pip","Ripple"]
+  },
+  {
+    id:"hedgehog", species:"Hedgehog", art:{kind:"quad",body:"#8E7A5F",belly:"#D6C6A8",ear:"round",tail:"none",spines:true},
+    where:"Number 12 garden", x:30, y:87, kind:"tangle", tint:"#6E8A5C",
+    title:"Wrapped in the netting",
+    brief:"Someone put fruit netting over the strawberries and forgot about it. A hedgehog walked into it in the night and rolled — which is exactly the wrong thing to do in netting.",
+    steps:[
+      {need:"snips", ask:"Every loop he rolled through has pulled tighter. There's no unwinding this. What do you use?", win:"You cut each strand one at a time, working from the outside in, until the whole net falls away in pieces.",
+       miss:{gloves:"You'll want them — but the netting has to come off first.",tools:"Much too clumsy for netting this fine.",net:"He's got quite enough netting already."}},
+      {need:"gloves", ask:"He's out of the net and rolled up into a ball of spines. How do you pick him up?", win:"Gloves on, both hands cupped underneath, and up he comes without a single scratch.",
+       miss:{basket:"You still have to get him into it somehow.",blanket:"The spines snag straight through a blanket.",snips:"Nothing left to cut."}}
+    ],
+    care:{dirt:"dust", dirtN:7, bath:"garden dirt",
+      ails:[{x:60,y:66,found:"Netting cuts around middle",fix:"🩹"},{x:38,y:46,found:"Out in daylight — unwell",fix:"💧"}],
+      bugs:4, bugKind:"tick"},
+    names:["Nutmeg","Bramble","Prickle","Hawthorn"]
+  },
+  {
+    id:"goat", species:"Goat kid", art:{kind:"quad",body:"#EFE6D6",belly:"#FFFBF2",ear:"flop",tail:"stub",horns:true},
+    where:"Quarry ledge", x:88, y:14, kind:"high", tint:"#B0AA9C",
+    title:"Stranded on the quarry shelf",
+    brief:"A goat kid got onto a shelf halfway down the quarry face and now can't work out how to get off it again. He has been shouting about it for two hours.",
+    steps:[
+      {need:"ladder", ask:"The shelf is about four metres down the quarry face. How do you reach him?", win:"You walk the ladder down the slope, wedge the feet in the scree, and climb down to the shelf.",
+       miss:{rope:"You'll want it in a minute — but you can't climb down bare rock first.",net:"He'd panic and go over the edge.",treats:"He's not coming to you. He genuinely cannot get off that shelf."}},
+      {need:"rope", ask:"He's forty kilos of frightened goat and the ladder won't take you both. How do you get him up?", win:"You rig a harness under his belly and the team above hauls him up, legs pedalling, straight onto the grass.",
+       miss:{basket:"He is far, far too big for the basket.",ladder:"He's not going to climb a ladder. He's a goat.",blanket:"He'd kick straight out of it halfway up."}}
+    ],
+    care:{dirt:"dust", dirtN:8, bath:"quarry dust",
+      ails:[{x:36,y:72,found:"Split hoof",fix:"🩹"},{x:64,y:40,found:"Two hours of shouting — hoarse",fix:"💧"}],
+      bugs:2, bugKind:"tick"},
+    names:["Clover","Gravel","Sergeant","Bounce"]
+  }
+];
+
+const BUGART = {flea:"🦟", tick:"🕷️", mite:"🐜", leech:"🪱"};
+const BEDS = [
+  {id:"basket", g:"🧺", n:"Basket bed"},
+  {id:"quilt",  g:"🛏️", n:"Quilt nest"},
+  {id:"cushion",g:"🪺", n:"Straw nest"}
+];
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const KEY = "fernbrook-rescue-v1";
+let S = {done:{}, sound:true, crew:[]};
+try{ const raw = localStorage.getItem(KEY); if(raw) S = Object.assign(S, JSON.parse(raw)); }catch(e){}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+
+/* Layout randomness is SEEDED so two people in the same room see the dirt,
+   the ticks and the suggested name land in identical places. Solo play seeds
+   off the clock, so it still varies call to call. */
+let __rs = 0;
+function rnd(){
+  __rs = __rs + 0x6D2B79F5 | 0;
+  let t = Math.imul(__rs ^ __rs >>> 15, 1 | __rs);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+  return ((t ^ t >>> 14) >>> 0) / 4294967296;
+}
+function reseed(tag){
+  const s = (window.__roomSeed || ("solo" + Date.now())) + "|" + tag;
+  let h = 2166136261;
+  for(let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  __rs = h | 0;
+}
+
+const $ = s=>document.querySelector(s);
+const screen = $("#screen");
+const pager  = $("#pager");
+let active = null;      // current call
+let step   = 0;         // rescue step index
+let station= 0;         // care station index
+let careState = {};
+
+/* ============================================================
+   SOUND — tiny synth blips, no external assets
+   ============================================================ */
+let ac = null;
+function beep(freq, dur, type, vol){
+  if(!S.sound) return;
+  try{
+    if(!ac) ac = new (window.AudioContext||window.webkitAudioContext)();
+    if(ac.state === "suspended") ac.resume();
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = type||"sine"; o.frequency.value = freq;
+    g.gain.setValueAtTime(0, ac.currentTime);
+    g.gain.linearRampToValueAtTime(vol||0.09, ac.currentTime+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime+(dur||0.12));
+    o.connect(g); g.connect(ac.destination);
+    o.start(); o.stop(ac.currentTime+(dur||0.12)+0.02);
+  }catch(e){}
+}
+/* --- the ring -----------------------------------------------------------
+   A classic double-burst ringtone: two 440+480Hz bursts, then a pause.
+   Browsers block audio until the page has had a real user gesture, so if the
+   context won't start we arm a one-shot unlock on the first click or keypress
+   and begin ringing then. The visual ring runs regardless.              */
+let ringTimer = null;
+function audioReady(){
+  try{
+    if(!ac) ac = new (window.AudioContext||window.webkitAudioContext)();
+    if(ac.state === "suspended") ac.resume();
+    return ac.state === "running";
+  }catch(e){ return false; }
+}
+function ringBurst(at, dur){
+  if(!S.sound || !ac) return;
+  [440,480].forEach(f=>{
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = "sine"; o.frequency.value = f;
+    g.gain.setValueAtTime(0, at);
+    g.gain.linearRampToValueAtTime(.055, at+.02);
+    g.gain.setValueAtTime(.055, at+dur-.06);
+    g.gain.exponentialRampToValueAtTime(.0001, at+dur);
+    o.connect(g); g.connect(ac.destination);
+    o.start(at); o.stop(at+dur+.02);
+  });
+}
+function ringOnce(){
+  if(!S.sound || !ac) return;
+  const t = ac.currentTime;
+  ringBurst(t, .42);          // matches the 2%–14% shudder
+  ringBurst(t+.45, .42);      // and the 18%–30% one
+}
+function startRinging(){
+  stopRinging();
+  if(!audioReady()){
+    const unlock = ev=>{ document.removeEventListener("pointerdown",unlock,true);
+                         document.removeEventListener("keydown",unlock,true);
+                         // if the unlocking gesture IS them answering, don't ring over the pickup
+                         if(ev && ev.target && ev.target.closest && ev.target.closest("#v-call")) return;
+                         if(pager.getAttribute("data-state")==="idle") startRinging(); };
+    document.addEventListener("pointerdown", unlock, true);
+    document.addEventListener("keydown", unlock, true);
+    return;
+  }
+  ringOnce();
+  ringTimer = setInterval(ringOnce, 3000);   // same 3s cycle as the CSS
+}
+function stopRinging(){ if(ringTimer){ clearInterval(ringTimer); ringTimer = null; } }
+
+const sfx = {
+  pickup:()=>{beep(520,.05,"square",.05); setTimeout(()=>beep(760,.09,"square",.05),60);},
+  tap:   ()=>beep(660,.07,"square",.05),
+  good:  ()=>{beep(660,.1,"sine",.08); setTimeout(()=>beep(880,.16,"sine",.08),90);},
+  win:   ()=>{[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.16,"sine",.08),i*95));},
+  bad:   ()=>beep(180,.16,"sawtooth",.05),
+  pop:   ()=>beep(1100,.05,"sine",.06),
+  snore: ()=>{beep(220,.3,"sine",.05); setTimeout(()=>beep(180,.35,"sine",.04),320);}
+};
+
+/* ============================================================
+   CRITTER ART — three builders, feature flags on top
+   ============================================================ */
+function eyes(cx,cy,r,closed,dark){
+  if(closed){
+    return '<path d="M'+(cx-r-1)+' '+cy+' q'+(r+1)+' '+(r*1.1)+' '+((r+1)*2)+' 0" fill="none" stroke="'+(dark||"#1B221E")+'" stroke-width="2.6" stroke-linecap="round"/>';
+  }
+  return '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="'+(dark||"#1B221E")+'"/>'+
+         '<circle cx="'+(cx+r*0.34)+'" cy="'+(cy-r*0.36)+'" r="'+(r*0.34)+'" fill="#fff"/>';
+}
+function quad(a, o){
+  const c = a.body, b = a.belly, closed = o.closed;
+  let s = '<svg viewBox="0 0 260 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="rescued animal">';
+  // tail
+  if(a.tail === "fluff")
+    s += '<path d="M206 138 q46 -6 40 -48 q-2 -20 -20 -18 q-16 2 -12 20 q4 18 -14 22z" fill="'+c+'"/>';
+  else if(a.tail === "tip")
+    s += '<path d="M206 140 q52 -2 46 -52 q-3 -22 -22 -18 q-18 4 -12 22 q6 20 -16 24z" fill="'+c+'"/><path d="M232 74 q18 -4 14 16 q-2 12 -14 10 q-8 -2 -6 -14z" fill="#FBF3E6"/>';
+  else if(a.tail === "thin")
+    s += '<path d="M204 136 q40 -14 42 -46" fill="none" stroke="'+c+'" stroke-width="11" stroke-linecap="round"/>';
+  else if(a.tail === "ringed"){
+    s += '<path d="M204 136 q44 -12 44 -50" fill="none" stroke="'+c+'" stroke-width="17" stroke-linecap="round"/>';
+    s += '<path d="M222 128 l10 6 M236 108 l12 3 M245 88 l11 0" stroke="#3E3B3A" stroke-width="8" stroke-linecap="round" opacity=".8"/>';
+  }
+  else if(a.tail === "puff")
+    s += '<circle cx="216" cy="132" r="19" fill="'+b+'"/>';
+  else if(a.tail === "stub")
+    s += '<path d="M204 130 q22 -6 24 -20" fill="none" stroke="'+c+'" stroke-width="12" stroke-linecap="round"/>';
+  // legs
+  s += '<g fill="'+c+'">'+
+       '<rect x="98"  y="160" width="20" height="36" rx="10"/>'+
+       '<rect x="128" y="164" width="20" height="32" rx="10"/>'+
+       '<rect x="170" y="160" width="20" height="36" rx="10"/>'+
+       '<rect x="198" y="164" width="20" height="32" rx="10"/></g>';
+  // body
+  s += '<ellipse cx="152" cy="140" rx="66" ry="48" fill="'+c+'"/>';
+  s += '<ellipse cx="146" cy="158" rx="46" ry="28" fill="'+b+'" opacity=".85"/>';
+  if(a.spines){
+    // two staggered rows so the silhouette actually reads as a hedgehog
+    let sp = '<g fill="#463A2C">';
+    for(let i=0;i<13;i++){
+      const x = 92 + i*10.5, y = 116 - Math.sin(i/12*Math.PI)*24;
+      sp += '<path d="M'+x+' '+(y+24)+' l5.5 -32 l5.5 32z"/>';
+    }
+    sp += '</g><g fill="#5F5040">';
+    for(let i=0;i<12;i++){
+      const x = 98 + i*10.5, y = 130 - Math.sin(i/11*Math.PI)*20;
+      sp += '<path d="M'+x+' '+(y+22)+' l5 -26 l5 26z"/>';
+    }
+    s += sp + '</g>';
+  }
+  // ears (behind head)
+  if(a.ear === "long")
+    s += '<g fill="'+c+'"><ellipse cx="70" cy="34" rx="12" ry="34" transform="rotate(-11 70 34)"/><ellipse cx="102" cy="30" rx="12" ry="34" transform="rotate(6 102 30)"/></g>'+
+         '<g fill="'+b+'" opacity=".8"><ellipse cx="71" cy="36" rx="5.5" ry="24" transform="rotate(-11 71 36)"/><ellipse cx="101" cy="32" rx="5.5" ry="24" transform="rotate(6 101 32)"/></g>';
+  else if(a.ear === "point")
+    s += '<g fill="'+c+'"><path d="M58 66 l4 -46 l34 22z"/><path d="M124 62 l-2 -46 l-32 24z"/></g>'+
+         '<g fill="'+b+'" opacity=".75"><path d="M66 62 l3 -28 l20 14z"/><path d="M116 60 l-1 -28 l-19 15z"/></g>';
+  else if(a.ear === "flop")
+    s += '<g fill="'+c+'"><ellipse cx="56" cy="76" rx="15" ry="30" transform="rotate(14 56 76)"/><ellipse cx="126" cy="72" rx="14" ry="27" transform="rotate(-12 126 72)"/></g>';
+  else if(a.ear === "round")
+    s += '<g fill="'+c+'"><circle cx="62" cy="48" r="18"/><circle cx="120" cy="44" r="18"/></g>'+
+         '<g fill="'+b+'" opacity=".7"><circle cx="63" cy="50" r="9"/><circle cx="120" cy="46" r="9"/></g>';
+  if(a.horns)
+    s += '<g fill="none" stroke="#B9AC93" stroke-width="9" stroke-linecap="round"><path d="M72 46 q-6 -26 6 -34"/><path d="M114 42 q4 -26 -8 -32"/></g>';
+  // head
+  s += '<circle cx="92" cy="88" r="44" fill="'+c+'"/>';
+  if(a.mask){
+    s += '<path d="M52 78 q40 -20 80 -4 q-6 22 -22 24 q-20 3 -38 -2 q-16 -4 -20 -18z" fill="#3E3B3A" opacity=".82"/>';
+    s += '<path d="M62 62 q30 -12 60 -2" stroke="#EFEAE0" stroke-width="7" fill="none" stroke-linecap="round" opacity=".8"/>';
+  }
+  // muzzle + face
+  s += '<ellipse cx="94" cy="106" rx="22" ry="16" fill="'+b+'"/>';
+  s += eyes(76,82,6.2,closed, a.mask?"#1A1A18":null);
+  s += eyes(112,80,6.2,closed, a.mask?"#1A1A18":null);
+  s += '<ellipse cx="94" cy="99" rx="6.5" ry="5" fill="#43302B"/>';
+  s += '<path d="M94 104 q0 8 -9 8 M94 104 q0 8 9 8" stroke="#43302B" stroke-width="2.4" fill="none" stroke-linecap="round"/>';
+  if(a.horns) s += '<path d="M94 122 q0 16 -5 20 q10 2 10 -20z" fill="'+b+'"/>';
+  s += '</svg>';
+  return s;
+}
+function bird(a,o){
+  const c=a.body,b=a.belly,closed=o.closed;
+  let s = '<svg viewBox="0 0 260 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="rescued bird">';
+  s += '<g stroke="'+a.beak+'" stroke-width="7" stroke-linecap="round"><path d="M136 176 v20"/><path d="M170 176 v20"/><path d="M126 196 h20 M160 196 h20"/></g>';
+  s += '<path d="M198 130 q46 -12 46 -44 q-26 6 -34 22z" fill="'+c+'"/>';
+  s += '<ellipse cx="156" cy="134" rx="60" ry="52" fill="'+c+'"/>';
+  s += '<ellipse cx="150" cy="152" rx="40" ry="30" fill="'+b+'" opacity=".8"/>';
+  s += '<path d="M180 108 q40 16 30 56 q-26 6 -44 -20z" fill="'+a.wing+'"/>';
+  s += '<circle cx="96" cy="84" r="40" fill="'+c+'"/>';
+  s += '<path d="M60 86 l-40 10 l40 14z" fill="'+a.beak+'"/>';
+  s += '<path d="M60 86 l-40 10 l38 4z" fill="'+a.beak+'" opacity=".7"/>';
+  s += eyes(84,74,6.4,closed);
+  s += eyes(114,74,6.4,closed);
+  s += '</svg>';
+  return s;
+}
+function turtle(a,o){
+  const c=a.body,closed=o.closed;
+  let s = '<svg viewBox="0 0 260 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="rescued turtle">';
+  s += '<g fill="'+c+'">'+
+       '<rect x="86" y="152" width="26" height="32" rx="13"/>'+
+       '<rect x="176" y="152" width="26" height="32" rx="13"/>'+
+       '<path d="M212 148 q28 -4 26 18 q-18 8 -30 -4z"/></g>';
+  s += '<ellipse cx="146" cy="146" rx="78" ry="34" fill="'+c+'"/>';
+  s += '<path d="M68 142 q6 -60 78 -60 q72 0 78 60z" fill="'+a.shell+'"/>';
+  s += '<g fill="none" stroke="'+a.shell2+'" stroke-width="4" opacity=".9">'+
+       '<path d="M100 138 q6 -34 46 -34 q40 0 46 34"/>'+
+       '<path d="M146 104 v-22"/><path d="M112 118 l-22 -18"/><path d="M180 118 l22 -18"/>'+
+       '<path d="M104 140 v-10"/><path d="M146 140 v-16"/><path d="M188 140 v-10"/></g>';
+  s += '<ellipse cx="146" cy="142" rx="78" ry="8" fill="'+a.shell2+'" opacity=".55"/>';
+  s += '<circle cx="58" cy="126" r="30" fill="'+c+'"/>';
+  s += '<path d="M40 100 q18 -14 36 -2" stroke="#4E6A42" stroke-width="5" fill="none" stroke-linecap="round"/>';
+  s += eyes(48,118,5.4,closed);
+  s += eyes(70,118,5.4,closed);
+  s += '<path d="M44 138 q14 8 28 0" stroke="#3C5334" stroke-width="3" fill="none" stroke-linecap="round"/>';
+  s += '</svg>';
+  return s;
+}
+function critter(call, opts){
+  const o = opts||{}, a = call.art;
+  if(a.kind === "bird")   return bird(a,o);
+  if(a.kind === "turtle") return turtle(a,o);
+  return quad(a,o);
+}
+
+/* ============================================================
+   MAP — hand-inked field map
+   ============================================================ */
+function mapSVG(){
+  return `<svg viewBox="0 0 1000 640" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <rect width="1000" height="640" fill="var(--screen-3)"/>
+    <path d="M0 470 q120 -40 230 -6 q140 44 260 -10 q130 -58 250 -8 q120 50 260 10 v184 H0z" fill="var(--sky)" opacity=".45"/>
+    <path d="M-20 300 q160 -70 320 -20 q150 46 280 -18 q140 -70 300 -10 q80 34 140 18" fill="none" stroke="var(--sky)" stroke-width="16" opacity=".8" stroke-linecap="round"/>
+    <path d="M-20 300 q160 -70 320 -20 q150 46 280 -18 q140 -70 300 -10 q80 34 140 18" fill="none" stroke="var(--screen)" stroke-width="4" opacity=".5"/>
+    <g fill="none" stroke="var(--line)" stroke-width="2" opacity=".55">
+      <path d="M780 40 q-40 60 10 110 q50 48 -10 96"/>
+      <path d="M830 30 q-46 70 6 128 q54 56 -14 108"/>
+      <path d="M60 560 q90 -40 150 6 q60 44 150 4"/>
+    </g>
+    <g fill="var(--stone)" opacity=".55">
+      <rect x="90" y="120" width="140" height="86" rx="6"/>
+      <rect x="250" y="96"  width="86"  height="66" rx="6"/>
+      <rect x="380" y="150" width="120" height="96" rx="6"/>
+      <rect x="540" y="80"  width="150" height="72" rx="6"/>
+      <rect x="690" y="180" width="110" height="80" rx="6"/>
+      <rect x="180" y="360" width="130" height="90" rx="6"/>
+      <rect x="420" y="420" width="150" height="80" rx="6"/>
+      <rect x="120" y="530" width="180" height="80" rx="6"/>
+      <rect x="600" y="500" width="140" height="90" rx="6"/>
+    </g>
+    <g stroke="var(--screen)" stroke-width="18" fill="none" opacity=".9" stroke-linecap="round">
+      <path d="M-10 250 H1010"/><path d="M-10 480 H1010"/>
+      <path d="M340 -10 V650"/><path d="M760 -10 V650"/>
+    </g>
+    <g stroke="var(--line)" stroke-width="2" stroke-dasharray="10 12" fill="none" opacity=".7">
+      <path d="M-10 250 H1010"/><path d="M-10 480 H1010"/>
+      <path d="M340 -10 V650"/><path d="M760 -10 V650"/>
+    </g>
+    <ellipse cx="150" cy="700" rx="220" ry="130" fill="var(--signal)" opacity=".16"/>
+    <ellipse cx="880" cy="600" rx="180" ry="120" fill="var(--signal)" opacity=".14"/>
+  </svg>`;
+}
+/* Place names live in the pin layer, not the SVG: the map is stretched to the
+   panel, so HTML labels in % stay locked to the pins and never distort. */
+const PLACES = [
+  {x:12, y:18, t:"Baker St"},
+  {x:56, y:11, t:"Dog park"},
+  {x:44, y:31, t:"Library"},
+  {x:68, y:27, t:"Depot"},
+  {x:20, y:55, t:"Willow Ln"},
+  {x:46, y:86, t:"Canal Rd"},
+  {x:20, y:93, t:"Garden row"}
+];
+const ZONES = [
+  {x:8,  y:84, t:"Orchard"},
+  {x:78, y:22, t:"Quarry"},
+  {x:90, y:76, t:"Marsh"}
+];
+
+/* ============================================================
+   RESCUE BACKDROPS
+   ============================================================ */
+function backdrop(kind, tint){
+  const sky = 'var(--sky)';
+  let inner = "";
+  if(kind === "high"){
+    inner = `<rect width="600" height="380" fill="${sky}" opacity=".6"/>
+      <circle cx="486" cy="66" r="34" fill="var(--sun)" opacity=".5"/>
+      <path d="M0 380 V150 h250 V380z" fill="${tint}"/>
+      <path d="M0 150 h250 v14 H0z" fill="${tint}" opacity=".6"/>
+      <g stroke="rgba(0,0,0,.14)" stroke-width="2">
+        <path d="M0 190 h250 M0 230 h250 M0 270 h250 M0 310 h250 M0 350 h250"/>
+        <path d="M60 150 v230 M130 150 v230 M200 150 v230"/></g>
+      <rect x="230" y="120" width="180" height="30" rx="8" fill="${tint}" opacity=".95"/>
+      <rect x="230" y="120" width="180" height="8" rx="4" fill="rgba(255,255,255,.3)"/>
+      <path d="M0 380 h600 v0z" fill="none"/>
+      <rect y="352" width="600" height="28" fill="var(--stone)"/>`;
+  } else if(kind === "tangle"){
+    /* wire itself lives in foreground() so it can be cut away */
+    inner = `<rect width="600" height="380" fill="${sky}" opacity=".45"/>
+      <ellipse cx="300" cy="410" rx="420" ry="120" fill="${tint}"/>
+      <g fill="var(--signal)" opacity=".22">
+        <ellipse cx="90" cy="322" rx="54" ry="17"/><ellipse cx="510" cy="342" rx="62" ry="19"/></g>
+      <rect y="358" width="600" height="22" fill="${tint}" opacity=".8"/>`;
+  } else if(kind === "hole"){
+    inner = `<rect width="600" height="380" fill="${tint}" opacity=".55"/>
+      <rect y="0" width="600" height="150" fill="var(--stone)" opacity=".7"/>
+      <path d="M0 150 h600 v14 H0z" fill="rgba(0,0,0,.18)"/>
+      <ellipse cx="300" cy="250" rx="150" ry="96" fill="rgba(10,16,14,.88)"/>
+      <ellipse cx="300" cy="242" rx="126" ry="80" fill="rgba(4,8,7,.95)"/>
+      <g stroke="var(--stone)" stroke-width="9" opacity=".8">
+        <path d="M180 200 h240 M172 240 h256 M180 280 h240"/></g>
+      <rect y="352" width="600" height="28" fill="var(--stone)" opacity=".8"/>`;
+  } else if(kind === "shut"){
+    /* what's revealed once the door in foreground() is pried open */
+    inner = `<rect width="600" height="380" fill="${sky}" opacity=".4"/>
+      <ellipse cx="300" cy="420" rx="430" ry="110" fill="${tint}"/>
+      <rect x="90" y="60" width="420" height="300" rx="10" fill="#1B211E"/>
+      <rect x="102" y="72" width="396" height="276" rx="6" fill="#0E1412"/>
+      <g fill="rgba(255,255,255,.05)">
+        <rect x="130" y="250" width="120" height="98" rx="6"/>
+        <rect x="370" y="210" width="96" height="138" rx="6"/></g>
+      <rect x="90" y="46" width="420" height="20" rx="6" fill="rgba(255,255,255,.2)"/>`;
+  } else {
+    inner = `<rect width="600" height="380" fill="${sky}" opacity=".5"/>
+      <circle cx="80" cy="60" r="40" fill="var(--sun)" opacity=".4"/>
+      <ellipse cx="300" cy="430" rx="460" ry="130" fill="${tint}"/>
+      <g stroke="rgba(0,0,0,.1)" stroke-width="2">
+        <path d="M0 300 q150 -14 300 0 q150 14 300 0"/>
+        <path d="M0 336 q150 -14 300 0 q150 14 300 0"/></g>
+      <g fill="var(--signal)" opacity=".3">
+        <ellipse cx="70" cy="318" rx="46" ry="16"/><ellipse cx="520" cy="336" rx="56" ry="18"/></g>`;
+  }
+  return '<svg class="backdrop" viewBox="0 0 600 380" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'+inner+'</svg>';
+}
+/* Foreground layer: what the animal is stuck behind. Drawn over the critter and
+   faded out once the step that frees them lands (see FG_CLEARS_AFTER). */
+function foreground(kind, tint){
+  let inner = "";
+  if(kind === "tangle"){
+    inner = `<g stroke="rgba(60,60,56,.72)" stroke-width="2.6">
+      <path d="M40 190 H560 M40 230 H560 M40 270 H560 M40 310 H560 M40 350 H560"/>
+      <path d="M80 180 V380 M140 180 V380 M200 180 V380 M260 180 V380 M320 180 V380 M380 180 V380 M440 180 V380 M500 180 V380"/></g>
+      <g stroke="${tint}" stroke-width="7" opacity=".85"><path d="M40 380 V180 M540 380 V180"/></g>`;
+  } else if(kind === "shut"){
+    inner = `<rect x="90" y="60" width="420" height="300" rx="10" fill="${tint}" opacity=".97"/>
+      <g stroke="rgba(0,0,0,.24)" stroke-width="3">
+        <path d="M150 60 V360 M210 60 V360 M270 60 V360 M330 60 V360 M390 60 V360 M450 60 V360"/></g>
+      <rect x="270" y="190" width="60" height="16" rx="8" fill="rgba(240,240,235,.85)"/>
+      <circle cx="300" cy="176" r="16" fill="none" stroke="rgba(240,240,235,.85)" stroke-width="7"/>`;
+  } else if(kind === "hole"){
+    inner = `<path d="M0 300 q150 -34 300 -34 q150 0 300 34 v80 H0z" fill="var(--stone)"/>
+      <path d="M0 300 q150 -34 300 -34 q150 0 300 34" fill="none" stroke="rgba(0,0,0,.28)" stroke-width="5"/>`;
+  } else return "";
+  return '<svg class="fg" id="scenefg" viewBox="0 0 600 380" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'+inner+'</svg>';
+}
+/* index of the step that clears the foreground: cut the wire / pry the door open;
+   the drain lip stays until they're actually lifted out */
+const FG_CLEARS_AFTER = {tangle:0, shut:0, hole:1};
+
+const CRITTER_POS = {
+  high:   {left:"38%", top:"20%", width:"26%"},
+  tangle: {left:"33%", top:"52%", width:"34%"},
+  hole:   {left:"33%", top:"58%", width:"34%"},
+  shut:   {left:"34%", top:"52%", width:"32%"},
+  ground: {left:"32%", top:"56%", width:"36%"}
+};
+
+/* ============================================================
+   VIEW ROUTING
+   ============================================================ */
+function go(v){
+  screen.setAttribute("data-view", v);
+  const live = (v === "scene");
+  $("#kit").setAttribute("data-live", live ? "1" : "0");
+  $("#kitnote").textContent = live
+    ? "Rescue kit — tap everything you want to take, then use it"
+    : (v === "care" ? "Rescue kit — stowed. You're at the shelter now."
+                    : "Rescue kit — locked until you're on a call");
+}
+function tallyUp(){
+  const n = Object.keys(S.done).length;
+  $("#tally").innerHTML = "Rescued <b>"+n+"</b>/"+CALLS.length;
+}
+
+/* ============================================================
+   KEYPAD
+   ============================================================ */
+$("#kit").innerHTML = KIT.map(k =>
+  '<button class="key" data-tool="'+k.id+'" type="button" aria-label="'+k.lab+'">'+
+  '<span class="glyph" aria-hidden="true">'+k.g+'</span><span class="lab">'+k.lab+'</span></button>'
+).join("");
+$("#kit").addEventListener("click", e=>{
+  const btn = e.target.closest(".key");
+  if(!btn || $("#kit").getAttribute("data-live") !== "1") return;
+  if(btn.classList.contains("done")) return;   // already did its job
+  toggleTool(btn.dataset.tool, btn);
+});
+
+/* ============================================================
+   MAP VIEW
+   ============================================================ */
+$("#mapwrap").insertAdjacentHTML("afterbegin", mapSVG());
+function renderMap(){
+  const pl = $("#pinlayer");
+  pl.innerHTML =
+    ZONES.map(z=>'<span class="mzone" style="left:'+z.x+'%;top:'+z.y+'%">'+z.t+'</span>').join("") +
+    PLACES.map(p=>'<span class="mlabel" style="left:'+p.x+'%;top:'+p.y+'%">'+p.t+'</span>').join("") +
+    '<span class="mgrid" style="left:10px">Fernbrook · Grid 4B</span>' +
+    '<span class="mgrid" style="right:10px">N ↑</span>' +
+    CALLS.map(c=>{
+    const done = S.done[c.id] ? "1" : "0";
+    return '<button class="pin" type="button" data-id="'+c.id+'" data-done="'+done+'" '+
+      'style="left:'+c.x+'%;top:'+c.y+'%" aria-label="'+c.species+' at '+c.where+'">'+
+      (done==="1" ? "✓" : "🐾")+'</button>';
+  }).join("");
+  const open = CALLS.filter(c=>!S.done[c.id]).length;
+  $("#openN").textContent = open ? open+" waiting" : "all clear";
+  $("#callsList").innerHTML = CALLS.map(c=>{
+    const done = S.done[c.id];
+    const who = done ? (done.name+" — safe") : (c.species+" · "+c.title.toLowerCase());
+    return '<button class="callrow" type="button" data-id="'+c.id+'" data-done="'+(done?"1":"0")+'">'+
+      '<span class="dot"></span><span class="txt"><span class="who">'+who+'</span>'+
+      '<span class="where mono">'+c.where+'</span></span></button>';
+  }).join("");
+  tallyUp();
+}
+function openBrief(id){
+  const c = CALLS.find(x=>x.id===id); if(!c) return;
+  const done = S.done[id];
+  $("#briefcard").innerHTML =
+    '<div class="eyebrow mono">'+(done ? "Closed call · "+c.where : "Live call · "+c.where)+'</div>'+
+    '<h2>'+(done ? done.name+" is safe" : c.title)+'</h2>'+
+    '<p>'+(done ? "Brought in from "+c.where+". Cleaned up, checked over, fed, and asleep in a "+
+        (BEDS.find(b=>b.id===done.bed)||BEDS[0]).n.toLowerCase()+"." : c.brief)+'</p>'+
+    '<div class="row">'+
+      (done ? '<button class="btn ghost" data-act="close" style="flex:1">Back to map</button>'
+            : '<button class="btn ghost" data-act="close">Not yet</button>'+
+              '<button class="btn" data-act="take" data-id="'+c.id+'" style="flex:1">Take this call</button>')+
+    '</div>';
+  $("#brief").classList.add("on");
+  sfx.tap();
+}
+$("#pinlayer").addEventListener("click", e=>{
+  const p = e.target.closest(".pin"); if(p) openBrief(p.dataset.id);
+});
+$("#callsList").addEventListener("click", e=>{
+  const r = e.target.closest(".callrow"); if(r) openBrief(r.dataset.id);
+});
+$("#callsList").addEventListener("mouseover", e=>{
+  const r = e.target.closest(".callrow"); if(!r) return;
+  document.querySelectorAll(".pin").forEach(p=>p.classList.toggle("hi", p.dataset.id === r.dataset.id));
+});
+$("#callsList").addEventListener("mouseout", ()=>{
+  document.querySelectorAll(".pin").forEach(p=>p.classList.remove("hi"));
+});
+$("#brief").addEventListener("click", e=>{
+  if(e.target.id === "brief"){ $("#brief").classList.remove("on"); return; }
+  const b = e.target.closest("button"); if(!b) return;
+  if(b.dataset.act === "close") $("#brief").classList.remove("on");
+  if(b.dataset.act === "take"){ $("#brief").classList.remove("on"); startRescue(b.dataset.id); }
+});
+/* ============================================================
+   CREW — who's taking which station at the shelter.
+   Names never leave this browser: they live in localStorage, are not in
+   the published page, and are never sent anywhere.
+   ============================================================ */
+function crewFor(stationIdx){
+  if(!S.crew.length) return null;
+  // offset by animals already brought in, so nobody is stuck on the same job
+  const off = Object.keys(S.done).length;
+  return S.crew[(stationIdx + off) % S.crew.length];
+}
+function openCrew(){
+  const c = S.crew.slice();
+  while(c.length < 6) c.push("");
+  $("#crewcard").innerHTML =
+    '<div class="eyebrow mono">Fernbrook · Shift board</div>'+
+    '<h2>Who\'s on the crew?</h2>'+
+    '<p>Add the people playing and the shelter jobs get shared out — the game '+
+      'says whose turn it is at each station. Leave it empty to play on your own.</p>'+
+    '<div class="crewgrid">'+
+      c.map((n,i)=>'<input id="crew'+i+'" value="'+escapeHTML(n)+'" maxlength="14" placeholder="Name '+(i+1)+'" aria-label="Crew member '+(i+1)+'">').join("")+
+    '</div>'+
+    '<div class="privacy"><span aria-hidden="true">🔒</span>'+
+      '<span>These names stay on this computer only. They are not part of the shared page and never get sent anywhere.</span></div>'+
+    '<div class="row">'+
+      '<button class="btn ghost" data-act="clear">Clear all</button>'+
+      '<button class="btn" data-act="save" style="flex:1">Save crew</button>'+
+    '</div>';
+  $("#crew").classList.add("on");
+  sfx.tap();
+}
+$("#toCrew").addEventListener("click", openCrew);
+$("#crew").addEventListener("click", e=>{
+  if(e.target.id === "crew"){ $("#crew").classList.remove("on"); return; }
+  const b = e.target.closest("button"); if(!b) return;
+  if(b.dataset.act === "clear"){
+    for(let i=0;i<6;i++){ const el = $("#crew"+i); if(el) el.value = ""; }
+    return;
+  }
+  if(b.dataset.act === "save"){
+    const names = [];
+    for(let i=0;i<6;i++){
+      const el = $("#crew"+i);
+      const v = el ? el.value.trim() : "";
+      if(v) names.push(v);
+    }
+    S.crew = names; save();
+    $("#crew").classList.remove("on");
+    sfx.good();
+  }
+});
+
+$("#toRoster").addEventListener("click", ()=>{ renderRoster(); go("roster"); sfx.tap(); });
+$("#rosterBack").addEventListener("click", ()=>{ renderMap(); go("map"); sfx.tap(); });
+$("#sceneBack").addEventListener("click", ()=>{ renderMap(); go("map"); sfx.tap(); });
+
+/* ============================================================
+   RESCUE SCENE
+   ============================================================ */
+/* A rescue is a SET of gear, not a quiz with one right answer per turn.
+   Tap as many keys as you like, then use them together, in any order. */
+let needs = [];        // tools this job actually requires
+let banked = [];       // needs that have already done their work
+let picked = new Set();// keys currently held down
+let missHints = {};    // both steps' hints merged, for gear that isn't needed
+let rescueDone = false;
+
+function startRescue(id){
+  active = CALLS.find(c=>c.id===id);
+  needs  = active.steps.map(s=>s.need);
+  banked = [];
+  picked = new Set();
+  missHints = Object.assign({}, active.steps[1].miss, active.steps[0].miss);
+  const pos = CRITTER_POS[active.kind];
+  $("#stagewrap").innerHTML =
+    backdrop(active.kind, active.tint) +
+    '<div class="critterbox bob" id="critterbox" style="left:'+pos.left+';top:'+pos.top+';width:'+pos.width+'">'+
+      critter(active,{}) + '</div>' +
+    foreground(active.kind, active.tint) +
+    '<div class="toolfx" id="toolfx" style="left:50%;top:44%"></div>';
+  $("#sceneWhere").textContent = "Live call · " + active.where;
+  $("#sceneTitle").textContent = active.title;
+  $("#sceneBrief").textContent = active.brief;
+  // fresh keypad for a fresh call
+  document.querySelectorAll(".key").forEach(k=>k.classList.remove("sel","done","wrong"));
+  rescueDone = false;
+  $("#useKit").textContent = "Use the kit";
+  $("#useKit").classList.remove("go");
+  $("#sceneFeed").className = "feedback";
+  $("#sceneFeed").textContent = "";
+  drawScene();
+  go("scene");
+  sfx.tap();
+}
+function names(list){
+  const n = list.map(t=>KITMAP[t].lab.toLowerCase());
+  if(n.length === 1) return "the " + n[0];
+  return "the " + n.slice(0,-1).join(", the ") + " and the " + n[n.length-1];
+}
+/* The open question is whichever needed piece of gear is still missing. */
+function openAsk(){
+  const i = needs.findIndex(n=>!banked.includes(n));
+  return i < 0 ? null : active.steps[i].ask;
+}
+function drawScene(){
+  const ask = openAsk();
+  $("#sceneAsk").className = banked.length ? "ask" : "ask";
+  $("#sceneAsk").textContent = ask || "";
+  $("#sceneTrayLab").textContent = needs.length + " pieces of gear will do this job";
+  $("#sceneTray").innerHTML = needs.map(n=>
+    banked.includes(n)
+      ? '<span class="slot filled" title="'+KITMAP[n].lab+'">'+KITMAP[n].g+'</span>'
+      : '<span class="slot" aria-label="still needed"></span>').join("");
+  drawPicks();
+}
+function drawPicks(){
+  const p = [...picked];
+  const btn = $("#useKit");
+  btn.disabled = !p.length;
+  btn.textContent = p.length ? "Use the kit (" + p.length + ")" : "Use the kit";
+  $("#scenePicks").innerHTML = p.length
+    ? "Taking in: <b>" + p.map(t=>KITMAP[t].lab).join(", ") + "</b>"
+    : "Tap everything you want to take — you can pick as many as you like.";
+}
+function toggleTool(tool, btn){
+  if(!active) return;
+  if(picked.has(tool)){ picked.delete(tool); btn.classList.remove("sel"); }
+  else { picked.add(tool); btn.classList.add("sel"); sfx.tap(); }
+  drawPicks();
+}
+function useKit(){
+  // once secured, the same button carries them to the shelter — no timed
+  // auto-advance, so nobody gets yanked off the page mid-sentence
+  if(rescueDone){ rescueDone = false; startCare(); return; }
+  if(!active || !picked.size) return;
+  const took    = [...picked];
+  const helped  = needs.filter(n=>took.includes(n) && !banked.includes(n));
+  const spare   = took.filter(t=>!needs.includes(t));
+
+  // bank what worked, and light those keys green for good
+  helped.forEach(n=>banked.push(n));
+  document.querySelectorAll(".key").forEach(k=>{
+    k.classList.remove("sel");
+    if(banked.includes(k.dataset.tool)) k.classList.add("done");
+    else if(spare.includes(k.dataset.tool)){
+      k.classList.add("wrong");
+      setTimeout(()=>k.classList.remove("wrong"), 400);
+    }
+  });
+  picked.clear();
+
+  // narrate: what each useful thing did, then what stayed in the bag
+  const lines = helped.map(n=>active.steps[needs.indexOf(n)].win);
+  if(spare.length === 1){
+    lines.push(missHints[spare[0]] || "The " + KITMAP[spare[0]].lab.toLowerCase() + " goes straight back in the bag — not this job.");
+  } else if(spare.length > 1 && spare.length <= 3){
+    lines.push("You get " + names(spare) + " out too, but none of it is what this needs.");
+  } else if(spare.length > 3){
+    lines.push("You tip out half the kit. Most of it goes back in.");
+  }
+
+  const fx = $("#toolfx");
+  if(helped.length){
+    sfx.good();
+    fx.textContent = KITMAP[helped[0]].g;
+    fx.classList.remove("play"); void fx.offsetWidth; fx.classList.add("play");
+    const fg = $("#scenefg");
+    if(fg && banked.includes(needs[FG_CLEARS_AFTER[active.kind]]))
+      setTimeout(()=>fg.classList.add("off"), 380);
+  } else {
+    sfx.bad();
+  }
+  $("#sceneFeed").className = "feedback " + (helped.length ? "good" : "bad");
+  $("#sceneFeed").textContent = lines.join(" ");
+  // keep the newest line in view — the panel scrolls once the story gets long
+  const body = document.querySelector("#v-scene .side-body");
+  if(body) body.scrollTop = body.scrollHeight;
+
+  const done = banked.length === needs.length;
+  if(!done){
+    drawScene();
+    if(helped.length && active.kind === "high"){
+      const box = $("#critterbox");
+      box.style.top = "44%"; box.style.left = "36%"; box.style.width = "30%";
+    }
+    return;
+  }
+  // rescued
+  $("#sceneTrayLab").textContent = "Everything this job needed";
+  $("#sceneTray").innerHTML = needs.map(n=>'<span class="slot filled">'+KITMAP[n].g+'</span>').join("");
+  $("#scenePicks").textContent = "";
+  $("#useKit").disabled = true;
+  $("#useKit").textContent = "Securing…";
+  setTimeout(()=>{
+    $("#sceneAsk").className = "ask done";
+    $("#sceneAsk").textContent = "Secured. They're safe in the van.";
+    sfx.win();
+    const box = $("#critterbox");
+    box.style.top = "44%"; box.style.left = "34%"; box.style.width = "32%";
+    rescueDone = true;
+    $("#useKit").disabled = false;
+    $("#useKit").textContent = "Drive to Fernbrook";
+    $("#useKit").classList.add("go");
+  }, 1400);
+}
+$("#useKit").addEventListener("click", useKit);
+
+/* ============================================================
+   SHELTER CARE — six stations
+   ============================================================ */
+const STATIONS = ["brush","check","bugs","bath","meal","bed"];
+
+function startCare(){
+  station = 0;
+  reseed(active.id + ":name");
+  careState = {
+    name: active.names[Math.floor(rnd()*active.names.length)],
+    bed: null, fixed:[], nameIdx:0
+  };
+  $("#carestage").innerHTML =
+    '<div class="brush" id="brush">🧽</div>' +
+    '<div class="carecritter" id="carecritter">'+critter(active,{})+'</div>';
+  go("care");
+  drawStation();
+}
+function stageEl(){ return $("#carestage"); }
+function addSpot(cls, x, y, size, extra){
+  const d = document.createElement(extra && extra.button ? "button" : "div");
+  d.className = "spot " + cls;
+  d.style.left = x+"%"; d.style.top = y+"%";
+  d.style.width = size+"px"; d.style.height = size+"px";
+  if(extra && extra.html) d.innerHTML = extra.html;
+  if(extra && extra.button) d.type = "button";
+  stageEl().appendChild(d);
+  return d;
+}
+/* Scatter n points across a box, keeping them far enough apart that their
+   number badges never overlap — an unreadable number can't be called out. */
+function spread(n, x0, x1, y0, y1, minD){
+  const pts = [];
+  for(let i=0;i<n;i++){
+    let best = null, bestGap = -1;
+    for(let t=0;t<60;t++){
+      const p = {x: x0 + rnd()*(x1-x0), y: y0 + rnd()*(y1-y0)};
+      let gap = Infinity;
+      pts.forEach(q=>{
+        const dx = p.x-q.x, dy = (p.y-q.y)*0.85;
+        gap = Math.min(gap, Math.sqrt(dx*dx+dy*dy));
+      });
+      if(gap >= minD){ best = p; break; }
+      if(gap > bestGap){ bestGap = gap; best = p; }   // keep the roomiest try
+    }
+    pts.push(best);
+  }
+  return pts;
+}
+function clearSpots(){
+  stageEl().querySelectorAll(".spot,.bowl,.bedart,.zzz,.sparkle").forEach(n=>n.remove());
+  stageEl().classList.remove("scrub");
+}
+function setDots(){
+  $("#careDots").innerHTML = STATIONS.map((_,i)=>
+    '<i class="'+(i<station?"ok":(i===station?"on":""))+'"></i>').join("");
+}
+function ready(on, label){
+  const b = $("#careNext");
+  b.disabled = !on;
+  b.textContent = label || (station === STATIONS.length-1 ? "Tuck in" : "Next");
+}
+function sparkle(x,y){
+  const s = document.createElement("div");
+  s.className = "sparkle"; s.textContent = "✨";
+  s.style.left = x+"%"; s.style.top = y+"%";
+  stageEl().appendChild(s);
+  setTimeout(()=>s.remove(), 1100);
+}
+
+/* --- pointer scrubbing shared by brush + bath --- */
+let scrubHandler = null;
+function enableScrub(glyph, onHit){
+  const stage = stageEl();
+  stage.classList.add("scrub");
+  $("#brush").textContent = glyph;
+  scrubHandler = ev=>{
+    const r = stage.getBoundingClientRect();
+    if(!r.width || !r.height) return;
+    const px = ((ev.clientX - r.left) / r.width) * 100;
+    const py = ((ev.clientY - r.top) / r.height) * 100;
+    const br = $("#brush");
+    br.style.left = px+"%"; br.style.top = py+"%";
+    // a tap does the whole job in one go, so someone can just say "that one"
+    // and whoever holds the mouse clicks it; dragging still works too
+    onHit(px, py, ev.type === "pointerdown");
+  };
+  stage.addEventListener("pointermove", scrubHandler);
+  stage.addEventListener("pointerdown", scrubHandler);
+}
+function disableScrub(){
+  const stage = stageEl();
+  if(scrubHandler){
+    stage.removeEventListener("pointermove", scrubHandler);
+    stage.removeEventListener("pointerdown", scrubHandler);
+    scrubHandler = null;
+  }
+  stage.classList.remove("scrub");
+}
+
+function drawStation(){
+  clearSpots(); disableScrub();
+  setDots();
+  reseed(active.id + ":" + station);
+  const c = active, cs = c.care;
+  const ctl = $("#careCtl");
+  ctl.innerHTML = "";
+  ctl.onclick = null;
+  const nm = careState.name;
+
+  // whose turn is it at this station
+  const who = crewFor(station), turnEl = $("#careTurn");
+  if(who){ turnEl.hidden = false; turnEl.innerHTML = '<span>Up next</span>' + escapeHTML(who); }
+  else { turnEl.hidden = true; }
+  $("#careStep").textContent = "Fernbrook · Station " + (station+1) + " of " + STATIONS.length;
+
+  if(STATIONS[station] === "brush"){
+    $("#careTitle").textContent = "Brush off the "+cs.dirt;
+    $("#careHint").textContent = "Before anything else, the loose dirt has to come off. Tap each patch, or drag the brush across them.";
+    ctl.innerHTML = '<div class="meter"><b id="m1"></b></div>';
+    ready(false);
+    const blobs = spread(cs.dirtN, 32, 72, 32, 74, 13).map(p=>{
+      const size = 22 + rnd()*13;
+      return {el: addSpot("dirt "+cs.dirt, p.x, p.y, size),
+              x:p.x, y:p.y, r:size/2, life:3, t:0};
+    });
+    let cleared = 0;
+    enableScrub("🪥", (px,py,tap)=>{
+      const now = performance.now();
+      blobs.forEach(b=>{
+        if(b.life <= 0) return;
+        const dx = px-b.x, dy = (py-b.y)*0.7;
+        if(Math.sqrt(dx*dx+dy*dy) < (tap ? 9 : 7) && (tap || now - b.t > 70)){
+          b.t = now; b.life = tap ? 0 : b.life - 1;
+          b.el.style.opacity = (b.life/3*0.85).toFixed(2);
+          b.el.style.transform = "translate(-50%,-50%) scale("+(0.5+b.life/6)+")";
+          if(b.life <= 0){
+            cleared++; sfx.pop(); sparkle(b.x, b.y); b.el.remove();
+            $("#m1").style.width = Math.round(cleared/blobs.length*100)+"%";
+            if(cleared === blobs.length){
+              disableScrub();
+              $("#careHint").textContent = "Coat clear. You can see what you're dealing with now.";
+              ready(true); sfx.good();
+            }
+          }
+        }
+      });
+    });
+  }
+
+  else if(STATIONS[station] === "check"){
+    $("#careTitle").textContent = "Health check";
+    $("#careHint").textContent = "Go over them nose to tail. Tap anything that doesn't look right and treat it.";
+    ctl.innerHTML = '<div class="found" id="foundList"></div>';
+    ready(false);
+    careState.fixed = [];
+    cs.ails.forEach((a,i)=>{
+      const el = addSpot("ail", a.x, a.y, 34, {button:true});
+      el.setAttribute("aria-label","Check this spot");
+      el.addEventListener("click", ()=>{
+        if(el.classList.contains("fixed")) return;
+        el.classList.add("fixed"); el.textContent = a.fix;
+        careState.fixed.push(a.found);
+        sfx.pop(); sparkle(a.x, a.y-6);
+        $("#foundList").innerHTML = careState.fixed.map(f=>'<span class="chip">'+f+' ✓</span>').join("");
+        if(careState.fixed.length === cs.ails.length){
+          $("#careHint").textContent = "Everything found is treated. Nothing here that won't mend.";
+          ready(true); sfx.good();
+        }
+      });
+    });
+  }
+
+  else if(STATIONS[station] === "bugs"){
+    $("#careTitle").textContent = "Check for passengers";
+    $("#careHint").textContent = "Every animal that comes in gets checked for fleas, ticks and mites. Tap each one you spot — they move, so look carefully.";
+    ctl.innerHTML = '<div class="found"><span class="chip warn" id="bugCount">'+cs.bugs+' to find</span></div>';
+    ready(false);
+    let left = cs.bugs;
+    const bugPts = spread(cs.bugs, 32, 72, 32, 74, 16);
+    for(let i=0;i<cs.bugs;i++){
+      let x = bugPts[i].x, y = bugPts[i].y;
+      const el = addSpot("bug", x, y, 26, {button:true, html:BUGART[cs.bugKind]||"🐜"});
+      el.setAttribute("aria-label","Remove parasite");
+      const drift = setInterval(()=>{
+        if(window.__roomSeed) return;   /* in a room they hold still, so both screens match */
+        x += (Math.random()-0.5)*7; y += (Math.random()-0.5)*6;
+        x = Math.max(26, Math.min(74, x)); y = Math.max(28, Math.min(78, y));
+        el.style.left = x+"%"; el.style.top = y+"%";
+      }, 620);
+      el.addEventListener("click", ()=>{
+        if(el.classList.contains("gone")) return;
+        clearInterval(drift);
+        el.classList.add("gone"); sfx.pop();
+        left--;
+        $("#bugCount").textContent = left ? left+" to find" : "all clear ✓";
+        if(!left){
+          $("#bugCount").className = "chip";
+          $("#careHint").textContent = "All of them out and in the jar. Now for the bath.";
+          ready(true); sfx.good();
+        }
+      });
+    }
+  }
+
+  else if(STATIONS[station] === "bath"){
+    $("#careTitle").textContent = "Bath time";
+    $("#careHint").textContent = "Warm water, gentle soap. Tap all over to work up a lather, then rinse.";
+    ctl.innerHTML = '<div class="meter"><b id="m2"></b></div>'+
+      '<div class="found" style="margin-top:8px"><span class="chip warn" id="bathTag">washing off '+cs.bath+'</span></div>';
+    ready(false);
+    let suds = 0, rinsed = false;
+    const buds = [];
+    enableScrub("🧼", (px,py,tap)=>{
+      if(rinsed || suds >= 100) return;
+      if(px < 26 || px > 76 || py < 26 || py > 80) return;   // on the animal
+      suds = Math.min(100, suds + (tap ? 13 : 1.4));         // ~8 taps, or keep scrubbing
+      $("#m2").style.width = suds+"%";
+      for(let k=0; k < (tap ? 5 : 1); k++){
+        if(buds.length < 44 && (tap || rnd() < .5))
+          buds.push(addSpot("sud", px+(rnd()-.5)*13, py+(rnd()-.5)*13, 8+rnd()*11));
+      }
+      if(tap) sfx.pop();
+      if(suds < 100) return;
+      {
+        disableScrub();
+        $("#careHint").textContent = "Covered in suds. Time to rinse.";
+        const btn = document.createElement("button");
+        btn.className = "btn go"; btn.type = "button"; btn.textContent = "Rinse and dry";
+        btn.style.marginTop = "10px"; btn.style.width = "100%";
+        ctl.appendChild(btn);
+        btn.addEventListener("click", ()=>{
+          rinsed = true; btn.remove();
+          buds.forEach((b,i)=>setTimeout(()=>b.remove(), i*22));
+          setTimeout(()=>{
+            [40,52,64].forEach((x,i)=>setTimeout(()=>sparkle(x, 36+i*8), i*160));
+            $("#bathTag").className = "chip"; $("#bathTag").textContent = cs.bath+" gone ✓";
+            $("#careHint").textContent = "Clean, dry and about half the size they looked when they came in.";
+            ready(true); sfx.win();
+          }, 700);
+        });
+        sfx.good();
+      }
+    });
+  }
+
+  else if(STATIONS[station] === "meal"){
+    $("#careTitle").textContent = "Food and water";
+    $("#careHint").textContent = "First meal in days for most of them. Food first, then fresh water.";
+    ctl.innerHTML =
+      '<div class="choices" style="grid-template-columns:repeat(2,1fr)">'+
+      '<button class="choice" type="button" data-give="food"><span class="g">🍲</span><span class="n">Food bowl</span></button>'+
+      '<button class="choice" type="button" data-give="water"><span class="g">💧</span><span class="n">Water bowl</span></button>'+
+      '</div><div class="found" id="mealDone" style="margin-top:10px"></div>';
+    ready(false);
+    const gave = {};
+    ctl.onclick = e=>{
+      const b = e.target.closest("[data-give]"); if(!b) return;
+      const kind = b.dataset.give;
+      if(gave[kind]) return;
+      gave[kind] = true;
+      b.style.opacity = ".45"; b.style.pointerEvents = "none";
+      const bowl = document.createElement("div");
+      bowl.className = "bowl";
+      bowl.textContent = kind === "food" ? "🍲" : "💧";
+      bowl.style.left = (kind === "food" ? 34 : 66) + "%";
+      bowl.style.top = "80%";
+      stageEl().appendChild(bowl);
+      sfx.pop();
+      const cc = $("#carecritter");
+      cc.style.transition = "transform .15s ease-in-out";
+      let n = 0;
+      const munch = setInterval(()=>{
+        cc.style.transform = "translate(-50%,-50%) translateY("+(n%2?6:0)+"px)";
+        n++;
+        if(n > 5){
+          clearInterval(munch);
+          cc.style.transform = "";
+          cc.style.transition = "";
+          bowl.classList.add("empty");
+          sparkle(kind === "food" ? 34 : 66, 72);
+          $("#mealDone").innerHTML =
+            (gave.food  ? '<span class="chip">ate everything ✓</span>' : '') +
+            (gave.water ? '<span class="chip">drank it all ✓</span>' : '');
+          if(gave.food && gave.water){
+            $("#careHint").textContent = "Full up and much brighter. One thing left.";
+            ready(true); sfx.good();
+          }
+        }
+      }, 190);
+    };
+  }
+
+  else if(STATIONS[station] === "bed"){
+    $("#careTitle").textContent = "Somewhere to sleep";
+    $("#careHint").textContent = "Pick a bed, give them a name for the board, and tuck them in.";
+    ctl.innerHTML =
+      '<div class="choices" id="bedPick">'+
+        BEDS.map(b=>'<button class="choice" type="button" data-bed="'+b.id+'"><span class="g">'+b.g+'</span><span class="n">'+b.n+'</span></button>').join("")+
+      '</div>'+
+      '<div style="margin-top:12px">'+
+        '<div class="where mono" style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px">Name for the board</div>'+
+        '<div class="namer"><input id="nameIn" value="'+nm+'" maxlength="18" aria-label="Name this animal">'+
+        '<button class="dice" id="dice" type="button" title="Another name">🎲</button></div>'+
+      '</div>';
+    ready(false, "Tuck in");
+    $("#dice").addEventListener("click", ()=>{
+      careState.nameIdx = (careState.nameIdx+1) % active.names.length;
+      $("#nameIn").value = active.names[careState.nameIdx];
+      sfx.pop();
+    });
+    $("#bedPick").addEventListener("click", e=>{
+      const b = e.target.closest("[data-bed]"); if(!b) return;
+      careState.bed = b.dataset.bed;
+      [].forEach.call($("#bedPick").children, el=>{
+        el.style.boxShadow = el === b ? "0 0 0 2px var(--flare) inset" : "";
+      });
+      stageEl().querySelectorAll(".bedart,.zzz").forEach(n=>n.remove());
+      const art = document.createElement("div");
+      art.className = "bedart";
+      art.textContent = BEDS.find(x=>x.id===careState.bed).g;
+      stageEl().appendChild(art);
+      const cc = $("#carecritter");
+      cc.innerHTML = critter(active, {closed:true});
+      cc.classList.add("sleep");
+      const z = document.createElement("div");
+      z.className = "zzz"; z.textContent = "z z z";
+      stageEl().appendChild(z);
+      sfx.snore();
+      $("#careHint").textContent = "Warm, fed, safe and fast asleep. That's the whole job.";
+      ready(true, "Tuck in");
+    });
+  }
+}
+
+$("#careNext").addEventListener("click", ()=>{
+  if(station < STATIONS.length-1){
+    station++; sfx.tap(); drawStation();
+  } else {
+    const nameEl = $("#nameIn");
+    const name = (nameEl && nameEl.value.trim()) || careState.name;
+    S.done[active.id] = {
+      name: name,
+      bed: careState.bed || "basket",
+      found: careState.fixed.slice(),
+      where: active.where
+    };
+    save(); sfx.win();
+    renderRoster(); go("roster");
+  }
+});
+
+/* ============================================================
+   ROSTER
+   ============================================================ */
+function renderRoster(){
+  const rescued = CALLS.filter(c=>S.done[c.id]);
+  const all = rescued.length === CALLS.length;
+  let html = "";
+  if(all){
+    html += '<div class="finale"><h3>Every call closed</h3>'+
+      '<p>Ten animals came in off the map and ten are asleep in the back room. Fernbrook is full.</p></div>';
+  }
+  if(!rescued.length){
+    html += '<div class="empty-roster">No animals in yet. Answer a call on the map and bring the first one home.</div>';
+  }
+  html += rescued.map(c=>{
+    const d = S.done[c.id];
+    const bed = BEDS.find(b=>b.id===d.bed) || BEDS[0];
+    return '<div class="card"><div class="art">'+critter(c,{closed:true})+
+      '<span class="bd" aria-hidden="true">'+bed.g+'</span></div>'+
+      '<div class="nm">'+escapeHTML(d.name)+'</div>'+
+      '<div class="sp mono">'+c.species+'</div>'+
+      '<div class="tg">Brought in from '+c.where+'. '+
+        (d.found.length ? d.found[0].toLowerCase()+", treated." : "Checked over, all clear.")+'</div></div>';
+  }).join("");
+  $("#rosterGrid").innerHTML = html;
+  tallyUp();
+}
+function escapeHTML(s){
+  return String(s).replace(/[&<>"']/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+}
+$("#newShift").addEventListener("click", function(){
+  if(this.dataset.armed !== "1"){
+    this.dataset.armed = "1"; this.textContent = "Clear the board?";
+    setTimeout(()=>{ this.dataset.armed = "0"; this.textContent = "New shift"; }, 4000);
+    return;
+  }
+  S.done = {}; save();
+  this.dataset.armed = "0"; this.textContent = "New shift";
+  renderRoster(); renderMap(); callIn();
+});
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+/* The pager always starts ringing — a returning shift gets a new call, not a
+   silent map. Progress is still remembered; the wording just changes. */
+function callIn(){
+  const done = Object.keys(S.done).length, open = CALLS.length - done;
+  const sub = $("#callSub"), tap = $("#callTap");
+  if(!done){
+    sub.textContent = "Ten calls came in overnight. Pick up your pager and go get them.";
+    tap.textContent = "Tap the pager to answer";
+  } else if(open){
+    sub.textContent = open + (open===1 ? " call is" : " calls are") + " still open. " +
+      done + (done===1 ? " animal is" : " animals are") + " already asleep at Fernbrook.";
+    tap.textContent = "Tap the pager to answer";
+  } else {
+    sub.textContent = "Every call is closed and all ten are safe. Dispatch is just checking in.";
+    tap.textContent = "Tap the pager to look in on them";
+  }
+  pager.setAttribute("data-state", "idle");
+  screen.setAttribute("data-view", "call");
+  $("#kit").setAttribute("data-live", "0");
+  startRinging();
+}
+function answer(){
+  stopRinging();
+  sfx.pickup();
+  pager.setAttribute("data-state", "on");
+  renderMap();
+  go("map");
+  setTimeout(()=>sfx.win(), 180);
+}
+$("#v-call").addEventListener("click", answer);
+$("#v-call").addEventListener("keydown", e=>{
+  if(e.key === "Enter" || e.key === " "){ e.preventDefault(); answer(); }
+});
+$("#sound").addEventListener("click", function(){
+  S.sound = !S.sound; save();
+  this.setAttribute("aria-pressed", S.sound ? "true" : "false");
+  this.textContent = S.sound ? "🔊" : "🔇";
+  if(!S.sound) stopRinging();
+  else if(pager.getAttribute("data-state") === "idle") startRinging();
+  else sfx.tap();
+});
+$("#sound").setAttribute("aria-pressed", S.sound ? "true" : "false");
+$("#sound").textContent = S.sound ? "🔊" : "🔇";
+
+renderMap();
+callIn();
+})();
+</script>
+
+<script>
+/* ============================================================
+   PLAY TOGETHER
+   Sits beside the game and never reaches into it. Every click and every
+   tap on the care stage is described as a position in the page and sent
+   to the other computer, which performs the same action. Both sides run
+   the real game; neither is watching the other's screen.
+
+   If nothing connects, the game is exactly as it was. That is deliberate —
+   a squad call must never be wrecked by a relay having a bad day.
+   ============================================================ */
+(function(){
+"use strict";
+var RELAY = "wss://broker.emqx.io:8084/mqtt";   // free, no account — for trying it out
+var code = null, bc = null, sock = null, busy = false, peers = 0, state = "off";
+
+var btn  = document.getElementById("roomBtn");
+var wrap = document.getElementById("roomWrap");
+var card = document.getElementById("roomCard");
+
+function newCode(){
+  var L = "BCDFGHJKLMNPRSTVWXZ", s = "";
+  for(var i=0;i<4;i++) s += L[Math.floor(Math.random()*L.length)];
+  return s;
+}
+/* where an element sits in the page, as a list of child positions */
+function pathOf(el){
+  var p = [];
+  while(el && el !== document.body){
+    var par = el.parentNode; if(!par) return null;
+    p.push(Array.prototype.indexOf.call(par.childNodes, el));
+    el = par;
+  }
+  return p.reverse();
+}
+function nodeAt(p){
+  var el = document.body;
+  for(var i=0;i<p.length;i++){
+    if(!el || !el.childNodes) return null;
+    el = el.childNodes[p[i]];
+  }
+  return el;
+}
+
+function send(msg){
+  if(!code) return;
+  msg.room = code;
+  var raw = JSON.stringify(msg);
+  try{ if(bc) bc.postMessage(raw); }catch(e){}
+  try{ if(sock && sock.readyState === 1) sock.send(raw); }catch(e){}
+}
+function receive(raw){
+  var m; try{ m = JSON.parse(raw); }catch(e){ return; }
+  if(!m || m.room !== code) return;
+  if(m.t === "hello"){ peers = 1; paint(); send({t:"here"}); return; }
+  if(m.t === "here"){ peers = 1; paint(); return; }
+  busy = true;
+  try{
+    if(m.t === "click"){
+      var el = nodeAt(m.p);
+      if(el && el.click) el.click();
+    } else if(m.t === "point"){
+      var stage = document.getElementById("carestage");
+      if(stage){
+        var r = stage.getBoundingClientRect();
+        stage.dispatchEvent(new PointerEvent("pointerdown", {
+          clientX: r.left + r.width  * m.x / 100,
+          clientY: r.top  + r.height * m.y / 100,
+          bubbles: true
+        }));
+      }
+    } else if(m.t === "type"){
+      var t = nodeAt(m.p);
+      if(t && "value" in t) t.value = m.v;
+    }
+  }catch(e){}
+  setTimeout(function(){ busy = false; }, 25);
+}
+
+/* --- outbound --- */
+document.addEventListener("click", function(ev){
+  if(!code || busy) return;
+  if(ev.target.closest && ev.target.closest("#roomWrap, #roomBtn")) return;
+  var p = pathOf(ev.target);
+  if(p) send({t:"click", p:p});
+}, true);
+
+document.addEventListener("pointerdown", function(ev){
+  if(!code || busy) return;
+  var stage = document.getElementById("carestage");
+  if(!stage || !stage.contains(ev.target)) return;
+  var r = stage.getBoundingClientRect();
+  if(!r.width || !r.height) return;
+  send({t:"point",
+        x:((ev.clientX - r.left)/r.width)*100,
+        y:((ev.clientY - r.top)/r.height)*100});
+}, true);
+
+document.addEventListener("input", function(ev){
+  if(!code || busy) return;
+  if(!ev.target || !("value" in ev.target)) return;
+  var p = pathOf(ev.target);
+  if(p) send({t:"type", p:p, v:ev.target.value});
+}, true);
+
+/* --- connect --- */
+function connect(c){
+  code = c;
+  window.__roomSeed = "room:" + c;          // both screens lay out identically
+  try{ bc = new BroadcastChannel("fernbrook-" + c); bc.onmessage = function(e){ receive(e.data); }; }catch(e){}
+  state = "connecting"; paint();
+  try{
+    sock = new WebSocket(RELAY, ["mqtt"]);
+    sock.onopen    = function(){ state = "open"; paint(); send({t:"hello"}); };
+    sock.onmessage = function(e){ receive(typeof e.data === "string" ? e.data : ""); };
+    sock.onerror   = function(){ state = "blocked"; paint(); };
+    sock.onclose   = function(){ if(state !== "blocked") state = "closed"; paint(); };
+  }catch(e){ state = "blocked"; paint(); }
+  setTimeout(function(){ if(state === "connecting"){ state = "blocked"; paint(); } }, 7000);
+  btn.dataset.on = "1";
+  send({t:"hello"});
+}
+function leave(){
+  try{ if(bc) bc.close(); }catch(e){}
+  try{ if(sock) sock.close(); }catch(e){}
+  bc = sock = null; code = null; peers = 0; state = "off";
+  delete window.__roomSeed;
+  btn.dataset.on = "0";
+  btn.textContent = "Play together";
+  wrap.classList.remove("on");
+}
+
+function statusLine(){
+  if(state === "open")    return peers ? "<b>Connected — they're in.</b>" : "Waiting for them to join&hellip;";
+  if(state === "blocked") return "<i>This network is blocking the connection.</i> Same-computer play still works.";
+  if(state === "connecting") return "Connecting&hellip;";
+  return "";
+}
+function paint(){
+  if(code) btn.textContent = "Room " + code + (peers ? " · 2" : " · 1");
+  var s = document.getElementById("roomStatus");
+  if(s) s.innerHTML = statusLine();
+}
+
+function open(){
+  if(code){
+    card.innerHTML =
+      '<div class="eyebrow mono">Playing together</div><h2>Room ' + code + '</h2>' +
+      '<p>They type this code into the same link. Close the room to go back to playing on your own.</p>' +
+      '<div class="codebox">' + code + '</div>' +
+      '<div class="status" id="roomStatus"></div>' +
+      '<div class="row"><button class="btn ghost" data-r="close" style="flex:1">Back to the game</button>' +
+      '<button class="btn" data-r="leave">Close the room</button></div>';
+  } else {
+    card.innerHTML =
+      '<div class="eyebrow mono">Playing together</div><h2>Two computers, one game</h2>' +
+      '<p>Start a room and read out the code. Whoever types it in plays with you, from their own laptop.</p>' +
+      '<div class="row"><button class="btn" data-r="host" style="flex:1">Start a room</button></div>' +
+      '<div class="joinrow"><input id="joinCode" maxlength="4" placeholder="CODE" aria-label="Room code">' +
+      '<button class="btn ghost" data-r="join">Join</button></div>' +
+      '<div class="status" id="roomStatus"></div>' +
+      '<div class="row"><button class="btn ghost" data-r="close" style="flex:1">Not now</button></div>';
+  }
+  wrap.classList.add("on");
+  paint();
+}
+btn.addEventListener("click", open);
+/* the same door from the map, where she actually looks */
+var mapBtn = document.getElementById("toRoom");
+if(mapBtn) mapBtn.addEventListener("click", open);
+wrap.addEventListener("click", function(ev){
+  if(ev.target === wrap){ wrap.classList.remove("on"); return; }
+  var b = ev.target.closest("button"); if(!b) return;
+  var r = b.dataset.r;
+  if(r === "close") wrap.classList.remove("on");
+  else if(r === "leave") leave();
+  else if(r === "host"){ connect(newCode()); open(); }
+  else if(r === "join"){
+    var v = (document.getElementById("joinCode").value || "").toUpperCase().replace(/[^A-Z]/g,"");
+    if(v.length === 4){ connect(v); open(); }
+  }
+});
+})();
+</script>
+
+</body></html>
