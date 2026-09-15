@@ -1,0 +1,1945 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style></head><body>
+<title>The Clover Hollow Case Files</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bevan&family=Nunito:wght@400;600;700;900&family=Special+Elite&display=swap">
+<style>
+:root{
+  --soil:#2B2028; --soil-deep:#1B1319; --soil-lift:#3A2C34;
+  --lamp:#F5B942; --lamp-dim:#B9822A; --lamp-ghost:rgba(245,185,66,.13);
+  --paper:#F3EDDF; --paper-edge:#E2D9C3; --paper-shade:#EAE2CF;
+  --ink:#332630; --ink-soft:#6B5A64;
+  --clover:#79A257; --clover-deep:#4E7136; --clover-ghost:rgba(121,162,87,.16);
+  --velvet:#C26F8A; --berry:#C0453E; --berry-ghost:rgba(192,69,62,.14);
+  --ff-display:'Bevan',Georgia,serif;
+  --ff-body:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --ff-mono:'Special Elite','Courier New',monospace;
+  --r:16px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--soil-deep);
+  background-image:
+    radial-gradient(120% 80% at 50% -10%, #4A3742 0%, rgba(74,55,66,0) 62%),
+    radial-gradient(70% 50% at 50% 108%, #221A20 0%, rgba(34,26,32,0) 70%);
+  color:var(--paper); font-family:var(--ff-body); font-size:18px; line-height:1.55;
+  min-height:100vh; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+.lamp-drift{animation:drift 24s ease-in-out infinite alternate}
+@keyframes drift{from{transform:translate3d(-.8%,-.5%,0)}to{transform:translate3d(.8%,.8%,0)}}
+.shake{animation:sh .32s}
+@keyframes sh{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important}}
+:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+
+.wrap{max-width:1080px;margin:0 auto;padding:20px 18px 80px}
+.crest{display:flex;align-items:center;gap:15px;flex-wrap:wrap}
+.crest-lamp{width:50px;height:50px;flex:0 0 auto;border-radius:50%;
+  background:radial-gradient(circle at 38% 34%, #FFE7A8 0%, var(--lamp) 44%, var(--lamp-dim) 100%);
+  box-shadow:0 0 0 5px var(--lamp-ghost), 0 0 44px 12px rgba(245,185,66,.2)}
+h1{font-family:var(--ff-display);font-weight:400;font-size:clamp(26px,4.4vw,42px);line-height:1.03;
+  margin:0;letter-spacing:.005em;text-wrap:balance}
+h1 em{font-style:normal;color:var(--lamp);display:block;font-size:.62em}
+.mono{font-family:var(--ff-mono);font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--lamp)}
+.stage-title{font-family:var(--ff-display);font-weight:400;font-size:clamp(21px,3vw,30px);line-height:1.15;margin:6px 0 10px}
+h3{font-family:var(--ff-display);font-weight:400;font-size:21px;margin:0 0 10px;color:var(--paper)}
+
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 20px}
+.tab{font:inherit;font-weight:700;font-size:15px;padding:9px 16px;border-radius:999px;cursor:pointer;
+  background:var(--soil-lift);color:var(--paper);border:2px solid rgba(243,237,223,.16)}
+.tab.on{background:var(--lamp);color:var(--soil-deep);border-color:var(--lamp)}
+.tab.ghost{background:transparent;color:var(--ink-soft);border-color:rgba(243,237,223,.14)}
+
+.btn{font:inherit;font-weight:800;font-size:16px;padding:12px 22px;border-radius:999px;cursor:pointer;
+  background:var(--lamp);color:var(--soil-deep);border:none;box-shadow:0 3px 0 var(--lamp-dim)}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--lamp-dim)}
+.btn.big{font-size:18px;padding:14px 28px}
+.btn.ghost{background:transparent;color:var(--paper);border:2px solid rgba(243,237,223,.28);box-shadow:none}
+.btn.green{background:var(--clover);color:#12200C;box-shadow:0 3px 0 var(--clover-deep)}
+.btn[disabled]{opacity:.42;cursor:default;box-shadow:none}
+
+.paper{background:var(--paper);color:var(--ink);border-radius:var(--r);padding:20px 20px 22px;
+  box-shadow:0 16px 34px rgba(0,0,0,.34);border:1px solid var(--paper-edge)}
+.paper .mono{color:var(--lamp-dim)}
+.paper h3,.paper .stage-title{color:var(--ink)}
+.hint{color:var(--ink-soft);font-size:16px;margin:.2em 0 1em}
+
+/* ---------- case files ---------- */
+.files{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.file{background:var(--paper);color:var(--ink);border-radius:var(--r);padding:16px 17px;text-align:left;
+  border:1px solid var(--paper-edge);cursor:pointer;font:inherit;box-shadow:0 10px 22px rgba(0,0,0,.28)}
+.file:hover{transform:translateY(-2px)}
+.file.shut{background:var(--soil-lift);color:var(--ink-soft);border-color:rgba(243,237,223,.12);cursor:default}
+.file.shut:hover{transform:none}
+.file b{display:block;font-family:var(--ff-display);font-weight:400;font-size:20px;line-height:1.2;margin:5px 0 6px;color:var(--ink)}
+.file.shut b{color:var(--paper)}
+.file small{display:block;font-size:15px;line-height:1.42}
+.seal{display:inline-block;font-family:var(--ff-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 9px;border-radius:5px;background:var(--clover-ghost);color:var(--clover-deep);border:1px solid rgba(78,113,54,.34);margin-top:9px}
+.stamp{font-family:var(--ff-mono);font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--lamp);opacity:.82;margin:0 0 2px}
+.al{display:block;font-style:italic;margin-top:6px;font-size:15px}
+
+/* ---------- evidence + options ---------- */
+.evidence{background:var(--paper);color:var(--ink);border-radius:var(--r);padding:18px 19px;
+  border:1px solid var(--paper-edge);border-left:6px solid var(--lamp);box-shadow:0 14px 30px rgba(0,0,0,.3)}
+.evidence p{margin:.35em 0 0;font-size:17.5px}
+.opts{display:grid;gap:9px;margin:16px 0 4px}
+.optrow{display:flex;gap:8px;align-items:stretch}
+.opt{flex:1;display:flex;gap:11px;align-items:center;text-align:left;font:inherit;font-size:17px;cursor:pointer;
+  background:var(--paper);color:var(--ink);border:2px solid var(--paper-edge);border-radius:13px;padding:12px 14px}
+.opt:hover{border-color:var(--lamp)}
+.opt .ltr{flex:0 0 30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--ff-mono);
+  font-size:14px;background:var(--soil-lift);color:var(--lamp)}
+.opt.wrong{background:var(--soil-lift);color:var(--ink-soft);border-color:rgba(192,69,62,.4);text-decoration:line-through}
+.opt.wrong .ltr{background:var(--berry-ghost);color:var(--berry)}
+.opt.right{background:#E9F2DE;border-color:var(--clover-deep);font-weight:800}
+.opt.right .ltr{background:var(--clover-deep);color:#fff}
+.opt.faded{opacity:.4}
+.opt.out{background:transparent;color:var(--ink-soft);border-style:dashed;border-color:rgba(243,237,223,.3);
+  text-decoration:line-through;padding:7px 14px;font-size:15px}
+.opt.out .ltr{height:22px;flex-basis:22px;font-size:12px;background:transparent;border:1px dashed rgba(243,237,223,.4)}
+.opt[disabled]{cursor:default}
+.rule{flex:0 0 62px;font:inherit;cursor:pointer;border-radius:13px;display:grid;place-content:center;gap:1px;
+  background:transparent;color:var(--paper);border:2px dashed rgba(243,237,223,.3)}
+.rule b{font-size:17px;line-height:1}
+.rule small{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;opacity:.8}
+.rule:hover{border-color:var(--lamp);color:var(--lamp)}
+.rule.back{border-style:solid;border-color:var(--lamp);color:var(--lamp)}
+.ruleline{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;
+  margin:12px 0 0;padding:10px 14px;border-radius:12px;background:rgba(243,237,223,.06);border:1px dashed rgba(243,237,223,.22)}
+.ruleline.good{background:var(--clover-ghost);border-color:var(--clover)}
+.ruleline.good .mono{color:var(--clover)}
+.ruleline.bad{background:var(--berry-ghost);border-color:var(--berry)}
+.ruleline.bad .mono{color:#E8908A}
+
+.whisper{margin:14px 0 0;padding:14px 16px;border-radius:13px;background:var(--soil-lift);
+  border:1px solid rgba(243,237,223,.14);font-size:17px}
+.whisper.good{background:var(--clover-ghost);border-color:var(--clover)}
+.whisper .who{display:block;font-family:var(--ff-mono);font-size:12px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--lamp);margin-bottom:4px}
+.footrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+
+.track{display:flex;gap:6px;margin:14px 0 0;flex-wrap:wrap}
+.pip{width:34px;height:6px;border-radius:3px;background:rgba(243,237,223,.16)}
+.pip.done{background:var(--clover)}
+.pip.now{background:var(--lamp)}
+
+/* ---------- bench / gallery ---------- */
+.bench{margin-top:22px}
+.dets{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(168px,1fr))}
+.det{background:var(--paper);color:var(--ink);border-radius:var(--r);padding:12px 10px 14px;text-align:center;
+  border:1px solid var(--paper-edge)}
+.det.off{opacity:.5}
+.det b{display:block;font-size:16.5px;margin-top:4px}
+.det small{display:block;color:var(--ink-soft);font-size:13.5px}
+.det .row{display:flex;gap:6px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+.mini{font:inherit;font-size:12.5px;font-weight:700;padding:5px 10px;border-radius:999px;cursor:pointer;
+  background:var(--soil-lift);color:var(--paper);border:none}
+.addbox{background:var(--paper);color:var(--ink);border-radius:var(--r);padding:15px 16px;border:1px solid var(--paper-edge);margin-top:12px}
+.addbox input{font:inherit;font-size:17px;padding:10px 13px;border-radius:11px;border:2px solid var(--paper-edge);width:100%;max-width:320px;background:#fff;color:var(--ink)}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}
+.chip{font:inherit;font-size:14px;font-weight:700;padding:7px 13px;border-radius:999px;cursor:pointer;
+  background:#fff;color:var(--ink);border:2px solid var(--paper-edge)}
+.chip[aria-pressed="true"]{background:var(--clover);color:#12200C;border-color:var(--clover-deep)}
+.swatch{width:19px;height:19px;border-radius:50%;display:inline-block;vertical-align:-4px;margin-right:7px;border:1px solid rgba(0,0,0,.2)}
+.fieldlabel{font-family:var(--ff-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--lamp-dim);margin:12px 0 2px}
+
+/* ---------- locker ---------- */
+#overlay:empty{display:none}
+.veil{position:fixed;inset:0;z-index:60;background:rgba(20,15,19,.82);display:grid;place-items:start center;
+  overflow:auto;padding:18px 14px 40px}
+.panel{background:var(--paper);color:var(--ink);border-radius:20px;padding:20px;max-width:940px;width:100%;
+  border:1px solid var(--paper-edge);box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.phead{display:flex;gap:14px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.lede{color:var(--ink-soft);font-size:16.5px;margin:.4em 0 1em}
+.locker{display:flex;flex-direction:column;gap:8px}
+.lrow{border-top:1px solid var(--paper-edge);padding-top:11px}
+.lname{font-weight:800;font-size:16.5px;margin-bottom:7px}
+.lname em{font-style:normal;font-weight:600;font-size:13px;color:var(--ink-soft);margin-left:8px}
+.lname em.done{color:var(--clover-deep)}
+.lopts{display:flex;gap:8px;flex-wrap:wrap}
+.lopt{font:inherit;cursor:pointer;background:#fff;border:2px solid var(--paper-edge);border-radius:13px;
+  padding:5px 5px 7px;width:96px;text-align:center;color:var(--ink)}
+.lopt small{display:block;font-size:12px;line-height:1.25;margin-top:2px}
+.lopt[aria-pressed="true"]{border-color:var(--clover-deep);background:#E9F2DE}
+.lopt.fresh{box-shadow:0 0 0 2px var(--lamp)}
+.lopt.owns{border-style:solid;border-color:var(--lamp-dim)}
+.wardrobe{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px;justify-content:center}
+.wchip{font:inherit;font-size:12px;font-weight:700;padding:4px 9px;border-radius:999px;cursor:pointer;
+  background:var(--paper-shade);color:var(--ink);border:1px solid var(--paper-edge)}
+.wchip[aria-pressed="true"]{background:var(--clover);color:#12200C}
+
+.coach{margin-top:22px;background:var(--soil-lift);border-radius:var(--r);border:1px solid rgba(243,237,223,.14);padding:2px 16px}
+.coach summary{cursor:pointer;font-family:var(--ff-mono);font-size:13px;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--lamp);padding:12px 0}
+.cin{padding-bottom:14px;font-size:16.5px}
+.cin p{margin:.5em 0}
+.warn{background:var(--berry-ghost);border:1px solid var(--berry);border-radius:12px;padding:10px 14px;font-size:15.5px}
+.notesbox{font:inherit;font-size:16px;width:100%;min-height:88px;padding:11px 13px;border-radius:12px;
+  border:2px solid var(--paper-edge);background:#fff;color:var(--ink)}
+.scene{width:100%;height:auto;border-radius:13px;display:block;background:var(--soil);border:1px solid rgba(243,237,223,.1)}
+.grid{display:grid;gap:11px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.sus{background:var(--paper);color:var(--ink);border:2px solid var(--paper-edge);border-radius:14px;
+  padding:12px;text-align:left;font:inherit;cursor:pointer}
+.sus:hover{border-color:var(--lamp)}
+.sus b{display:block;font-size:17px}
+.sus small{display:block;color:var(--ink-soft);font-size:14px}
+.sus i{display:block;font-style:italic;margin-top:6px;font-size:15px}
+
+/* ---------- controls sitting ON a cream card need cream-card colours ----------
+   These were inheriting the dark-ground palette, which made the rule-out
+   button, the ruled-out rows and Inspector Bramble's explanation unreadable. */
+.paper .btn.ghost,.panel .btn.ghost{color:var(--ink);border-color:rgba(51,38,48,.3)}
+.paper .btn.ghost:hover,.panel .btn.ghost:hover{border-color:var(--lamp-dim);color:var(--lamp-dim)}
+.paper .rule{color:var(--ink-soft);border-color:rgba(51,38,48,.34)}
+.paper .rule:hover,.paper .rule.back{border-color:var(--lamp-dim);color:var(--lamp-dim)}
+.paper .opt.out{color:var(--ink-soft);border-color:rgba(51,38,48,.3)}
+.paper .opt.out .ltr{border-color:rgba(51,38,48,.42);color:var(--ink-soft)}
+.paper .opt.wrong{background:transparent;color:var(--ink-soft);border-color:rgba(192,69,62,.45)}
+.paper .ruleline{background:rgba(51,38,48,.05);border-color:rgba(51,38,48,.2)}
+.paper .ruleline.good{background:var(--clover-ghost);border-color:var(--clover-deep)}
+.paper .ruleline.good .mono{color:var(--clover-deep)}
+.paper .ruleline.bad{background:var(--berry-ghost);border-color:var(--berry)}
+.paper .ruleline.bad .mono{color:var(--berry)}
+.paper .whisper{background:var(--paper-shade);border-color:var(--paper-edge);color:var(--ink)}
+.paper .whisper .who{color:var(--lamp-dim)}
+.paper .whisper.good{background:#E9F2DE;border-color:var(--clover-deep);color:var(--ink)}
+.paper .whisper.good .who{color:var(--clover-deep)}
+.paper .track .pip{background:rgba(51,38,48,.14)}
+.paper .track .pip.done{background:var(--clover-deep)}
+.paper .track .pip.now{background:var(--lamp-dim)}
+.paper .mini{background:var(--soil-lift);color:var(--paper)}
+
+/* ---------- evidence picture ---------- */
+.evidence.haspic{display:grid;gap:18px;grid-template-columns:minmax(0,300px) minmax(0,1fr);align-items:center}
+.evpic{min-width:0}
+.evpic svg{width:100%;height:auto;display:block;border-radius:12px;border:1px solid rgba(51,38,48,.18);background:#2B2028}
+.evtext{min-width:0}
+.evtext p{margin:.35em 0 0;font-size:17.5px}
+@media (max-width:880px){
+  .evidence.haspic{grid-template-columns:1fr}
+  .evpic svg{max-width:420px;margin:0 auto}
+}
+@media (max-height:860px){
+  .evidence.haspic{grid-template-columns:minmax(0,240px) minmax(0,1fr);gap:15px}
+}
+
+/* ---------- opening picture + case description ---------- */
+.opener{display:grid;gap:20px;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:center;margin-bottom:18px}
+@media (max-width:900px){.opener{grid-template-columns:1fr}}
+.opener .scene{border-radius:14px}
+.opentext{min-width:0}
+.opentext p{margin:.45em 0 0;font-size:17px;color:var(--ink)}
+.opentext .lead{font-weight:800}
+</style>
+
+<div class="wrap">
+  <header class="crest">
+    <div class="crest-lamp" aria-hidden="true"></div>
+    <div>
+      <p class="stamp">Bureau of Small Mysteries</p>
+      <h1>The Clover Hollow Case Files<em>Rabbit Division</em></h1>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab" data-view="files" type="button" onclick="go('files')">Case files</button>
+    <button class="tab" data-view="suspects" type="button" onclick="go('suspects')">Suspects</button>
+    <button class="tab" data-view="notes" type="button" onclick="go('notes')">Case notes</button>
+    <button class="tab" data-view="gallery" type="button" onclick="go('gallery')">The Hollow Irregulars</button>
+    <button class="tab ghost" id="reset" type="button" onclick="armReset()">Start over</button>
+  </nav>
+
+  <main id="stage" aria-live="polite"></main>
+  <p class="warn" id="storewarn" hidden>Nothing is saving in this browser — the burrow will reset when you close the tab.</p>
+</div>
+<div id="overlay"></div>
+
+<script>
+/* ============================ LOOKS ============================ */
+const FUR=[
+ {id:'oat',      name:'Oat',      c:'#E4D6BE', d:'#B9A585', e:'#F2C9D2'},
+ {id:'slate',    name:'Slate',    c:'#9BA6AE', d:'#6E7B84', e:'#F2C9D2'},
+ {id:'cocoa',    name:'Cocoa',    c:'#9A7359', d:'#6E4E3A', e:'#E9B6BE'},
+ {id:'soot',     name:'Soot',     c:'#5A4F58', d:'#3B3238', e:'#D79AA8'},
+ {id:'cream',    name:'Cream',    c:'#F4EADA', d:'#CBBBA1', e:'#F4C3CE'},
+ {id:'cinnamon', name:'Cinnamon', c:'#C88A5C', d:'#96603A', e:'#F0BDC4'}
+];
+const PATS=[
+ {id:'plain',   name:'Plain'},
+ {id:'blaze',   name:'Nose blaze'},
+ {id:'saddle',  name:'Saddle'},
+ {id:'patch',   name:'Eye patch'},
+ {id:'freckles',name:'Freckles'}
+];
+const EYES=[
+ {id:'chestnut',name:'Chestnut',c:'#8A5A34',c2:null},
+ {id:'amber',   name:'Amber',   c:'#F2B84B',c2:null},
+ {id:'moss',    name:'Moss',    c:'#6FA86C',c2:null},
+ {id:'ink',     name:'Ink',     c:'#4A4258',c2:null},
+ {id:'odd',     name:'Odd eyes',c:'#6FA86C',c2:'#8A5A34'}
+];
+/* each case SETS the breed, exactly like Whisker Street */
+const BREEDS=[
+ {id:'lop',     name:'Lop',       ear:'lop',   bodyW:1.06, cheek:1, tail:11},
+ {id:'tufted',  name:'Tufted',    ear:'tuft',  bodyW:1.02, cheek:0, tail:12},
+ {id:'longear', name:'Long ear',  ear:'tall',  bodyW:.96,  cheek:0, tail:9},
+ {id:'dwarf',   name:'Dwarf',     ear:'short', bodyW:1.12, cheek:1, tail:13},
+ {id:'oneup',   name:'One up',    ear:'tilt',  bodyW:1,    cheek:0, tail:11}
+];
+/* ear path sets: [leftOuter, rightOuter, leftInner, rightInner] on a 120x160 canvas */
+const EAR={
+ tall: ['M46 40 Q38 -6 52 -8 Q62 -6 55 40 Z','M74 40 Q82 -6 68 -8 Q58 -6 65 40 Z',
+        'M48.5 36 Q43 2 51.5 0 Q57 2 52.5 36 Z','M71.5 36 Q77 2 68.5 0 Q63 2 67.5 36 Z'],
+ lop:  ['M46 42 Q22 40 14 66 Q10 84 26 84 Q44 78 50 46 Z','M74 42 Q98 40 106 66 Q110 84 94 84 Q76 78 70 46 Z',
+        'M46 46 Q28 46 22 66 Q20 76 29 75 Q41 70 47 49 Z','M74 46 Q92 46 98 66 Q100 76 91 75 Q79 70 73 49 Z'],
+ tuft: ['M46 40 Q38 2 52 0 Q62 2 55 40 Z M48 6 Q42 -8 51 -6 Q55 -2 53 6 Z','M74 40 Q82 2 68 0 Q58 2 65 40 Z M72 6 Q78 -8 69 -6 Q65 -2 67 6 Z',
+        'M48.5 36 Q44 8 51.5 6 Q56 8 52.5 36 Z','M71.5 36 Q76 8 68.5 6 Q64 8 67.5 36 Z'],
+ short:['M47 42 Q42 16 53 14 Q62 16 56 42 Z','M73 42 Q78 16 67 14 Q58 16 64 42 Z',
+        'M49 38 Q46 21 52.5 20 Q57 21 53.5 38 Z','M71 38 Q74 21 67.5 20 Q63 21 66.5 38 Z'],
+ tilt: ['M46 40 Q38 -6 52 -8 Q62 -6 55 40 Z','M74 42 Q98 40 106 66 Q110 84 94 84 Q76 78 70 46 Z',
+        'M48.5 36 Q43 2 51.5 0 Q57 2 52.5 36 Z','M74 46 Q92 46 98 66 Q100 76 91 75 Q79 70 73 49 Z']
+};
+
+/* ---------- gear ---------- */
+const ORDER=['back','body','neck','face','hat','tool','front'];
+const SLOTS=[
+ {id:'hat',   label:'Detective hat'},
+ {id:'face',  label:'Eye gear'},
+ {id:'neck',  label:'Neck piece'},
+ {id:'coat',  label:'Coat or cape'},
+ {id:'tool',  label:'Detective tool'},
+ {id:'legend',label:'Legend mark'}
+];
+/* items with a `c` belong to that case and appear marked as new; the rest are always available */
+const GEAR={
+ hat:[
+  {id:'deerstalker',name:'Deerstalker',layer:'hat',svg:()=>'<path d="M34 34 Q60 8 86 34 Z" fill="#8E7050"/><rect x="26" y="31" width="68" height="8" rx="4" fill="#6B5136"/>'},
+  {id:'flatcap',name:'Flat cap',layer:'hat',svg:()=>'<ellipse cx="60" cy="27" rx="27" ry="13" fill="#5D7092"/><path d="M33 33 Q59 25 88 29 L88 35 Q59 32 33 40 Z" fill="#4B5C7A"/>'},
+  {id:'kerchief',name:'Kerchief',layer:'hat',svg:f=>'<path d="M35 32 Q60 14 85 32 Q60 40 35 32 Z" fill="'+f.e+'"/><path d="M84 31 Q94 36 92 46" stroke="'+f.e+'" stroke-width="5" fill="none"/>'},
+  {id:'cloverpin',name:'Clover crown',layer:'hat',svg:()=>'<g fill="#79A257"><circle cx="52" cy="26" r="6"/><circle cx="60" cy="21" r="6"/><circle cx="68" cy="26" r="6"/><circle cx="60" cy="30" r="6"/></g><circle cx="60" cy="26" r="2.4" fill="#4E7136"/>'},
+  {id:'keepershawl',name:'Keeper shawl',layer:'hat',c:'001',svg:()=>'<path d="M30 40 Q30 12 60 12 Q90 12 90 40 Q74 30 60 30 Q46 30 30 40 Z" fill="#EFE7D2"/><path d="M36 36 Q36 18 60 18 Q84 18 84 36" fill="none" stroke="#CBBBA1" stroke-width="3.4"/>'},
+  {id:'nightcap',name:'Night cap',layer:'hat',c:'001',svg:()=>'<path d="M36 40 Q36 8 62 10 Q84 12 78 34 Z" fill="#8C7BA8"/><rect x="32" y="35" width="60" height="9" rx="4.5" fill="#6E5F86"/><circle cx="80" cy="10" r="6" fill="#C6B7DE"/>'},
+  {id:'ribbonband',name:'Ribbon band',layer:'hat',c:'002',svg:()=>'<rect x="30" y="30" width="60" height="10" rx="5" fill="#C26F8A"/><path d="M84 35 L98 26 L96 40 Z" fill="#D989A2"/><circle cx="82" cy="35" r="4.6" fill="#EBB4C6"/>'},
+  {id:'stagelamp',name:'Stage lamp',layer:'hat',c:'002',svg:()=>'<rect x="34" y="32" width="52" height="9" rx="4.5" fill="#3B3238"/><rect x="50" y="22" width="20" height="15" rx="4" fill="#5A4F58"/><circle cx="60" cy="30" r="5.6" fill="#F5B942"/><path d="M60 30 L36 2 L84 2 Z" fill="#F5B942" opacity=".3"/>'}
+ ],
+ face:[
+  {id:'roundspecs',name:'Round specs',layer:'face',svg:()=>'<circle cx="49" cy="58" r="11" fill="#CFE6F0" opacity=".2"/><circle cx="71" cy="58" r="11" fill="#CFE6F0" opacity=".2"/><circle cx="49" cy="58" r="11" fill="none" stroke="#3B3238" stroke-width="3"/><circle cx="71" cy="58" r="11" fill="none" stroke="#3B3238" stroke-width="3"/><rect x="58.5" y="56.8" width="3" height="2.6" fill="#3B3238"/>'},
+  {id:'monocle',name:'Monocle',layer:'face',svg:()=>'<circle cx="71" cy="58" r="13" fill="#CFE6F0" opacity=".22"/><circle cx="71" cy="58" r="13" fill="none" stroke="#E5B84E" stroke-width="3"/><path d="M78 69 Q86 82 76 88" fill="none" stroke="#E5B84E" stroke-width="2"/>'},
+  {id:'bigbrows',name:'Big brows',layer:'face',svg:f=>'<path d="M39 46 Q49 38 59 45" stroke="'+f.d+'" stroke-width="5.4" fill="none" stroke-linecap="round"/><path d="M61 45 Q71 38 81 46" stroke="'+f.d+'" stroke-width="5.4" fill="none" stroke-linecap="round"/>'},
+  {id:'sunvisor',name:'Sun visor',layer:'face',svg:()=>'<path d="M32 46 Q60 34 88 46 L88 53 Q60 43 32 53 Z" fill="#79A257"/><rect x="33" y="39" width="54" height="9" rx="4.5" fill="#4E7136"/>'},
+  {id:'dustmask',name:'Dust mask',layer:'face',c:'001',svg:()=>'<path d="M44 64 Q60 58 76 64 Q76 82 60 87 Q44 82 44 64 Z" fill="#EFE7D2" stroke="#CBBBA1" stroke-width="2"/><path d="M44 66 L30 58M76 66 L90 58" stroke="#CBBBA1" stroke-width="2.6"/>'},
+  {id:'halfmoons',name:'Half-moon specs',layer:'face',c:'001',svg:()=>'<path d="M38 58 A11 11 0 0 0 60 58 Z" fill="#EFE0BC" opacity=".4"/><path d="M60 58 A11 11 0 0 0 82 58 Z" fill="#EFE0BC" opacity=".4"/><path d="M38 58 A11 11 0 0 0 60 58" fill="none" stroke="#7A5A22" stroke-width="3"/><path d="M60 58 A11 11 0 0 0 82 58" fill="none" stroke="#7A5A22" stroke-width="3"/><path d="M38 58 h44" stroke="#7A5A22" stroke-width="2.2"/>'},
+  {id:'stagepaint',name:'Stage paint',layer:'face',c:'002',svg:()=>'<path d="M40 52 Q49 44 58 52" stroke="#C26F8A" stroke-width="3.4" fill="none"/><path d="M62 52 Q71 44 80 52" stroke="#C26F8A" stroke-width="3.4" fill="none"/><g fill="#F5B942"><circle cx="43" cy="66" r="2.4"/><circle cx="77" cy="66" r="2.4"/></g>'},
+  {id:'earflaps',name:'Ear muffs',layer:'face',c:'002',svg:()=>'<rect x="30" y="44" width="60" height="7" rx="3.5" fill="#8C7BA8"/><circle cx="33" cy="55" r="10" fill="#C6B7DE"/><circle cx="87" cy="55" r="10" fill="#C6B7DE"/>'}
+ ],
+ neck:[
+  {id:'bowtie',name:'Bow tie',layer:'neck',svg:()=>'<path d="M60 96 L45 88 L45 104 Z" fill="#C0453E"/><path d="M60 96 L75 88 L75 104 Z" fill="#C0453E"/><circle cx="60" cy="96" r="5" fill="#D3625B"/>'},
+  {id:'woolscarf',name:'Wool scarf',layer:'neck',svg:()=>'<path d="M36 90 Q60 106 84 90 L84 99 Q60 115 36 99 Z" fill="#C26F8A" stroke="#8E4A62" stroke-width="1.8"/><path d="M77 99 L90 119 L80 122 L71 103 Z" fill="#D989A2" stroke="#8E4A62" stroke-width="1.8"/>'},
+  {id:'brasswhistle',name:'Whistle',layer:'neck',svg:()=>'<path d="M40 88 Q60 110 80 88" stroke="#CBB78A" stroke-width="3" fill="none"/><rect x="54" y="106" width="15" height="9" rx="3" fill="#E0B24C"/><circle cx="71" cy="110" r="3.2" fill="#9E7A21"/>'},
+  {id:'cloverchain',name:'Clover chain',layer:'neck',svg:()=>'<path d="M40 90 Q60 108 80 90" stroke="#79A257" stroke-width="2.6" fill="none" stroke-dasharray="4 4"/><circle cx="60" cy="106" r="5.6" fill="#79A257"/><circle cx="60" cy="106" r="2" fill="#4E7136"/>'},
+  {id:'keeperkey',name:'Keeper key',layer:'neck',c:'001',svg:()=>'<path d="M42 88 Q60 108 78 88" stroke="#B9A585" stroke-width="2.6" fill="none"/><g transform="translate(60 108)"><circle r="5" fill="none" stroke="#E0B24C" stroke-width="3"/><path d="M0 5 v10 M0 11 h5 M0 15 h5" stroke="#E0B24C" stroke-width="3"/></g>'},
+  {id:'downcollar',name:'Soft collar',layer:'neck',c:'001',svg:()=>'<path d="M34 90 Q60 110 86 90 Q86 104 60 116 Q34 104 34 90 Z" fill="#F6F1E4" stroke="#D9CFB6" stroke-width="2"/><g fill="#EFE7D2"><circle cx="46" cy="98" r="5"/><circle cx="60" cy="103" r="5.4"/><circle cx="74" cy="98" r="5"/></g>'},
+  {id:'medalribbon',name:'Ribbon rosette',layer:'neck',c:'002',svg:()=>'<g transform="translate(60 100)"><g fill="#C26F8A">'+[0,45,90,135].map(a=>'<ellipse rx="11" ry="4.6" transform="rotate('+a+')"/>').join('')+'</g><circle r="5" fill="#F5B942"/></g><path d="M55 108 L52 124 L60 119 L68 124 L65 108 Z" fill="#D989A2"/>'},
+  {id:'dancesash',name:'Dance sash',layer:'neck',c:'002',svg:()=>'<path d="M38 86 L82 112 L76 120 L32 94 Z" fill="#8C7BA8" opacity=".92"/><circle cx="76" cy="116" r="4.6" fill="#F5B942"/>'}
+ ],
+ coat:[
+  {id:'trench',name:'Trench coat',layer:'body',svg:()=>'<path d="M30 104 Q60 96 90 104 L94 150 L26 150 Z" fill="#B9A585"/><path d="M60 98 v52" stroke="#96876C" stroke-width="2.4"/><g fill="#7A6D56"><circle cx="52" cy="118" r="2.6"/><circle cx="68" cy="118" r="2.6"/><circle cx="52" cy="132" r="2.6"/><circle cx="68" cy="132" r="2.6"/></g>'},
+  {id:'cape',name:'Night cape',layer:'back',svg:()=>'<path d="M32 100 Q60 94 88 100 Q100 132 96 154 L24 154 Q20 132 32 100 Z" fill="#3A2C34"/><path d="M32 100 Q60 108 88 100" stroke="#5A4F58" stroke-width="3" fill="none"/>'},
+  {id:'gilet',name:'Quilted gilet',layer:'body',svg:()=>'<path d="M34 104 Q60 98 86 104 L88 148 L32 148 Z" fill="#4E7136"/><g stroke="#3C5729" stroke-width="1.8" opacity=".7"><path d="M34 118 h52M34 132 h52M60 104 v44"/></g>'},
+  {id:'apron',name:'Work apron',layer:'body',svg:()=>'<path d="M44 100 L76 100 L80 148 L40 148 Z" fill="#EFE7D2" stroke="#CBBBA1" stroke-width="2"/><path d="M44 100 L38 90M76 100 L82 90" stroke="#CBBBA1" stroke-width="2.6"/><rect x="52" y="118" width="16" height="12" rx="2" fill="#E2D9C3"/>'},
+  {id:'dressinggown',name:'Dressing gown',layer:'body',c:'001',svg:()=>'<path d="M32 102 Q60 96 88 102 L92 150 L28 150 Z" fill="#8C7BA8"/><path d="M48 100 L60 122 L72 100" fill="#A395C0"/><path d="M28 128 Q60 136 92 128" stroke="#6E5F86" stroke-width="5" fill="none"/>'},
+  {id:'museumcoat',name:'Museum coat',layer:'body',c:'001',svg:()=>'<path d="M32 104 Q60 98 88 104 L90 150 L30 150 Z" fill="#5A6E86"/><path d="M60 98 v52" stroke="#455668" stroke-width="2.4"/><rect x="66" y="120" width="14" height="10" rx="2" fill="#93A8BE"/>'},
+  {id:'practiceshawl',name:'Practice shawl',layer:'back',c:'002',svg:()=>'<path d="M30 102 Q60 96 90 102 Q98 128 92 150 L28 150 Q22 128 30 102 Z" fill="#C26F8A" opacity=".9"/><path d="M28 140 Q60 148 92 140" stroke="#9E5271" stroke-width="4" fill="none"/>'},
+  {id:'starcape',name:'Star cape',layer:'back',c:'002',svg:()=>'<path d="M32 100 Q60 94 88 100 Q100 132 96 154 L24 154 Q20 132 32 100 Z" fill="#2F2A44"/><g fill="#F5B942">'+[[42,116,3],[60,130,3.6],[78,118,3],[52,142,2.6],[70,146,2.6]].map(s=>'<circle cx="'+s[0]+'" cy="'+s[1]+'" r="'+s[2]+'"/>').join('')+'</g>'}
+ ],
+ tool:[
+  {id:'magnifier',name:'Magnifier',layer:'tool',svg:()=>'<g transform="translate(92 112)"><circle r="12" fill="#CFE6F0" opacity=".35"/><circle r="12" fill="none" stroke="#B9A585" stroke-width="3.4"/><path d="M9 9 L20 22" stroke="#8E7050" stroke-width="5" stroke-linecap="round"/></g>'},
+  {id:'notebook',name:'Notebook',layer:'tool',svg:()=>'<g transform="translate(90 118) rotate(-8)"><rect x="-13" y="-16" width="26" height="32" rx="3" fill="#F6F1E4" stroke="#CBBBA1" stroke-width="2"/><g stroke="#D9CFB6" stroke-width="1.6"><path d="M-8 -8 h16M-8 -1 h16M-8 6 h16"/></g></g>'},
+  {id:'lantern',name:'Lantern',layer:'tool',svg:()=>'<g transform="translate(92 114)"><path d="M0 -18 v5" stroke="#8E7050" stroke-width="2.4"/><rect x="-9" y="-13" width="18" height="24" rx="3" fill="#3A2C34" stroke="#8E7050" stroke-width="2"/><circle cy="-1" r="6" fill="#F5B942"/></g>'},
+  {id:'quill',name:'Quill',layer:'tool',svg:()=>'<g transform="translate(92 114) rotate(18)"><path d="M0 14 Q-4 -6 4 -18 Q10 -4 6 14 Z" fill="#F6F1E4" stroke="#CBBBA1" stroke-width="1.6"/><path d="M3 14 v8" stroke="#8E7050" stroke-width="2.4"/></g>'},
+  {id:'featherbrush',name:'Feather brush',layer:'tool',c:'001',svg:()=>'<g transform="translate(92 114) rotate(-14)"><path d="M0 16 v-10" stroke="#8E7050" stroke-width="3"/><path d="M0 6 Q-9 -6 0 -18 Q9 -6 0 6 Z" fill="#EFE7D2" stroke="#D9CFB6" stroke-width="1.6"/></g>'},
+  {id:'thermometer',name:'Thermometer',layer:'tool',c:'001',svg:()=>'<g transform="translate(92 114)"><rect x="-4" y="-18" width="8" height="28" rx="4" fill="#F6F1E4" stroke="#CBBBA1" stroke-width="1.8"/><circle cy="12" r="6" fill="#C0453E"/><rect x="-1.6" y="-4" width="3.2" height="16" fill="#C0453E"/></g>'},
+  {id:'metronome',name:'Metronome',layer:'tool',c:'002',svg:()=>'<g transform="translate(92 116)"><path d="M-10 14 L10 14 L6 -12 L-6 -12 Z" fill="#9A7359" stroke="#6E4E3A" stroke-width="1.8"/><path d="M0 12 L7 -16" stroke="#3B3238" stroke-width="2.2"/><circle cx="7" cy="-16" r="3.2" fill="#F5B942"/></g>'},
+  {id:'chalk',name:'Floor chalk',layer:'tool',c:'002',svg:()=>'<g transform="translate(92 116) rotate(24)"><rect x="-4" y="-14" width="8" height="26" rx="3" fill="#F6F1E4" stroke="#D9CFB6" stroke-width="1.6"/><path d="M-4 8 h8" stroke="#C26F8A" stroke-width="4"/></g>'}
+ ],
+ legend:[
+  {id:'goldsparks',name:'Gold sparks',layer:'front',svg:()=>'<g fill="#F5B942">'+[[26,44,3.4],[96,52,3],[34,118,2.6],[92,132,3],[60,8,2.6]].map(s=>'<circle cx="'+s[0]+'" cy="'+s[1]+'" r="'+s[2]+'"/>').join('')+'</g>'},
+  {id:'spotlight',name:'Spotlight',layer:'back',svg:()=>'<ellipse cx="60" cy="150" rx="46" ry="10" fill="#F5B942" opacity=".22"/><path d="M60 150 L16 26 L104 26 Z" fill="#F5B942" opacity=".08"/>'},
+  {id:'laurel',name:'Laurel',layer:'front',svg:()=>'<g fill="none" stroke="#79A257" stroke-width="3"><path d="M22 132 Q14 100 26 74"/><path d="M98 132 Q106 100 94 74"/></g><g fill="#79A257">'+[[20,120],[19,106],[23,92],[100,120],[101,106],[97,92]].map(p=>'<ellipse cx="'+p[0]+'" cy="'+p[1]+'" rx="5" ry="3" />').join('')+'</g>'},
+  {id:'clovercrown',name:'Clover ring',layer:'front',svg:()=>'<g fill="#79A257" opacity=".95">'+[0,60,120,180,240,300].map(a=>'<circle cx="'+(60+34*Math.cos(a*Math.PI/180)).toFixed(1)+'" cy="'+(78+34*Math.sin(a*Math.PI/180)).toFixed(1)+'" r="4.4"/>').join('')+'</g>'},
+  {id:'confetti',name:'Confetti',layer:'front',svg:()=>{const cs=['#F5B942','#C26F8A','#79A257','#F3EDDF'];let o='';for(let i=0;i<14;i++){const x=12+(i*8.1)%98,y=8+((i*29)%136),r=(i*47)%180;o+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="5" height="3.2" fill="'+cs[i%4]+'" transform="rotate('+r+' '+x.toFixed(1)+' '+y.toFixed(1)+')" opacity=".85"/>';}return o;}},
+  {id:'lampglow',name:'Lamp glow',layer:'back',svg:()=>'<circle cx="60" cy="70" r="54" fill="#F5B942" opacity=".1"/><circle cx="60" cy="70" r="38" fill="#F5B942" opacity=".08"/>'}
+ ]
+};
+/* gear from cases 003-005, appended so the slot lists above stay readable */
+const LAYER={hat:'hat',face:'face',neck:'neck',coat:'body',tool:'tool',legend:'front'};
+[
+ /* 003 — the harvest show */
+ ['hat','strawhat','Straw hat','003',()=>'<ellipse cx="60" cy="30" rx="34" ry="9" fill="#E3C879"/><path d="M38 30 Q38 10 60 10 Q82 10 82 30 Z" fill="#EFD98F"/><rect x="38" y="24" width="44" height="6" rx="3" fill="#79A257"/>'],
+ ['face','loupe','Jeweller loupe','003',()=>'<circle cx="72" cy="60" r="11" fill="#CFE6F0" opacity=".3"/><circle cx="72" cy="60" r="11" fill="none" stroke="#8E7050" stroke-width="4"/><circle cx="72" cy="60" r="4" fill="none" stroke="#8E7050" stroke-width="1.4"/><path d="M83 60 h7" stroke="#8E7050" stroke-width="3"/>'],
+ ['neck','tapemeasure','Tape measure','003',()=>'<path d="M36 90 Q60 108 84 90" stroke="#EFE7D2" stroke-width="6" fill="none"/><g stroke="#96603A" stroke-width="1.4">'+[44,52,60,68,76].map(x=>'<path d="M'+x+' 96 v4"/>').join('')+'</g>'],
+ ['coat','showcoat','Show coat','003',()=>'<path d="M32 104 Q60 98 88 104 L90 148 L30 148 Z" fill="#8E5A3C"/><path d="M60 98 v50" stroke="#6E4227" stroke-width="2.4"/><path d="M40 108 L52 122 L40 130 Z" fill="#E3C879"/><path d="M80 108 L68 122 L80 130 Z" fill="#E3C879"/>'],
+ ['tool','scales','Little scales','003',()=>'<g transform="translate(92 112)"><path d="M0 14 v-22" stroke="#8E7050" stroke-width="3"/><path d="M-12 -8 h24" stroke="#8E7050" stroke-width="2.6"/><path d="M-12 -8 v6" stroke="#8E7050" stroke-width="1.6"/><path d="M12 -8 v6" stroke="#8E7050" stroke-width="1.6"/><path d="M-17 -2 h10" stroke="#E0B24C" stroke-width="2.6"/><path d="M7 -2 h10" stroke="#E0B24C" stroke-width="2.6"/></g>'],
+ ['legend','goldleaf','Gold leaf','003',()=>'<g fill="#E0B24C" opacity=".9">'+[[20,60],[100,66],[26,110],[96,116]].map(p=>'<ellipse cx="'+p[0]+'" cy="'+p[1]+'" rx="7" ry="4" transform="rotate(-24 '+p[0]+' '+p[1]+')"/>').join('')+'</g>'],
+ /* 004 — the post office */
+ ['hat','postcap','Post cap','004',()=>'<path d="M33 32 Q33 12 60 12 Q87 12 87 32 Z" fill="#3A5C86"/><rect x="27" y="29" width="66" height="9" rx="4" fill="#2A4568"/><rect x="50" y="17" width="20" height="10" rx="2" fill="#E0B24C"/>'],
+ ['face','readingspecs','Reading specs','004',()=>'<circle cx="48" cy="61" r="12" fill="#EFE0BC" opacity=".3"/><circle cx="72" cy="61" r="12" fill="#EFE0BC" opacity=".3"/><circle cx="48" cy="61" r="12" fill="none" stroke="#5A4436" stroke-width="3.2"/><circle cx="72" cy="61" r="12" fill="none" stroke="#5A4436" stroke-width="3.2"/><rect x="58" y="59.6" width="4" height="2.8" fill="#5A4436"/><path d="M36 62 Q26 74 32 86" stroke="#8E7050" stroke-width="2" fill="none"/>'],
+ ['neck','satchel','Satchel strap','004',()=>'<path d="M38 86 L82 114 L76 122 L32 94 Z" fill="#8E7050"/><rect x="70" y="112" width="18" height="14" rx="3" fill="#A98A63" stroke="#6E5136" stroke-width="1.8"/><path d="M70 118 h18" stroke="#6E5136" stroke-width="1.6"/>'],
+ ['coat','postcoat','Post coat','004',()=>'<path d="M32 104 Q60 98 88 104 L90 148 L30 148 Z" fill="#3A5C86"/><path d="M60 98 v50" stroke="#2A4568" stroke-width="2.4"/><g fill="#E0B24C"><circle cx="52" cy="116" r="2.6"/><circle cx="68" cy="116" r="2.6"/><circle cx="52" cy="130" r="2.6"/><circle cx="68" cy="130" r="2.6"/></g>'],
+ ['tool','rubberstamp','Rubber stamp','004',()=>'<g transform="translate(92 112)"><rect x="-8" y="6" width="16" height="8" rx="2" fill="#5A4436"/><rect x="-4" y="-6" width="8" height="12" rx="2" fill="#8E7050"/><circle cy="-10" r="5" fill="#A98A63"/><path d="M-8 14 h16" stroke="#C0453E" stroke-width="3"/></g>'],
+ ['legend','paperswirl','Paper swirl','004',()=>'<g fill="#F6F1E4" opacity=".85">'+[[22,52,-18],[98,58,22],[24,116,14],[96,122,-16]].map(p=>'<rect x="'+p[0]+'" y="'+p[1]+'" width="13" height="9" rx="1.5" transform="rotate('+p[2]+' '+p[0]+' '+p[1]+')"/>').join('')+'</g>'],
+ /* 005 — the brook */
+ ['hat','sunbonnet','Sun bonnet','005',()=>'<path d="M28 38 Q28 10 60 10 Q92 10 92 38 Q76 28 60 28 Q44 28 28 38 Z" fill="#F6E4EA"/><path d="M22 34 Q60 46 98 34 L98 41 Q60 55 22 41 Z" fill="#EBC8D4"/><circle cx="60" cy="14" r="5" fill="#C26F8A"/>'],
+ ['face','splashgoggles','Splash goggles','005',()=>'<circle cx="48" cy="60" r="12.5" fill="#8FB8D6" opacity=".55"/><circle cx="72" cy="60" r="12.5" fill="#8FB8D6" opacity=".55"/><circle cx="48" cy="60" r="12.5" fill="none" stroke="#4E7A99" stroke-width="3.2"/><circle cx="72" cy="60" r="12.5" fill="none" stroke="#4E7A99" stroke-width="3.2"/><rect x="57" y="57.5" width="6" height="5" fill="#4E7A99"/><path d="M25 55 Q18 60 25 65" stroke="#4E7A99" stroke-width="3" fill="none"/>'],
+ ['neck','ropecoil','Rope coil','005',()=>'<path d="M36 90 Q60 110 84 90" stroke="#C9A96B" stroke-width="5" fill="none" stroke-dasharray="6 4"/><circle cx="60" cy="108" r="7" fill="none" stroke="#C9A96B" stroke-width="4"/>'],
+ ['coat','waders','Waders','005',()=>'<path d="M34 104 Q60 98 86 104 L88 148 L32 148 Z" fill="#4E7A99"/><path d="M34 128 Q60 136 86 128" stroke="#3A5E77" stroke-width="4" fill="none"/><path d="M44 100 L44 92M76 100 L76 92" stroke="#3A5E77" stroke-width="3.4"/>'],
+ ['tool','dipstick','Measuring stick','005',()=>'<g transform="translate(92 112) rotate(10)"><rect x="-4" y="-20" width="8" height="34" rx="2" fill="#EFE7D2" stroke="#B9A585" stroke-width="1.6"/><g stroke="#4E7A99" stroke-width="1.8">'+[-14,-7,0,7].map(y=>'<path d="M-4 '+y+' h8"/>').join('')+'</g><rect x="-4" y="4" width="8" height="10" fill="#8FB8D6" opacity=".7"/></g>'],
+ ['legend','ripple','Ripple ring','005',()=>'<g fill="none" stroke="#8FB8D6" stroke-width="2.4" opacity=".7"><ellipse cx="60" cy="146" rx="30" ry="8"/><ellipse cx="60" cy="146" rx="44" ry="12"/><ellipse cx="60" cy="146" rx="56" ry="16"/></g>']
+].forEach(function(g){ GEAR[g[0]].push({id:g[1],name:g[2],layer:LAYER[g[0]],c:g[3],svg:g[4]}); });
+
+const KEEPS={
+ floppy:{name:'The Floppy-Ear Medal', c:'#EFE7D2', r:'#B9A585',
+   g:'<path d="M-3.4 -2.6 Q0 -4.4 3.4 -2.6 Q2.4 2.6 0 3.4 Q-2.4 2.6 -3.4 -2.6 Z" fill="#8E7050"/>'},
+ notyet:{name:'The Not-Yet Ribbon', c:'#C26F8A', r:'#8E4A62',
+   g:'<path d="M-3.2 -3.4 L3.2 -3.4 L1.6 1 L-1.6 1 Z" fill="#F6E4EA"/><path d="M-1.6 1 L-2.6 4.4 L0 3 L2.6 4.4 L1.6 1 Z" fill="#F6E4EA"/>'},
+ goodenough:{name:'The Good Enough Medal', c:'#E0B24C', r:'#9E7A21',
+   g:'<path d="M0 -4 L1.1 -1.2 L4 -1.2 L1.7 0.7 L2.6 3.6 L0 1.9 L-2.6 3.6 L-1.7 0.7 L-4 -1.2 L-1.1 -1.2 Z" fill="#7A5A16"/>'},
+ askedfor:{name:'The Asked-For-Help Badge', c:'#79A257', r:'#4E7136',
+   g:'<circle r="3.8" fill="none" stroke="#2F4A1E" stroke-width="1.4"/><path d="M-2 0 h4M0 -2 v4" stroke="#2F4A1E" stroke-width="1.8" stroke-linecap="round"/>'},
+ lookagain:{name:'The Look-Again Lens', c:'#8FB8D6', r:'#4E7A99',
+   g:'<circle cx="-0.6" cy="-0.6" r="3" fill="none" stroke="#2F4E63" stroke-width="1.5"/><path d="M1.6 1.6 L4 4" stroke="#2F4E63" stroke-width="1.8" stroke-linecap="round"/>'}
+};
+function medalBar(d){
+  const k=(d.keeps||[]).filter(id=>KEEPS[id]);
+  if(!k.length) return '';
+  const step=13, x0=60-((k.length-1)*step)/2;
+  return '<g><path d="M'+(x0-10).toFixed(1)+' 158 H'+(x0+(k.length-1)*step+10).toFixed(1)+'" stroke="#B9A585" stroke-width="1.8" opacity=".45"/>'
+   +k.map((id,i)=>{const K=KEEPS[id],x=x0+i*step;
+     return '<g transform="translate('+x.toFixed(1)+' 150)"><circle r="5.8" fill="'+K.c+'"/><circle r="5.8" fill="none" stroke="'+K.r+'" stroke-width="1.6"/>'+K.g+'</g>';}).join('')+'</g>';
+}
+
+/* ============================ RABBIT ============================ */
+function bunnySVG(d,size,override){
+  const f=FUR.find(x=>x.id===d.fur)||FUR[0];
+  const ey=EYES.find(x=>x.id===(d.eye||'chestnut'))||EYES[0];
+  const br=BREEDS.find(x=>x.id===(d.breed||'lop'))||BREEDS[0];
+  const ear=EAR[br.ear]||EAR.lop;
+  const irisL=ey.c, irisR=ey.c2||ey.c;
+  const g=Object.assign({},d.gear,override||{});
+  const bucket={back:'',body:'',neck:'',face:'',hat:'',tool:'',front:''};
+  for(const s of SLOTS){
+    const pickId=g[s.id]; if(!pickId) continue;
+    const item=(GEAR[s.id]||[]).find(x=>x.id===pickId); if(!item) continue;
+    bucket[item.layer]+=item.svg(f);
+  }
+  const P=d.pat||'plain';
+  let bodyPat='',headPat='';
+  if(P==='saddle') bodyPat='<path d="M36 108 Q60 100 84 108 Q84 124 60 126 Q36 124 36 108 Z" fill="'+f.d+'" opacity=".5"/>';
+  if(P==='blaze')  headPat='<path d="M60 40 Q64 56 60 74 Q56 56 60 40 Z" fill="#F6F1E4" opacity=".85"/>';
+  if(P==='patch')  headPat='<ellipse cx="47" cy="58" rx="12" ry="10.5" fill="'+f.d+'" opacity=".62"/>';
+  if(P==='freckles') headPat='<g fill="'+f.d+'" opacity=".6"><circle cx="46" cy="70" r="1.8"/><circle cx="51" cy="74" r="1.6"/><circle cx="69" cy="70" r="1.8"/><circle cx="74" cy="74" r="1.6"/></g>';
+  const bw=br.bodyW;
+  const cheeks=br.cheek?'<ellipse cx="41" cy="70" rx="7" ry="5.4" fill="'+f.d+'" opacity=".35"/><ellipse cx="79" cy="70" rx="7" ry="5.4" fill="'+f.d+'" opacity=".35"/>':'';
+  return '<svg viewBox="0 -10 120 175" width="'+size+'" height="'+Math.round(size*175/120)+'" role="img" aria-label="'+escAttr(d.name||'detective')+'">'
+   +bucket.back
+   /* tail tucks in behind */
+   +'<circle cx="'+(60-24*bw).toFixed(1)+'" cy="124" r="9.5" fill="'+f.e+'" opacity=".55"/>'
+   +'<circle cx="'+(60-24*bw).toFixed(1)+'" cy="124" r="9.5" fill="none" stroke="'+f.d+'" stroke-width="1.6"/>'
+   /* ears */
+   +'<path d="'+ear[0]+'" fill="'+f.c+'" stroke="'+f.d+'" stroke-width="2"/>'
+   +'<path d="'+ear[1]+'" fill="'+f.c+'" stroke="'+f.d+'" stroke-width="2"/>'
+   +'<path d="'+ear[2]+'" fill="'+f.e+'"/>'
+   +'<path d="'+ear[3]+'" fill="'+f.e+'"/>'
+   /* round little body */
+   +'<ellipse cx="60" cy="117" rx="'+(26*bw).toFixed(1)+'" ry="27" fill="'+f.c+'" stroke="'+f.d+'" stroke-width="2"/>'
+   +'<ellipse cx="60" cy="123" rx="'+(16*bw).toFixed(1)+'" ry="17" fill="'+f.e+'" opacity=".38"/>'
+   +bodyPat+bucket.body
+   /* back feet, then little front paws */
+   +'<ellipse cx="47" cy="140" rx="11" ry="7" fill="'+f.c+'" stroke="'+f.d+'" stroke-width="2"/>'
+   +'<ellipse cx="73" cy="140" rx="11" ry="7" fill="'+f.c+'" stroke="'+f.d+'" stroke-width="2"/>'
+   +'<circle cx="49" cy="126" r="6" fill="'+f.c+'" stroke="'+f.d+'" stroke-width="1.8"/>'
+   +'<circle cx="71" cy="126" r="6" fill="'+f.c+'" stroke="'+f.d+'" stroke-width="1.8"/>'
+   /* big round head */
+   +'<ellipse cx="60" cy="60" rx="29" ry="27" fill="'+f.c+'" stroke="'+f.d+'" stroke-width="2"/>'
+   +cheeks+headPat
+   /* eyes — big and shiny */
+   +'<ellipse cx="48" cy="60" rx="7.6" ry="8.4" fill="#F6F1E4"/><ellipse cx="72" cy="60" rx="7.6" ry="8.4" fill="#F6F1E4"/>'
+   +'<ellipse cx="48" cy="60.8" rx="5.4" ry="6.4" fill="'+irisL+'"/><ellipse cx="72" cy="60.8" rx="5.4" ry="6.4" fill="'+irisR+'"/>'
+   +'<circle cx="49.8" cy="57.8" r="2.2" fill="#fff" opacity=".95"/><circle cx="73.8" cy="57.8" r="2.2" fill="#fff" opacity=".95"/>'
+   +'<circle cx="46.2" cy="63.4" r="1.1" fill="#fff" opacity=".6"/><circle cx="70.2" cy="63.4" r="1.1" fill="#fff" opacity=".6"/>'
+   /* nose + mouth */
+   +'<path d="M60 71 Q56.2 71 57.6 74.4 Q60 77.4 62.4 74.4 Q63.8 71 60 71 Z" fill="'+f.e+'" stroke="'+f.d+'" stroke-width="1.1"/>'
+   +'<path d="M60 77 v2.6 M60 79.6 Q56.4 82.4 53.8 79.4 M60 79.6 Q63.6 82.4 66.2 79.4" stroke="'+f.d+'" stroke-width="1.8" fill="none" stroke-linecap="round"/>'
+   /* whiskers */
+   +'<g stroke="'+f.d+'" stroke-width="1.3" opacity=".6"><path d="M36 73 q-8 -1.5 -12 -4M36 78 q-8 1 -12 2.5M84 73 q8 -1.5 12 -4M84 78 q8 1 12 2.5"/></g>'
+   +bucket.neck+bucket.face+bucket.hat+bucket.tool
+   +medalBar(d)+bucket.front
+   +'</svg>';
+}
+
+/* ============================ SCENES ============================ */
+function museumScene(){
+  return '<svg class="scene" viewBox="0 0 640 260" role="img" aria-label="The Burrow Museum at night, an empty stand where The Down should be">'
+  +'<defs><radialGradient id="mg" cx="50%" cy="18%" r="72%"><stop offset="0" stop-color="#4A3742"/><stop offset="1" stop-color="#221A20"/></radialGradient></defs>'
+  +'<rect width="640" height="260" fill="url(#mg)"/>'
+  /* floor */
+  +'<path d="M0 210 H640 V260 H0 Z" fill="#33262E"/>'
+  +'<g stroke="#3F2F38" stroke-width="2">'+[80,180,280,380,480,580].map(x=>'<path d="M'+x+' 210 V260"/>').join('')+'</g>'
+  /* stairs on the right, going up */
+  +'<g fill="#3A2C34" stroke="#4A3A43" stroke-width="2">'
+   +'<rect x="470" y="196" width="150" height="16"/><rect x="492" y="180" width="128" height="16"/>'
+   +'<rect x="514" y="164" width="106" height="16"/><rect x="536" y="148" width="84" height="16"/>'
+   +'<rect x="558" y="132" width="62" height="16"/></g>'
+  /* fluff trail going up the stairs */
+  +'<g fill="#F6F1E4" opacity=".85">'
+   +[[300,206,4],[350,204,3.4],[400,202,4.4],[452,200,3.6],[496,190,4],[528,174,3.4],[556,158,4],[580,142,3.4]]
+     .map(p=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="'+p[2]+'"/>').join('')+'</g>'
+  /* empty stand */
+  +'<g><rect x="150" y="150" width="86" height="60" rx="4" fill="#3A2C34" stroke="#5A4652" stroke-width="2"/>'
+   +'<rect x="140" y="140" width="106" height="12" rx="4" fill="#4A3A43"/>'
+   +'<text x="193" y="186" text-anchor="middle" font-family="Special Elite, monospace" font-size="13" fill="#B9A585">THE DOWN</text>'
+   +'<text x="193" y="202" text-anchor="middle" font-family="Special Elite, monospace" font-size="11" fill="#8E7A86">— missing —</text></g>'
+  /* front door, latched */
+  +'<g><rect x="34" y="112" width="72" height="98" rx="5" fill="#2F242B" stroke="#5A4652" stroke-width="2"/>'
+   +'<circle cx="94" cy="164" r="4.4" fill="#B9A585"/>'
+   +'<rect x="60" y="158" width="34" height="7" rx="3" fill="#E0B24C"/>'
+   +'<text x="70" y="230" text-anchor="middle" font-family="Special Elite, monospace" font-size="11" fill="#E0B24C">latched inside</text></g>'
+  /* warm glow upstairs */
+  +'<g><path d="M560 40 L620 40 L620 128 L560 128 Z" fill="#F5B942" opacity=".16"/>'
+   +'<circle cx="590" cy="62" r="13" fill="#F5B942" opacity=".62"/>'
+   +'<text x="590" y="30" text-anchor="middle" font-family="Special Elite, monospace" font-size="11" fill="#F5B942">reading room</text></g>'
+  +'</svg>';
+}
+function hallScene(){
+  return '<svg class="scene" viewBox="0 0 640 260" role="img" aria-label="The dance hall above the burrows, one lamp lit, a loose shutter">'
+  +'<defs><radialGradient id="hg" cx="50%" cy="20%" r="74%"><stop offset="0" stop-color="#453346"/><stop offset="1" stop-color="#1F1720"/></radialGradient></defs>'
+  +'<rect width="640" height="260" fill="url(#hg)"/>'
+  /* hall floor */
+  +'<path d="M40 150 H600 V214 H40 Z" fill="#5A4436"/>'
+  +'<g stroke="#6B5242" stroke-width="2">'+[110,180,250,320,390,460,530].map(x=>'<path d="M'+x+' 150 V214"/>').join('')+'</g>'
+  /* the half-circle scuff */
+  +'<path d="M270 196 A44 22 0 0 1 358 196" fill="none" stroke="#EFE7D2" stroke-width="5" opacity=".8" stroke-linecap="round"/>'
+  +'<text x="314" y="184" text-anchor="middle" font-family="Special Elite, monospace" font-size="11" fill="#EFE7D2">one foot, turning</text>'
+  /* window + loose shutter */
+  +'<g><rect x="440" y="52" width="104" height="80" rx="4" fill="#2A2130" stroke="#7A6472" stroke-width="2"/>'
+   +'<path d="M492 52 V132 M440 92 H544" stroke="#7A6472" stroke-width="2"/>'
+   +'<g transform="rotate(-16 552 60)"><rect x="546" y="50" width="16" height="84" rx="3" fill="#4A3A43" stroke="#7A6472" stroke-width="2"/></g>'
+   +'<text x="560" y="150" text-anchor="middle" font-family="Special Elite, monospace" font-size="11" fill="#F5B942">loose</text></g>'
+  /* lamp still on */
+  +'<g><path d="M150 24 v20" stroke="#7A6472" stroke-width="3"/>'
+   +'<path d="M128 44 H172 L164 66 H136 Z" fill="#4A3A43" stroke="#7A6472" stroke-width="2"/>'
+   +'<circle cx="150" cy="70" r="11" fill="#F5B942"/>'
+   +'<path d="M150 70 L96 150 L204 150 Z" fill="#F5B942" opacity=".14"/></g>'
+  /* burrows below */
+  +'<path d="M0 214 H640 V260 H0 Z" fill="#2A2028"/>'
+  +'<g fill="#1B1319">'+[80,200,320,440,560].map(x=>'<path d="M'+x+' 260 q0 -26 26 -26 q26 0 26 26 Z"/>').join('')+'</g>'
+  +'<text x="320" y="252" text-anchor="middle" font-family="Special Elite, monospace" font-size="11" fill="#8E7A86">the burrows — directly underneath</text>'
+  +'</svg>';
+}
+
+function showScene(){
+  return '<svg class="scene" viewBox="0 0 640 260" role="img" aria-label="The harvest show tent, the Golden Carrot on its table">'
+  +'<defs><radialGradient id="sg" cx="50%" cy="16%" r="72%"><stop offset="0" stop-color="#4C3B36"/><stop offset="1" stop-color="#221A20"/></radialGradient></defs>'
+  +'<rect width="640" height="260" fill="url(#sg)"/>'
+  +'<path d="M0 60 L320 8 L640 60 L640 76 L0 76 Z" fill="#5A4436"/>'
+  +'<g fill="#79A257" opacity=".5">'+[60,150,240,330,420,510,600].map(x=>'<path d="M'+x+' 76 q10 -14 20 0 Z"/>').join('')+'</g>'
+  +'<path d="M0 206 H640 V260 H0 Z" fill="#33262E"/>'
+  +'<g><rect x="212" y="150" width="216" height="56" rx="4" fill="#3A2C34" stroke="#5A4652" stroke-width="2"/>'
+   +'<rect x="200" y="140" width="240" height="12" rx="4" fill="#4A3A43"/>'
+   +'<rect x="200" y="140" width="240" height="5" rx="2.5" fill="#C26F8A" opacity=".5"/></g>'
+  /* the trophy, carrot shaped */
+  +'<g transform="translate(320 108)"><path d="M0 30 L-15 -16 Q0 -26 15 -16 Z" fill="#E0B24C" stroke="#9E7A21" stroke-width="2.4"/>'
+   +'<g fill="#79A257"><path d="M-9 -18 q-4 -14 3 -18 q2 10 2 18 Z"/><path d="M0 -20 q0 -16 4 -18 q2 12 0 18 Z"/><path d="M9 -18 q5 -13 -1 -17 q-3 9 -3 17 Z"/></g></g>'
+  +'<text x="320" y="196" text-anchor="middle" font-family="Special Elite, monospace" font-size="12" fill="#B9A585">THE GOLDEN CARROT</text>'
+  /* scales in the corner */
+  +'<g transform="translate(534 150)"><path d="M0 46 v-44" stroke="#8E7050" stroke-width="4"/><path d="M-26 6 h52" stroke="#8E7050" stroke-width="3.4"/>'
+   +'<path d="M-26 6 v10M26 6 v10" stroke="#8E7050" stroke-width="2"/>'
+   +'<path d="M-38 18 h24M14 18 h24" stroke="#E0B24C" stroke-width="3.4"/>'
+   +'<path d="M-20 46 h40" stroke="#8E7050" stroke-width="5"/></g>'
+  +'<text x="534" y="212" text-anchor="middle" font-family="Special Elite, monospace" font-size="11" fill="#8E7A86">produce scales</text>'
+  /* shavings */
+  +'<g fill="#C9A96B" opacity=".85">'+[[126,198],[152,204],[104,206],[170,196],[138,210]].map(p=>'<ellipse cx="'+p[0]+'" cy="'+p[1]+'" rx="7" ry="2.6" transform="rotate(-20 '+p[0]+' '+p[1]+')"/>').join('')+'</g>'
+  +'<text x="136" y="228" text-anchor="middle" font-family="Special Elite, monospace" font-size="11" fill="#C9A96B">shavings</text>'
+  +'</svg>';
+}
+function postScene(){
+  return '<svg class="scene" viewBox="0 0 640 260" role="img" aria-label="The post room, letters in the wrong slots">'
+  +'<defs><radialGradient id="pg" cx="50%" cy="18%" r="74%"><stop offset="0" stop-color="#3E3A50"/><stop offset="1" stop-color="#1E1822"/></radialGradient></defs>'
+  +'<rect width="640" height="260" fill="url(#pg)"/>'
+  +'<path d="M0 214 H640 V260 H0 Z" fill="#33262E"/>'
+  /* sorting rack */
+  +'<g><rect x="60" y="40" width="360" height="170" rx="5" fill="#3A2C34" stroke="#6E5A66" stroke-width="2"/>'
+   +'<g stroke="#6E5A66" stroke-width="2">'
+   +[92,144,196].map(y=>'<path d="M60 '+y+' H420"/>').join('')
+   +[150,240,330].map(x=>'<path d="M'+x+' 40 V210"/>').join('')+'</g></g>'
+  /* letters, some crooked */
+  +'<g>'+[[86,66,-6],[176,66,4],[266,66,-3],[356,118,7],[86,118,3],[266,170,-8],[356,170,2]]
+    .map(p=>'<g transform="rotate('+p[2]+' '+p[0]+' '+p[1]+')"><rect x="'+p[0]+'" y="'+p[1]+'" width="46" height="30" rx="2" fill="#F6F1E4" stroke="#CBBBA1" stroke-width="1.6"/>'
+      +'<path d="M'+p[0]+' '+p[1]+' l23 16 l23 -16" fill="none" stroke="#CBBBA1" stroke-width="1.4"/></g>').join('')+'</g>'
+  +'<text x="240" y="234" text-anchor="middle" font-family="Special Elite, monospace" font-size="11" fill="#8E7A86">every one in the wrong slot</text>'
+  /* the post box */
+  +'<g><rect x="490" y="86" width="96" height="124" rx="10" fill="#3A5C86" stroke="#7C93B4" stroke-width="2"/>'
+   +'<rect x="510" y="106" width="56" height="9" rx="4.5" fill="#1E3350"/>'
+   +'<circle cx="538" cy="164" r="13" fill="none" stroke="#E0B24C" stroke-width="3"/></g>'
+  +'<text x="538" y="232" text-anchor="middle" font-family="Special Elite, monospace" font-size="11" fill="#8E7A86">emptied — but when?</text>'
+  /* empty spectacle case */
+  +'<g transform="translate(452 196)"><rect x="-24" y="-9" width="48" height="18" rx="8" fill="#5A4436" stroke="#8E7050" stroke-width="2"/>'
+   +'<path d="M-24 -1 h48" stroke="#8E7050" stroke-width="1.6"/></g>'
+  +'<text x="452" y="222" text-anchor="middle" font-family="Special Elite, monospace" font-size="10" fill="#F5B942">empty</text>'
+  +'</svg>';
+}
+function brookScene(){
+  return '<svg class="scene" viewBox="0 0 640 260" role="img" aria-label="The brook running low, and an old dry channel that is wet again">'
+  +'<defs><radialGradient id="bg2" cx="50%" cy="14%" r="76%"><stop offset="0" stop-color="#33465A"/><stop offset="1" stop-color="#1B1F26"/></radialGradient></defs>'
+  +'<rect width="640" height="260" fill="url(#bg2)"/>'
+  +'<path d="M0 120 Q160 100 300 132 Q440 164 640 140 L640 260 L0 260 Z" fill="#2E3C2C"/>'
+  /* the brook, thin */
+  +'<path d="M0 168 Q150 152 300 176 Q450 200 640 184" stroke="#4E7A99" stroke-width="13" fill="none" opacity=".9"/>'
+  +'<path d="M0 168 Q150 152 300 176 Q450 200 640 184" stroke="#8FB8D6" stroke-width="5" fill="none" opacity=".65"/>'
+  +'<text x="120" y="200" font-family="Special Elite, monospace" font-size="11" fill="#8FB8D6">a finger lower every day</text>'
+  /* the old channel, newly wet */
+  +'<path d="M300 176 Q400 128 560 104" stroke="#3F5E4A" stroke-width="16" fill="none"/>'
+  +'<path d="M300 176 Q400 128 560 104" stroke="#5E8FA8" stroke-width="6" fill="none" opacity=".55" stroke-dasharray="14 8"/>'
+  +'<text x="470" y="94" font-family="Special Elite, monospace" font-size="11" fill="#79A257">the old dry channel</text>'
+  /* the stone fall */
+  +'<g>'+[[292,158,13],[312,150,10],[276,150,9],[302,140,8],[286,138,7]]
+    .map(s=>'<circle cx="'+s[0]+'" cy="'+s[1]+'" r="'+s[2]+'" fill="#6E6A74" stroke="#4A4750" stroke-width="1.8"/>').join('')+'</g>'
+  +'<text x="240" y="132" text-anchor="end" font-family="Special Elite, monospace" font-size="11" fill="#B7A8AF">stones, since the storm</text>'
+  /* measuring stick */
+  +'<g transform="translate(90 150)"><rect x="-5" y="0" width="10" height="62" rx="2" fill="#EFE7D2" stroke="#B9A585" stroke-width="1.6"/>'
+   +'<g stroke="#4E7A99" stroke-width="2">'+[10,20,30,40,50].map(y=>'<path d="M-5 '+y+' h10"/>').join('')+'</g></g>'
+  +'</svg>';
+}
+
+/* ======================= EVIDENCE PICTURES =======================
+   One drawing per clue, so the language always has a picture beside it.
+   Same idea as Whisker Street: a labelled diagram, not a painting —
+   she reads the evidence out, then points at the thing being described. */
+const EM='Special Elite, monospace';
+function eF(inner){return '<svg viewBox="0 0 320 200" role="img" aria-hidden="true">'+inner+'</svg>';}
+function eG(){return '<rect width="320" height="200" fill="#241A21"/><circle cx="160" cy="4" r="152" fill="#4A3742" opacity=".5"/>';}
+function eFloor(y){return '<rect x="0" y="'+y+'" width="320" height="'+(200-y)+'" fill="#33262E"/>'
+ +'<path d="M0 '+y+' H320" stroke="#4A3A43" stroke-width="2.4"/>';}
+function eWood(y){let s='<rect x="0" y="'+y+'" width="320" height="'+(200-y)+'" fill="#5A4436"/>'
+ +'<path d="M0 '+y+' H320" stroke="#6B5242" stroke-width="2.4"/><g stroke="#6B5242" stroke-width="1.8">';
+ for(let x=32;x<320;x+=36)s+='<path d="M'+x+' '+y+' V200"/>';
+ return s+'</g>';}
+function eTxt(x,y,t,c,sz,anch){return '<text x="'+x+'" y="'+y+'" font-family="'+EM+'" font-size="'+(sz||11)+'" fill="'+(c||'#B9A585')+'"'
+ +(anch?' text-anchor="'+anch+'"':'')+'>'+t+'</text>';}
+function eTag(x,y,t,c){
+  const w=t.length*6.6+18;
+  return '<g><rect x="'+(x-w/2).toFixed(1)+'" y="'+(y-13)+'" width="'+w.toFixed(1)+'" height="22" rx="6" fill="#241A21" stroke="'+c+'" stroke-width="2"/>'
+   +eTxt(x,y+3,t,c,11,'middle')+'</g>';}
+function eCross(x,y,c){return '<g stroke="'+(c||'#C0453E')+'" stroke-width="4.4" stroke-linecap="round">'
+ +'<path d="M'+(x-8)+' '+(y-8)+' l16 16M'+(x+8)+' '+(y-8)+' l-16 16"/></g>';}
+function eTick(x,y){return '<path d="M'+(x-7)+' '+y+' l6 7 l10 -14" stroke="#79A257" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';}
+function eFluff(x,y,r){return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="#F6F1E4" opacity=".9"/>';}
+function eDoor(x,y,w,h){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="4" fill="#2F242B" stroke="#5A4652" stroke-width="2"/>'
+ +'<rect x="'+(x+5)+'" y="'+(y+6)+'" width="'+(w-10)+'" height="'+(h-12)+'" rx="3" fill="#3A2C34"/>';}
+function eDoc(title,rows,hi){
+  let s='<rect x="30" y="12" width="260" height="176" rx="9" fill="#F3EDDF" stroke="#B9A585" stroke-width="3"/>'
+   +'<rect x="30" y="12" width="260" height="26" rx="9" fill="#4A3A43"/>'
+   +'<rect x="30" y="31" width="260" height="7" fill="#4A3A43"/>'
+   +eTxt(160,31,title,'#F5B942',12,'middle');
+  for(let i=0;i<rows.length;i++){
+    const r=rows[i],y=64+i*25;
+    if(hi===i)s+='<rect x="38" y="'+(y-16)+'" width="244" height="24" rx="4" fill="#F5B942" opacity=".26"/>';
+    s+=eTxt(46,y,r[0],'#6B5A64',12)
+     +'<text x="274" y="'+y+'" text-anchor="end" font-family="'+EM+'" font-size="12" fill="'+(r[2]||'#332630')+'">'+r[1]+'</text>'
+     +'<path d="M46 '+(y+7)+' H274" stroke="#E2D9C3" stroke-width="1.4"/>';
+  }
+  return s;
+}
+
+const CLUEART={
+ /* ---------------- 001 · the museum ---------------- */
+ '001':[
+  /* 1 · a trail of fluff */
+  function(){return eF(eG()+eFloor(140)
+   +eDoor(10,64,42,76)
+   +'<rect x="76" y="94" width="58" height="46" rx="3" fill="#3A2C34" stroke="#5A4652" stroke-width="2"/>'
+   +'<rect x="68" y="85" width="74" height="10" rx="4" fill="#4A3A43"/>'
+   +eTxt(105,122,'EMPTY','#8E7A86',10,'middle')
+   +'<g fill="#3A2C34" stroke="#4A3A43" stroke-width="1.6">'
+   +'<rect x="196" y="152" width="118" height="14"/><rect x="216" y="138" width="98" height="14"/>'
+   +'<rect x="236" y="124" width="78" height="14"/><rect x="256" y="110" width="58" height="14"/></g>'
+   +eFluff(148,154,4)+eFluff(172,158,3.4)+eFluff(196,150,4.2)+eFluff(220,138,3.6)
+   +eFluff(244,124,4)+eFluff(268,110,3.4)+eFluff(292,100,3)
+   +eTag(46,178,'NO FLUFF HERE','#C0453E')
+   +eTag(248,186,'IT GOES UP','#F5B942'));},
+  /* 2 · the front door */
+  function(){return eF(eG()+eFloor(168)
+   +eDoor(96,26,120,142)
+   +'<rect x="188" y="88" width="34" height="11" rx="5" fill="#F5B942"/>'
+   +'<circle cx="206" cy="112" r="5" fill="#B9A585"/>'
+   +eTag(258,74,'LATCH','#F5B942')
+   +eTag(258,98,'THIS SIDE','#F5B942')
+   +'<g>'+eCross(52,60)+eTxt(52,94,'WINDOWS','#8E7A86',10,'middle')+eTxt(52,108,'ALL SHUT','#8E7A86',10,'middle')+'</g>'
+   +'<g>'+eCross(52,140)+eTxt(52,160,'BACK DOOR','#8E7A86',10,'middle')+'</g>'
+   +eTag(160,188,'NOBODY LEFT','#79A257'));},
+  /* 3 · the empty stand */
+  function(){return eF(eG()+eFloor(172)
+   +'<rect x="86" y="146" width="148" height="26" rx="4" fill="#4A3A43"/>'
+   +'<rect x="98" y="52" width="124" height="94" rx="6" fill="#8FB8D6" opacity=".13"/>'
+   +'<rect x="98" y="52" width="124" height="94" rx="6" fill="none" stroke="#B9A585" stroke-width="5"/>'
+   +'<path d="M222 52 L268 34 L268 128 L222 146" fill="#8FB8D6" opacity=".1"/>'
+   +'<path d="M222 52 L268 34" stroke="#B9A585" stroke-width="4" fill="none"/>'
+   +'<g transform="translate(150 118)"><circle r="7" fill="none" stroke="#F5B942" stroke-width="4"/>'
+   +'<path d="M0 7 v18 M0 18 h8 M0 25 h8" stroke="#F5B942" stroke-width="4"/></g>'
+   +eTag(58,40,'OPEN','#F5B942')
+   +eTag(160,190,'NOT ONE CRACK','#79A257')
+   +eTag(262,166,'2 KEYS ONLY','#F5B942'));},
+  /* 4 · the warm room */
+  function(){return eF(eG()
+   +'<rect x="24" y="16" width="272" height="80" rx="6" fill="#3A2C34" stroke="#5A4652" stroke-width="2"/>'
+   +'<rect x="24" y="104" width="272" height="80" rx="6" fill="#2F242B" stroke="#5A4652" stroke-width="2"/>'
+   +'<circle cx="70" cy="52" r="15" fill="#F5B942"/><path d="M70 52 L34 96 L106 96 Z" fill="#F5B942" opacity=".2"/>'
+   +eTxt(126,44,'READING ROOM','#F5B942',12)
+   +eTxt(126,64,'WARMEST IN THE HOUSE','#B9A585',11)
+   +eTxt(126,84,'AND THE LAMP IS ON','#B9A585',11)
+   +'<g stroke="#8FB8D6" stroke-width="2.6" opacity=".85">'
+   +'<path d="M52 122 v44M36 144 h32M40 130 l24 28M64 130 l-24 28"/></g>'
+   +eTxt(126,132,'FRONT HALL','#8FB8D6',12)
+   +eTxt(126,152,'FREEZING','#8FB8D6',11)
+   +eTxt(126,172,'COLDEST NIGHT SO FAR','#8E7A86',11)
+   +eTag(252,120,'11 O CLOCK','#8FB8D6'));},
+  /* 5 · six pairs of boots */
+  function(){return eF(eG()+eFloor(150)
+   +'<g fill="#5A4436" stroke="#3B3238" stroke-width="1.6">'
+   +[16,62,108,154,200,246].map(x=>'<path d="M'+x+' 122 h16 v22 h10 v6 h-26 z"/>').join('')+'</g>'
+   +eTxt(160,174,'SIX PAIRS, LINED UP NEATLY','#B9A585',11,'middle')
+   +'<g>'+[[10,42],[42,34],[74,44],[106,36],[138,44],[170,34]].map(p=>'<g transform="translate('+p[0]+' '+p[1]+')">'
+     +'<path d="M0 0 q16 -9 32 0 q-16 8 -32 0 z" fill="#F6F1E4" stroke="#CBBBA1" stroke-width="1.4"/>'
+     +'<path d="M16 -5 v9" stroke="#CBBBA1" stroke-width="1.2"/></g>').join('')+'</g>'
+   +eTxt(106,74,'SIX BOOKS, OPEN','#B9A585',11,'middle')
+   +'<g transform="translate(258 60)"><rect x="-26" y="-6" width="52" height="44" rx="4" fill="#3A2C34" stroke="#5A4652" stroke-width="2"/>'
+   +'<rect x="-26" y="-24" width="52" height="20" rx="4" fill="#4A3A43"/>'
+   +'<g transform="translate(0 6)"><circle cx="-8" r="7" fill="none" stroke="#F5B942" stroke-width="2.4"/>'
+   +'<circle cx="8" r="7" fill="none" stroke="#F5B942" stroke-width="2.4"/><path d="M-1 0 h2" stroke="#F5B942" stroke-width="2"/></g></g>'
+   +eTag(258,120,'FOLDED, NEATLY','#F5B942')
+   +eTag(258,186,'SOMEBODY STAYED','#79A257'));}
+ ],
+ /* ---------------- 002 · the midnight thump ---------------- */
+ '002':[
+  /* 1 · which nights */
+  function(){return eF(eG()+eDoc('THE NIGHT LIST',[
+    ['MONDAY','QUIET','#79A257'],
+    ['TUESDAY','THUMP  ·  WINDY','#C0453E'],
+    ['WEDNESDAY','QUIET','#79A257'],
+    ['THURSDAY','THUMP  ·  WINDY','#C0453E'],
+    ['FRIDAY','THUMP  ·  WINDY','#C0453E']]));},
+  /* 2 · exactly midnight */
+  function(){return eF(eG()
+   +'<circle cx="80" cy="98" r="52" fill="#3A2C34" stroke="#B9A585" stroke-width="3"/>'
+   +'<g stroke="#B9A585" stroke-width="2">'+[0,90,180,270].map(a=>{
+      const r1=42,r2=48,rad=a*Math.PI/180;
+      return '<path d="M'+(80+r1*Math.sin(rad)).toFixed(1)+' '+(98-r1*Math.cos(rad)).toFixed(1)
+        +' L'+(80+r2*Math.sin(rad)).toFixed(1)+' '+(98-r2*Math.cos(rad)).toFixed(1)+'"/>';}).join('')+'</g>'
+   +'<path d="M80 98 V58" stroke="#F5B942" stroke-width="4" stroke-linecap="round"/>'
+   +'<path d="M80 98 V62" stroke="#F5B942" stroke-width="4" stroke-linecap="round"/>'
+   +'<circle cx="80" cy="98" r="4" fill="#F5B942"/>'
+   +eTxt(80,168,'MIDNIGHT','#F5B942',12,'middle')
+   +'<path d="M176 34 V166" stroke="#5A4652" stroke-width="2.4"/>'
+   +[['9.00','HALL CLOSES','#B9A585',48],['9.30','LAST ONE HOME','#B9A585',86],['12.00','THUMP','#C0453E',140]]
+     .map(r=>'<g><circle cx="176" cy="'+r[3]+'" r="5" fill="'+r[2]+'"/>'+eTxt(192,r[3]+4,r[0]+'  '+r[1],r[2],11)+'</g>').join('')
+   +eTag(230,186,'NOBODY THERE','#79A257'));},
+  /* 3 · a mark on the floor */
+  function(){return eF(eG()+eWood(70)
+   +'<path d="M110 148 A50 26 0 0 1 210 148" fill="none" stroke="#EFE7D2" stroke-width="6" stroke-linecap="round"/>'
+   +eTag(160,118,'ONE FOOT, TURNING','#F5B942')
+   +eTxt(160,178,'THE REST OF THE FLOOR IS SPOTLESS','#EFE7D2',11,'middle')
+   +eTag(56,46,'SWEPT','#79A257')+eTag(258,46,'POLISHED','#79A257'));},
+  /* 4 · the loose shutter */
+  function(){return eF(eG()
+   +'<rect x="30" y="44" width="96" height="86" rx="4" fill="#2A2130" stroke="#7A6472" stroke-width="2"/>'
+   +'<path d="M78 44 V130 M30 87 H126" stroke="#7A6472" stroke-width="2"/>'
+   +'<g transform="rotate(-18 134 52)"><rect x="128" y="42" width="16" height="90" rx="3" fill="#4A3A43" stroke="#F5B942" stroke-width="2.4"/></g>'
+   +eTag(66,158,'ONE HINGE GONE','#F5B942')
+   +'<g stroke="#8FB8D6" stroke-width="3" fill="none" stroke-linecap="round">'
+   +'<path d="M158 78 h56"/><path d="M204 70 l12 8 l-12 8"/></g>'
+   +eTxt(186,60,'DRAUGHT','#8FB8D6',11,'middle')
+   +eDoor(238,44,60,96)
+   +'<g stroke="#C0453E" stroke-width="3" fill="none">'+[0,1,2].map(i=>'<path d="M'+(302+i*5)+' '+(76+i*6)+' q8 8 0 16"/>').join('')+'</g>'
+   +eTag(268,164,'SLAMS HALF A','#C0453E')
+   +eTag(268,186,'SECOND LATE','#C0453E'));},
+  /* 5 · the lamp at midnight */
+  function(){return eF(eG()
+   +'<rect x="20" y="20" width="278" height="106" rx="6" fill="#3A2C34" stroke="#5A4652" stroke-width="2"/>'
+   +'<circle cx="70" cy="52" r="13" fill="#F5B942"/><path d="M70 52 L38 122 L102 122 Z" fill="#F5B942" opacity=".18"/>'
+   +eTxt(112,46,'THE HALL, LATE','#F5B942',12)
+   +eTxt(112,66,'LAMP ON. NOBODY IN IT.','#B9A585',11)
+   +'<g transform="translate(224 96)"><path d="M-30 14 q0 -22 18 -24 q26 -3 32 12 q3 12 -12 12 z" fill="#C26F8A" stroke="#8E4A62" stroke-width="2"/>'
+   +'<path d="M-30 14 q-2 -14 6 -18" stroke="#8E4A62" stroke-width="2" fill="none"/>'
+   +'<circle cx="18" cy="6" r="6" fill="#241A21"/></g>'
+   +eTag(226,142,'LEFT SHOE, WORN THROUGH','#F5B942')
+   +'<rect x="0" y="160" width="320" height="40" fill="#2A2028"/>'
+   +'<g fill="#1B1319">'+[26,96,166,236].map(x=>'<path d="M'+x+' 200 q0 -24 24 -24 q24 0 24 24 Z"/>').join('')+'</g>'
+   +eTxt(160,192,'THE BURROWS — RIGHT UNDERNEATH','#8E7A86',11,'middle'));}
+ ],
+ /* ---------------- 003 · the golden carrot ---------------- */
+ '003':[
+  /* 1 · the felt is not dented */
+  function(){return eF(eG()
+   +'<rect x="24" y="126" width="272" height="16" rx="3" fill="#5A4436"/>'
+   +'<rect x="24" y="142" width="272" height="12" fill="#4A3A43"/>'
+   +'<rect x="48" y="112" width="90" height="14" rx="3" fill="#4E7136"/>'
+   +'<rect x="182" y="112" width="90" height="14" rx="3" fill="#4E7136"/>'
+   +'<path d="M182 126 q22 -14 44 0" fill="none" stroke="#79A257" stroke-width="3" stroke-dasharray="5 4"/>'
+   +'<g transform="translate(93 92)"><path d="M0 20 L-11 -12 Q0 -19 11 -12 Z" fill="#E0B24C" stroke="#9E7A21" stroke-width="2"/></g>'
+   +'<g transform="translate(227 92)"><path d="M0 20 L-11 -12 Q0 -19 11 -12 Z" fill="#B9A585" stroke="#8E7050" stroke-width="2" opacity=".5"/></g>'
+   +eTxt(93,60,'TODAY','#F5B942',12,'middle')
+   +eTxt(227,60,'SIXTY YEARS','#8E7A86',12,'middle')
+   +eTag(93,178,'FELT STILL SPRINGY','#C0453E')
+   +eTag(227,178,'SHOULD BE FLAT','#8E7A86'));},
+  /* 2 · the dust ring fits exactly */
+  function(){return eF(eG()
+   +'<rect x="20" y="22" width="280" height="156" rx="8" fill="#5A4436"/>'
+   +'<ellipse cx="150" cy="102" rx="78" ry="52" fill="none" stroke="#B9A585" stroke-width="4" stroke-dasharray="8 6"/>'
+   +'<ellipse cx="150" cy="102" rx="72" ry="47" fill="#E0B24C" opacity=".9" stroke="#9E7A21" stroke-width="2"/>'
+   +eTxt(150,106,'THE COPY','#7A5A16',12,'middle')
+   +eTag(60,42,'DUST RING','#B9A585')
+   +eTag(150,170,'NOT A HAIR OUT','#F5B942'));},
+  /* 3 · four hundred grams */
+  function(){return eF(eG()
+   +'<g transform="translate(88 40)"><path d="M0 118 v-108" stroke="#8E7050" stroke-width="5"/>'
+   +'<path d="M-46 12 h92" stroke="#8E7050" stroke-width="4"/>'
+   +'<path d="M-46 12 v14M46 12 v14" stroke="#8E7050" stroke-width="2"/>'
+   +'<path d="M-62 28 h32M30 28 h32" stroke="#F5B942" stroke-width="4"/>'
+   +'<path d="M-24 118 h48" stroke="#8E7050" stroke-width="6"/>'
+   +'<g transform="translate(-46 4)"><path d="M0 12 L-8 -8 Q0 -13 8 -8 Z" fill="#E0B24C" stroke="#9E7A21" stroke-width="1.8"/></g></g>'
+   +eTag(42,182,'400 g','#C0453E')
+   +eDocSmall());},
+  /* 4 · cedar shavings */
+  function(){return eF(eG()+eFloor(146)
+   +'<g fill="#2E3C2C">'+[0,46,92,138,184,230,276].map(x=>'<path d="M'+x+' 146 q10 -16 22 0 Z"/>').join('')+'</g>'
+   +'<g fill="#C9A96B" opacity=".9">'+[[60,166],[92,174],[38,176],[116,164],[74,184],[136,178]]
+     .map(p=>'<ellipse cx="'+p[0]+'" cy="'+p[1]+'" rx="9" ry="3.2" transform="rotate(-20 '+p[0]+' '+p[1]+')"/>').join('')+'</g>'
+   +eTag(84,138,'CEDAR SHAVINGS','#C9A96B')
+   +'<g><path d="M196 96 L252 62 L308 96 Z" fill="#4A3A43" stroke="#5A4652" stroke-width="2"/>'
+   +'<rect x="204" y="96" width="96" height="60" rx="3" fill="#3A2C34" stroke="#5A4652" stroke-width="2"/>'
+   +eDoor(236,110,34,46)
+   +'<rect x="210" y="104" width="18" height="46" rx="2" fill="#C9A96B" transform="rotate(-6 219 127)"/></g>'
+   +eTag(252,42,'ONE SHED','#F5B942')
+   +eTag(252,178,'ONE CEDAR PLANK','#F5B942'));},
+  /* 5 · a page torn out */
+  function(){return eF(eG()
+   +'<path d="M28 40 Q160 24 292 40 L292 172 Q160 156 28 172 Z" fill="#F3EDDF" stroke="#B9A585" stroke-width="3"/>'
+   +'<path d="M160 30 V164" stroke="#B9A585" stroke-width="3"/>'
+   +'<g stroke="#E2D9C3" stroke-width="1.6">'+[62,80,98,116,134].map(y=>'<path d="M42 '+y+' H144M176 '+y+' H278"/>').join('')+'</g>'
+   +eTxt(93,54,'11','#6B5A64',12,'middle')
+   +eTxt(227,54,'13','#6B5A64',12,'middle')
+   +'<path d="M160 34 l10 8 l-10 8 l10 8 l-10 8 l10 8 l-10 8 l10 8 l-10 8 l10 8 l-10 8 l10 8 l-10 8"'
+   +' fill="none" stroke="#C0453E" stroke-width="3"/>'
+   +eTag(160,186,'PAGE 12 — THE MEASUREMENTS','#C0453E'));}
+ ],
+ /* ---------------- 004 · the crossed letters ---------------- */
+ '004':[
+  /* 1 · three different times */
+  function(){return eF(eG()+eDoc('WHEN WAS THE BOX EMPTIED?',[
+    ['MARIGOLD  5.30','ALREADY EMPTY','#C0453E'],
+    ['DANDELION  6.00','I EMPTIED IT','#F5B942'],
+    ['NUTMEG  8.00','RACK WAS FULL','#332630'],
+    ['','','#332630'],
+    ['ALL THREE HONEST?','YES','#79A257']],0));},
+  /* 2 · nothing was opened */
+  function(){return eF(eG()
+   +'<g>'+[[26,44],[128,44],[230,44],[76,120],[178,120]].map(p=>'<g transform="translate('+p[0]+' '+p[1]+')">'
+     +'<rect width="64" height="42" rx="3" fill="#F6F1E4" stroke="#CBBBA1" stroke-width="2"/>'
+     +'<path d="M0 0 l32 22 l32 -22" fill="none" stroke="#CBBBA1" stroke-width="1.8"/>'
+     +'<circle cx="32" cy="26" r="8" fill="#C0453E" opacity=".85"/>'
+     +eTick(32,26)+'</g>').join('')+'</g>'
+   +eTag(160,188,'EVERY SEAL STILL WHOLE','#79A257'));},
+  /* 3 · names that look alike */
+  function(){return eF(eG()+eDoc('WHERE THEY WENT',[
+    ['BRAMBLE','BRAMWELL','#C0453E'],
+    ['THISTLE','THIMBLE','#C0453E'],
+    ['MARIGOLD','MARJORAM','#C0453E'],
+    ['','',''],
+    ['SAME SHAPE','EVERY TIME','#F5B942']]));},
+  /* 4 · an empty case */
+  function(){return eF(eG()+eFloor(158)
+   +'<g transform="translate(160 96)">'
+   +'<path d="M-76 -34 q76 -18 152 0 l0 12 q-76 -16 -152 0 z" fill="#4A3A43" stroke="#8E7050" stroke-width="2.4"/>'
+   +'<path d="M-76 -22 q76 -16 152 0 l0 44 q-76 14 -152 0 z" fill="#3A2C34" stroke="#8E7050" stroke-width="2.4"/>'
+   +'<path d="M-60 4 q60 -12 120 0" stroke="#241A21" stroke-width="3" fill="none"/></g>'
+   +eCross(160,100)
+   +eTxt(160,150,'S. D.','#8E7050',12,'middle')
+   +eTag(74,44,'CARRIED FOR YEARS','#B9A585')
+   +eTag(160,186,'EMPTY','#C0453E'));},
+  /* 5 · one smudged slot */
+  function(){return eF(eG()
+   +'<rect x="18" y="20" width="188" height="160" rx="5" fill="#3A2C34" stroke="#6E5A66" stroke-width="2"/>'
+   +'<g stroke="#6E5A66" stroke-width="2">'+[60,100,140].map(y=>'<path d="M18 '+y+' H206"/>').join('')
+   +[80,142].map(x=>'<path d="M'+x+' 20 V180"/>').join('')+'</g>'
+   +'<g fill="#F6F1E4" opacity=".85">'+[[26,28],[88,28],[150,28],[26,108],[150,68]]
+     .map(p=>'<rect x="'+p[0]+'" y="'+p[1]+'" width="46" height="26" rx="2"/>').join('')+'</g>'
+   +'<rect x="88" y="146" width="46" height="8" rx="3" fill="#E2D9C3"/>'
+   +'<ellipse cx="111" cy="166" rx="12" ry="8" fill="#8E7A86" opacity=".8"/>'
+   +'<path d="M206 160 L252 166" stroke="#F5B942" stroke-width="2" stroke-dasharray="4 4"/>'
+   +'<g transform="translate(276 130)"><circle r="34" fill="#241A21" stroke="#F5B942" stroke-width="3"/>'
+   +'<ellipse cy="6" rx="15" ry="10" fill="#8E7A86" opacity=".85"/>'
+   +eTxt(0,-10,'NOSE','#F5B942',10,'middle')+'</g>'
+   +eTag(78,192,'ONE SLOT ONLY','#F5B942'));}
+ ],
+ /* ---------------- 005 · the vanishing stream ---------------- */
+ '005':[
+  /* 1 · a finger a day */
+  function(){return eF(eG()
+   +'<rect x="0" y="118" width="320" height="82" fill="#2E3C2C"/>'
+   +'<rect x="0" y="150" width="320" height="50" fill="#4E7A99" opacity=".8"/>'
+   +'<path d="M0 150 H320" stroke="#8FB8D6" stroke-width="3"/>'
+   +'<g transform="translate(96 40)"><rect x="-9" width="18" height="130" rx="3" fill="#F3EDDF" stroke="#B9A585" stroke-width="2"/>'
+   +'<g stroke="#4E7A99" stroke-width="2.4">'+[14,26,38,50,62,74,86,98,110].map(y=>'<path d="M-9 '+y+' h18"/>').join('')+'</g>'
+   +'<g fill="#C0453E">'+[14,26,38,50,62,74,86,98,110].map(y=>'<circle cx="20" cy="'+y+'" r="3.2"/>').join('')+'</g></g>'
+   +eTxt(132,64,'DAY 1','#B9A585',10)+eTxt(132,152,'DAY 9','#B9A585',10)
+   +eTag(230,100,'ONE FINGER','#F5B942')
+   +eTag(230,124,'EVERY DAY','#F5B942')
+   +eTag(230,180,'EVEN IN THE RAIN','#8FB8D6'));},
+  /* 2 · it started the day after the storm */
+  function(){return eF(eG()
+   +'<path d="M22 34 Q46 20 70 34 Q92 26 96 46 Q70 56 22 50 Z" fill="#5A4652"/>'
+   +'<g stroke="#F5B942" stroke-width="3.4" fill="none" stroke-linecap="round"><path d="M50 52 l-10 22 l14 -4 l-8 20"/></g>'
+   +'<g stroke="#8FB8D6" stroke-width="2.6" opacity=".8">'+[26,44,78,92].map(x=>'<path d="M'+x+' 54 l-6 20"/>').join('')+'</g>'
+   +eTxt(58,116,'THE STORM','#F5B942',12,'middle')
+   +eTxt(58,134,'NIGHT 0','#8E7A86',11,'middle')
+   +'<path d="M104 160 H304" stroke="#5A4652" stroke-width="3"/>'
+   +'<g>'+[0,1,2,3,4,5,6,7,8].map(i=>'<path d="M'+(112+i*22)+' 160 V'+(64+i*10)+'" stroke="#4E7A99" stroke-width="8"/>').join('')+'</g>'
+   +'<path d="M112 60 Q200 96 288 152" stroke="#C0453E" stroke-width="2.4" fill="none" stroke-dasharray="6 5"/>'
+   +eTxt(204,186,'NINE DAYS, DOWN AND DOWN','#8FB8D6',11,'middle')
+   +eTag(214,40,'IT HAS NOT STOPPED','#C0453E'));},
+  /* 3 · nobody's butt is fuller */
+  function(){return eF(eG()+eFloor(160)
+   +'<g>'+[['MARIGOLD',26,66],['IVY',102,80],['SORREL',178,92],['BARNABY',254,160]].map(function(b,i){
+      const x=b[1],top=b[2];
+      let g='<rect x="'+x+'" y="70" width="52" height="88" rx="5" fill="#3A2C34" stroke="#8E7050" stroke-width="2.4"/>';
+      if(i<3)g+='<rect x="'+(x+4)+'" y="'+top+'" width="44" height="'+(154-top)+'" rx="3" fill="#4E7A99" opacity=".75"/>';
+      g+=eTxt(x+26,178,b[0],'#8E7A86',10,'middle');
+      g+=i<3?eTick(x+26,54):eCross(x+26,54);
+      return g;}).join('')+'</g>'
+   +eTag(160,26,'ALL AT THE USUAL LINE','#79A257')
+   +eTag(272,124,'NO BUTT','#8E7A86'));},
+  /* 4 · the dry channel is wet */
+  function(){return eF(eG()
+   +'<path d="M0 96 Q120 74 320 58 L320 200 L0 200 Z" fill="#2E3C2C"/>'
+   +'<path d="M0 140 Q100 122 200 138" stroke="#3A3038" stroke-width="18" fill="none"/>'
+   +'<path d="M200 138 Q260 100 320 78" stroke="#3F5E4A" stroke-width="20" fill="none"/>'
+   +'<path d="M200 138 Q260 100 320 78" stroke="#4E7A99" stroke-width="8" fill="none" opacity=".85"/>'
+   +'<g fill="#79A257">'+[[218,124],[240,114],[262,104],[284,94],[306,84]]
+     .map(p=>'<ellipse cx="'+p[0]+'" cy="'+p[1]+'" rx="9" ry="5" transform="rotate(-24 '+p[0]+' '+p[1]+')"/>').join('')+'</g>'
+   +eTag(72,110,'DRY FIFTY YEARS','#8E7A86')
+   +eTag(228,50,'RUNNING NOW','#4E7A99')
+   +eTag(160,186,'BRAND NEW MOSS','#79A257'));},
+  /* 5 · a fall of stones */
+  function(){return eF(eG()
+   +'<path d="M0 84 Q120 62 320 50 L320 200 L0 200 Z" fill="#2E3C2C"/>'
+   +'<path d="M0 62 Q90 52 148 96" stroke="#5A4436" stroke-width="10" fill="none"/>'
+   +'<path d="M0 150 Q76 138 140 122" stroke="#4E7A99" stroke-width="16" fill="none" opacity=".9"/>'
+   +'<path d="M164 112 Q240 86 320 70" stroke="#4E7A99" stroke-width="14" fill="none" opacity=".9"/>'
+   +'<g>'+[[150,122,15],[172,112,12],[136,110,10],[160,98,9],[142,94,8],[176,130,9]]
+     .map(s=>'<circle cx="'+s[0]+'" cy="'+s[1]+'" r="'+s[2]+'" fill="#6E6A74" stroke="#4A4750" stroke-width="2"/>').join('')+'</g>'
+   +eTag(66,178,'THE BROOK ARRIVES','#4E7A99')
+   +eTag(156,166,'STONES','#B7A8AF')
+   +eTag(250,40,'AND GOES ROUND','#4E7A99')
+   +eTag(58,42,'TORN BANK','#C0453E'));}
+ ]
+};
+function eDocSmall(){
+  return '<g transform="translate(226 96)"><rect x="-74" y="-58" width="148" height="116" rx="7" fill="#F3EDDF" stroke="#B9A585" stroke-width="3"/>'
+   +'<rect x="-74" y="-58" width="148" height="24" rx="7" fill="#4A3A43"/><rect x="-74" y="-42" width="148" height="8" fill="#4A3A43"/>'
+   +eTxt(0,-41,'THE RECORD BOOK','#F5B942',11,'middle')
+   +eTxt(0,-8,'THE GOLDEN CARROT','#6B5A64',11,'middle')
+   +eTxt(0,22,'3 KILOGRAMS','#C0453E',15,'middle')
+   +'<path d="M-56 32 H56" stroke="#E2D9C3" stroke-width="1.6"/>'
+   +eTxt(0,48,'SAME NUMBER SINCE 1966','#6B5A64',9,'middle')+'</g>';
+}
+function clueArt(isFinal){
+  try{
+    const c=CUR();
+    if(isFinal)return c.scene?c.scene():'';
+    const set=CLUEART[c.id];
+    if(!set)return '';
+    const fn=set[S.ci];
+    return fn?fn():'';
+  }catch(e){return '';}
+}
+
+/* ============================ CASES ============================ */
+const SUS3=[
+ {id:'barnaby3',name:'Barnaby Fluff',role:'Show steward',fur:'cinnamon',
+  alibi:'“I set that table out myself. Same as every year. Nothing has moved.”'},
+ {id:'marigold3',name:'Marigold',role:'Produce judge',fur:'cream',
+  alibi:'“I judge the vegetables. I do not touch the silverware.”'},
+ {id:'thistle3',name:'Old Thistle',role:'Gardener',fur:'soot',
+  alibi:'“I have not been near the tent. I have been in my shed. All winter, if you want to know.”'},
+ {id:'sorrel',name:'Sorrel',role:'Youngest grower',fur:'oat',
+  alibi:'“I only came to see if my carrot won. It did not.”'}
+];
+const CLUES3=[
+ {tag:'Evidence 1 of 5',title:'The felt is not dented',reward:'hat',
+  text:'The Golden Carrot has stood on the same green felt for sixty years. Under it, the felt should be squashed flat. Today the felt is springy. The trophy sitting on it is not pressing down at all.',
+  note:'The thing on the table is far too light to be the real trophy.',
+  opts:[
+   {t:'The felt was replaced this morning.',hint:'Look at the edges. The felt is faded and worn, and there is sixty years of dust in the seams. Nobody has changed it.'},
+   {t:'The thing on the table is too light to be the real one.',ok:true},
+   {t:'The trophy has always been light.',hint:'The record book says it weighs as much as three bags of flour. That would flatten felt.'},
+   {t:'Somebody has propped the trophy up from underneath.',hint:'Lift the edge and look. There is nothing under it but felt.'},
+   {t:'The table has been changed instead.',hint:'It is the same table with the same wobble in the same leg. Barnaby sets it out every year.'}
+  ]},
+ {tag:'Evidence 2 of 5',title:'The dust ring fits exactly',reward:'face',
+  text:'Around the base there is a ring in the dust, worn there over sixty years. The trophy standing there now sits inside that ring perfectly. Not a hair too wide. Not a hair too narrow.',
+  note:'Whoever made the copy knew the exact measurements.',
+  opts:[
+   {t:'It is the real trophy after all.',hint:'Then the felt would be flat. Two clues have to agree, and these do not.'},
+   {t:'It fits by luck.',hint:'To the width of a hair, on the first try? Nobody is that lucky. Somebody measured.'},
+   {t:'Whoever made this copy had the exact measurements.',ok:true},
+   {t:'The ring was drawn on this morning.',hint:'It is worn INTO the wood, not drawn on top of it. That takes years.'},
+   {t:'The copy is a bit too small and nobody noticed.',hint:'Put your eye level with the table. It fills the ring right to the line.'}
+  ]},
+ {tag:'Evidence 3 of 5',title:'Four hundred grams',reward:'neck',
+  text:'Marigold lets you borrow the produce scales. The trophy on the table weighs four hundred grams — about the same as a loaf of bread. The show record book says the Golden Carrot weighs three kilograms.',
+  note:'It weighs less than a seventh of what it should. It is not metal at all.',
+  opts:[
+   {t:'The scales are broken.',hint:'Marigold has been weighing marrows on them all morning and they have been right every time. Try a marrow yourself.'},
+   {t:'The record book is wrong.',hint:'It has been the same number in the same handwriting since before Marigold was born. Somebody would have noticed.'},
+   {t:'The trophy has worn away over sixty years.',hint:'Gold does not wear down to a seventh of itself. It would still be heavy, just thinner.'},
+   {t:'It weighs so little that it cannot be metal.',ok:true},
+   {t:'Somebody hollowed the real one out.',hint:'Good thinking, but look at the surface. Under the paint it is not metal at all. Keep going.'}
+  ]},
+ {tag:'Evidence 4 of 5',title:'Cedar shavings',reward:'coat',
+  text:'On the grass by the tent flap there are wood shavings. They smell of cedar. There is exactly one shed in Clover Hollow with a cedar plank in it, and one rabbit who has been shut inside that shed all winter.',
+  note:'The copy is carved from cedar, out of Old Thistle’s shed.',
+  opts:[
+   {t:'Somebody has been cutting firewood.',hint:'Firewood is not cedar, and nobody carries firewood into a flower tent.'},
+   {t:'The shavings blew in from the hedge.',hint:'Shavings come off a blade. Hedges do not make them.'},
+   {t:'The copy was carved from cedar, in Old Thistle’s shed.',ok:true},
+   {t:'Sorrel dropped them from her seed tray.',hint:'Her tray is full of soil, not shavings. Have a look.'},
+   {t:'The tent poles are cedar and one has split.',hint:'The poles are ash, and all six are sound. Barnaby checked them at dawn.'}
+  ]},
+ {tag:'Evidence 5 of 5',title:'A page torn out',reward:'tool',
+  text:'The show record book is missing one page. It is the page with the Golden Carrot’s measurements on it: height, width across the base, weight. Somebody needed those numbers, and did not want to be seen writing them down.',
+  note:'Somebody was building a copy to match, and needed the measurements to do it.',
+  opts:[
+   {t:'The page fell out with age.',hint:'Torn pages leave a ragged stub. This one was pulled, and pulled straight.'},
+   {t:'Somebody wanted to hide the trophy’s value.',hint:'The page has no price on it. Only measurements.'},
+   {t:'Somebody needed the measurements to build a copy that would fit.',ok:true},
+   {t:'A judge took the page to check a marrow.',hint:'Marrows are not measured against a trophy. And the marrow page is still in the book.'},
+   {t:'The page was never there.',hint:'The page numbers jump from eleven to thirteen. Twelve is gone.'}
+  ]}
+];
+const FINALE3={
+ tag:'The accusation',title:'Put it all together',
+ text:'Springy felt. A dust ring that fits to a hair. Four hundred grams instead of three kilograms. Cedar shavings from one shed in the Hollow. And the page with the measurements torn out. So — what is on the table, and who put it there?',
+ note:'Old Thistle carved a copy while he repaired the real one, and would not show it until it was right.',
+ opts:[
+  {t:'Sorrel swapped it because her carrot did not win.',hint:'Sorrel is nine and has never held a chisel. And the copy took a whole winter to carve.'},
+  {t:'Barnaby swapped it to sell the real one.',hint:'Barnaby sets that table out every year and has never once touched the trophy. And no cedar has ever been in the gift shop.'},
+  {t:'Old Thistle carved a copy so the show would still have a trophy while he mended the real one.',ok:true},
+  {t:'Marigold hid it because the judging was unfair.',hint:'Marigold lent you her own scales to prove the thing was too light. She is helping you.'},
+  {t:'Nothing is wrong. That is the real trophy.',hint:'Three kilograms cannot weigh four hundred grams. The numbers do not allow it.'}
+ ]};
+const REVEAL3=[
+ 'The Golden Carrot cracked in the hard frost last winter. Old Thistle found it on his morning round, took it home in his coat, and did not tell a soul.',
+ 'He has been mending it in his shed ever since. And because he could not bear the show to stand there in June with an empty table, he tore the measurements out of the record book and carved a copy from a cedar plank — sixty years of dust ring matched to the hair, because he measured it eleven times.',
+ 'He never meant it to be admired. He meant it to be a placeholder, and he did not put his name anywhere near it. When you ask him about the carving he will not look up, and he will tell you it is nowhere near finished.',
+ 'It is, though. It fooled the entire Hollow for a whole morning.'
+];
+
+const SUS4=[
+ {id:'dandelion4',name:'Sergeant Dandelion',role:'Door-keeper and postman',fur:'slate',
+  alibi:'“I emptied that box at six, same as always. Everything went in the right slot.”'},
+ {id:'pip4',name:'Pip',role:'Youngest in the Hollow',fur:'oat',
+  alibi:'“I posted a letter to my gran. She never got it. She got somebody’s bill.”'},
+ {id:'nutmeg4',name:'Nutmeg',role:'Sorting clerk',fur:'cocoa',
+  alibi:'“I came in at eight and the rack was already full. I did not sort a single one.”'},
+ {id:'marigold4',name:'Marigold',role:'Baker',fur:'cream',
+  alibi:'“I was first at the box. Half past five, before the bread went in.”'}
+];
+const CLUES4=[
+ {tag:'Evidence 1 of 5',title:'Three different times',reward:'hat',
+  text:'You ask everyone when the post box was emptied. Marigold says it was already empty at half past five. Dandelion says he emptied it at six. Nutmeg says the sorting rack was full when she arrived at eight.',
+  note:'The box was emptied before six. So Dandelion emptied an already-empty box, or he is wrong about the time.',
+  opts:[
+   {t:'One of them is lying.',hint:'Hold on. Three rabbits can all be honest and still not agree. Try making all three true at once before you accuse anyone.'},
+   {t:'The box was emptied twice.',hint:'Close, and worth holding on to. But if it was emptied at half five and again at six, the second emptying got nothing. Where did the letters go?'},
+   {t:'The box was already empty before Dandelion got there at six.',ok:true},
+   {t:'Nutmeg sorted them and forgot.',hint:'She says she did not sort one, and the handwriting on the slot labels is not hers. Believe her for now.'},
+   {t:'There is no post box.',hint:'It is right there, painted blue, with a dent in the door.'}
+  ]},
+ {tag:'Evidence 2 of 5',title:'Nothing was opened',reward:'face',
+  text:'Every misdelivered letter is still sealed. Not one has been steamed, slit or peeked into. They went to the wrong burrows, and then they sat there unopened until people brought them back.',
+  note:'Nobody was being nosy. This is a sorting mistake, not snooping.',
+  opts:[
+   {t:'Somebody was reading other rabbits’ letters.',hint:'Then at least one would be open. Not one is. Check the seals yourself.'},
+   {t:'This is a sorting mistake, not snooping.',ok:true},
+   {t:'The letters were swapped on purpose to cause trouble.',hint:'Trouble-making would be funnier or crueller than a bill going to Pip’s gran. This looks like an accident.'},
+   {t:'The glue failed in the damp.',hint:'They are all sealed. The glue held perfectly. That is the point.'},
+   {t:'They were never posted at all.',hint:'They all carry Tuesday’s stamp mark. They went through the box.'}
+  ]},
+ {tag:'Evidence 3 of 5',title:'Names that look alike',reward:'neck',
+  text:'Look at where they went. Bramble’s letter went to Bramwell. Thistle’s went to Thimble. Marigold’s went to Marjoram. Every wrong burrow has a name that LOOKS like the right one — same shape, same first letters, same length.',
+  note:'Whoever sorted these was going by the shape of the words, not reading them.',
+  opts:[
+   {t:'The names sound alike and somebody misheard them.',hint:'Nobody said these out loud. They were written on envelopes. Bramble and Bramwell do not sound much alike, but on paper they look almost the same.'},
+   {t:'Whoever sorted them was going by the shape of the word, not reading it.',ok:true},
+   {t:'The addresses were written badly.',hint:'They are beautifully written. Pip’s gran does lovely handwriting and hers went wrong too.'},
+   {t:'The slot labels are in the wrong order.',hint:'The labels are alphabetical and correct. It is the letters that went into the wrong labels.'},
+   {t:'Two families have swapped burrows.',hint:'Nobody has moved in the Hollow since spring.'}
+  ]},
+ {tag:'Evidence 4 of 5',title:'An empty case',reward:'coat',
+  text:'Sergeant Dandelion has a spectacle case in his coat pocket. He has carried it for years. You ask to see it and he hands it over, and it is empty. He says he is fine. He says it twice.',
+  note:'He has lost his reading glasses, and he has not told anybody.',
+  opts:[
+   {t:'Somebody stole his spectacles.',hint:'Then he would have said so at once. He is a door-keeper. Reporting things is his whole job.'},
+   {t:'He has lost them, and he has not told anybody.',ok:true},
+   {t:'He does not need them any more.',hint:'Then why still carry the case every day? And why say he is fine twice, when nobody suggested otherwise?'},
+   {t:'He keeps a spare pair at home.',hint:'Ask him. He goes quiet. If there were a spare pair, Tuesday would have gone fine.'},
+   {t:'The case belongs to somebody else.',hint:'It has his initials pressed into the leather, worn nearly smooth.'}
+  ]},
+ {tag:'Evidence 5 of 5',title:'One smudged slot',reward:'tool',
+  text:'On the sorting rack, one slot has a smudge on the wood just below the label. It is the shape of the tip of a nose. Somebody was holding letters right up against their face, one at a time, trying to make the words out.',
+  note:'Somebody was sorting the whole rack with their nose almost on the paper.',
+  opts:[
+   {t:'A young rabbit was playing at being a postman.',hint:'Pip is too short to reach that slot even standing on the stool. Try it.'},
+   {t:'Somebody sorted the whole rack holding each letter right up to their face.',ok:true},
+   {t:'The wood is just dirty.',hint:'It is one clean nose-shaped mark under one label, and the rest of the rack is spotless. Nutmeg polishes it.'},
+   {t:'Somebody was crying over the letters.',hint:'A tear mark spreads and lifts the grain. This is a smudge from being pressed against.'},
+   {t:'A letter was stuck and had to be pulled out.',hint:'That leaves a scrape along the slot, not a round mark below the label.'}
+  ]}
+];
+const FINALE4={
+ tag:'The accusation',title:'Put it all together',
+ text:'The box was empty before six. Nothing was opened. Every wrong burrow has a name that looks like the right one. An empty spectacle case, and a nose print under one slot. So — who crossed the letters, and why?',
+ note:'Sergeant Dandelion, who had lost his glasses and would not say so.',
+ opts:[
+  {t:'Nutmeg sorted them wrongly and covered it up.',hint:'She arrived at eight and the rack was already full. And she can read perfectly well — she wrote the labels.'},
+  {t:'Marigold emptied the box early and muddled them.',hint:'She was at the box at half past five, yes. But she posted one letter and went home to her bread. The rack was sorted after that.'},
+  {t:'Sergeant Dandelion sorted them by guessing, because he had lost his reading glasses and would not say.',ok:true},
+  {t:'Pip did it as a joke.',hint:'Pip lost his own letter to his gran in it. And he cannot reach the slot.'},
+  {t:'The post box is broken and mixes them up inside.',hint:'A box cannot put a letter in a rack. Somebody carried them across the room and made choices.'}
+ ]};
+const REVEAL4=[
+ 'Sergeant Dandelion lost his reading glasses somewhere between the hedge and the bridge, about a fortnight ago. He has looked every day since, and he has not told a single rabbit.',
+ 'On Tuesday he emptied the box at half past five — earlier than he said, because he wanted the room to himself — and then he stood at that rack for an hour and a half, holding each envelope right up against his nose, matching the shape of the writing to the shape of the label. Bramble looks like Bramwell if you cannot quite see. Thistle looks like Thimble.',
+ 'He got about a third of them right. He is sixty-eight years old and he has done that round for thirty-one years without one mistake, and he could not make himself walk into the sorting room and say, out loud, that he could not read the addresses any more.',
+ 'Nobody in the Hollow minded about the letters. What they minded about was the fortnight.'
+];
+
+const SUS5=[
+ {id:'marigold5',name:'Marigold',role:'Baker',fur:'cream',
+  alibi:'“I use two buckets a day. Two. Same as I have for years.”'},
+ {id:'ivy5',name:'Ivy',role:'Dance teacher',fur:'soot',
+  alibi:'“I fill one jug. For the hall. You are welcome to come and count.”'},
+ {id:'barnaby5',name:'Barnaby Fluff',role:'Gift shop',fur:'cinnamon',
+  alibi:'“I am accusing nobody. But somebody is taking it, and it is not me.”'},
+ {id:'sorrel5',name:'Sorrel',role:'Youngest grower',fur:'oat',
+  alibi:'“My seedlings need watering. Is that allowed? Everyone is looking at me.”'}
+];
+const CLUES5=[
+ {tag:'Evidence 1 of 5',title:'A finger a day',reward:'hat',
+  text:'Somebody has pushed a measuring stick into the brook bed. The water has gone down by exactly one finger’s width every day for nine days. Not more on some days. Not less on others. Exactly the same, every day.',
+  note:'It is dropping at a steady rate. Nothing a rabbit does is that regular.',
+  opts:[
+   {t:'Somebody is taking the same amount every day.',hint:'Every day, to the width of a finger, including Sunday? No rabbit is that precise. Something steady is doing this, not somebody.'},
+   {t:'It is dropping at a perfectly steady rate.',ok:true},
+   {t:'The measuring stick is sinking into the mud.',hint:'Pull it up and look. It is pushed into gravel, and the marks on it are dry above the water line.'},
+   {t:'Somebody moves the stick each night.',hint:'Sorrel has watched it since Tuesday and it has not moved. The water has.'},
+   {t:'It has been very hot.',hint:'It rained on two of those nine days, and the drop was exactly the same on both. Weather is not this tidy.'}
+  ]},
+ {tag:'Evidence 2 of 5',title:'It started the day after the storm',reward:'face',
+  text:'Nine days ago there was a storm — the loud one, the one that took the shutter off Ivy’s hall. The brook was full that night. The next morning it started dropping, and it has not stopped.',
+  note:'Whatever changed, it changed during the storm.',
+  opts:[
+   {t:'Somebody started taking water after the storm.',hint:'Why would a storm make somebody thirsty for exactly one finger a day? Look for what the storm itself changed.'},
+   {t:'Whatever changed, the storm changed it.',ok:true},
+   {t:'The storm washed the water away.',hint:'A storm puts water in a brook. It does not carry a brook off.'},
+   {t:'It is a coincidence.',hint:'Nine days, starting the exact morning after, at a perfectly even rate. That is not a coincidence, that is a cause.'},
+   {t:'The storm broke the measuring stick.',hint:'The stick was only put in three days ago, and the drop had already been going a week by then. Barnaby noticed it first.'}
+  ]},
+ {tag:'Evidence 3 of 5',title:'Nobody’s butt is fuller',reward:'neck',
+  text:'You go round and look in every water butt in the Hollow. Marigold’s is at the usual line. Ivy’s jug is a jug. Sorrel’s watering can is half full. Barnaby has no butt at all. Nobody is hoarding anything.',
+  note:'The missing water is not in anybody’s burrow.',
+  opts:[
+   {t:'Somebody is hiding it somewhere else.',hint:'Nine days of brook water is an enormous amount. You could not hide that in Clover Hollow. You would see it from the hill.'},
+   {t:'The missing water is not in anybody’s burrow.',ok:true},
+   {t:'They emptied the butts before you came round.',hint:'Then the ground beside them would be soaked. It is dry and cracked.'},
+   {t:'Sorrel is using more than she says.',hint:'Her can holds two litres. The brook has lost more than the whole Hollow could drink in a year.'},
+   {t:'The water is being drunk.',hint:'By whom? There are forty rabbits in the Hollow and the brook has lost a river’s worth.'}
+  ]},
+ {tag:'Evidence 4 of 5',title:'The dry channel is wet',reward:'coat',
+  text:'Above the Hollow there is an old channel that has been dry as long as anyone can remember. Grandmother Bramble says it has been dry since she was a kit. Today there is water running down it — and the moss growing along it is bright green and brand new.',
+  note:'The water is going somewhere else. It has not gone away at all.',
+  opts:[
+   {t:'Somebody has been carrying water up there.',hint:'Uphill? Nine days running? And the moss has been growing steadily the whole time. Nobody is doing that.'},
+   {t:'The water is going somewhere else, not disappearing.',ok:true},
+   {t:'It is rainwater collecting.',hint:'It only rained twice. This has been running for nine days without a break.'},
+   {t:'A spring has opened up there.',hint:'Good thought — but taste it and look at it. It is the same brook water, carrying the same grit. Follow it back.'},
+   {t:'The moss was always there.',hint:'Bright green and soft, on a channel dry for fifty years? Moss that new has had water for about nine days.'}
+  ]},
+ {tag:'Evidence 5 of 5',title:'A fall of stones',reward:'tool',
+  text:'Where the brook bends, upstream of the Hollow, a heap of stones has come down off the bank. The brook arrives, meets the stones, and goes round them — into the old channel, and away over the hill.',
+  note:'The stones came down in the storm and turned the brook into its old bed.',
+  opts:[
+   {t:'Somebody built a dam.',hint:'Look at the stones. They are jumbled, all sizes, half buried, with the bank torn away above them. A built dam is stacked. This fell.'},
+   {t:'The stones came down in the storm and pushed the brook into its old bed.',ok:true},
+   {t:'The stones have always been there.',hint:'The bank above them is a raw open scar with roots hanging out of it. That happened nine days ago.'},
+   {t:'Somebody moved the stones to hide something.',hint:'There is nothing under them but more stones and a very cross frog.'},
+   {t:'The brook has dried up at its source.',hint:'Then the old channel would be dry too. It is running. All the water is still here.'}
+  ]}
+];
+const FINALE5={
+ tag:'The accusation',title:'Put it all together',
+ text:'A finger a day, exactly, for nine days. Starting the morning after the storm. Not a drop of it in anybody’s burrow. An old dry channel running, with brand new moss. And a fall of stones at the bend. So — who is taking the water?',
+ note:'Nobody. The stones came down in the storm and sent the brook round the hill.',
+ opts:[
+  {t:'Marigold, for the bakery.',hint:'Two buckets a day, and you counted them. The brook has lost more than the bakery uses in a lifetime.'},
+  {t:'Sorrel, for her seedlings.',hint:'She has a two-litre can and forty rabbits watching her. She has been the easiest one to blame all week, and she has done nothing.'},
+  {t:'Nobody. The storm brought stones down and the brook went round them into its old channel.',ok:true},
+  {t:'Ivy, for the dance hall.',hint:'One jug. She invited you to come and count it. She is not hiding a river.'},
+  {t:'Barnaby, and he accused everybody else to cover it.',hint:'Barnaby is the one who noticed it first and told everybody. He has no water butt at all.'}
+ ]};
+const REVEAL5=[
+ 'Nine days ago the storm tore a piece out of the bank above the bend, and a heap of stones came down into the brook. Not a big heap. Enough.',
+ 'The water arrived, met the stones, and did what water does — it went round. And round happened to be the old channel that has been dry since Grandmother Bramble was a kit, which runs away over the hill and down the far side, where nobody in the Hollow ever goes.',
+ 'Not one drop of it was taken. The brook is exactly as full as it always was. It is just somewhere else now, and it has been getting further away by a finger a day while the Hollow stood on the bridge and argued about who was to blame.',
+ 'It took four rabbits nine days to accuse each other, and about twenty minutes to move the stones back.'
+];
+
+const SUS1=[
+ {id:'barnaby',name:'Barnaby Fluff',role:'Gift shop',fur:'cinnamon',
+  alibi:'“I was counting postcards. Twice. I lost count the first time.”'},
+ {id:'nutmeg',name:'Nutmeg',role:'Apprentice keeper',fur:'cocoa',
+  alibi:'“I came in early to sweep. The lamp upstairs was already on.”'},
+ {id:'thistle',name:'Old Thistle',role:'Gardener',fur:'soot',
+  alibi:'“I never go inside. Look at my paws. Mud everywhere.”'},
+ {id:'bramble',name:'Grandmother Bramble',role:'Night keeper',fur:'cream',
+  alibi:'“I never go home. Somebody has to mind the place.”'}
+];
+const CLUES1=[
+ {tag:'Evidence 1 of 5',title:'A trail of fluff',reward:'hat',
+  text:'Soft white fluff is scattered across the floor. It runs from the empty stand toward the back of the hall — and then it keeps going, up the stairs. Not one wisp of it goes near the front door.',
+  note:'Whatever happened, The Down went UP the stairs — not out of the building.',
+  opts:[
+   {t:'Somebody carried The Down out through the front door.',hint:'Then there would be fluff by the front door. There is none at all. Follow the fluff instead of the guess.'},
+   {t:'The Down went up the stairs, still inside the museum.',ok:true},
+   {t:'The fluff blew in from the garden.',hint:'It starts at the empty stand and goes in one direction. Wind does not walk in a straight line up a staircase.'},
+   {t:'The Down was cut up and taken away in pieces.',hint:'A cut blanket sheds everywhere in a mess. This is a neat trail — the sort a carried thing leaves.'},
+   {t:'A very large rabbit dragged it across the floor.',hint:'Dragging leaves a wide smear. This is a line of small drops, the kind you get from carrying something soft in your arms.'}
+  ]},
+ {tag:'Evidence 2 of 5',title:'The front door',reward:'face',
+  text:'Sergeant Dandelion checks the front door. It is still latched — and the latch is on the inside. Every window is shut. The back door has not been touched since autumn.',
+  note:'Nobody left the building. Whoever took it is still in here.',
+  opts:[
+   {t:'The thief locked it behind them from outside.',hint:'You cannot reach an inside latch from the street. That is rather the point of an inside latch.'},
+   {t:'Nobody left. Whoever has it is still in the building.',ok:true},
+   {t:'The thief had a key to the front door.',hint:'A key would not re-latch it from the inside either. The latch is the problem, not the lock.'},
+   {t:'Somebody climbed out of a window.',hint:'Every window is shut, and shut from the inside as well. Check them again.'},
+   {t:'It was taken out through the back door.',hint:'The back door has not moved since autumn — there is a spider living on the handle.'}
+  ]},
+ {tag:'Evidence 3 of 5',title:'The empty stand',reward:'neck',
+  text:'The glass case around The Down is standing open. It is not smashed, not forced, not scratched. It was opened with its key — and there are exactly two keys to it in the whole Hollow.',
+  note:'It was opened properly, with a key. So it was somebody allowed to open it.',
+  opts:[
+   {t:'It was smashed open in a hurry.',hint:'Not a crack anywhere. Look how tidy it is.'},
+   {t:'The case was never locked in the first place.',hint:'It was locked at closing — Nutmeg turned the key herself and hung it back up.'},
+   {t:'It was opened with its own key, by somebody allowed to.',ok:true},
+   {t:'Somebody picked the lock with a hairpin.',hint:'A picked lock gets scratched around the keyhole. This one is unmarked.'},
+   {t:'The glass was lifted off the top.',hint:'It is bolted at the corners. Somebody would have needed tools, and tools leave marks.'}
+  ]},
+ {tag:'Evidence 4 of 5',title:'The warm room',reward:'coat',
+  text:'Nutmeg mentioned a lamp. Upstairs, the reading room is the warmest place in the museum — and the coldest night of the autumn came through the hedge at about eleven o’clock.',
+  note:'Somebody was upstairs, keeping something warm, on the coldest night so far.',
+  opts:[
+   {t:'The lamp was left on by accident.',hint:'A lamp left on makes a room bright. It does not make it the warmest room in the building on the coldest night.'},
+   {t:'Somebody was upstairs, and something up there needed keeping warm.',ok:true},
+   {t:'The heating is broken and stuck on.',hint:'Then every room would be warm. It is only that one.'},
+   {t:'The thief hid upstairs to keep warm themselves.',hint:'Possible — but hold that thought until Evidence 5. Somebody hiding does not usually turn a lamp ON.'},
+   {t:'The warmth came up from the burrows below.',hint:'The burrows are below the front hall, not below the reading room. And the front hall is freezing.'}
+  ]},
+ {tag:'Evidence 5 of 5',title:'Six pairs of boots',reward:'tool',
+  text:'At the bottom of the stairs, six pairs of very small boots are lined up neatly. Upstairs there are six picture books open on the floor — and a chair by the door with somebody’s spectacles folded on the arm.',
+  note:'Six kits fell asleep up there. Somebody stayed to watch them.',
+  opts:[
+   {t:'Six thieves came in together.',hint:'Six thieves do not take their boots off at the door and read picture books.'},
+   {t:'Six kits fell asleep upstairs, and somebody stayed with them.',ok:true},
+   {t:'The boots were part of the exhibit.',hint:'A museum of soft things does not exhibit six pairs of muddy boots at the bottom of the stairs.'},
+   {t:'The kits took The Down and hid it.',hint:'The case was opened with a key, and no kit in the Hollow has one. Somebody with a key was up there too.'},
+   {t:'Somebody left in a hurry and forgot their spectacles.',hint:'The spectacles are folded, and set down neatly on the arm of a chair. That is not a hurry. That is settling in.'}
+  ]}
+];
+const FINALE1={
+ tag:'The accusation',title:'Put it all together',
+ text:'Fluff going up, not out. A door latched from the inside. A case opened with its own key. The warmest room in the building on the coldest night. Six pairs of small boots at the bottom of the stairs. So — where is The Down, and who moved it?',
+ note:'Grandmother Bramble, one floor up, keeping six kits warm.',
+ opts:[
+  {t:'Barnaby Fluff took it to sell in the gift shop.',hint:'Barnaby has no key to the case, and the gift shop is on the ground floor. The fluff goes up.'},
+  {t:'Nutmeg took it because she came in early.',hint:'Nutmeg has a key — but she said the lamp was ALREADY on when she arrived. Somebody was up there before her.'},
+  {t:'Grandmother Bramble took it upstairs to cover six sleeping kits.',ok:true},
+  {t:'Old Thistle carried it out to the garden shed.',hint:'Thistle never comes inside, and there is not a single muddy print on that floor. Look at it.'},
+  {t:'Nobody took it — it was never there.',hint:'There is a dust ring on the stand and a trail of its own fluff leading away. It was there, and it moved.'}
+ ]};
+const REVEAL1=[
+ 'At eleven o’clock the frost found the gap in the hedge, and the reading room went cold. Six new kits had fallen asleep up there over their picture books, the way kits do, and Grandmother Bramble — who had never actually gone home — took her key off its hook, opened the case, carried The Down up the back stairs and tucked it round all six of them.',
+ 'Then she sat herself down in the chair by the door to wait until morning, so she could carry it back before anybody noticed it had gone. She fully meant to leave a note about it. She fell asleep instead.',
+ 'The Down was never further away than one floor up. And the fluff on the stairs was not evidence of a crime. It was evidence of somebody carrying something warm upstairs in a hurry.'
+];
+
+const SUS2=[
+ {id:'pip',name:'Pip',role:'Youngest in the Hollow',fur:'oat',
+  alibi:'“I’m asleep at midnight. I’m always asleep. Ask anyone.”'},
+ {id:'marigold',name:'Marigold',role:'Baker',fur:'cream',
+  alibi:'“I’m awake at midnight, yes. Bread doesn’t rise by itself.”'},
+ {id:'dandelion',name:'Sergeant Dandelion',role:'Door-keeper',fur:'slate',
+  alibi:'“I patrol all night. I’d have heard it. I heard it. That’s the problem.”'},
+ {id:'ivy',name:'Ivy',role:'Dance teacher',fur:'soot',
+  alibi:'“My hall is right over on the far side. Nothing to do with me.”'}
+];
+const CLUES2=[
+ {tag:'Evidence 1 of 5',title:'Which nights',reward:'hat',
+  text:'Sergeant Dandelion has kept a list. The thump came on Tuesday, Thursday and Friday. Not Monday. Not Wednesday. Beside each date he has written the weather — and Tuesday, Thursday and Friday were the windy ones.',
+  note:'It only happens on windy nights. The wind is part of it somehow.',
+  opts:[
+   {t:'It happens every single night and people slept through some.',hint:'The whole Hollow woke up on the nights it happened. Nobody sleeps through that.'},
+   {t:'It only happens on windy nights.',ok:true},
+   {t:'It happens when there is a full moon.',hint:'Check his list again — he wrote the weather, not the moon. Tuesday, Thursday, Friday: wind.'},
+   {t:'It happens on the nights Marigold bakes.',hint:'Marigold bakes every night without exception, including Monday and Wednesday. Those were quiet.'},
+   {t:'The wind itself is making the thump.',hint:'Close — the wind is involved. But wind rattles and whistles. This is one single heavy thump, at the same minute each time. Hold that thought.'}
+  ]},
+ {tag:'Evidence 2 of 5',title:'Exactly midnight',reward:'face',
+  text:'Every thump has landed at midnight, give or take a minute. Marigold points out something useful: the dance hall closes at nine, and the last of the little ones is collected by half past.',
+  note:'Whatever it is, it happens long after everybody has gone home.',
+  opts:[
+   {t:'It is one of the dance classes running late.',hint:'The last child leaves at half past nine. Midnight is two and a half hours after that.'},
+   {t:'It happens when the building is empty of everybody but one.',ok:true},
+   {t:'The bakery ovens make it when they switch off.',hint:'The ovens switch off at four in the morning, not midnight — and they only sigh. They do not thump.'},
+   {t:'It is Sergeant Dandelion’s own boots on patrol.',hint:'He is outside, on gravel, all night. Gravel does not thump. And he keeps hearing it too.'},
+   {t:'Somebody is sleepwalking.',hint:'Three nights, same minute, only when it is windy? Sleepwalking is not that punctual.'}
+  ]},
+ {tag:'Evidence 3 of 5',title:'A mark on the floor',reward:'neck',
+  text:'Up in Ivy’s dance hall the floor is swept and polished. But there is one fresh mark on it: a scuff shaped like a half-circle, about a foot across, right in the middle. Just one. And it is new.',
+  note:'Somebody turned on one foot, right in the middle of the empty hall.',
+  opts:[
+   {t:'Furniture was dragged across the floor.',hint:'Dragged furniture leaves two marks, or four, and they run in straight lines. This is one curve.'},
+   {t:'Somebody turned on one foot in the middle of the hall.',ok:true},
+   {t:'A class of children scuffed it up during the day.',hint:'A class leaves dozens of marks all over. This is one, on its own, in the very centre.'},
+   {t:'Something heavy fell and rolled.',hint:'A roll leaves a long line, not a tight half-circle the width of one foot.'},
+   {t:'The polish was applied unevenly.',hint:'Ivy polishes that floor herself every evening. And polish does not dry in the shape of a footprint.'}
+  ]},
+ {tag:'Evidence 4 of 5',title:'The loose shutter',reward:'coat',
+  text:'One shutter on the hall’s tall window has lost a hinge. On a windy night it swings in, and when it swings in the draught catches the landing door and slams it — about half a second after anything else happens in the hall.',
+  note:'The slam comes half a second late, and from the far side of the building.',
+  opts:[
+   {t:'The shutter banging IS the thump.',hint:'A shutter is thin wood — it clatters. The Hollow is being woken by something heavy. And the shutter only explains the second sound.'},
+   {t:'The slam arrives late, so the sound seems to come from the wrong place.',ok:true},
+   {t:'The wind is getting into the burrows directly.',hint:'The burrows are sealed and warm. Nobody down there felt a draught — they felt a thump.'},
+   {t:'The landing door needs oiling.',hint:'True, and beside the point. The question is why nobody could tell where the sound came from.'},
+   {t:'There are two different noises on two different nights.',hint:'There are two noises on the SAME night, half a second apart. That is the whole trick of it.'}
+  ]},
+ {tag:'Evidence 5 of 5',title:'The lamp at midnight',reward:'tool',
+  text:'Pip, who is not always asleep, says he has seen the hall lamp on late — twice. And the hall sits directly above the burrows. Ivy keeps a pair of very old dance shoes behind the piano, and the left one is worn right through at the toe.',
+  note:'Ivy has been in the hall alone at midnight, dancing.',
+  opts:[
+   {t:'Ivy has been teaching a secret late class.',hint:'One scuff mark. One worn shoe. A class leaves a floor full of marks and a hall full of coats.'},
+   {t:'Ivy has been in the hall alone at midnight, dancing.',ok:true},
+   {t:'Somebody has been breaking in to use the hall.',hint:'Then the shoes behind the piano would not be Ivy’s own, worn to Ivy’s own shape. They are hers.'},
+   {t:'Pip made it up because he was in trouble for being awake.',hint:'Pip described the lamp being on before anybody told him it mattered. And the shoes are real either way.'},
+   {t:'The lamp is on a timer.',hint:'The hall has no timer. Somebody turns that lamp on, and somebody turns it off again.'}
+  ]}
+];
+const FINALE2={
+ tag:'The accusation',title:'Put it all together',
+ text:'Only on windy nights. Always long after everyone goes home. One half-circle scuff in the middle of an empty hall. A loose shutter that slams a door half a second late. A lamp on at midnight and one shoe worn through at the toe. So — what is the thump, and who is making it?',
+ note:'Ivy, practising a turn she has never landed.',
+ opts:[
+  {t:'Marigold, dropping bread tins in the bakery.',hint:'Marigold bakes every night, including the quiet ones. And the scuff is on the dance floor, not the bakery floor.'},
+  {t:'Sergeant Dandelion, shutting doors too hard on his rounds.',hint:'He is outside all night, and he has been woken by it too. He is the one keeping the list.'},
+  {t:'Ivy, practising a turn on her own, with the wind throwing the sound off.',ok:true},
+  {t:'Pip, out of bed and jumping about.',hint:'Pip cannot reach the hall lamp, and the worn shoe behind the piano is a grown rabbit’s. He only saw the light.'},
+  {t:'The loose shutter on its own, banging in the wind.',hint:'The shutter explains why nobody could FIND the sound. It does not explain a single heavy thump at the same minute, or a fresh mark on the floor.'}
+ ]};
+const REVEAL2=[
+ 'Ivy has been practising. Not teaching — practising. Every night, after the last of them has gone home and the hall is empty, she puts the lamp on and she goes again.',
+ 'There is one turn she has never landed. She has been trying it since she was nine. She is sixty-one now and she would like, once, to land it properly — and she does not want an audience for the part before that. The thump the whole Hollow has been waking up to is her foot coming down.',
+ 'The loose shutter is why nobody could find her. The wind came through it and slammed the landing door half a second after each thump, so the sound arrived from the wrong direction every single time.',
+ 'And that is the case. Not a thief — somebody practising in the dark, on the bit nobody sees, because she has not got it yet.'
+];
+
+const CASES=[
+ {id:'001',no:'File 001',title:'The Softest Thing in the Hollow',
+  sub:'The Burrow Museum’s prize exhibit is gone. Every door was still locked.',
+  breed:'lop', keep:'floppy', scene:museumScene,
+  brief:['The Burrow Museum of Very Soft Things opens at nine.',
+         'At nine, the best thing in it was missing.',
+         'It is called The Down. It is a blanket so soft it makes your ears go floppy.',
+         'Its stand is empty. Every door was still locked.'],
+  suspects:SUS1, clues:CLUES1, finale:FINALE1, reveal:REVEAL1,
+  solvedTitle:'Nobody stole anything',
+  closer:'She fully meant to leave a note.',
+  run:'Play this one when you want her talking about somebody who did a kind thing and hid it. The turn is Evidence 4 — the warmest room on the coldest night. Let her sit in that before you go on.'},
+ {id:'002',no:'File 002',title:'The Midnight Thump',
+  sub:'Three nights running, something wakes the whole Hollow at exactly midnight.',
+  breed:'tufted', keep:'notyet', scene:hallScene,
+  brief:['Three nights running: THUMP. Exactly midnight. Every burrow in the Hollow.',
+         'Nobody can work out where it comes from.',
+         'The Hollow has stopped sleeping. The Hollow has started arguing.',
+         'Find the thump.'],
+  suspects:SUS2, clues:CLUES2, finale:FINALE2, reveal:REVEAL2,
+  solvedTitle:'She had not landed it yet',
+  closer:'She was not hiding it because she had done something wrong. She was hiding it because she has not landed it yet.',
+  run:'This is the one about practising the part nobody sees. Ivy is sixty-one and still working on one turn. Ask what she is currently working on that nobody has seen yet.'},
+ {id:'003',no:'File 003',title:'The Case of the Golden Carrot',
+  sub:'The trophy is still on the table. It is the wrong trophy.',
+  breed:'longear', keep:'goodenough', scene:showScene,
+  brief:['The Clover Hollow Harvest Show opens at ten.',
+         'The Golden Carrot has stood on the same green felt for sixty years.',
+         'It is still standing there this morning. That is the strange part.',
+         'Because it is not the Golden Carrot.'],
+  suspects:SUS3, clues:CLUES3, finale:FINALE3, reveal:REVEAL3,
+  solvedTitle:'It is nowhere near finished, he says',
+  closer:'It fooled the entire Hollow for a whole morning.',
+  run:'This is the numbers one — weights, measurements, a dust ring to the width of a hair. Good if she is stronger at maths than at reading. The turn is Thistle refusing to call his own carving finished. Ask what she is working on that she has not shown anybody.'},
+ {id:'004',no:'File 004',title:'The Case of the Crossed Letters',
+  sub:'Every letter posted on Tuesday arrived at the wrong burrow.',
+  breed:'dwarf', keep:'askedfor', scene:postScene,
+  brief:['On Tuesday the Hollow posted forty-one letters.',
+         'On Wednesday forty-one rabbits opened somebody else’s post.',
+         'Nothing was stolen. Nothing was opened. Everything went to the wrong door.',
+         'Find out how.'],
+  suspects:SUS4, clues:CLUES4, finale:FINALE4, reveal:REVEAL4,
+  solvedTitle:'Thirty-one years without one mistake',
+  closer:'Nobody minded about the letters. They minded about the fortnight.',
+  run:'The reasoning here is testimony that cannot all be true at once, then word shapes rather than word sounds. The turn is the empty spectacle case. Ask her when she last needed help with something and did not ask — and then wait.'},
+ {id:'005',no:'File 005',title:'The Case of the Vanishing Stream',
+  sub:'The brook is dropping a finger a day, and the Hollow has started pointing.',
+  breed:'oneup', keep:'lookagain', scene:brookScene,
+  brief:['The brook has been going down for nine days.',
+         'A finger’s width every day. Never more, never less.',
+         'Four rabbits have been accused so far. Three of them are nine years old or under.',
+         'Find the water.'],
+  suspects:SUS5, clues:CLUES5, finale:FINALE5, reveal:REVEAL5,
+  solvedTitle:'Nobody took anything',
+  closer:'Nine days accusing each other. Twenty minutes to move the stones back.',
+  run:'The only case in the Hollow with no culprit at all — the answer is that everybody was wrong to be looking for one. Save it for a week when she has been hard on herself, or on somebody else. The question at the end is not who did it, it is why we all went looking for a who.'}
+];
+const COMING={no:'File 006',title:'The Case of the Borrowed Song',sub:'Still open. Somebody is humming something nobody has written yet.'};
+
+/* ============================ STATE ============================ */
+const KEY='clover-hollow-v1';
+let S={view:'files',caseId:null,stage:'files',dets:[],prog:{},ci:0,solved:0,
+       tried:{},out:{},finaleTried:[],finaleOut:[],notes:{},ret:null};
+let draft={name:'',fur:'oat',pat:'plain',eye:'chestnut',breed:'lop'};
+let flash=null, storageOK=true;
+let openSlot=null, lockerMode='advance';
+let editing=null;
+
+function load(){
+  try{
+    const raw=localStorage.getItem(KEY);
+    if(!raw)return;
+    const p=JSON.parse(raw);
+    if(!p)return;
+    /* carry the old shape forward: detectives -> dets, marks -> keeps, nothing lost */
+    const olds=Array.isArray(p.detectives)?p.detectives:null;
+    if(olds){
+      const earToBreed={up:'longear',lop:'lop',tilt:'oneup'};
+      const keepByName={};Object.keys(KEEPS).forEach(k=>{keepByName[KEEPS[k].name]=k;});
+      S.dets=olds.map(d=>{
+        const keeps=(d.keepsakes||[]).map(n=>keepByName[n]).filter(Boolean);
+        return {name:d.name||'Detective',fur:d.fur||'oat',pat:'plain',eye:'chestnut',
+          breed:earToBreed[d.ear]||'lop',gear:{},won:[],keeps:keeps,active:true};
+      });
+      if(p.cases&&typeof p.cases==='object'){
+        Object.keys(p.cases).forEach(id=>{ if(p.cases[id]&&p.cases[id].solved) S.prog[id]={done:true}; });
+      }
+      if(p.notes&&typeof p.notes==='object')S.notes=p.notes;
+    } else {
+      S=Object.assign(S,p);
+      if(!Array.isArray(S.dets))S.dets=[];
+    }
+    S.dets.forEach(d=>{ if(!d.gear)d.gear={}; if(!d.won)d.won=[]; if(!d.keeps)d.keeps=[];
+      if(d.active===undefined)d.active=true;
+      /* anything already worn counts as won */
+      Object.keys(d.gear).forEach(k=>{const id=d.gear[k];if(id&&d.won.indexOf(id)<0)d.won.push(id);}); });
+    S.view='files';S.stage='files';S.caseId=null;
+  }catch(e){ storageOK=false; }
+}
+function save(){
+  if(!storageOK)return;
+  try{ localStorage.setItem(KEY,JSON.stringify(S)); }
+  catch(e){ storageOK=false; const w=$('storewarn'); if(w)w.hidden=false; }
+}
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const escAttr=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function CUR(){return CASES.find(c=>c.id===S.caseId)||CASES[0];}
+function activeDets(){return S.dets.filter(d=>d.active!==false);}
+function done(id){return !!(S.prog[id]&&S.prog[id].done);}
+function caseBreed(){const b=CUR().breed;return BREEDS.find(x=>x.id===b)||BREEDS[0];}
+function applyCaseBreed(){const b=caseBreed().id;S.dets.forEach(d=>{if(d.active!==false)d.breed=b;});draft.breed=b;}
+function seenCases(){ return CASES.filter(c=>done(c.id)||c.id===S.caseId).map(c=>c.id); }
+function gearFor(slot){ const seen=seenCases(); return (GEAR[slot]||[]).filter(it=>!it.c||seen.indexOf(it.c)>-1); }
+function findGear(id){ for(const sl of SLOTS){const it=(GEAR[sl.id]||[]).find(x=>x.id===id);if(it)return{slot:sl.id,item:it,label:sl.label};} return null; }
+function wonCount(d){return (d.won||[]).length;}
+
+/* ============================ NAV ============================ */
+function go(view){
+  if(view==='case'&&!S.caseId)view='files';
+  if(view==='case'){ S.view='case'; if(S.stage==='files')S.stage=S.dets.length?'brief':'setup'; }
+  else { S.view=view; if(view==='files'){S.stage='files';S.caseId=null;} }
+  flash=null; shut(); save(); render();
+}
+function enterCase(id){
+  if(!S.dets.length){ openSetup(); return; }   /* the case files already block this */
+  S.caseId=id; S.stage='brief';
+  S.ci=0;S.solved=0;S.tried={};S.out={};S.finaleTried=[];S.finaleOut=[];flash=null;
+  applyCaseBreed(); S.view='case'; save(); render();
+}
+function replayCase(id){
+  if(S.prog[id])delete S.prog[id];
+  enterCase(id);
+}
+function armReset(){
+  $('overlay').innerHTML='<div class="veil" onclick="if(event.target===this)shut()"><div class="panel">'
+   +'<div class="phead"><div><span class="mono">Start over</span>'
+   +'<h2 class="stage-title">Clear the whole burrow?</h2></div></div>'
+   +'<p class="lede">This removes every detective, everything they have won, and every solved case. '
+   +'Use it to see the game the way a new detective sees it. It cannot be undone.</p>'
+   +'<div class="footrow"><button class="btn" onclick="doReset()">Yes, clear it</button>'
+   +'<button class="btn ghost" onclick="shut()">Keep everything</button></div>'
+   +'</div></div>';
+}
+function doReset(){
+  S={view:'files',caseId:null,stage:'files',dets:[],prog:{},ci:0,solved:0,
+     tried:{},out:{},finaleTried:[],finaleOut:[],notes:{},ret:null};
+  draft={name:'',fur:'oat',pat:'plain',eye:'chestnut',breed:'lop'};
+  editing=null;
+  try{localStorage.removeItem(KEY);}catch(e){}
+  flash=null;shut();render();
+}
+
+/* ============================ RENDER ============================ */
+function render(){
+  document.querySelectorAll('.tab[data-view]').forEach(t=>{
+    const on=t.dataset.view===S.view||(S.view==='case'&&t.dataset.view==='files');
+    t.classList.toggle('on',on);
+  });
+  const st=$('stage');
+  if(S.view==='gallery'){ st.innerHTML=viewGallery(); return; }
+  if(S.view==='suspects'){ st.innerHTML=viewSuspects(); return; }
+  if(S.view==='notes'){ st.innerHTML=viewNotes(); return; }
+  if(S.view==='case'){
+    if(S.stage==='setup'){ st.innerHTML=viewSetup(); refocus(); return; }
+    if(S.stage==='brief'){ st.innerHTML=viewBrief(); return; }
+    if(S.stage==='clue'){ st.innerHTML=viewClue(false); return; }
+    if(S.stage==='accuse'){ st.innerHTML=viewClue(true); return; }
+    if(S.stage==='closed'){ st.innerHTML=viewClosed(); return; }
+  }
+  st.innerHTML=viewFiles();
+}
+
+function viewFiles(){
+  const has=S.dets.length>0;
+  const solvedN=CASES.filter(c=>done(c.id)).length;
+  const nx=CASES.filter(c=>!done(c.id))[0]||CASES[0];
+  let h='<div class="paper" style="margin-bottom:18px">'
+   +'<div class="opener">'
+   +'<div>'+nx.scene()+'</div>'
+   +'<div class="opentext"><span class="mono">'+nx.no+(solvedN?' &middot; '+solvedN+' of '+CASES.length+' solved':'')+'</span>'
+   +'<h2 class="stage-title">'+nx.title+'</h2>'
+   +'<p class="lead">'+nx.sub+'</p>'
+   +nx.brief.map(p=>'<p>'+p+'</p>').join('')
+   +'</div></div>'
+   +'<h3 style="margin-top:4px">'+(has?'Pick a mystery':'Every detective needs a bunny')+'</h3>'
+   +'<p class="hint">'+(has
+      ? 'Your bunny keeps their name, their look and every piece of gear they earn, case after case.'
+      : 'Build your bunny first — then pick a mystery. Nothing they win is ever lost.')+'</p>'
+   +'<div class="footrow">'
+   +'<button class="btn'+(has?' green':' big')+'" onclick="openSetup()">'
+     +(has?'Build another bunny':'Build your bunny detective &#8594;')+'</button>'
+   +(has?'<button class="btn" onclick="enterCase(\''+nx.id+'\')">Open '+nx.no.toLowerCase()+' &#8594;</button>'
+        +'<button class="btn ghost" onclick="go(\'gallery\')">The Hollow Irregulars</button>':'')
+   +'</div></div>';
+
+  if(has){
+    h+='<span class="mono">On the case right now</span><div class="dets" style="margin:8px 0 20px">'
+     +S.dets.map((d,i)=>'<div class="det">'+bunnySVG(d,110)+'<b>'+esc(d.name)+'</b>'
+       +'<small>'+((d.keeps||[]).length?(d.keeps||[]).length+' solved &middot; '+wonCount(d)+' piece'+(wonCount(d)===1?'':'s'):'no cases yet')+'</small>'
+       +'<div class="row"><button class="mini" onclick="editDet('+i+')">Rebuild this bunny</button></div></div>').join('')
+     +'</div>';
+  }
+
+  h+='<h3>The case files</h3><div class="files">';
+  CASES.forEach(c=>{
+    const isDone=done(c.id);
+    h+='<div class="file'+(has?'':' shut')+'"'+(has?' role="button" tabindex="0" onclick="enterCase(\''+c.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();enterCase(\''+c.id+'\')}"':'')+'>'
+     +'<span class="mono">'+c.no+'</span><b>'+c.title+'</b><small>'+c.sub+'</small>'
+     +(has
+        ? (isDone?'<span class="seal">Solved — play again</span>':'')
+        : '<span class="seal" style="background:transparent;color:var(--ink-soft);border-color:var(--paper-edge)">Build a detective first</span>')
+     +'</div>';
+  });
+  h+='<div class="file shut"><span class="mono">'+COMING.no+'</span><b>'+COMING.title+'</b><small>'+COMING.sub+'</small></div>';
+  h+='</div>';
+  return h;
+}
+
+function viewSetup(){
+  const base=editing!==null&&S.dets[editing]?S.dets[editing]:{gear:{},won:[],keeps:[]};
+  const d=Object.assign({},base,draft);
+  let h='<div class="paper"><span class="mono">'+(S.caseId?CUR().no:'The burrow')+'</span>'
+   +'<h2 class="stage-title">'+(editing!==null?'Rebuild this bunny':'Build your bunny detective')+'</h2>'
+   +'<p class="hint">'+(editing!==null
+      ? 'Change anything you like — the gear and keepsakes they have already won stay exactly where they are.'
+      : 'This one is yours. It keeps every piece of gear you ever earn, and every keepsake, from now on.')+'</p>'
+   +'<div style="text-align:center;margin:6px 0 12px">'+bunnySVG(d,168)+'</div>'
+   +'<div class="addbox">'
+   +'<div class="fieldlabel">Name</div>'
+   +'<input type="text" id="nm" maxlength="22" placeholder="Detective name" value="'+escAttr(draft.name)+'" oninput="draft.name=this.value">'
+   +'<div class="fieldlabel">Fur</div><div class="chips">'
+   +FUR.map(f=>'<button class="chip" aria-pressed="'+(draft.fur===f.id)+'" onclick="setDraft(\'fur\',\''+f.id+'\')"><span class="swatch" style="background:'+f.c+'"></span>'+f.name+'</button>').join('')
+   +'</div><div class="fieldlabel">Markings</div><div class="chips">'
+   +PATS.map(p=>'<button class="chip" aria-pressed="'+(draft.pat===p.id)+'" onclick="setDraft(\'pat\',\''+p.id+'\')">'+p.name+'</button>').join('')
+   +'</div><div class="fieldlabel">Eyes</div><div class="chips">'
+   +EYES.map(e=>'<button class="chip" aria-pressed="'+(draft.eye===e.id)+'" onclick="setDraft(\'eye\',\''+e.id+'\')"><span class="swatch" style="background:'+e.c+'"></span>'+e.name+'</button>').join('')
+   +'</div>'
+   +'<div class="footrow">'
+   +'<button class="btn'+(S.dets.length?'':' big')+'" onclick="saveDet()">'
+     +(editing!==null?'Save this bunny':(S.dets.length?'Add this one':'This is my bunny &#8594;'))+'</button>'
+   +(editing!==null?'<button class="btn ghost" onclick="cancelEdit()">Leave it as it was</button>':'')
+   +'</div></div>';
+  if(S.dets.length&&editing===null){
+    h+='<h3 style="margin-top:22px">Signed in</h3><div class="dets">'
+     +S.dets.map((d,i)=>'<div class="det">'+bunnySVG(d,104)+'<b>'+esc(d.name)+'</b>'
+       +'<small>'+wonCount(d)+' piece'+(wonCount(d)===1?'':'s')+' earned</small></div>').join('')
+     +'</div><div class="footrow"><button class="btn big" onclick="leaveSetup()">'
+     +(S.ret&&S.ret.stage&&S.ret.stage!=='files'&&S.ret.stage!=='setup'?'Back to the case':'Everyone is in — pick a mystery')+' &#8594;</button></div>';
+  }
+  return h+'</div>';
+}
+function setDraft(k,v){draft[k]=v;render();}
+function openSetup(){editing=null;draft={name:'',fur:'oat',pat:'plain',eye:'chestnut',breed:S.caseId?caseBreed().id:'lop'};
+  S.ret={view:S.view,stage:S.stage};S.view='case';S.stage='setup';if(S.caseId)applyCaseBreed();save();render();}
+function editDet(i){
+  const d=S.dets[i]; if(!d)return;
+  editing=i;
+  draft={name:d.name||'',fur:d.fur||'oat',pat:d.pat||'plain',eye:d.eye||'chestnut',breed:d.breed||'lop'};
+  S.ret={view:S.view,stage:S.stage};S.view='case';S.stage='setup';save();render();refocus();
+}
+function saveDet(){
+  if(editing===null)return addDet();
+  const d=S.dets[editing];
+  if(d){
+    d.name=(draft.name||'').trim()||d.name;
+    d.fur=draft.fur; d.pat=draft.pat; d.eye=draft.eye;
+  }
+  editing=null;save();leaveSetup();
+}
+function cancelEdit(){editing=null;leaveSetup();}
+function leaveSetup(){
+  editing=null;
+  const r=S.ret;S.ret=null;
+  const backIntoCase = S.caseId && r && r.view==='case' && r.stage && r.stage!=='files' && r.stage!=='setup';
+  if(backIntoCase){ S.view='case'; S.stage=r.stage; }
+  else { S.view='files'; S.stage='files'; S.caseId=null; }
+  save();render();
+}
+const SPARE=['Inspector Clover','Detective Thistle','Sergeant Nibbles','Constable Pip','Agent Sorrel','Inspector Bramble'];
+function addDet(){
+  const nm=(draft.name||'').trim()||SPARE[S.dets.length%SPARE.length];
+  S.dets.push({name:nm,fur:draft.fur,pat:draft.pat,eye:draft.eye,
+    breed:S.caseId?caseBreed().id:draft.breed,gear:{},won:[],keeps:[],active:true});
+  draft.name='';save();render();refocus();
+}
+function dropDet(i){S.dets.splice(i,1);save();render();}
+function toggleActive(i){const d=S.dets[i];d.active=(d.active===false);save();render();}
+function refocus(){const el=$('nm');if(el){el.focus();try{el.setSelectionRange(el.value.length,el.value.length)}catch(e){}}}
+
+function viewBrief(){
+  const c=CUR();
+  let h='<div class="paper"><span class="mono">'+c.no+'</span><h2 class="stage-title">'+c.title+'</h2>'
+   +c.scene()
+   +c.brief.map(p=>'<p>'+p+'</p>').join('')
+   +'<h3 style="margin-top:18px">Four rabbits were in the Hollow that night</h3><div class="grid">'
+   +c.suspects.map(s=>'<div class="sus"><b>'+s.name+'</b><small>'+s.role+'</small><i>'+s.alibi+'</i></div>').join('')
+   +'</div>'
+   +'<p class="hint" style="margin-top:16px"><b>How it plays.</b> Five pieces of evidence. Read each one out loud, talk about it, cross off what cannot be true, then tap what you agree on. A wrong tap costs nothing — Inspector Bramble says why it does not fit and you go again. Every solved clue opens the gear locker.</p>';
+  if(S.dets.length){
+    h+='<h3 style="margin-top:20px">On the case</h3><div class="dets">'
+     +S.dets.map(d=>'<div class="det">'+bunnySVG(d,104)+'<b>'+esc(d.name)+'</b>'
+       +'<small>ears for this case: '+caseBreed().name.toLowerCase()+'</small></div>').join('')
+     +'</div>';
+  }
+  h+='<div class="footrow"><button class="btn big" onclick="startClues()">Open the first evidence &#8594;</button>'
+   +'<button class="btn ghost" onclick="openSetup()">Build a different bunny</button></div>'
+   +'</div>'+coachPanel(c);
+  return h;
+}
+function startClues(){S.stage='clue';S.ci=0;flash=null;save();render();}
+
+function drawTrack(){
+  const n=CUR().clues.length;let h='<div class="track">';
+  for(let i=0;i<n;i++)h+='<div class="pip'+(S.ci>i?' done':(S.ci===i?' now':''))+'"></div>';
+  return h+'</div>';
+}
+function viewClue(isFinal){
+  const c=isFinal?CUR().finale:CUR().clues[S.ci];
+  const key=isFinal?'F':String(S.ci);
+  const tried=isFinal?S.finaleTried:(S.tried[key]||[]);
+  const out=isFinal?S.finaleOut:(S.out[key]||[]);
+  const solvedNow=flash&&flash.ok;
+  const letters='ABCDE';
+  const pic=clueArt(isFinal);
+  let h='<div class="paper"><div class="evidence lamp-drift'+(pic?' haspic':'')+'">'
+   +(pic?'<div class="evpic">'+pic+'</div>':'')
+   +'<div class="evtext"><span class="mono">'+c.tag+'</span>'
+   +'<h2 class="stage-title">'+c.title+'</h2><p>'+c.text+'</p></div></div>';
+  if(!isFinal)h+=drawTrack();
+  h+='<div class="opts">';
+  c.opts.forEach((o,i)=>{
+    const isWrong=tried.indexOf(i)>-1;
+    const isOut=!isWrong&&out.indexOf(i)>-1;
+    const isRight=solvedNow&&o.ok;
+    const cls='opt'+(isWrong?' wrong':'')+(isOut?' out':'')+(isRight?' right':'')
+      +(solvedNow&&!o.ok?' faded':'')+(flash&&flash.i===i&&!flash.ok?' shake':'');
+    h+='<div class="optrow"><button class="'+cls+'" '+(isWrong||isOut||solvedNow?'disabled':'')
+      +' onclick="pick('+i+','+(isFinal?'true':'false')+')">'
+      +'<span class="ltr">'+letters[i]+'</span><span class="txt">'+o.t+'</span></button>'
+      +(solvedNow||isWrong?'':'<button class="rule'+(isOut?' back':'')+'" onclick="ruleOut('+i+','+(isFinal?'true':'false')+')" aria-label="'
+        +(isOut?'Bring option '+letters[i]+' back':'Rule out option '+letters[i])+'"><b>'
+        +(isOut?'&#8617;':'&#10005;')+'</b><small>'+(isOut?'back':'rule out')+'</small></button>')
+      +'</div>';
+  });
+  h+='</div>';
+  const standing=c.opts.filter((o,i)=>tried.indexOf(i)<0&&out.indexOf(i)<0).length;
+  if(!solvedNow&&out.length){
+    let msg=out.length+' ruled out',cls='';
+    if(standing===1){msg='One left standing — check it against every clue';cls=' good';}
+    else if(standing===0){msg='Everything is crossed out, and one of them has to be right';cls=' bad';}
+    h+='<div class="ruleline'+cls+'"><span class="mono">'+msg+'</span>'
+      +'<button class="btn ghost" onclick="clearOut('+(isFinal?'true':'false')+')">Bring '+(out.length>1?'them all':'it')+' back</button></div>';
+  }
+  if(flash){
+    if(flash.ok){
+      h+='<div class="whisper good"><div><span class="who">Inspector Bramble</span>'
+       +(isFinal?'That is the whole story. Case closed, detectives.':'That is it. Write it down: <b>'+c.note+'</b>')+'</div></div>'
+       +'<div class="footrow"><button class="btn big" onclick="advance('+(isFinal?'true':'false')+')">'
+       +(isFinal?'Award the keepsake &#8594;':'Claim your gear &#8594;')+'</button></div>';
+    } else {
+      h+='<div class="whisper"><div><span class="who">Inspector Bramble</span>'+c.opts[flash.i].hint+' Have another go.</div></div>';
+    }
+  }
+  h+=notesBox();
+  return h+'</div>';
+}
+function pick(i,isFinal){
+  const c=isFinal?CUR().finale:CUR().clues[S.ci];
+  if(c.opts[i].ok){ flash={i:i,ok:true}; }
+  else{
+    if(isFinal){ if(S.finaleTried.indexOf(i)<0)S.finaleTried.push(i); }
+    else{ const k=String(S.ci); if(!S.tried[k])S.tried[k]=[]; if(S.tried[k].indexOf(i)<0)S.tried[k].push(i); }
+    flash={i:i,ok:false};
+  }
+  save();render();
+}
+function ruleOut(i,isFinal){
+  let arr;
+  if(isFinal)arr=S.finaleOut;
+  else{ const k=String(S.ci); if(!S.out[k])S.out[k]=[]; arr=S.out[k]; }
+  const at=arr.indexOf(i);
+  if(at>-1)arr.splice(at,1); else arr.push(i);
+  save();render();
+}
+function clearOut(isFinal){ if(isFinal)S.finaleOut=[];else S.out[String(S.ci)]=[]; save();render(); }
+function advance(isFinal){
+  if(isFinal){
+    const k=CUR().keep;
+    activeDets().forEach(d=>{if(!d.keeps)d.keeps=[];if(d.keeps.indexOf(k)<0)d.keeps.push(k);});
+    S.prog[S.caseId]={done:true};
+    S.stage='closed';flash=null;save();render();return;
+  }
+  S.solved=S.ci+1;save();render();
+  openLocker(CUR().clues[S.ci].reward);
+}
+
+/* ============================ GEAR LOCKER ============================ */
+function lockerHTML(slot){
+  let h='<div class="locker">';
+  if(!S.dets.length)h+='<p class="lede">No detectives yet — add one and the gear is theirs.</p>';
+  S.dets.forEach((d,di)=>{
+    h+='<div class="lrow"><div class="lname">'+esc(d.name)
+     +(d.gear[slot]?'<em class="done">&#10003; chosen</em>':'<em>pick one</em>')+'</div><div class="lopts">';
+    gearFor(slot).forEach(item=>{
+      const ov={};ov[slot]=item.id;
+      const owns=(d.won||[]).indexOf(item.id)>-1;
+      h+='<button class="lopt'+(item.c&&item.c===S.caseId?' fresh':'')+(owns?' owns':'')+'" aria-pressed="'
+        +(d.gear[slot]===item.id)+'" onclick="setGear('+di+',\''+slot+'\',\''+item.id+'\')">'
+        +bunnySVG(d,74,ov)+'<small>'+item.name+'</small></button>';
+    });
+    h+='</div></div>';
+  });
+  return h+'</div>';
+}
+function allPicked(slot){return S.dets.length&&S.dets.every(d=>d.gear[slot]);}
+function commitWon(slot){
+  if(!slot)return;
+  S.dets.forEach(d=>{
+    if(d.active===false)return;
+    if(!d.won)d.won=[];
+    const id=d.gear[slot];
+    if(id&&d.won.indexOf(id)<0)d.won.push(id);
+  });
+}
+function setGear(di,slot,id){
+  const d=S.dets[di];
+  d.gear[slot]=(d.gear[slot]===id)?undefined:id;
+  if(!d.gear[slot])delete d.gear[slot];
+  if(slot==='legend')commitWon('legend');
+  save();
+  if(openSlot)openLocker(openSlot,lockerMode); else render();
+}
+function wear(i,slot,id){
+  const d=S.dets[i];
+  d.gear[slot]=(d.gear[slot]===id)?undefined:id;
+  if(!d.gear[slot])delete d.gear[slot];
+  save();render();
+}
+function openLocker(slot,mode){
+  openSlot=slot;lockerMode=mode||'advance';
+  const s=SLOTS.find(x=>x.id===slot);
+  const fresh=gearFor(slot).some(it=>it.c===S.caseId);
+  const allHave=activeDets().length&&activeDets().every(d=>d.gear[slot]);
+  const eyebrow=slot==='legend'?'Case closed':'Gear locker — clue '+S.solved+' of '+CUR().clues.length;
+  let title,lede;
+  if(slot==='legend'){
+    title='Pick the mark you want to be remembered by';
+    lede='One per detective. It follows you into every case after this one.';
+  } else if(fresh){
+    title='New '+s.label.toLowerCase()+' from this case';
+    lede='This case brought new gear with it. The new pieces are ringed in gold — take one, or keep what you are already wearing.';
+  } else if(allHave){
+    title='Change your '+s.label.toLowerCase();
+    lede='You already have one of these. Swap it if you fancy a change, or leave it exactly as it is.';
+  } else {
+    title='Every detective earns a '+s.label.toLowerCase();
+    lede='Tap the version of your own bunny you want to keep. Tap it again to take it back off.';
+  }
+  const label=allPicked(slot)?(slot==='legend'?'Done':'On to the next clue'):'Skip for now';
+  const btn='<button class="btn" onclick="closeLocker()">'+label+' &#8594;</button>';
+  $('overlay').innerHTML='<div class="veil" onclick="if(event.target===this)closeLocker()"><div class="panel">'
+   +'<div class="phead"><div><span class="mono">'+eyebrow+'</span><h2 class="stage-title">'+title+'</h2></div>'+btn+'</div>'
+   +'<p class="lede">'+lede+'</p>'+lockerHTML(slot)
+   +'<div class="footrow">'+btn+'</div></div></div>';
+}
+function closeLocker(){
+  const slot=openSlot;
+  openSlot=null;$('overlay').innerHTML='';
+  commitWon(slot);
+  if(slot==='legend'){ save();render(); return; }
+  flash=null;S.ci++;
+  if(S.ci>=CUR().clues.length)S.stage='accuse';
+  save();render();
+}
+function shut(){openSlot=null;const o=$('overlay');if(o)o.innerHTML='';}
+
+/* ============================ CLOSED ============================ */
+function viewClosed(){
+  const c=CUR();
+  let h='<div class="paper"><span class="mono">Case closed — '+c.no.toLowerCase()+'</span>'
+   +'<h2 class="stage-title">'+c.solvedTitle+'</h2>'
+   +c.reveal.map(p=>'<p>'+p+'</p>').join('')
+   +'<p style="color:var(--lamp-dim);font-weight:800">'+c.closer+'</p>'
+   +'<p style="font-weight:800;color:var(--ink)">Every detective on this case earns <b>'+(KEEPS[c.keep]||{name:'the keepsake'}).name+'</b> — it stays on your bunny for good.</p>'
+   +'<div class="footrow"><button class="btn" onclick="openLocker(\'legend\')">Pick your legend mark</button>'
+   +'<button class="btn ghost" onclick="go(\'gallery\')">See the burrow</button>'
+   +'<button class="btn ghost" onclick="go(\'files\')">Back to the case files</button></div></div>'
+   +coachPanel(c);
+  return h;
+}
+
+/* ============================ GALLERY ============================ */
+function viewGallery(){
+  let h='<div class="paper"><span class="mono">The burrow</span><h2 class="stage-title">Every detective, and everything they have won</h2>'
+   +'<p class="hint">Tap any piece to put it back on. Nothing is ever lost — a bunny can wear museum gear on a dance-hall case.</p>';
+  if(!S.dets.length){
+    h+='<p>Nobody in the burrow yet.</p><div class="footrow"><button class="btn green" onclick="openSetup()">Build a bunny detective</button></div></div>';
+    return h;
+  }
+  h+='<div class="dets">';
+  S.dets.forEach((d,i)=>{
+    const ks=(d.keeps||[]).map(id=>KEEPS[id]?KEEPS[id].name:null).filter(Boolean);
+    const owned={};
+    (d.won||[]).forEach(id=>{const g=findGear(id);if(g){(owned[g.slot]=owned[g.slot]||[]).push(g.item);}});
+    h+='<div class="det'+(d.active===false?' off':'')+'">'+bunnySVG(d,132)
+     +'<b>'+esc(d.name)+'</b><small>'+wonCount(d)+' piece'+(wonCount(d)===1?'':'s')+' &middot; '+ks.length+' keepsake'+(ks.length===1?'':'s')+'</small>';
+    SLOTS.forEach(sl=>{
+      const list=owned[sl.id];if(!list||!list.length)return;
+      h+='<div class="wardrobe">'+list.map(it=>'<button class="wchip" aria-pressed="'+(d.gear[sl.id]===it.id)+'" onclick="wear('+i+',\''+sl.id+'\',\''+it.id+'\')">'+it.name+'</button>').join('')+'</div>';
+    });
+    if(ks.length)h+='<small style="margin-top:7px;color:var(--lamp-dim)">'+ks.join(' &middot; ')+'</small>';
+    h+='</div>';
+  });
+  h+='</div><div class="footrow"><button class="btn green" onclick="openSetup()">Build another bunny</button>'
+   +'<button class="btn ghost" onclick="go(\'files\')">Back to the case files</button></div></div>';
+  return h;
+}
+
+/* ============================ NOTES + COACH ============================ */
+function notesBox(){
+  const id=S.caseId||'x';
+  return '<div style="margin-top:18px"><div class="fieldlabel">Case notes — only if you want them</div>'
+   +'<textarea class="notesbox" id="nt" placeholder="Who do you think it is, and why?" oninput="S.notes[\''+id+'\']=this.value;save()">'
+   +esc(S.notes[id]||'')+'</textarea></div>';
+}
+function coachPanel(c){
+  return '<details class="coach"><summary>For the coach — the answer, and how to run it</summary><div class="cin">'
+   +'<p><b>How to run it.</b> '+c.run+'</p>'
+   +'<p><b>The answer.</b> '+c.finale.note+'</p>'
+   +'<p><b>Read this bit aloud yourself.</b> It is written for your voice, not for them to decode.</p>'
+   +c.reveal.map(p=>'<p>'+p+'</p>').join('')
+   +'<p><b>Nobody is the villain.</b> Both cases end with somebody who did a kind or brave thing and did not leave a note. If they guess wrong they still get the keepsake — that is deliberate.</p>'
+   +'<p><b>The question worth asking</b> after file 002: <em>“Why do you think she practised where nobody could see?”</em> Then stop talking.</p>'
+   +'<p><b>Never a penalty.</b> A wrong tap only produces an explanation. The dashed <em>rule out</em> button beside each option is for talking — it crosses a line through it, collapses it out of the way, and comes straight back if you change your mind. Nothing is scored.</p>'
+   +'</div></details>';
+}
+
+/* ---------- suspects + notes tabs ---------- */
+function viewSuspects(){
+  if(!S.caseId){
+    return '<div class="paper"><span class="mono">Suspects</span><h2 class="stage-title">No case open</h2>'
+     +'<p>Open a case file and the rabbits in it will show up here.</p>'
+     +'<div class="footrow"><button class="btn" onclick="go(\'files\')">Go to the case files</button></div></div>';
+  }
+  const c=CUR();
+  return '<div class="paper"><span class="mono">'+c.no+' · suspects</span><h2 class="stage-title">'+c.title+'</h2>'
+   +'<p class="hint">Tap each one to hear what they say. Nobody is out yet.</p><div class="grid">'
+   +c.suspects.map((s,i)=>'<button class="sus" type="button" aria-pressed="false" onclick="var a=this.querySelector(\'.al\');var on=this.getAttribute(\'aria-pressed\')===\'true\';this.setAttribute(\'aria-pressed\',on?\'false\':\'true\');a.hidden=on;">'
+     +'<b>'+s.name+'</b><small>'+s.role+'</small><span class="al" hidden>'+s.alibi+'</span></button>').join('')
+   +'</div><div class="footrow"><button class="btn" onclick="go(\'case\')">Back to the case</button></div></div>';
+}
+function viewNotes(){
+  if(!S.caseId){
+    return '<div class="paper"><span class="mono">Case notes</span><h2 class="stage-title">Nothing on the desk</h2>'
+     +'<p>Open a case file first.</p>'
+     +'<div class="footrow"><button class="btn" onclick="go(\'files\')">Go to the case files</button></div></div>';
+  }
+  const c=CUR();
+  let h='<div class="paper"><span class="mono">Case notes</span><h2 class="stage-title">'+c.title+'</h2>'
+   +'<h3>What we know</h3>'+c.brief.map(p=>'<p>'+p+'</p>').join('')
+   +'<h3>Evidence settled so far</h3>';
+  const got=c.clues.slice(0,S.solved);
+  if(!got.length)h+='<p class="hint">None yet.</p>';
+  else h+=got.map(cl=>'<p><b>'+cl.note+'</b></p>').join('');
+  h+='<h3>Detective’s note</h3><p class="hint">Optional. Say it out loud instead if you would rather.</p>'
+   +notesBox()
+   +'<div class="footrow"><button class="btn" onclick="go(\'case\')">Back to the case</button></div></div>';
+  return h;
+}
+
+/* ============================ BOOT ============================ */
+load();
+render();
+if(!storageOK){const w=$('storewarn');if(w)w.hidden=false;}
+</script>
+
+
+</body></html>
