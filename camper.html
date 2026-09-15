@@ -295,17 +295,117 @@ var MONTHS=["January","February","March","April","May","June",
 
 var STYLES=[
   {id:"cosy", wood:"#A9703F", tex:"#C8643F", met:"#C9A227", em:"🕯️", n:"Cosy",
-   l:"blankets and warm lamps", wall:"#F4E0C6", floor:"#B8875A", glow:"#F2A93B"},
+   l:"blankets and warm lamps", wall:"#F4E0C6", floor:"#B8875A", glow:"#F2A93B",
+   deco:function(a,s){
+     a("path",{d:"M0 12 q52 17 104 0 q52-17 104 0 q52 17 104 0 q52-17 104 0",fill:"none",stroke:s.met,"stroke-width":1.4,opacity:".8"});
+     [26,130,234,338].forEach(function(x){ a("circle",{cx:x,cy:19,r:4.6,fill:s.glow}); a("circle",{cx:x,cy:19,r:9,fill:s.glow,opacity:".22"}); });
+     a("rect",{x:300,y:28,width:56,height:30,rx:5,fill:s.tex,opacity:".5"});
+     a("path",{d:"M306 42 h44 M306 50 h30",stroke:"#fff","stroke-width":2,opacity:".5"});
+   }},
   {id:"boho", wood:"#8A5A3B", tex:"#8B5E83", met:"#B98A5E", em:"🪶", n:"Bohemian",
-   l:"patterns and hanging plants", wall:"#E8CCB0", floor:"#9C6B4A", glow:"#D9548C"},
+   l:"patterns and hanging plants", wall:"#E8CCB0", floor:"#9C6B4A", glow:"#D9548C",
+   deco:function(a,s){
+     [300,340,376].forEach(function(x,i){
+       a("path",{d:"M"+x+" 0 v"+(16+i*7),stroke:s.met,"stroke-width":1.6});
+       a("circle",{cx:x,cy:20+i*7,r:7,fill:s.tex,opacity:".85"});
+       a("path",{d:"M"+(x-6)+" "+(22+i*7)+" q6 16 0 22 M"+(x+5)+" "+(22+i*7)+" q-4 14 1 20",stroke:"#5E8A4E","stroke-width":2,fill:"none"});
+     });
+     a("g",{});
+     [0,1,2,3].forEach(function(i){ a("path",{d:"M"+(8+i*11)+" 96 l5 9 l-5 9 l-5-9 z",fill:s.tex,opacity:".45"}); });
+     a("path",{d:"M0 120 h24",stroke:s.met,"stroke-width":2,opacity:".6"});
+   }},
   {id:"modern", wood:"#D9DEE4", tex:"#3C4652", met:"#8A939C", em:"🤍", n:"Modern",
-   l:"clean and simple, nothing extra", wall:"#EDF0F4", floor:"#9AA3AD", glow:"#3B7DD8"},
+   l:"clean and simple, nothing extra", wall:"#EDF0F4", floor:"#9AA3AD", glow:"#3B7DD8",
+   deco:function(a,s){
+     a("rect",{x:300,y:22,width:62,height:40,rx:2,fill:"#fff",opacity:".9"});
+     a("rect",{x:300,y:22,width:62,height:40,rx:2,fill:"none",stroke:s.tex,"stroke-width":2});
+     a("path",{d:"M310 52 L324 34 L336 48 L352 30",fill:"none",stroke:s.glow,"stroke-width":2.6});
+     a("rect",{x:0,y:104,width:22,height:4,rx:2,fill:s.tex,opacity:".5"});
+   }},
   {id:"woodland", wood:"#6B4F32", tex:"#3F6F4A", met:"#9BA88F", em:"🌲", n:"Woodland",
-   l:"wood and green, like a cabin", wall:"#D8E4CF", floor:"#7A5C3C", glow:"#3C9D6E"},
+   l:"wood and green, like a cabin", wall:"#D8E4CF", floor:"#7A5C3C", glow:"#3C9D6E",
+   deco:function(a,s){
+     a("g",{});
+     [[8,10],[372,6]].forEach(function(p){
+       a("path",{d:"M"+p[0]+" "+p[1]+" q22 14 8 40 M"+p[0]+" "+p[1]+" q-4 20 -2 34",stroke:s.tex,"stroke-width":2.4,fill:"none"});
+       [0,1,2,3].forEach(function(i){ a("ellipse",{cx:p[0]+6+i*3,cy:p[1]+10+i*9,rx:8,ry:3.4,fill:s.tex,opacity:".8",transform:"rotate("+(-24+i*8)+" "+(p[0]+6+i*3)+" "+(p[1]+10+i*9)+")"}); });
+     });
+     [16,30,44].forEach(function(y){ a("path",{d:"M250 "+y+" h140",stroke:s.wood,"stroke-width":1.2,opacity:".3"}); });
+   }},
   {id:"starry", wood:"#3B3A66", tex:"#6E5AC0", met:"#A99BE0", em:"🌠", n:"Starry",
-   l:"dark and sparkly, like night", wall:"#2C2B52", floor:"#1B1A36", glow:"#C3A4E6"},
+   l:"dark and sparkly, like night", wall:"#2C2B52", floor:"#1B1A36", glow:"#C3A4E6",
+   deco:function(a,s){
+     a("circle",{cx:340,cy:34,r:18,fill:"#F6EFC9",opacity:".92"});
+     a("circle",{cx:331,cy:30,r:15,fill:s.wall});
+     [[20,18],[60,34],[100,12],[140,40],[292,16],[380,64],[10,60],[128,86],[264,30]].forEach(function(p,i){
+       a("circle",{cx:p[0],cy:p[1],r:i%3===0?2.2:1.4,fill:"#fff",opacity:".9"});
+     });
+     a("path",{d:"M60 96 l3 7 l7 3 l-7 3 l-3 7 l-3-7 l-7-3 l7-3 z",fill:"#fff",opacity:".75"});
+   }},
   {id:"seaside", wood:"#EBE4D4", tex:"#2F7E9B", met:"#9FB6BE", em:"🐚", n:"Seaside",
-   l:"blues and sand, windows open", wall:"#D7ECF3", floor:"#E3D3A8", glow:"#2B9EB3"}
+   l:"blues and sand, windows open", wall:"#D7ECF3", floor:"#E3D3A8", glow:"#2B9EB3",
+   deco:function(a,s){
+     a("path",{d:"M0 10 q50 12 100 0 q50-12 100 0 q50 12 100 0 q50-12 100 0",fill:"none",stroke:s.met,"stroke-width":1.4});
+     [24,72,120,268,316,364].forEach(function(x,i){
+       a("path",{d:"M"+(x-7)+" 12 l14 0 l-7 15 z",fill:i%2?s.tex:s.glow,opacity:".85"});
+     });
+     [0,1,2].forEach(function(i){ a("path",{d:"M250 "+(34+i*9)+" q18 6 36 0 q18-6 36 0 q18 6 36 0",fill:"none",stroke:s.tex,"stroke-width":1.6,opacity:".4"}); });
+   }},
+  {id:"disco", wood:"#3A3050", tex:"#D14A8F", met:"#E8C45A", em:"🪩", n:"Disco",
+   l:"mirror ball, lights and a dance floor", wall:"#2A2140", floor:"#3A2E55", glow:"#F25CA2",
+   deco:function(a,s){
+     a("path",{d:"M200 0 v16",stroke:s.met,"stroke-width":2});
+     ["#F25CA2","#5ED6E8","#E8C45A","#9B7CE8"].forEach(function(c,i){
+       a("path",{d:"M200 26 L"+(60+i*95)+" 196 L"+(96+i*95)+" 196 z",fill:c,opacity:".13"});
+     });
+     a("circle",{cx:200,cy:26,r:13,fill:"#C9D4E2"});
+     [[-6,-6],[3,-7],[-7,3],[4,3],[-1,-1]].forEach(function(p){ a("circle",{cx:200+p[0],cy:26+p[1],r:2.6,fill:"#fff",opacity:".95"}); });
+     a("circle",{cx:200,cy:26,r:13,fill:"none",stroke:s.met,"stroke-width":1.4});
+     var cs=["#F25CA2","#5ED6E8","#E8C45A","#9B7CE8"];
+     for(var i=0;i<10;i++){ a("rect",{x:8+i*40,y:206+(i%2)*22,width:26,height:16,rx:2,fill:cs[i%4],opacity:".3"}); }
+     [[26,52],[368,44],[300,20]].forEach(function(p,i){ a("path",{d:"M"+p[0]+" "+p[1]+" l3 8 l8 3 l-8 3 l-3 8 l-3-8 l-8-3 l8-3 z",fill:cs[i],opacity:".8"}); });
+   }},
+  {id:"bloom", wood:"#B98A6E", tex:"#E08AA8", met:"#8FB06A", em:"🌸", n:"Bloom",
+   l:"flowers everywhere, like a garden", wall:"#FBEAF0", floor:"#C9A98E", glow:"#F08FB4",
+   deco:function(a,s){
+     a("path",{d:"M0 8 q60 22 120 6 q60-16 120 4 q60 20 160 2",fill:"none",stroke:s.met,"stroke-width":2.2});
+     [30,86,142,250,306,362].forEach(function(x,i){
+       var y=14+(i%2)*8;
+       [0,72,144,216,288].forEach(function(ang){
+         var r=ang*Math.PI/180;
+         a("ellipse",{cx:(x+7*Math.cos(r)).toFixed(1),cy:(y+7*Math.sin(r)).toFixed(1),rx:4.6,ry:3.2,fill:i%2?s.tex:s.glow,opacity:".9",transform:"rotate("+ang+" "+(x+7*Math.cos(r)).toFixed(1)+" "+(y+7*Math.sin(r)).toFixed(1)+")"});
+       });
+       a("circle",{cx:x,cy:y,r:3.4,fill:s.met});
+     });
+     a("path",{d:"M6 250 q6-40 -2-70",stroke:s.met,"stroke-width":2.4,fill:"none"});
+     [0,1,2].forEach(function(i){ a("ellipse",{cx:5+(i%2?7:-4),cy:206-i*22,rx:7,ry:4,fill:s.met,opacity:".85"}); });
+   }},
+  {id:"arcade", wood:"#232A3E", tex:"#00D2C8", met:"#FF5F8F", em:"🕹️", n:"Arcade",
+   l:"neon, dark and bright at once", wall:"#171B2B", floor:"#20263C", glow:"#00D2C8",
+   deco:function(a,s){
+     ["#00D2C8","#FF5F8F"].forEach(function(c,i){
+       a("rect",{x:0,y:6+i*7,width:400,height:2.6,fill:c,opacity:".85"});
+     });
+     a("rect",{x:296,y:24,width:68,height:44,rx:4,fill:"#0E1220",stroke:s.tex,"stroke-width":2});
+     var px=[[0,0],[1,0],[2,0],[0,1],[1,1],[2,1],[1,2]];
+     px.forEach(function(p){ a("rect",{x:312+p[0]*12,y:34+p[1]*10,width:10,height:8,fill:p[1]===2?s.met:s.tex,opacity:".9"}); });
+     [[18,44],[18,60],[18,76]].forEach(function(p,i){ a("rect",{x:p[0],y:p[1],width:10,height:10,rx:2,fill:i===1?s.met:s.tex,opacity:".8"}); });
+     a("path",{d:"M130 96 l6 12 l12 2 l-9 9 l2 12 l-11-6 l-11 6 l2-12 l-9-9 l12-2 z",fill:s.met,opacity:".5"});
+   }},
+  {id:"desert", wood:"#B07A4E", tex:"#C9603F", met:"#E0A94C", em:"🌵", n:"Desert",
+   l:"warm sand, clay and cactus", wall:"#F5DCC0", floor:"#C99A6B", glow:"#E8893F",
+   deco:function(a,s){
+     a("circle",{cx:340,cy:30,r:20,fill:s.met,opacity:".55"});
+     a("circle",{cx:340,cy:30,r:13,fill:s.met,opacity:".8"});
+     [0,1,2,3].forEach(function(i){
+       a("path",{d:"M250 "+(56+i*7)+" h140",stroke:i%2?s.tex:s.wood,"stroke-width":2,opacity:".35"});
+     });
+     a("g",{});
+     a("rect",{x:8,y:150,width:26,height:16,rx:3,fill:s.tex,opacity:".9"});
+     a("path",{d:"M21 150 v-34 q0-10 10-10 q9 0 9 10 v10",fill:"none",stroke:"#6E9B5A","stroke-width":7,"stroke-linecap":"round"});
+     a("path",{d:"M21 128 q-12 0 -12 -12",fill:"none",stroke:"#6E9B5A","stroke-width":6,"stroke-linecap":"round"});
+     [0,1,2].forEach(function(i){ a("path",{d:"M"+(96+i*16)+" 20 l8 14 l-16 0 z",fill:s.tex,opacity:".5"}); });
+   }}
 ];
 function styleOf(){
   for(var i=0;i<STYLES.length;i++){ if(STYLES[i].id===me.style) return STYLES[i]; }
@@ -867,6 +967,7 @@ function roomSVG(){
   a("rect",{x:0,y:0,width:400,height:250,fill:st.wall});
   a("rect",{x:0,y:196,width:400,height:54,fill:st.floor});
   a("rect",{x:150,y:212,width:110,height:28,rx:6,fill:st.tex,opacity:".55"});
+  if(typeof st.deco==="function"){ try{ st.deco(a,st); }catch(e){} }
   a("rect",{x:14,y:150,width:132,height:48,rx:5,fill:st.wood});
   a("rect",{x:20,y:136,width:120,height:18,rx:8,fill:st.tex});
   a("rect",{x:26,y:124,width:34,height:19,rx:8,fill:"#fff",opacity:".92"});
