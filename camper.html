@@ -271,6 +271,21 @@ h1{font-family:var(--ff-d); font-weight:800; font-size:clamp(26px,4.4vw,40px);
 .btn.ghost:hover{border-color:var(--plum); color:var(--plum); filter:none}
 .btn.sm{font-size:15px; padding:8px 16px}
 .btn.off{opacity:.45}
+.sendbar{position:fixed; left:0; right:0; bottom:0; z-index:8;
+  background:var(--card); border-top:3px solid var(--plum);
+  box-shadow:0 -6px 22px rgba(35,27,61,.16);
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  padding:10px clamp(12px,3vw,22px)}
+.sendbar .lbl{font-size:14.5px; color:var(--ink-2); flex:1 1 200px; line-height:1.3}
+.sendbar .lbl b{color:var(--ink)}
+.sendbar button{font-family:var(--ff-d); font-weight:800; font-size:17px; border-radius:999px;
+  padding:11px 22px; background:var(--plum); color:var(--paper); white-space:nowrap}
+.sendbar button:hover{filter:brightness(1.12)}
+.sendbar.done{border-top-color:var(--moss)}
+.sendbar.done button{background:var(--moss)}
+.wrap{padding-bottom:104px}
+@media (max-width:520px){ .sendbar .lbl{font-size:13.5px} .sendbar button{font-size:16px; padding:10px 18px} }
+
 .toast{position:fixed; left:50%; bottom:24px; transform:translateX(-50%);
   background:var(--ink); color:var(--paper); font-weight:700; font-size:15px;
   padding:11px 20px; border-radius:999px; z-index:9}
@@ -280,6 +295,11 @@ h1{font-family:var(--ff-d); font-weight:800; font-size:clamp(26px,4.4vw,40px);
   <div class="brand">🚐 My Dream Camper</div>
   <div id="rail"></div>
   <div id="body"></div>
+</div>
+
+<div class="sendbar" id="sendbar">
+  <span class="lbl" id="sendlbl">When you are finished, <b>send your camper to your coach</b> so it is never lost.</span>
+  <button type="button" id="sendbtn">Copy my link</button>
 </div>
 
 <script>
@@ -753,6 +773,49 @@ function save(){
   var d=document.getElementById("savedot");
   if(d) d.textContent = storageWorks ? "Saved" : "Saved in the link";
 }
+function copyText(s, done){
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(s).then(done, function(){ copyFallback(s, done); });
+      return;
+    }
+  }catch(e){}
+  copyFallback(s, done);
+}
+function copyFallback(s, done){
+  try{
+    var ta=document.createElement("textarea");
+    ta.value=s; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    done();
+  }catch(e){ done(true); }
+}
+(function sendBar(){
+  var bar=document.getElementById("sendbar");
+  var btn=document.getElementById("sendbtn");
+  var lbl=document.getElementById("sendlbl");
+  if(!bar||!btn||!lbl) return;
+  btn.addEventListener("click",function(){
+    var link=camperLink();
+    copyText(link,function(failed){
+      if(failed){
+        lbl.innerHTML='Could not copy it. <b>Click the web address at the very top, then press Ctrl and C.</b>';
+        return;
+      }
+      bar.className="sendbar done";
+      btn.textContent="Copied";
+      lbl.innerHTML='<b>Now paste it to your coach</b> in the chat — click the chat and press Ctrl and V.';
+      setTimeout(function(){
+        bar.className="sendbar";
+        btn.textContent="Copy my link";
+        lbl.innerHTML='When you are finished, <b>send your camper to your coach</b> so it is never lost.';
+      },12000);
+    });
+  });
+})();
+
 function camperLink(){
   var enc=packUp(JSON.stringify(squeeze()));
   return location.href.split("#")[0]+(enc?"#c="+enc:"");
