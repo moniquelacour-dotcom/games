@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Fernbrook Animal Rescue</title>
+<title>Glacier Animal Rescue</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Figtree:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap">
@@ -494,6 +494,8 @@ h1,h2,h3{font-family:"Baloo 2",system-ui,sans-serif;font-weight:700;line-height:
 .dirt{background:var(--soil);opacity:.85;filter:blur(.4px)}
 .dirt.soot{background:#4A4740}
 .dirt.dust{background:#A79878}
+.dirt.pitch{background:#6B4A22}
+.dirt.silt{background:#8A8068}
 .sud{background:#fff;box-shadow:0 0 0 1px rgba(120,160,190,.5) inset;opacity:.9}
 .ail{
   pointer-events:auto;cursor:pointer;background:transparent;
@@ -612,7 +614,7 @@ h1,h2,h3{font-family:"Baloo 2",system-ui,sans-serif;font-weight:700;line-height:
 
   <div class="rail rail-top">
     <span class="badge">Unit 7</span>
-    <span class="org">Fernbrook Animal Rescue</span>
+    <span class="org">Glacier Animal Rescue</span>
     <span class="rail-spacer"></span>
     <button class="roompill" id="roomBtn">Play together</button>
     <span class="tally mono" id="tally">Rescued <b>0</b>/10</span>
@@ -627,7 +629,7 @@ h1,h2,h3{font-family:"Baloo 2",system-ui,sans-serif;font-weight:700;line-height:
       <div class="view" id="v-call" role="button" tabindex="0" aria-label="Answer the incoming call">
         <div class="incoming mono"><i></i>Incoming call</div>
         <div class="ring">📞</div>
-        <div class="call-from mono">Fernbrook Dispatch · mobile</div>
+        <div class="call-from mono">Glacier Dispatch · park radio</div>
         <h1>Animals need you</h1>
         <p id="callSub">Ten calls came in overnight. Pick up your pager and go get them.</p>
         <span class="tap mono" id="callTap">Tap the pager to answer</span>
@@ -686,7 +688,7 @@ h1,h2,h3{font-family:"Baloo 2",system-ui,sans-serif;font-weight:700;line-height:
         </div>
         <div class="side">
           <div class="side-head">
-            <div class="eyebrow mono" id="careStep">Fernbrook · Care bay</div>
+            <div class="eyebrow mono" id="careStep">Apgar · Care bay</div>
             <h2 id="careTitle">—</h2>
             <div class="turn" id="careTurn" hidden></div>
           </div>
@@ -704,7 +706,7 @@ h1,h2,h3{font-family:"Baloo 2",system-ui,sans-serif;font-weight:700;line-height:
       <!-- ============ ROSTER ============ -->
       <div class="view" id="v-roster">
         <div class="roster-head">
-          <h2>The Fernbrook roster</h2>
+          <h2>The Apgar roster</h2>
           <button class="btn ghost" id="newShift">New shift</button>
           <button class="btn" id="rosterBack">Back to map</button>
         </div>
@@ -730,185 +732,215 @@ h1,h2,h3{font-family:"Baloo 2",system-ui,sans-serif;font-weight:700;line-height:
 const KIT = [
   {id:"rope",   g:"🪢", lab:"Rope"},
   {id:"ladder", g:"🪜", lab:"Ladder"},
-  {id:"basket", g:"🧺", lab:"Basket"},
+  {id:"basket", g:"🧺", lab:"Carrier"},
   {id:"net",    g:"🥅", lab:"Net"},
   {id:"snips",  g:"✂️", lab:"Snips"},
-  {id:"tools",  g:"🛠️", lab:"Tools"},
+  {id:"tools",  g:"🛠️", lab:"Pry bar"},
   {id:"blanket",g:"🧣", lab:"Blanket"},
   {id:"gloves", g:"🧤", lab:"Gloves"},
   {id:"torch",  g:"🔦", lab:"Torch"},
-  {id:"treats", g:"🍖", lab:"Treats"}
+  {id:"treats", g:"🍖", lab:"Food"}
 ];
 const KITMAP = {}; KIT.forEach(k=>KITMAP[k.id]=k);
 
 /* ============================================================
-   THE TEN CALLS
-   backdrop kinds: high | tangle | hole | ground | shut
+   THE TEN CALLS — Glacier National Park
+   backdrop kinds: high | tangle | hole | ground | shut | water
    ============================================================ */
 const CALLS = [
   {
-    id:"kitten", species:"Kitten", art:{kind:"quad",body:"#E8A44C",belly:"#FBE7C8",ear:"point",tail:"fluff"},
-    where:"Baker Street roof", x:20, y:26, kind:"high", tint:"#C9B79C",
-    title:"A voice on the ledge",
-    brief:"The baker heard mewing above her sign all morning. Three storeys up, on a ledge the width of a book, there is a very small orange cat.",
+    id:"eagle", species:"Bald eagle",
+    art:{kind:"bird",body:"#4A382B",belly:"#5E4936",beak:"#E8B63C",wing:"#382A20",hood:"#F6F3EC",hook:true},
+    where:"Lake McDonald shore", x:26, y:60, kind:"tangle", fg:"line", tint:"#6E7F6A",
+    title:"Line in the driftwood",
+    brief:"Somebody left a fish and a tangle of fishing line on the rocks at the lake edge. A young bald eagle came down for the fish and got the line instead — around one wing, twice, and then around a branch of driftwood. She has stopped fighting it, which is how you know she has been there a while.",
     steps:[
-      {need:"rope", ask:"The ledge is three storeys up and there's nothing to climb. What gets you up there?", win:"You loop the rope over the chimney, test it twice, and walk yourself up the brickwork.",
-       miss:{ladder:"Your ladder is nowhere near three storeys.",treats:"Treats won't help — she's too frightened to move at all.",net:"Never net a cat on a ledge. One flinch and she falls."}},
-      {need:"basket", ask:"She's shaking too hard to be carried in your arms. How do you get her down?", win:"You tuck her into the basket, close the flap, and lower it hand over hand to the pavement.",
-       miss:{rope:"You've already got the rope. She can't hold on to one.",blanket:"A blanket calms her, but you need something with sides."}}
+      {need:"gloves", ask:"Her feet are the dangerous end, not the beak, and she will take hold of anything that comes near. What goes on before you touch her?",
+       win:"Gloves on, both hands. She grabs your left glove and will not let go — which, as it turns out, keeps her still while you work.",
+       miss:{snips:"You will need them in a second, but not before your hands are covered.",net:"Never drop a net over a wing that is already tangled. It only doubles the knot.",blanket:"A blanket over her head does calm her — but bare hands near those feet is how people get hurt.",treats:"There is a whole fish in front of her and she has not touched it."}},
+      {need:"snips", ask:"The line is thin, wet, and pulled tight down into the feathers. How does it come off?",
+       win:"One strand at a time, working outward from the wing, until the last loop drops away and the wing opens all the way — a very great deal of wing.",
+       miss:{rope:"More line is exactly what this bird does not need.",tools:"Far too heavy to bring near a wing.",gloves:"Already on. Now you need something that cuts."}}
     ],
-    care:{dirt:"soot", dirtN:8, bath:"soot streaks",
-      ails:[{x:33,y:78,found:"Scraped front paw",fix:"🩹"},{x:63,y:38,found:"Torn left ear",fix:"🩹"}],
-      bugs:2, bugKind:"flea"},
-    names:["Marmalade","Biscuit","Pumpkin","Sixpence"]
-  },
-  {
-    id:"puppy", species:"Puppy", art:{kind:"quad",body:"#7E6046",belly:"#E4D3BC",ear:"flop",tail:"thin"},
-    where:"Dog park fence", x:63, y:19, kind:"tangle", tint:"#8FA772",
-    title:"Caught in the wire",
-    brief:"He crawled under the fence after a ball and came out the other side with the wire wrapped twice around his back leg. He's been there long enough to stop struggling.",
-    steps:[
-      {need:"snips", ask:"The wire is tight around his leg. What do you reach for first?", win:"You slide the snips under the wire, snip, snip — and the loop falls away.",
-       miss:{tools:"Too heavy. You'd hurt him before you cut anything.",gloves:"Good instinct, but gloves won't get the wire off.",treats:"He's too scared to eat while he's held down."}},
-      {need:"blanket", ask:"He's free but shivering and won't stand up. What now?", win:"You wrap him in the blanket like a parcel, and the shivering slows right down.",
-       miss:{basket:"He's too long for the basket — he needs wrapping, not stacking.",net:"He's already free. A net would only scare him again."}}
-    ],
-    care:{dirt:"mud", dirtN:9, bath:"dried mud",
-      ails:[{x:70,y:74,found:"Wire cut on hind leg",fix:"🩹"},{x:40,y:60,found:"Very thin — underfed",fix:"🍖"}],
-      bugs:3, bugKind:"tick"},
-    names:["Biscuit","Rocket","Waffle","Tumble"]
-  },
-  {
-    id:"bunny", species:"Rabbit", art:{kind:"quad",body:"#9A9384",belly:"#EDE8DC",ear:"long",tail:"puff"},
-    where:"Willow Lane drain", x:33, y:56, kind:"hole", tint:"#9EA6A8",
-    title:"Two eyes in the drain",
-    brief:"A child on Willow Lane says something moved in the storm drain. The grate is off. It is very dark down there and something is definitely breathing.",
-    steps:[
-      {need:"torch", ask:"You can't rescue what you can't see. What comes out of the kit first?", win:"The beam finds her on a ledge above the water — a young rabbit, wet through, wedged in a corner.",
-       miss:{net:"You'd be swinging blind. You could hurt her.",rope:"Nothing down there to tie to yet.",basket:"You need to find her before you can lift her."}},
-      {need:"net", ask:"She's on a ledge just out of arm's reach and she bolts when you get close. How do you catch her?", win:"One slow sweep of the net and she's caught — kicking, but safe.",
-       miss:{treats:"A frightened rabbit won't eat. She just presses further into the corner.",gloves:"Your arm is still too short.",torch:"You've already got the light on her."}}
-    ],
-    care:{dirt:"dust", dirtN:7, bath:"drain grime",
-      ails:[{x:50,y:35,found:"Cold to the touch",fix:"🔥"},{x:36,y:70,found:"Cracked claw",fix:"🩹"}],
-      bugs:1, bugKind:"flea"},
-    names:["Pip","Willow","Thimble","Clover"]
-  },
-  {
-    id:"crow", species:"Fledgling crow", art:{kind:"bird",body:"#3B4048",belly:"#5A626D",beak:"#C0A24C",wing:"#2B3038"},
-    where:"Library steps", x:47, y:37, kind:"ground", tint:"#B7AE96",
-    title:"Down from the nest",
-    brief:"A young crow is hopping along the library steps with one wing held out wrong. Mum is in the plane tree above, shouting at everyone who walks past.",
-    steps:[
-      {need:"gloves", ask:"That beak is sharp and she'll use it. What do you put on before you touch her?", win:"Gloves on. She lands one good jab on your thumb and it doesn't even sting.",
-       miss:{net:"You'd catch the wing wrong. Never net an injured wing.",basket:"You'll need it — but not before your hands are protected.",treats:"She's not interested in food. She wants her mother."}},
-      {need:"basket", ask:"Her wing hangs wrong and can't be squashed. What do you carry her in?", win:"You settle her in the basket with the wing supported, and she goes quiet at once.",
-       miss:{blanket:"Wrapping presses on the bad wing. She needs space around it.",gloves:"You've got them on already."}}
-    ],
-    care:{dirt:"dust", dirtN:6, bath:"street dust",
-      ails:[{x:66,y:44,found:"Bruised right wing",fix:"🩹"},{x:44,y:78,found:"Dehydrated",fix:"💧"}],
+    care:{dirt:"pitch", dirtN:7, bath:"lake weed and pine pitch",
+      ails:[{x:49.6,y:62.9,found:"Line cut under the right wing",fix:"🩹"},{x:62.6,y:55.9,found:"Has not eaten in two days",fix:"🍖"}],
       bugs:2, bugKind:"mite"},
-    names:["Twig","Inkcap","Soot","Corvid"]
+    names:["Kintla","Sperry","Half-Moon","Storm"]
   },
   {
-    id:"turtle", species:"Pond turtle", art:{kind:"turtle",body:"#6C8A5A",shell:"#5A4A34",shell2:"#7A6748"},
-    where:"Marsh Flats gate", x:81, y:63, kind:"shut", tint:"#7E8C63",
-    title:"Under the fallen gate",
-    brief:"The old marsh gate came down in the wind and landed across the mud path. Underneath it, not squashed but thoroughly stuck, is a turtle who was only trying to get to the water.",
+    id:"cub", species:"Black bear cub",
+    art:{kind:"quad",body:"#3F332C",belly:"#6B5748",ear:"round",tail:"stub"},
+    where:"Avalanche boardwalk", x:34, y:45, kind:"hole", tint:"#7C6A54",
+    title:"Under the boardwalk",
+    brief:"A bear cub followed his mother along the creek, found a gap between two boards, and went straight through it. He is under the boardwalk in the dark, about a metre down, and he cannot work out how to get back up. His mother is somewhere in the trees, and she can hear him.",
     steps:[
-      {need:"tools", ask:"The gate is heavy timber and iron, pinned by its own hinge. What do you use?", win:"You get the pry bar under the hinge, lean your weight on it, and the gate lifts just enough.",
-       miss:{rope:"Nothing to anchor to out here on the flats.",snips:"Snips won't cut through an iron hinge.",gloves:"You could lift all day and it wouldn't budge."}},
-      {need:"basket", ask:"He's free, and he is a lot heavier than he looks. How do you move him?", win:"Both hands under the shell, into the basket, and off to the van.",
-       miss:{net:"A shell just slides straight out of a net.",blanket:"He doesn't need warming — he needs carrying."}}
+      {need:"ladder", ask:"You are not climbing down there with a bear cub, and his mother is close by. How do you give him a way out?",
+       win:"You lift two boards, drop the ladder through the gap, and back right off. Now there is a way up that was not there before.",
+       miss:{rope:"You would have to get hold of him to tie it on. Nobody is doing that.",net:"With a mother bear in the trees? Nothing that holds him still.",basket:"He is a bear. He is not getting into a carrier.",torch:"You can hear exactly where he is."}},
+      {need:"treats", ask:"The ladder is down and he has not moved. He does not know it is a way out. How do you show him?",
+       win:"A line of huckleberries up the rungs. He follows his nose, one rung at a time, and comes out at the top blinking.",
+       miss:{ladder:"It is already down there. Now he needs a reason to use it.",gloves:"You are not going to touch this one at all — and that is the right call.",blanket:"Nowhere near him. Let him climb out himself."}}
     ],
-    care:{dirt:"mud", dirtN:9, bath:"marsh mud",
-      ails:[{x:62,y:32,found:"Chipped shell edge",fix:"🩹"},{x:34,y:66,found:"Dry, cracked skin",fix:"💧"}],
-      bugs:2, bugKind:"leech"},
-    names:["Sherman","Pebble","Admiral","Slowcoach"]
+    care:{dirt:"mud", dirtN:9, bath:"creek mud",
+      ails:[{x:48.7,y:64.3,found:"Splinter in a front pad",fix:"🩹"},{x:42.8,y:50.0,found:"Hoarse from calling",fix:"💧"}],
+      bugs:3, bugKind:"tick"},
+    names:["Huckleberry","Scout","Bramble","Avalanche"]
   },
   {
-    id:"raccoon", species:"Raccoon", art:{kind:"quad",body:"#8C8C90",belly:"#D9D8D2",ear:"round",tail:"ringed",mask:true},
-    where:"Depot shed", x:74, y:34, kind:"shut", tint:"#8F7C6A",
-    title:"Locked in the shed",
-    brief:"Something has been crashing around inside the depot shed since Tuesday. The padlock is rusted solid and nobody can find the key. The crashing has got quieter, which is worse.",
+    id:"doe", species:"Doe",
+    art:{kind:"quad",body:"#A07A54",belly:"#EFE4D2",ear:"deer",tail:"flag"},
+    where:"Apgar campground", x:12, y:74, kind:"ground", tint:"#9AA877",
+    title:"The bucket on her head",
+    brief:"Somebody left a feed bucket out at the edge of the campground. A doe put her head in it for whatever was in the bottom, and now she cannot get it off. She has been walking into things all morning. Twice she has gone as far as the road.",
     steps:[
-      {need:"tools", ask:"The padlock is rusted into one lump. How do you get in?", win:"Two good pulls on the bar and the hasp tears out of the door frame.",
-       miss:{snips:"That padlock is far too thick for snips.",torch:"You can already see. You just can't get in.",treats:"He can't reach a treat through a locked door."}},
-      {need:"net", ask:"He's cornered behind the mower and he is not pleased to see you. How do you handle him safely?", win:"One clean sweep of the net. He grumbles the whole way to the carrier, but nobody gets bitten.",
-       miss:{gloves:"Gloves won't stop a frightened raccoon. Keep your distance.",basket:"You'd have to pick him up bare-handed to do that.",blanket:"Too close, too slow. He'd be past you in a second."}}
+      {need:"rope", ask:"She cannot see you coming and she bolts at every sound — and the road is forty metres away. What has to happen first?",
+       win:"You get a loop over her shoulders on the second try and take up the slack slowly. She stops. She is still frightened, but she is not going anywhere near that road.",
+       miss:{net:"Over a deer who cannot see? She would go straight through it and keep running.",treats:"She has a bucket on her head. She could not eat if she wanted to.",gloves:"You will want them — but not while she is still loose."}},
+      {need:"gloves", ask:"The bucket is wedged down past her ears and she will fight you for every inch of it. How do you take hold?",
+       win:"Gloves on, one hand flat against her neck, the other turning the bucket a little at a time — and off it comes, ears and all. She looks at you for about a second, and then she is gone.",
+       miss:{tools:"Nothing that hard goes anywhere near her head.",snips:"It is a plastic bucket, and cutting means blades near her eyes.",blanket:"She is not cold. She is stuck."}}
+    ],
+    care:{dirt:"dust", dirtN:7, bath:"road dust",
+      ails:[{x:42.8,y:50.0,found:"Rubbed raw behind both ears",fix:"🩹"},{x:48.7,y:64.3,found:"Two days without water",fix:"💧"}],
+      bugs:3, bugKind:"tick"},
+    names:["Willow","Aster","Juniper","Birch"]
+  },
+  {
+    id:"fawn", species:"Fawn",
+    art:{kind:"quad",body:"#B08A5E",belly:"#F7EFE0",ear:"deer",tail:"flag",spots:true},
+    where:"Two Medicine gate", x:74, y:84, kind:"hole", tint:"#8E8570",
+    title:"Down in the cattle guard",
+    brief:"A cattle guard is a grid of steel bars over a pit, and it is there so that cows will not cross it. A fawn tried to cross it. She went straight down between two bars, and she is standing in the pit underneath, knee deep in cold water, looking up.",
+    steps:[
+      {need:"tools", ask:"The bars are steel and they are bolted down. She cannot come back up through the gap she fell down. How do you open it?",
+       win:"You get the bar under the end of the grate and lean on it until two bars lift clear. It is not elegant. It is enough.",
+       miss:{rope:"You would be dragging her up through a gap she does not fit through.",snips:"Snips do not cut steel bar.",ladder:"She is a fawn. She is not going to climb one."}},
+      {need:"blanket", ask:"She is shaking so hard her legs will not hold still, and she is small enough to lift. What do you bring her up in?",
+       win:"The blanket goes round her the way you would wrap a loaf, legs tucked in, and she comes up out of the pit in one armful without a single kick.",
+       miss:{basket:"Her legs are longer than the carrier. She needs wrapping, not stacking.",gloves:"Fine to wear — but they will not keep her still.",net:"She is already caught. A net would only tangle those legs."}}
+    ],
+    care:{dirt:"mud", dirtN:8, bath:"ditch water",
+      ails:[{x:48.7,y:64.3,found:"Both back legs scraped",fix:"🩹"},{x:61.7,y:57.3,found:"Cold right through",fix:"🔥"}],
+      bugs:2, bugKind:"tick"},
+    names:["Dapple","Freckle","Pip","Sunbeam"]
+  },
+  {
+    id:"calf", species:"Calf",
+    art:{kind:"quad",body:"#3A322B",belly:"#F4EFE4",ear:"flop",tail:"tuft",patch:true},
+    where:"St. Mary creek", x:90, y:55, kind:"water", tint:"#7E8C63",
+    title:"Bogged in the creek",
+    brief:"The ranch on the park boundary brings its cattle down to the creek to drink. One calf went in at the soft end, where the bank is mud rather than gravel, and sank to the chest. Her mother is standing on the bank and has not moved from the spot all morning.",
+    steps:[
+      {need:"rope", ask:"She is stuck fast, and every push she makes takes her further in. What gets her out of the mud?",
+       win:"You work the rope under her chest, take the strain from the firm bank, and the mud lets go of her with a noise nobody enjoys.",
+       miss:{tools:"Nothing to lever against. It is mud all the way down.",net:"She is stuck, not running away.",ladder:"It would sink exactly the way she did.",treats:"She could not reach it, and she would not eat it."}},
+      {need:"blanket", ask:"She is out, she is soaked to the skin, and the wind coming off the lake is cold. What does she need now?",
+       win:"Blanket over her back, rubbed hard on both sides, and by the time her mother reaches her she is standing up on her own four feet.",
+       miss:{basket:"She weighs a good deal more than you do.",gloves:"Her problem is cold, not your hands.",rope:"She is out now. Take it off her."}}
+    ],
+    care:{dirt:"mud", dirtN:10, bath:"creek mud",
+      ails:[{x:48.7,y:64.3,found:"Rope rub behind the shoulder",fix:"🩹"},{x:61.7,y:57.3,found:"Chilled and shivering",fix:"🔥"}],
+      bugs:2, bugKind:"leech"},
+    names:["Buttercup","Domino","Biscuit","Muddy"]
+  },
+  {
+    id:"cow", species:"Cow",
+    art:{kind:"quad",body:"#4A4038",belly:"#F2EBDD",ear:"flop",tail:"tuft",patch:true,horns:true},
+    where:"Many Glacier fence line", x:84, y:20, kind:"tangle", tint:"#8E9A6E",
+    title:"The fence came down on her",
+    brief:"The wind came through in the night and took a hundred metres of fence with it. One cow was standing in the wrong place. She is down on her side in the wire with a fence post across both back legs, and she has stopped struggling, which is the part that worries you.",
+    steps:[
+      {need:"snips", ask:"There are four strands of barbed wire wound round her, and they pull tighter every time she moves. Where do you start?",
+       win:"You cut every strand you can reach, one at a time, the far ones first so that nothing springs back at her. The wire comes away in pieces.",
+       miss:{tools:"The post can wait. Move it now and the wire pulls tighter.",rope:"She is tangled in quite enough wire already.",gloves:"Wear them, certainly — but they do not cut barbed wire."}},
+      {need:"tools", ask:"The wire is off her and she still cannot get up: the post is lying across both back legs. What shifts it?",
+       win:"You get the bar under the post, lift, and walk it clear. She is up on her feet before you have put the bar down.",
+       miss:{snips:"Nothing left to cut. This is a timber post.",blanket:"She will warm up the moment she can stand.",net:"She is not going anywhere at all until that post moves."}}
+    ],
+    care:{dirt:"dust", dirtN:8, bath:"dirt and dried mud",
+      ails:[{x:48.7,y:64.3,found:"Wire cuts along both back legs",fix:"🩹"},{x:61.7,y:57.3,found:"Stiff from lying all night",fix:"🔥"}],
+      bugs:4, bugKind:"tick"},
+    names:["Marigold","Big Rosie","Patch","Thistle"]
+  },
+  {
+    id:"kid", species:"Mountain goat kid",
+    art:{kind:"quad",body:"#F2EADC",belly:"#FFFCF4",ear:"flop",tail:"stub",horns:true},
+    where:"Hidden Lake overlook", x:53, y:35, kind:"high", tint:"#A8A294",
+    title:"Off the edge at the overlook",
+    brief:"Mountain goats go where nothing else can. This one is four months old, and he has found the one place even a goat cannot get out of — a shelf below the overlook railing, with rock above him he cannot jump. His mother is on the path above. So are about forty visitors.",
+    steps:[
+      {need:"ladder", ask:"The shelf is three metres below the railing, and the rock above it overhangs. How do you get down to him?",
+       win:"Ladder over the railing, feet wedged into the scree, tied off at the top — and down you go, while somebody up there holds the path.",
+       miss:{rope:"You will want it next. But you cannot climb down an overhang on a rope that is not anchored to anything yet.",net:"He would go over the edge rather than be caught.",treats:"He is not coming to you. He genuinely cannot get up."}},
+      {need:"rope", ask:"He is on the shelf with you now, and neither of you can climb back up carrying the other. What gets him up?",
+       win:"A sling under his belly, a shout up to the crew, and up he goes with his legs pedalling the whole way. He lands on the path and walks straight to his mother.",
+       miss:{ladder:"He is not going to climb a ladder. He is a goat.",basket:"Much too big — and he would kick straight out of it.",blanket:"He is not cold. He is stuck."}}
+    ],
+    care:{dirt:"dust", dirtN:8, bath:"rock dust",
+      ails:[{x:48.7,y:64.3,found:"Split front hoof",fix:"🩹"},{x:42.8,y:50.0,found:"Three hours of shouting — hoarse",fix:"💧"}],
+      bugs:2, bugKind:"tick"},
+    names:["Chalk","Snowcap","Tuft","Pebble"]
+  },
+  {
+    id:"lamb", species:"Bighorn lamb",
+    art:{kind:"quad",body:"#A3947C",belly:"#E6DCC8",ear:"flop",tail:"stub",curl:true},
+    where:"The Loop road shed", x:42, y:52, kind:"shut", tint:"#7E6B52",
+    title:"Shut in the road shed",
+    brief:"The road crew keep their grit and their shovels in a shed at The Loop. A bighorn lamb walked in after the salt on the floor, and the wind took the door shut behind her. That was Friday. It is now Sunday, and somebody has heard something moving in there.",
+    steps:[
+      {need:"tools", ask:"The door has dropped on its hinge and jammed into the frame. Nobody has a key, and the hinge is painted solid. What opens it?",
+       win:"You get the bar in beside the hinge and lean until the whole door lifts and swings. Daylight goes in. Something in the corner stops moving.",
+       miss:{snips:"There is nothing to cut. It is a stuck door.",rope:"Nothing out here to pull against.",torch:"You can hear her perfectly well. You still cannot get in."}},
+      {need:"net", ask:"She is behind the grit pile, she is fast, and the open door leads straight out onto the road. How do you take hold of her safely?",
+       win:"One sweep of the net as she comes past, and you have her — furious, unhurt, and nowhere near the traffic.",
+       miss:{treats:"Two days shut in a shed. She wants out, not food.",gloves:"She is quicker than your hands. Catch her first.",blanket:"You would have to be on top of her already."}}
+    ],
+    care:{dirt:"dust", dirtN:9, bath:"road grit and salt",
+      ails:[{x:42.8,y:50.0,found:"Two days without water",fix:"💧"},{x:48.7,y:64.3,found:"Worn, sore front knees",fix:"🩹"}],
+      bugs:3, bugKind:"burr"},
+    names:["Scree","Bolt","Cinder","Tumble"]
+  },
+  {
+    id:"beaver", species:"Beaver kit",
+    art:{kind:"quad",body:"#6B5039",belly:"#8E7052",ear:"round",tail:"paddle",paddle:"#4A3729",teeth:true},
+    where:"Camas Creek culvert", x:15, y:27, kind:"water", fg:"mesh", tint:"#6E8A5C",
+    title:"Caught in the silt fence",
+    brief:"There is orange silt fencing along the creek where the road crew have been working, and half of it has washed into the water. A beaver kit swam into it in the dark. He is in the shallows with the mesh round his middle and both back legs, and the creek is coming up.",
+    steps:[
+      {need:"snips", ask:"The mesh is wound twice round him, and the current pulls him under every time the water pushes. What comes out of the kit first?",
+       win:"Snips — and you cut the mesh on the water side first, so the creek stops dragging on it. Then the rest, one strand at a time.",
+       miss:{rope:"You would only pull the mesh tighter round him.",net:"He is in quite enough netting already.",tools:"Much too rough this close to him.",treats:"He is half under water. He is not thinking about food."}},
+      {need:"basket", ask:"He is loose, he is heavier and crosser than he looks, and those front teeth are orange for a reason. How does he travel?",
+       win:"Straight into the carrier with the lid down, and he sits there chattering at you the whole way up the bank.",
+       miss:{gloves:"Wear them — but you still need something to put him in.",blanket:"Wet fur and a cold night, and he would be through a blanket in a minute.",snips:"Nothing left to cut."}}
+    ],
+    care:{dirt:"silt", dirtN:9, bath:"creek silt",
+      ails:[{x:48.7,y:64.3,found:"Mesh cuts round the middle",fix:"🩹"},{x:61.7,y:57.3,found:"Cold and worn out",fix:"🔥"}],
+      bugs:2, bugKind:"leech"},
+    names:["Timber","Chip","Paddle","Twig"]
+  },
+  {
+    id:"marmot", species:"Marmot",
+    art:{kind:"quad",body:"#9A7647",belly:"#DCC69B",ear:"round",tail:"fluff"},
+    where:"Logan Pass car park", x:61, y:22, kind:"shut", fg:"dark", tint:"#7A6A58",
+    title:"In the engine",
+    brief:"Marmots at Logan Pass have worked out that the warmest thing in the car park is the engine of a car that has just come up the hill. Mostly they chew the wiring and leave. This one is still in there, and the family who own the car would quite like to drive home.",
+    steps:[
+      {need:"torch", ask:"The bonnet is up, and the engine bay is a maze of black pipes and black wires in a black space. What finds him?",
+       win:"The beam goes in along the back of the engine, and two very round eyes look straight back at you from behind the battery.",
+       miss:{gloves:"You will want them the moment you reach in. First you have to know where to reach.",net:"You cannot swing a net inside an engine bay.",basket:"You have to find him before you can carry him.",treats:"He is warm and he is hidden. He is in no hurry at all."}},
+      {need:"basket", ask:"You can see him, and he is wedged in beside the battery where you cannot get two hands. How does he come out?",
+       win:"You bring the open carrier up to the gap, put the torch beam behind him, and he does the rest himself — straight in, and the lid goes down.",
+       miss:{gloves:"Reaching in there puts your hand between a marmot and a battery. Give him a door instead.",snips:"He has done all the cutting. There is nothing left for you to cut.",net:"There is no room to swing anything in there."}}
     ],
     care:{dirt:"soot", dirtN:8, bath:"engine oil",
-      ails:[{x:56,y:36,found:"Weak from hunger",fix:"🍖"},{x:70,y:70,found:"Sore, split pad",fix:"🩹"}],
+      ails:[{x:42.8,y:50.0,found:"Singed whiskers",fix:"🩹"},{x:48.7,y:64.3,found:"Very thirsty",fix:"💧"}],
       bugs:3, bugKind:"flea"},
-    names:["Bandit","Rascal","Domino","Trouble"]
-  },
-  {
-    id:"fox", species:"Fox cub", art:{kind:"quad",body:"#C7622C",belly:"#F2E4D2",ear:"point",tail:"tip"},
-    where:"Orchard row 4", x:15, y:73, kind:"tangle", tint:"#A0803C",
-    title:"The snare in the orchard",
-    brief:"An old wire snare nobody remembers setting has caught a fox cub by the back leg. She is small enough to fit in your two hands and she has been pulling against it all night.",
-    steps:[
-      {need:"snips", ask:"The snare wire has pulled tight and it will only get tighter. First move?", win:"You steady the wire with one hand and cut it clean with the other. The loop drops off.",
-       miss:{tools:"Far too rough this close to her leg.",rope:"More rope is the last thing this needs.",treats:"She's beyond eating. She just wants the wire gone."}},
-      {need:"blanket", ask:"She's loose but she can't put weight on the leg and she's snapping at everything. What now?", win:"The blanket goes over her head first. In the dark she goes still, and you scoop her up in one bundle.",
-       miss:{net:"She's already free — a net now would tangle the bad leg again.",gloves:"She'd bite through them. Cover her eyes first."}}
-    ],
-    care:{dirt:"mud", dirtN:8, bath:"orchard mud",
-      ails:[{x:70,y:76,found:"Snare wound, hind leg",fix:"🩹"},{x:46,y:38,found:"Exhausted",fix:"🔥"}],
-      bugs:3, bugKind:"tick"},
-    names:["Ember","Sorrel","Fennec","Kindle"]
-  },
-  {
-    id:"duckling", species:"Duckling", art:{kind:"bird",body:"#E8CE6A",belly:"#F8EDC0",beak:"#E8934A",wing:"#D9BC55"},
-    where:"Canal Road", x:55, y:80, kind:"ground", tint:"#9CA6A0",
-    title:"On the wrong side of the road",
-    brief:"The rest of the family made it across. One duckling didn't, and now she's sitting in the gutter on Canal Road with the traffic going past, too panicked to move an inch.",
-    steps:[
-      {need:"treats", ask:"Every time you step towards her she bolts further into the road. How do you get her to come to you?", win:"You crouch down and scatter a little food. Curiosity beats fear, and she waddles right over.",
-       miss:{net:"You'd chase her straight into the traffic.",torch:"It's the middle of the afternoon.",gloves:"Grabbing at her sends her the wrong way."}},
-      {need:"basket", ask:"She's close now and calm. How do you get her off this road?", win:"You lift her in both hands, into the basket, and she settles in the dark like it was made for her.",
-       miss:{blanket:"She'd wriggle straight out of a blanket.",treats:"She's already come to you. Now she needs somewhere safe."}}
-    ],
-    care:{dirt:"dust", dirtN:6, bath:"road grit",
-      ails:[{x:52,y:74,found:"Grazed webbed foot",fix:"🩹"},{x:60,y:40,found:"Separated from family",fix:"💧"}],
-      bugs:1, bugKind:"mite"},
-    names:["Puddle","Custard","Pip","Ripple"]
-  },
-  {
-    id:"hedgehog", species:"Hedgehog", art:{kind:"quad",body:"#8E7A5F",belly:"#D6C6A8",ear:"round",tail:"none",spines:true},
-    where:"Number 12 garden", x:30, y:87, kind:"tangle", tint:"#6E8A5C",
-    title:"Wrapped in the netting",
-    brief:"Someone put fruit netting over the strawberries and forgot about it. A hedgehog walked into it in the night and rolled — which is exactly the wrong thing to do in netting.",
-    steps:[
-      {need:"snips", ask:"Every loop he rolled through has pulled tighter. There's no unwinding this. What do you use?", win:"You cut each strand one at a time, working from the outside in, until the whole net falls away in pieces.",
-       miss:{gloves:"You'll want them — but the netting has to come off first.",tools:"Much too clumsy for netting this fine.",net:"He's got quite enough netting already."}},
-      {need:"gloves", ask:"He's out of the net and rolled up into a ball of spines. How do you pick him up?", win:"Gloves on, both hands cupped underneath, and up he comes without a single scratch.",
-       miss:{basket:"You still have to get him into it somehow.",blanket:"The spines snag straight through a blanket.",snips:"Nothing left to cut."}}
-    ],
-    care:{dirt:"dust", dirtN:7, bath:"garden dirt",
-      ails:[{x:60,y:66,found:"Netting cuts around middle",fix:"🩹"},{x:38,y:46,found:"Out in daylight — unwell",fix:"💧"}],
-      bugs:4, bugKind:"tick"},
-    names:["Nutmeg","Bramble","Prickle","Hawthorn"]
-  },
-  {
-    id:"goat", species:"Goat kid", art:{kind:"quad",body:"#EFE6D6",belly:"#FFFBF2",ear:"flop",tail:"stub",horns:true},
-    where:"Quarry ledge", x:88, y:14, kind:"high", tint:"#B0AA9C",
-    title:"Stranded on the quarry shelf",
-    brief:"A goat kid got onto a shelf halfway down the quarry face and now can't work out how to get off it again. He has been shouting about it for two hours.",
-    steps:[
-      {need:"ladder", ask:"The shelf is about four metres down the quarry face. How do you reach him?", win:"You walk the ladder down the slope, wedge the feet in the scree, and climb down to the shelf.",
-       miss:{rope:"You'll want it in a minute — but you can't climb down bare rock first.",net:"He'd panic and go over the edge.",treats:"He's not coming to you. He genuinely cannot get off that shelf."}},
-      {need:"rope", ask:"He's forty kilos of frightened goat and the ladder won't take you both. How do you get him up?", win:"You rig a harness under his belly and the team above hauls him up, legs pedalling, straight onto the grass.",
-       miss:{basket:"He is far, far too big for the basket.",ladder:"He's not going to climb a ladder. He's a goat.",blanket:"He'd kick straight out of it halfway up."}}
-    ],
-    care:{dirt:"dust", dirtN:8, bath:"quarry dust",
-      ails:[{x:36,y:72,found:"Split hoof",fix:"🩹"},{x:64,y:40,found:"Two hours of shouting — hoarse",fix:"💧"}],
-      bugs:2, bugKind:"tick"},
-    names:["Clover","Gravel","Sergeant","Bounce"]
+    names:["Whistler","Bandit","Mango","Sprocket"]
   }
 ];
 
-const BUGART = {flea:"🦟", tick:"🕷️", mite:"🐜", leech:"🪱"};
+const BUGART = {flea:"🦟", tick:"🕷️", mite:"🐜", leech:"🪱", burr:"🌿"};
 const BEDS = [
   {id:"basket", g:"🧺", n:"Basket bed"},
   {id:"quilt",  g:"🛏️", n:"Quilt nest"},
@@ -918,7 +950,7 @@ const BEDS = [
 /* ============================================================
    STATE
    ============================================================ */
-const KEY = "fernbrook-rescue-v1";
+const KEY = "glacier-rescue-v1";
 let S = {done:{}, sound:false, crew:[]};
 try{ const raw = localStorage.getItem(KEY); if(raw) S = Object.assign(S, JSON.parse(raw)); }catch(e){}
 S.sound = false;                    // never on, whatever was saved before
@@ -1054,6 +1086,20 @@ function quad(a, o){
     s += '<circle cx="216" cy="132" r="19" fill="'+b+'"/>';
   else if(a.tail === "stub")
     s += '<path d="M204 130 q22 -6 24 -20" fill="none" stroke="'+c+'" stroke-width="12" stroke-linecap="round"/>';
+  else if(a.tail === "flag"){
+    /* up, the way a whitetail carries it when something has frightened her */
+    s += '<path d="M206 136 q12 -46 36 -64 q16 -10 13 10 q-5 32 -27 66z" fill="'+c+'"/>';
+    s += '<path d="M216 128 q10 -34 28 -48 q9 -6 7 7 q-4 22 -19 48z" fill="'+b+'"/>';
+  }
+  else if(a.tail === "tuft"){
+    s += '<path d="M204 130 q38 -4 40 34" fill="none" stroke="'+c+'" stroke-width="8" stroke-linecap="round"/>';
+    s += '<path d="M238 158 q16 8 6 26 q-12 10 -18 -6 q-4 -14 12 -20z" fill="'+(a.tuft||b)+'"/>';
+  }
+  else if(a.tail === "paddle"){
+    s += '<ellipse cx="228" cy="158" rx="34" ry="17" transform="rotate(16 228 158)" fill="'+(a.paddle||"#5B4636")+'"/>';
+    s += '<g stroke="rgba(0,0,0,.22)" stroke-width="2" fill="none">'+
+         '<path d="M204 154 q22 -8 44 2 M202 164 q24 -8 48 2 M210 144 q20 -6 38 2"/></g>';
+  }
   // legs
   s += '<g fill="'+c+'">'+
        '<rect x="98"  y="160" width="20" height="36" rx="10"/>'+
@@ -1063,6 +1109,21 @@ function quad(a, o){
   // body
   s += '<ellipse cx="152" cy="140" rx="66" ry="48" fill="'+c+'"/>';
   s += '<ellipse cx="146" cy="158" rx="46" ry="28" fill="'+b+'" opacity=".85"/>';
+  if(a.spots){
+    /* a fawn's dapples: scattered, never in a grid */
+    let dp = '<g fill="'+b+'" opacity=".92">';
+    [[118,110,5.4],[142,102,4.6],[166,106,5.2],[190,114,4.4],[204,128,4.8],
+     [126,126,4.2],[152,119,5],[178,125,4.6],[200,144,4],[134,142,3.8]]
+      .forEach(function(p){ dp += '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="'+p[2]+'"/>'; });
+    s += dp + '</g>';
+  }
+  if(a.patch){
+    /* Holstein blotches — soft edges, no two the same */
+    s += '<g fill="'+b+'">'+
+         '<path d="M104 118 q28 -18 52 -2 q10 20 -14 30 q-30 8 -44 -8 q-6 -12 6 -20z"/>'+
+         '<path d="M186 108 q30 4 30 30 q0 22 -22 22 q-20 -2 -18 -26 q0 -20 10 -26z"/>'+
+         '<path d="M118 164 q26 -10 44 4 q6 14 -14 18 q-26 4 -34 -8z"/></g>';
+  }
   if(a.spines){
     // two staggered rows so the silhouette actually reads as a hedgehog
     let sp = '<g fill="#463A2C">';
@@ -1086,11 +1147,21 @@ function quad(a, o){
          '<g fill="'+b+'" opacity=".75"><path d="M66 62 l3 -28 l20 14z"/><path d="M116 60 l-1 -28 l-19 15z"/></g>';
   else if(a.ear === "flop")
     s += '<g fill="'+c+'"><ellipse cx="56" cy="76" rx="15" ry="30" transform="rotate(14 56 76)"/><ellipse cx="126" cy="72" rx="14" ry="27" transform="rotate(-12 126 72)"/></g>';
+  else if(a.ear === "deer")
+    s += '<g fill="'+c+'"><ellipse cx="46" cy="50" rx="14" ry="27" transform="rotate(-52 46 50)"/><ellipse cx="138" cy="46" rx="14" ry="27" transform="rotate(50 138 46)"/></g>'+
+         '<g fill="'+b+'" opacity=".78"><ellipse cx="49" cy="51" rx="6.5" ry="17" transform="rotate(-52 49 51)"/><ellipse cx="135" cy="47" rx="6.5" ry="17" transform="rotate(50 135 47)"/></g>';
   else if(a.ear === "round")
     s += '<g fill="'+c+'"><circle cx="62" cy="48" r="18"/><circle cx="120" cy="44" r="18"/></g>'+
          '<g fill="'+b+'" opacity=".7"><circle cx="63" cy="50" r="9"/><circle cx="120" cy="46" r="9"/></g>';
   if(a.horns)
     s += '<g fill="none" stroke="#B9AC93" stroke-width="9" stroke-linecap="round"><path d="M72 46 q-6 -26 6 -34"/><path d="M114 42 q4 -26 -8 -32"/></g>';
+  if(a.curl)
+    s += '<g fill="none" stroke="#A8916C" stroke-width="16" stroke-linecap="round">'+
+         '<path d="M78 40 q-38 -2 -46 30 q-6 32 26 33 q19 0 18 -17"/>'+
+         '<path d="M110 36 q38 -2 46 30 q6 32 -26 33 q-19 0 -18 -17"/></g>'+
+         '<g fill="none" stroke="rgba(0,0,0,.18)" stroke-width="3" stroke-linecap="round">'+
+         '<path d="M58 34 l-5 13 M40 48 l-10 7 M33 74 l-12 3 M42 96 l-7 11"/>'+
+         '<path d="M130 30 l5 13 M148 44 l10 7 M155 70 l12 3 M146 92 l7 11"/></g>';
   // head
   s += '<circle cx="92" cy="88" r="44" fill="'+c+'"/>';
   if(a.mask){
@@ -1104,6 +1175,10 @@ function quad(a, o){
   s += '<ellipse cx="94" cy="99" rx="6.5" ry="5" fill="#43302B"/>';
   s += '<path d="M94 104 q0 8 -9 8 M94 104 q0 8 9 8" stroke="#43302B" stroke-width="2.4" fill="none" stroke-linecap="round"/>';
   if(a.horns) s += '<path d="M94 122 q0 16 -5 20 q10 2 10 -20z" fill="'+b+'"/>';
+  if(a.teeth)
+    s += '<g fill="#E8A33C" stroke="#B87C1E" stroke-width="1.2">'+
+         '<rect x="87" y="110" width="7" height="15" rx="2"/>'+
+         '<rect x="96" y="110" width="7" height="15" rx="2"/></g>';
   s += '</svg>';
   return s;
 }
@@ -1111,13 +1186,21 @@ function bird(a,o){
   const c=a.body,b=a.belly,closed=o.closed;
   let s = '<svg viewBox="0 0 260 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="rescued bird">';
   s += '<g stroke="'+a.beak+'" stroke-width="7" stroke-linecap="round"><path d="M136 176 v20"/><path d="M170 176 v20"/><path d="M126 196 h20 M160 196 h20"/></g>';
-  s += '<path d="M198 130 q46 -12 46 -44 q-26 6 -34 22z" fill="'+c+'"/>';
+  s += '<path d="M198 130 q46 -12 46 -44 q-26 6 -34 22z" fill="'+(a.hood||c)+'"/>';
   s += '<ellipse cx="156" cy="134" rx="60" ry="52" fill="'+c+'"/>';
   s += '<ellipse cx="150" cy="152" rx="40" ry="30" fill="'+b+'" opacity=".8"/>';
   s += '<path d="M180 108 q40 16 30 56 q-26 6 -44 -20z" fill="'+a.wing+'"/>';
-  s += '<circle cx="96" cy="84" r="40" fill="'+c+'"/>';
-  s += '<path d="M60 86 l-40 10 l40 14z" fill="'+a.beak+'"/>';
-  s += '<path d="M60 86 l-40 10 l38 4z" fill="'+a.beak+'" opacity=".7"/>';
+  s += '<circle cx="96" cy="84" r="40" fill="'+(a.hood||c)+'"/>';
+  if(a.hook){
+    /* a raptor's beak: heavy at the base, and it curves down at the tip */
+    s += '<path d="M68 60 Q42 62 34 84 Q31 97 39 100 Q44 92 51 87 L68 88 Z" fill="'+a.beak+'"/>';
+    s += '<ellipse cx="68" cy="74" rx="10" ry="15" fill="'+a.beak+'"/>';
+    s += '<path d="M66 86 Q52 83 42 88" stroke="rgba(0,0,0,.28)" stroke-width="2.6" fill="none" stroke-linecap="round"/>';
+    s += '<circle cx="60" cy="70" r="2.6" fill="rgba(0,0,0,.35)"/>';
+  } else {
+    s += '<path d="M60 86 l-40 10 l40 14z" fill="'+a.beak+'"/>';
+    s += '<path d="M60 86 l-40 10 l38 4z" fill="'+a.beak+'" opacity=".7"/>';
+  }
   s += eyes(84,74,6.4,closed);
   s += eyes(114,74,6.4,closed);
   s += '</svg>';
@@ -1156,54 +1239,107 @@ function critter(call, opts){
    MAP — hand-inked field map
    ============================================================ */
 function mapSVG(){
+  var trees = "";
+  [[120,330,26],[330,555,30],[880,430,28],[630,135,24],[215,470,18],[770,615,16]]
+    .forEach(function(c){
+      for(var i=0;i<c[2];i++){
+        var ang = i*2.39996, r = Math.sqrt((i+0.6)/c[2]) * (c[2]>24?104:76);
+        var x = Math.round(c[0] + Math.cos(ang)*r);
+        var y = Math.round(c[1] + Math.sin(ang)*r*0.6);
+        var h = 20 + (i%3)*5;
+        trees += '<path d="M'+(x-7)+' '+(y+9)+' l7 -'+h+' l7 '+h+'z"/>';
+      }
+    });
   return `<svg viewBox="0 0 1000 640" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <rect width="1000" height="640" fill="var(--screen-3)"/>
-    <path d="M0 470 q120 -40 230 -6 q140 44 260 -10 q130 -58 250 -8 q120 50 260 10 v184 H0z" fill="var(--sky)" opacity=".45"/>
-    <path d="M-20 300 q160 -70 320 -20 q150 46 280 -18 q140 -70 300 -10 q80 34 140 18" fill="none" stroke="var(--sky)" stroke-width="16" opacity=".8" stroke-linecap="round"/>
-    <path d="M-20 300 q160 -70 320 -20 q150 46 280 -18 q140 -70 300 -10 q80 34 140 18" fill="none" stroke="var(--screen)" stroke-width="4" opacity=".5"/>
-    <g fill="none" stroke="var(--line)" stroke-width="2" opacity=".55">
-      <path d="M780 40 q-40 60 10 110 q50 48 -10 96"/>
-      <path d="M830 30 q-46 70 6 128 q54 56 -14 108"/>
-      <path d="M60 560 q90 -40 150 6 q60 44 150 4"/>
+
+    <!-- the Continental Divide, running the length of the park -->
+    <path d="M210 -20 q70 130 150 200 q90 80 150 190 q70 150 180 290"
+          fill="none" stroke="var(--stone)" stroke-width="54" opacity=".5" stroke-linecap="round"/>
+    <path d="M210 -20 q70 130 150 200 q90 80 150 190 q70 150 180 290"
+          fill="none" stroke="var(--stone)" stroke-width="20" opacity=".7" stroke-linecap="round"/>
+
+    <!-- peaks along it, and the glaciers still hanging off them -->
+    <g fill="var(--stone)" opacity=".85">
+      <path d="M238 108 l34 -66 l34 66z"/><path d="M318 208 l30 -58 l30 58z"/>
+      <path d="M398 290 l36 -70 l36 70z"/><path d="M486 356 l30 -58 l30 58z"/>
+      <path d="M556 452 l34 -66 l34 66z"/><path d="M646 552 l30 -58 l30 58z"/>
+      <path d="M150 200 l28 -54 l28 54z"/><path d="M700 260 l32 -62 l32 62z"/>
     </g>
-    <g fill="var(--stone)" opacity=".55">
-      <rect x="90" y="120" width="140" height="86" rx="6"/>
-      <rect x="250" y="96"  width="86"  height="66" rx="6"/>
-      <rect x="380" y="150" width="120" height="96" rx="6"/>
-      <rect x="540" y="80"  width="150" height="72" rx="6"/>
-      <rect x="690" y="180" width="110" height="80" rx="6"/>
-      <rect x="180" y="360" width="130" height="90" rx="6"/>
-      <rect x="420" y="420" width="150" height="80" rx="6"/>
-      <rect x="120" y="530" width="180" height="80" rx="6"/>
-      <rect x="600" y="500" width="140" height="90" rx="6"/>
+    <g fill="#FFFFFF" opacity=".78">
+      <path d="M254 82 l18 -34 l18 34z"/><path d="M420 254 l14 -28 l14 28z"/>
+      <path d="M574 418 l16 -32 l16 32z"/><path d="M716 228 l16 -30 l16 30z"/>
     </g>
-    <g stroke="var(--screen)" stroke-width="18" fill="none" opacity=".9" stroke-linecap="round">
-      <path d="M-10 250 H1010"/><path d="M-10 480 H1010"/>
-      <path d="M340 -10 V650"/><path d="M760 -10 V650"/>
+
+    <!-- the lakes: west side long and narrow, east side in the folds -->
+    <g fill="var(--sky)" opacity=".9">
+      <path d="M52 66 q80 -16 150 6 q14 12 -8 20 q-80 16 -146 -6 q-12 -10 4 -20z"/>
+      <path d="M70 156 q110 -22 200 10 q16 14 -10 22 q-110 20 -196 -12 q-14 -10 6 -20z"/>
+      <path d="M128 476 q60 -76 190 -190 q26 -14 40 8 q12 20 -14 42 q-118 106 -172 176 q-22 26 -42 6 q-18 -18 -2 -42z"/>
+      <path d="M646 356 q104 -46 224 -30 q22 8 8 28 q-14 20 -50 20 q-92 6 -172 22 q-28 4 -30 -16 q-2 -16 20 -24z"/>
+      <path d="M690 500 q90 -32 158 -14 q20 10 4 26 q-18 16 -60 14 q-60 -2 -100 8 q-22 2 -22 -16 q0 -14 20 -18z"/>
+      <path d="M744 126 q52 -20 92 -4 q14 10 0 22 q-18 14 -52 10 q-36 -4 -46 -10 q-10 -10 6 -18z"/>
+      <ellipse cx="516" cy="262" rx="34" ry="19"/>
     </g>
-    <g stroke="var(--line)" stroke-width="2" stroke-dasharray="10 12" fill="none" opacity=".7">
-      <path d="M-10 250 H1010"/><path d="M-10 480 H1010"/>
-      <path d="M340 -10 V650"/><path d="M760 -10 V650"/>
+
+    <!-- creeks -->
+    <g fill="none" stroke="var(--sky)" stroke-width="7" opacity=".85" stroke-linecap="round">
+      <path d="M200 180 q60 60 100 120 q30 46 -20 100"/>
+      <path d="M356 300 q-40 60 -70 110 q-30 50 -110 74"/>
+      <path d="M848 146 q40 60 30 140 q-8 70 -50 110"/>
+      <path d="M560 470 q60 30 110 40"/>
     </g>
-    <ellipse cx="150" cy="700" rx="220" ry="130" fill="var(--signal)" opacity=".16"/>
-    <ellipse cx="880" cy="600" rx="180" ry="120" fill="var(--signal)" opacity=".14"/>
+
+    <!-- Going-to-the-Sun Road, over the pass and down the other side -->
+    <g fill="none" stroke="var(--screen)" stroke-width="17" stroke-linecap="round">
+      <path d="M60 560 q100 -40 190 -120 q60 -54 120 -90 q40 -24 60 -70 q26 -60 96 -68 q90 -10 150 60 q70 80 200 106"/>
+    </g>
+    <g fill="none" stroke="var(--flare)" stroke-width="4" stroke-linecap="round" opacity=".85">
+      <path d="M60 560 q100 -40 190 -120 q60 -54 120 -90 q40 -24 60 -70 q26 -60 96 -68 q90 -10 150 60 q70 80 200 106"/>
+    </g>
+
+    <!-- the other ways in: Camas Road, Many Glacier, Two Medicine, and US-2 -->
+    <g fill="none" stroke="var(--screen)" stroke-width="12" stroke-linecap="round" opacity=".9">
+      <path d="M40 470 q40 -130 110 -270"/>
+      <path d="M1010 180 q-90 -20 -160 -30"/>
+      <path d="M1010 560 q-120 -30 -230 -40"/>
+      <path d="M-10 620 q300 -20 620 10 q200 10 400 -40"/>
+    </g>
+    <g fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="9 11" opacity=".8">
+      <path d="M40 470 q40 -130 110 -270"/>
+      <path d="M1010 180 q-90 -20 -160 -30"/>
+      <path d="M1010 560 q-120 -30 -230 -40"/>
+    </g>
+
+    <!-- park boundary -->
+    <g fill="none" stroke="var(--line)" stroke-width="3" stroke-dasharray="16 14" opacity=".75">
+      <path d="M26 -10 V600 q0 30 40 34"/>
+      <path d="M960 -10 V560"/>
+    </g>
+
+    <!-- forest, in the low ground on both sides -->
+    <g fill="var(--signal)" opacity=".34">${trees}</g>
   </svg>`;
 }
 /* Place names live in the pin layer, not the SVG: the map is stretched to the
    panel, so HTML labels in % stay locked to the pins and never distort. */
 const PLACES = [
-  {x:12, y:18, t:"Baker St"},
-  {x:56, y:11, t:"Dog park"},
-  {x:44, y:31, t:"Library"},
-  {x:68, y:27, t:"Depot"},
-  {x:20, y:55, t:"Willow Ln"},
-  {x:46, y:86, t:"Canal Rd"},
-  {x:20, y:93, t:"Garden row"}
+  {x:8,  y:12, t:"Kintla"},
+  {x:9,  y:24, t:"Bowman"},
+  {x:11, y:70, t:"Apgar"},
+  {x:22, y:56, t:"L. McDonald"},
+  {x:33, y:41, t:"Avalanche"},
+  {x:40, y:48, t:"The Loop"},
+  {x:52, y:31, t:"Hidden L."},
+  {x:60, y:18, t:"Logan Pass"},
+  {x:80, y:16, t:"Many Glacier"},
+  {x:84, y:51, t:"St. Mary"},
+  {x:72, y:80, t:"Two Medicine"}
 ];
 const ZONES = [
-  {x:8,  y:84, t:"Orchard"},
-  {x:78, y:22, t:"Quarry"},
-  {x:90, y:76, t:"Marsh"}
+  {x:26, y:8,  t:"North Fork"},
+  {x:46, y:66, t:"The Divide"},
+  {x:90, y:74, t:"Ranch land"}
 ];
 
 /* ============================================================
@@ -1250,6 +1386,29 @@ function backdrop(kind, tint){
         <rect x="130" y="250" width="120" height="98" rx="6"/>
         <rect x="370" y="210" width="96" height="138" rx="6"/></g>
       <rect x="90" y="46" width="420" height="20" rx="6" fill="rgba(255,255,255,.2)"/>`;
+  } else if(kind === "water"){
+    /* ridge, then pines, then the creek itself — the animal stands IN it and
+       the surface layer over the legs lives in foreground() */
+    inner = `<rect width="600" height="380" fill="${sky}" opacity=".6"/>
+      <path d="M0 196 l74 -92 l54 62 l44 -52 l66 80 l50 -58 l60 70 l52 -46 l74 88 v40 H0z"
+            fill="${tint}"/>
+      <path d="M74 104 l22 26 l-44 0z M222 112 l20 24 l-40 0z M398 118 l18 22 l-36 0z"
+            fill="#FFFFFF" opacity=".72"/>
+      <g fill="#2E4A39" opacity=".9">
+        <path d="M30 244 l18 -52 l18 52z"/><path d="M76 240 l14 -44 l14 44z"/>
+        <path d="M124 246 l17 -54 l17 54z"/><path d="M188 242 l15 -46 l15 46z"/>
+        <path d="M262 246 l18 -56 l18 56z"/><path d="M336 240 l14 -44 l14 44z"/>
+        <path d="M402 246 l17 -52 l17 52z"/><path d="M470 242 l15 -48 l15 48z"/>
+        <path d="M534 248 l18 -54 l18 54z"/></g>
+      <rect y="242" width="600" height="138" fill="#4E7F97"/>
+      <rect y="242" width="600" height="138" fill="#7FB3C4" opacity=".35"/>
+      <g stroke="rgba(255,255,255,.45)" stroke-width="3.4" fill="none" stroke-linecap="round">
+        <path d="M40 276 q26 -8 52 0 M140 292 q26 -8 52 0 M256 270 q26 -8 52 0"/>
+        <path d="M368 300 q26 -8 52 0 M470 280 q26 -8 52 0 M96 330 q26 -8 52 0"/>
+        <path d="M300 340 q26 -8 52 0 M436 348 q26 -8 52 0"/></g>
+      <g stroke="#4C6B3F" stroke-width="5" fill="none" stroke-linecap="round" opacity=".9">
+        <path d="M22 380 q-4 -50 8 -78 M44 380 q0 -44 -8 -66 M66 380 q6 -52 -4 -72"/>
+        <path d="M560 380 q4 -50 -8 -78 M582 380 q0 -44 8 -66"/></g>`;
   } else {
     inner = `<rect width="600" height="380" fill="${sky}" opacity=".5"/>
       <circle cx="80" cy="60" r="40" fill="var(--sun)" opacity=".4"/>
@@ -1288,6 +1447,44 @@ function foreground(kind, tint){
         <path d="M265 140 V320 M335 140 V320"/></g>
       <rect x="272" y="336" width="56" height="15" rx="7" fill="rgba(240,240,235,.85)"/>
       <circle cx="300" cy="324" r="14" fill="none" stroke="rgba(240,240,235,.85)" stroke-width="6"/>`;
+  } else if(kind === "dark"){
+    inner = `<rect width="600" height="380" fill="#080B0A" opacity=".9"/>
+      <g stroke="rgba(255,255,255,.07)" stroke-width="13" fill="none" stroke-linecap="round">
+        <path d="M40 116 q90 62 170 20 q92 -48 154 34"/>
+        <path d="M30 268 q120 -44 204 10 q82 48 182 -22"/>
+        <path d="M470 60 v300 M120 60 v300"/></g>
+      <g fill="rgba(255,255,255,.05)">
+        <rect x="150" y="150" width="130" height="90" rx="9"/>
+        <rect x="330" y="120" width="90" height="140" rx="9"/>
+        <circle cx="300" cy="300" r="34"/></g>
+      <rect x="0" y="0" width="600" height="46" fill="#11100E"/>
+      <rect x="0" y="40" width="600" height="9" rx="4" fill="rgba(255,255,255,.22)"/>`;
+  } else if(kind === "line"){
+    /* loose monofilament: long, thin, looped round everything it touched */
+    inner = `<g stroke="rgba(252,252,248,.92)" stroke-width="2.2" fill="none" stroke-linecap="round">
+        <path d="M-20 148 q120 42 202 10 q92 -36 152 20 q70 62 200 10"/>
+        <path d="M-20 228 q140 -50 210 6 q70 56 150 -6 q60 -46 190 20"/>
+        <path d="M62 380 q30 -122 132 -152 q92 -26 122 40 q28 64 -40 92 q-72 28 -102 -30 q-22 -46 40 -62"/>
+        <path d="M252 372 q-40 -92 40 -132 q80 -38 122 20 q34 54 -30 82"/>
+        <path d="M322 118 q60 62 30 142 q-24 62 -112 60"/></g>
+      <g stroke="rgba(110,110,100,.4)" stroke-width="1" fill="none">
+        <path d="M-20 148 q120 42 202 10 q92 -36 152 20 q70 62 200 10"/>
+        <path d="M-20 228 q140 -50 210 6 q70 56 150 -6 q60 -46 190 20"/></g>`;
+  } else if(kind === "water"){
+    inner = `<path d="M0 306 q150 -20 300 -6 q150 14 300 -8 v88 H0z" fill="#4E7F97" opacity=".72"/>
+      <path d="M0 306 q150 -20 300 -6 q150 14 300 -8" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="4"/>
+      <g stroke="rgba(255,255,255,.4)" stroke-width="3" fill="none" stroke-linecap="round">
+        <path d="M120 340 q26 -8 52 0 M320 352 q26 -8 52 0 M446 336 q26 -8 52 0"/></g>`;
+  } else if(kind === "mesh"){
+    /* the creek surface, and the orange silt fencing washed into it */
+    inner = `<path d="M0 306 q150 -20 300 -6 q150 14 300 -8 v88 H0z" fill="#4E7F97" opacity=".72"/>
+      <path d="M0 306 q150 -20 300 -6 q150 14 300 -8" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="4"/>
+      <g stroke="rgba(226,116,44,.8)" stroke-width="2.4" fill="none">
+        <path d="M0 196 H600 M0 226 H600 M0 256 H600 M0 286 H600 M0 316 H600 M0 346 H600"/>
+        <path d="M70 186 V380 M120 186 V380 M170 186 V380 M220 186 V380 M270 186 V380
+                 M320 186 V380 M370 186 V380 M420 186 V380 M470 186 V380 M520 186 V380"/></g>
+      <g stroke="rgba(226,116,44,.95)" stroke-width="8" stroke-linecap="round" fill="none">
+        <path d="M26 186 q42 60 -8 194 M574 186 q-42 60 8 194"/></g>`;
   } else if(kind === "hole"){
     inner = `<path d="M0 300 q150 -34 300 -34 q150 0 300 34 v80 H0z" fill="var(--stone)"/>
       <path d="M0 300 q150 -34 300 -34 q150 0 300 34" fill="none" stroke="rgba(0,0,0,.28)" stroke-width="5"/>`;
@@ -1296,7 +1493,7 @@ function foreground(kind, tint){
 }
 /* index of the step that clears the foreground: cut the wire / pry the door open;
    the drain lip stays until they're actually lifted out */
-const FG_CLEARS_AFTER = {tangle:0, shut:0, hole:1};
+const FG_CLEARS_AFTER = {tangle:0, shut:0, hole:1, water:1, line:1, mesh:0, dark:0};
 
 /* Put the animal where the scene wants it, but never outside the picture.
    The panel goes wide-and-short once the two panels stack, and sizing the
@@ -1349,7 +1546,8 @@ const CRITTER_POS = {
   tangle: {left:"33%", top:"52%", width:"34%"},
   hole:   {left:"33%", top:"58%", width:"34%"},
   shut:   {left:"34%", top:"44%", width:"32%"},
-  ground: {left:"32%", top:"56%", width:"36%"}
+  ground: {left:"32%", top:"56%", width:"36%"},
+  water:  {left:"32%", top:"53%", width:"34%"}
 };
 
 /* ============================================================
@@ -1395,7 +1593,7 @@ function renderMap(){
   pl.innerHTML =
     ZONES.map(z=>'<span class="mzone" style="left:'+z.x+'%;top:'+z.y+'%">'+z.t+'</span>').join("") +
     PLACES.map(p=>'<span class="mlabel" style="left:'+p.x+'%;top:'+p.y+'%">'+p.t+'</span>').join("") +
-    '<span class="mgrid" style="left:10px">Fernbrook · Grid 4B</span>' +
+    '<span class="mgrid" style="left:10px">Glacier N.P. · Going-to-the-Sun</span>' +
     '<span class="mgrid" style="right:10px">N ↑</span>' +
     CALLS.map(c=>{
     const done = S.done[c.id] ? "1" : "0";
@@ -1464,7 +1662,7 @@ function openCrew(){
   const c = S.crew.slice();
   while(c.length < 6) c.push("");
   $("#crewcard").innerHTML =
-    '<div class="eyebrow mono">Fernbrook · Shift board</div>'+
+    '<div class="eyebrow mono">Glacier · Shift board</div>'+
     '<h2>Who\'s on the crew?</h2>'+
     '<p>Add the people playing and the shelter jobs get shared out — the game '+
       'says whose turn it is at each station. Leave it empty to play on your own.</p>'+
@@ -1537,7 +1735,7 @@ function startRescue(id){
     backdrop(active.kind, active.tint) +
     '<div class="critterbox bob" id="critterbox">'+
       critter(active,{}) + '</div>' +
-    foreground(active.kind, active.tint) +
+    foreground(active.fg || active.kind, active.tint) +
     '<div class="toolfx" id="toolfx" style="left:50%;top:44%"></div>';
   placeCritter(pos.left, pos.top, pos.width);
   $("#sceneWhere").textContent = "Live call · " + active.where;
@@ -1627,7 +1825,7 @@ function useKit(){
     fx.textContent = KITMAP[helped[0]].g;
     fx.classList.remove("play"); void fx.offsetWidth; fx.classList.add("play");
     const fg = $("#scenefg");
-    if(fg && banked.includes(needs[FG_CLEARS_AFTER[active.kind]]))
+    if(fg && banked.includes(needs[FG_CLEARS_AFTER[active.fg || active.kind]]))
       setTimeout(()=>fg.classList.add("off"), 380);
   } else {
     sfx.bad();
@@ -1659,7 +1857,7 @@ function useKit(){
     placeCritter("34%", "44%", "32%");
     rescueDone = true;
     $("#useKit").disabled = false;
-    $("#useKit").textContent = "Drive to Fernbrook";
+    $("#useKit").textContent = "Drive to Apgar";
     $("#useKit").classList.add("go");
   }, 1400);
 }
@@ -1725,14 +1923,33 @@ function addSpot(cls, x, y, size, extra){
   stageEl().appendChild(d);
   return d;
 }
+const BODY_ZONES = {
+  quad:   [{x:54.7, y:60.3, rx:14.2, ry:11.4}, {x:41.8, y:48.0, rx:9.5, ry:10.5}],
+  bird:   [{x:55.6, y:58.9, rx:12.9, ry:12.4}, {x:42.7, y:47.0, rx:8.6, ry:9.5}],
+  turtle: [{x:53.4, y:58.2, rx:16.8, ry:11.7}, {x:34.5, y:57.0, rx:6.5, ry:7.1}]
+};
+function zonesFor(){
+  const k = active && active.art && active.art.kind;
+  return BODY_ZONES[k] || BODY_ZONES.quad;
+}
+function onBody(p, zones){
+  return zones.some(function(z){
+    const dx=(p.x-z.x)/z.rx, dy=(p.y-z.y)/z.ry;
+    return dx*dx + dy*dy <= 1;
+  });
+}
+
 /* Scatter n points across a box, keeping them far enough apart that their
-   number badges never overlap — an unreadable number can't be called out. */
+   number badges never overlap — an unreadable number can't be called out.
+   Points that miss the animal are thrown away and re-rolled. */
 function spread(n, x0, x1, y0, y1, minD){
-  const pts = [];
+  const pts = [], zones = zonesFor();
   for(let i=0;i<n;i++){
-    let best = null, bestGap = -1;
-    for(let t=0;t<60;t++){
+    let best = null, bestGap = -1, fallback = null;
+    for(let t=0;t<200;t++){
       const p = {x: x0 + rnd()*(x1-x0), y: y0 + rnd()*(y1-y0)};
+      if(!fallback) fallback = p;
+      if(!onBody(p, zones)) continue;               // that one was sky
       let gap = Infinity;
       pts.forEach(q=>{
         const dx = p.x-q.x, dy = (p.y-q.y)*0.85;
@@ -1741,7 +1958,7 @@ function spread(n, x0, x1, y0, y1, minD){
       if(gap >= minD){ best = p; break; }
       if(gap > bestGap){ bestGap = gap; best = p; }   // keep the roomiest try
     }
-    pts.push(best);
+    pts.push(best || fallback);
   }
   return pts;
 }
@@ -1813,7 +2030,7 @@ function drawStation(){
   const who = crewFor(station), turnEl = $("#careTurn");
   if(who){ turnEl.hidden = false; turnEl.innerHTML = '<span>Up next</span>' + escapeHTML(who); }
   else { turnEl.hidden = true; }
-  $("#careStep").textContent = "Fernbrook · Station " + (station+1) + " of " + STATIONS.length;
+  $("#careStep").textContent = "Apgar · Station " + (station+1) + " of " + STATIONS.length;
 
   if(STATIONS[station] === "brush"){
     $("#careTitle").textContent = "Brush off the "+cs.dirt;
@@ -2063,7 +2280,7 @@ function renderRoster(){
   let html = "";
   if(all){
     html += '<div class="finale"><h3>Every call closed</h3>'+
-      '<p>Ten animals came in off the map and ten are asleep in the back room. Fernbrook is full.</p></div>';
+      '<p>Ten animals came in off the mountain and ten are asleep in the back room. Apgar is full.</p></div>';
   }
   if(!rescued.length){
     html += '<div class="empty-roster">No animals in yet. Answer a call on the map and bring the first one home.</div>';
@@ -2108,7 +2325,7 @@ function callIn(){
     tap.textContent = "Tap the pager to answer";
   } else if(open){
     sub.textContent = open + (open===1 ? " call is" : " calls are") + " still open. " +
-      done + (done===1 ? " animal is" : " animals are") + " already asleep at Fernbrook.";
+      done + (done===1 ? " animal is" : " animals are") + " already asleep at Apgar.";
     tap.textContent = "Tap the pager to answer";
   } else {
     sub.textContent = "Every call is closed and all ten are safe. Dispatch is just checking in.";
@@ -2175,7 +2392,7 @@ callIn();
 (function(){
 "use strict";
 var RELAY = "wss://broker.emqx.io:8084/mqtt";   // free, no account needed
-var TOPIC = "fernbrook-rescue/room/";                  // + the room code
+var TOPIC = "glacier-rescue/room/";                  // + the room code
 var code = null, bc = null, sock = null, busy = false, peers = 0, state = "off";
 /* Who we are, so we can ignore our own messages: MQTT sends a publish back to
    every subscriber including the one that published it, and the two transports
@@ -2288,7 +2505,7 @@ document.addEventListener("input", function(ev){
 function connect(c){
   code = c;
   window.__roomSeed = "room:" + c;          // both screens lay out identically
-  try{ bc = new BroadcastChannel("fernbrook-rescue-" + c); bc.onmessage = function(e){ receive(e.data); }; }catch(e){}
+  try{ bc = new BroadcastChannel("glacier-rescue-" + c); bc.onmessage = function(e){ receive(e.data); }; }catch(e){}
   state = "connecting"; paint();
   /* If the script did not load — offline, or a school network blocking the CDN —
      the room still opens and same-computer play still works. */
