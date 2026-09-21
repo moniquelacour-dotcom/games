@@ -175,6 +175,7 @@
   .card-top .spacer { flex: 1; }
   .card-body { padding: 16px 18px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; align-items: center; }
 
+  #miniCanvas.short { aspect-ratio: 28 / 15; }
   #miniCanvas {
     width: 100%; max-width: 560px; aspect-ratio: 4 / 3;
     border-radius: 14px; border: 3px solid var(--line); background: #0d1020; touch-action: none;
@@ -229,9 +230,11 @@
   .pick .mins { font-family: var(--mono); font-size: 11px; color: var(--sun); }
   .pick .tick { font-family: var(--mono); font-size: 11px; color: var(--cash); }
   .picks.small button { padding: 7px; min-width: 0; }
-  .face { width: 46px; height: 46px; border-radius: 50%; display: block; position: relative; overflow: hidden; }
-  .face i { position: absolute; left: 0; right: 0; top: 0; height: 38%; border-radius: 23px 23px 7px 7px; }
-  .face.long i { height: 66%; border-radius: 23px 23px 16px 16px; }
+  .critcv { width: 62px; height: 62px; display: block; }
+  .picks.small button { padding: 4px; min-width: 0; }
+  .picks.small button[aria-pressed="true"] { border-color: var(--sun); background: #3a2a12; }
+  .swatch-btn { width: 46px; height: 46px; border-radius: 50%; padding: 0; border-width: 3px; }
+  .swatch-btn[aria-pressed="true"] { border-color: var(--sun); transform: translateY(-2px); }
   .rowlabel { font-family: var(--display); font-weight: 700; font-size: 13px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin: 2px 0 -6px; }
 
   .namebox { width: min(330px, 100%); display: flex; flex-direction: column; gap: 6px; align-items: center; }
@@ -348,7 +351,7 @@ function freshState() {
     rollsTried: [], sushiBought: 0,
     doneToday: {}, goals: {}, carWashed: false, bedMade: false,
     name: "", askedName: false,
-    look: { skin: "#f0c08a", hair: "#4a3526", long: false },
+    look: { animal: "fox", colour: "#ff7a3c" },
     stage: { practice: 0, acro: 0, shows: 0, bestShow: 0, ovations: 0 },
     dojo: { skill: 0, wins: 0, entries: 0, cups: 0 },
     challenge: null, challengeDone: {}, challengeFrom: 0,
@@ -370,7 +373,7 @@ function load() {
       jobsEver: Object.assign({}, d.jobsEver || {}),
       wardrobe: Object.assign({}, d.wardrobe || {}),
       outfit: Object.assign(base.outfit, d.outfit || {}),
-      look: Object.assign(base.look, d.look || {}),
+      look: Object.assign(base.look, (d.look && d.look.animal) ? d.look : {}),
       stage: Object.assign(base.stage, d.stage || {}),
       dojo: Object.assign(base.dojo, d.dojo || {}),
       challengeDone: Object.assign({}, d.challengeDone || {}),
@@ -1667,10 +1670,18 @@ function beltIndex() { let i = 0; BELTS.forEach((b, k) => { if (S.dojo.wins >= b
 function beltColor() { return BELTS[beltIndex()].c; }
 function beltName() { return BELTS[beltIndex()].name; }
 
+const MOVES = [
+  { id: "grab",  pic: "\u270A",            name: "Grab",  beats: "sweep" },
+  { id: "sweep", pic: "\uD83E\uDDB6",     name: "Sweep", beats: "block" },
+  { id: "block", pic: "\uD83D\uDEE1",     name: "Block", beats: "grab"  }
+];
+function moveById(id) { return MOVES.find(m => m.id === id) || MOVES[0]; }
+
+/* Each one has a favourite. Drilling on the dummy is what lets you see it. */
 const FIGHTERS = [
-  { name: "Mika", pic: "\uD83E\uDD8A", pull: .072 },
-  { name: "Tank", pic: "\uD83D\uDC17", pull: .100 },
-  { name: "Rex",  pic: "\uD83D\uDC3B", pull: .132 }
+  { name: "Mika", pic: "\uD83E\uDD8A", fav: "sweep", bias: .55, tell: "Mika loves a sweep." },
+  { name: "Tank", pic: "\uD83D\uDC17", fav: "grab",  bias: .60, tell: "Tank goes for the grab." },
+  { name: "Rex",  pic: "\uD83D\uDC3B", fav: "block", bias: .45, tell: "Rex blocks more than he attacks." }
 ];
 
 ROOMS.dojo = {
@@ -1688,7 +1699,7 @@ ROOMS.dojo = {
     { id: "ladder", kind: "ladder", x: 720, y: 62, w: 260, h: 108, caption: "Who you fight today",
       info() {
         return { title: "Enter today's tournament",
-          chips: [{ t: "3 matches", cls: "" }, { t: "up to +$200", cls: "earn" }, { t: "2 hr", cls: "time" }, { t: beltName(), cls: "good" }],
+          chips: [{ t: "3 fights", cls: "" }, { t: "first to 3 points", cls: "" }, { t: "up to +$200", cls: "earn" }, { t: beltName(), cls: "good" }],
           why: S.doneToday.job_dojo ? "You already fought today. The next one is tomorrow."
             : (S.needs.energy < 24 ? "You're too tired to compete." : "") };
       },
@@ -1716,7 +1727,7 @@ ROOMS.dojo = {
         S.needs.energy = clamp(S.needs.energy - 12, 0, 100);
         S.needs.clean = clamp(S.needs.clean - 8, 0, 100);
         advance(45); sfxGood();
-        toast("Skill " + S.dojo.skill + ". Your grip is stronger in the tournament now.", "win");
+        toast("Skill " + S.dojo.skill + ". You can read the other fighters better now.", "win");
       } },
     shopRack("girack", "gi", 280, 420, 110, 100),
     { id: "bag", kind: "bag", slim: true, x: 470, y: 405, w: 110, h: 130, caption: "Heavy bag",
@@ -1859,7 +1870,7 @@ function glow(x, y, r, c) {
 /* ---------------------------- people ---------------------------- */
 const DIRV = { down: [0, 1], up: [0, -1], left: [-1, 0], right: [1, 0] };
 
-function drawPerson(x, y, dir, step, shirt, skin, hair, chefHat, fit, longHair) {
+function drawPerson(x, y, dir, step, shirt, skin, hair, chefHat, fit, critter) {
   const bob = Math.sin(step) * 2, sw = Math.sin(step) * 4;
   const dv = DIRV[dir] || DIRV.down;
   const top = fit && fit.top ? fit.top : null;
@@ -1949,17 +1960,20 @@ function drawPerson(x, y, dir, step, shirt, skin, hair, chefHat, fit, longHair) 
   ctx.fillRect(x - 16, y - 8 + sw * .5, 5, 14);
   ctx.fillRect(x + 11, y - 8 - sw * .5, 5, 14);
 
-  // head
-  if (longHair) { ctx.fillStyle = hair; rr(x - 12, y - 31 + bob * .3, 24, 31, 11); ctx.fill(); }
-  ctx.fillStyle = skin;
-  ctx.beginPath(); ctx.arc(x, y - 20 + bob * .3, 11, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = hair;
-  ctx.beginPath(); ctx.arc(x, y - 23 + bob * .3, 11, Math.PI * (dir === "up" ? 0 : 1), Math.PI * 2); ctx.fill();
+  // head — an animal if this one has picked a character, otherwise a person
+  if (critter) {
+    critterHead(ctx, x, y - 21 + bob * .3, 12, critter.a, critter.c, dir);
+  } else {
+    ctx.fillStyle = skin;
+    ctx.beginPath(); ctx.arc(x, y - 20 + bob * .3, 11, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = hair;
+    ctx.beginPath(); ctx.arc(x, y - 23 + bob * .3, 11, Math.PI * (dir === "up" ? 0 : 1), Math.PI * 2); ctx.fill();
+  }
 
   if (chefHat) { box(x - 12, y - 34 + bob * .3, 24, 10, "#fff8ea", 5); box(x - 9, y - 42 + bob * .3, 18, 10, "#fff8ea", 6); }
 
   // hat
-  if (cap) {
+  if (cap && !critter) {
     const hy = y - 24 + bob * .3;
     if (cap.style === "capback") {
       ctx.fillStyle = cap.c;
@@ -1985,7 +1999,7 @@ function drawPerson(x, y, dir, step, shirt, skin, hair, chefHat, fit, longHair) 
   }
 
   // face
-  if (dir !== "up") {
+  if (dir !== "up" && !critter) {
     const ox = dir === "left" ? -3 : dir === "right" ? 3 : 0;
     if (shades) {
       ctx.fillStyle = shades.c;
@@ -2013,20 +2027,15 @@ function drawHero() {
     ripple(hero.x, hero.y + 8, 13 + Math.sin(T * 3 + 1) * 2, .35);
     ctx.fillStyle = worn("top") ? worn("top").c : "#ff7a3c";
     ctx.beginPath(); ctx.ellipse(hero.x, hero.y + 4 + bob, 15, 8, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = S.look.skin;
-    ctx.beginPath(); ctx.arc(hero.x, hero.y - 6 + bob, 10, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = S.look.hair;
-    ctx.beginPath(); ctx.arc(hero.x, hero.y - 9 + bob, 10, Math.PI, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = S.look.skin;
+    critterHead(ctx, hero.x, hero.y - 7 + bob, 11, S.look.animal, S.look.colour, "down");
+    ctx.fillStyle = S.look.colour;
     const arm = Math.sin(T * 5) * 6;
     ctx.beginPath(); ctx.ellipse(hero.x - 15, hero.y + arm, 6, 4, 0, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.ellipse(hero.x + 15, hero.y - arm, 6, 4, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#2b2018";
-    ctx.beginPath(); ctx.arc(hero.x - 4, hero.y - 6 + bob, 1.7, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(hero.x + 4, hero.y - 6 + bob, 1.7, 0, Math.PI * 2); ctx.fill();
     return;
   }
-  drawPerson(hero.x, hero.y, hero.dir, hero.step, "#ff7a3c", S.look.skin, S.look.hair, false, heroFit(), S.look.long);
+  drawPerson(hero.x, hero.y, hero.dir, hero.step, S.look.colour, null, null, false, heroFit(),
+    { a: S.look.animal, c: S.look.colour });
 }
 
 function waterUnderfoot() {
@@ -2793,7 +2802,8 @@ function drawProp(p, hot) {
       for (let i = 0; i < 6; i++) {
         const a = T * .5 + i * 1.05;
         drawPerson(x + w / 2 + Math.cos(a) * (w * .33), y + h / 2 + Math.sin(a) * (h * .31),
-          "down", T * 7 + i, shirts[i], SKINS[i % SKINS.length], HAIRS[i % HAIRS.length], false, null, i % 2 === 0);
+          "down", T * 7 + i, shirts[i], null, null, false, null,
+          { a: CRITTERS[(i * 2 + 1) % CRITTERS.length].id, c: shirts[i] });
       }
       break;
     }
@@ -3024,7 +3034,8 @@ function drawProp(p, hot) {
       for (let i = 0; i < 3; i++) {
         const a2 = T * .7 + i * 2.1;
         drawPerson(x + w / 2 + Math.cos(a2) * (w * .3), y + h / 2 + Math.sin(a2) * (h * .26),
-          "down", T * 8 + i, sh2[i], SKINS[(i * 2) % SKINS.length], HAIRS[(i * 3) % HAIRS.length], false, null, i !== 1);
+          "down", T * 8 + i, sh2[i], null, null, false, null,
+          { a: CRITTERS[(i * 4 + 2) % CRITTERS.length].id, c: sh2[i] });
       }
       break;
     }
@@ -3079,7 +3090,8 @@ function drawProp(p, hot) {
       for (let i = 0; i < 2; i++) {
         const a3 = T * .5 + i * Math.PI;
         drawPerson(x + w / 2 + Math.cos(a3) * 54, y + h / 2 + Math.sin(a3) * 34,
-          i ? "left" : "right", T * 5 + i, "#f4f6f8", SKINS[(i * 3 + 1) % SKINS.length], HAIRS[i * 2], false, null, i === 1);
+          i ? "left" : "right", T * 5 + i, "#f4f6f8", null, null, false, null,
+          { a: CRITTERS[i ? 4 : 8].id, c: "#f4f6f8" });
       }
       break;
     case "ladder":
@@ -3782,18 +3794,14 @@ function startAcro(paid) {
     g.save();
     g.translate(280, won ? 130 : 175);
     g.rotate(won ? (performance.now() % 650) / 650 * Math.PI * 2 : 0);
-    g.strokeStyle = S.look.skin; g.lineWidth = 7; g.lineCap = "round";
+    g.strokeStyle = S.look.colour; g.lineWidth = 7; g.lineCap = "round";
     g.beginPath(); g.moveTo(-10, -10); g.lineTo(-28, -30); g.stroke();
     g.beginPath(); g.moveTo(10, -10); g.lineTo(28, -30); g.stroke();
     g.beginPath(); g.moveTo(-7, 24); g.lineTo(-17, 50); g.stroke();
     g.beginPath(); g.moveTo(7, 24); g.lineTo(17, 50); g.stroke();
     g.fillStyle = worn("top") ? worn("top").c : "#e0538f";
     g.beginPath(); g.ellipse(0, 2, 15, 26, 0, 0, Math.PI * 2); g.fill();
-    if (S.look.long) { g.fillStyle = S.look.hair; g.beginPath(); g.ellipse(0, -34, 14, 18, 0, 0, Math.PI * 2); g.fill(); }
-    g.fillStyle = S.look.skin;
-    g.beginPath(); g.arc(0, -35, 13, 0, Math.PI * 2); g.fill();
-    g.fillStyle = S.look.hair;
-    g.beginPath(); g.arc(0, -38, 13, Math.PI, Math.PI * 2); g.fill();
+    critterHead(g, 0, -36, 14, S.look.animal, S.look.colour, "down");
     g.restore();
 
     const bx = 60, bw = 440, by = 326;
@@ -3843,92 +3851,190 @@ function finishAcro(paid, landed) {
   document.getElementById("overlay").classList.remove("show");
 }
 
-/* ===================== THE TOURNAMENT: three matches ====================
-   A grip battle. Left, right, left, right pulls the rope your way; the
-   other one pulls steadily back. Drilling and your belt make you stronger. */
+/* ===================== THE TOURNAMENT: three matches ==================
+   No mashing. You pick a move, they pick a move, and one of them wins the
+   point — grab catches a sweep, a sweep goes under a block, a block stops a
+   grab. First to three points takes the match. Drilling on the dummy is
+   what tells you the other one's habit, so the dummy is worth doing.
+
+   Every result waits for a tap. Nothing on this screen is on a timer she
+   cannot see, so nothing can flash past before a child has read it. */
 function startBout() {
   openOverlay("Today's tournament", "Three people to beat, one after the other", "#2b4468");
   const body = document.getElementById("cardBody");
   body.innerHTML =
-    '<div id="miniStat"><span>Match <b id="tRound">1</b> of 3</span><span>Won <b id="tWon">0</b></span></div>' +
-    '<canvas id="miniCanvas" width="560" height="420"></canvas>' +
-    '<div class="lanebtns"><button type="button" data-p="L" style="color:#ff5d8f">\u25C0</button>' +
-    '<button type="button" data-p="R" style="color:#7ac6e0">\u25B6</button></div>' +
-    '<p class="hint">Pull the rope by pressing left, right, left, right as fast as you can. Tap the two big arrows instead if you like.</p>' +
-    '<button id="miniQuit" class="primary" type="button">Give up</button>';
+    '<div id="miniStat"><span>Fight <b id="tRound">1</b> of 3</span><span>Won <b id="tWon">0</b></span></div>' +
+    '<canvas id="miniCanvas" class="short" width="560" height="300"></canvas>' +
+    '<div class="lanebtns" id="moveRow"></div>' +
+    '<p class="hint" id="boutHint">Grab catches a sweep &middot; sweep goes under a block &middot; block stops a grab</p>' +
+    '<button id="miniQuit" type="button">Leave the mat</button>';
+
   const c = document.getElementById("miniCanvas"), g = c.getContext("2d");
-  const grip = .045 + S.dojo.skill * .004 + beltIndex() * .003;
-  mini = { mode: "bout", round: 0, won: 0, m: .5, side: "", t: 0, pause: false, note: "", over: false, raf: 0 };
+  const row = document.getElementById("moveRow");
+  const hint = document.getElementById("boutHint");
+
+  mini = {
+    mode: "bout", round: 0, won: 0, you: 0, them: 0,
+    phase: "pick", mine: null, theirs: null, note: "", flash: 0,
+    over: false, raf: 0
+  };
   mini.end = () => finishBout(mini ? mini.won : 0);
-  mini.onKey = code => { if (code === "ArrowLeft") hit("L"); else if (code === "ArrowRight") hit("R"); };
-  body.querySelectorAll(".lanebtns button").forEach(b => b.addEventListener("click", () => hit(b.dataset.p)));
+  mini.onKey = code => {
+    if (mini.phase !== "pick") { if (code === "Space" || code === "Enter") advanceBout(); return; }
+    const i = ["Digit1", "Digit2", "Digit3"].indexOf(code);
+    if (i >= 0) choose(MOVES[i].id);
+    if (code === "ArrowLeft") choose("grab");
+    if (code === "ArrowUp") choose("sweep");
+    if (code === "ArrowRight") choose("block");
+  };
   document.getElementById("miniQuit").addEventListener("click", () => { if (mini) mini.end(); });
 
-  function hit(sd) {
-    if (!mini || mini.over || mini.pause) return;
-    const good = sd !== mini.side;
-    mini.side = sd;
-    mini.m = clamp(mini.m + grip * (good ? 1 : .4), 0, 1);
-    beep(good ? 520 : 290, .04);
-  }
-  function endRound(win) {
-    if (!mini || mini.pause) return;
-    mini.pause = true;
-    mini.note = win ? "YOU WON!" : "THEY GOT YOU";
-    if (win) { mini.won++; sfxGood(); } else sfxNope();
-    setTimeout(() => {
-      if (!mini || mini.over) return;
-      mini.round++; mini.m = .5; mini.t = 0; mini.side = ""; mini.pause = false; mini.note = "";
-      if (mini.round >= 3) mini.end();
-    }, 1600);
-  }
-
-  let last = performance.now();
-  function frame(now) {
-    if (!mini || mini.over) return;
-    const dt = Math.min(50, now - last); last = now;
-    const f = FIGHTERS[Math.min(2, mini.round)];
-    if (!mini.pause) {
-      mini.t += dt;
-      mini.m = clamp(mini.m - f.pull * dt / 1000, 0, 1);
-      if (mini.m >= 1) endRound(true);
-      else if (mini.m <= 0) endRound(false);
-      else if (mini.t > 22000) endRound(mini.m > .5);
-    }
-    g.fillStyle = "#101828"; g.fillRect(0, 0, 560, 420);
-    g.fillStyle = "#1b2740"; g.fillRect(0, 300, 560, 120);
-
-    g.font = "64px sans-serif"; g.textAlign = "center";
-    g.fillText("\uD83E\uDD4B", 120, 150);
-    g.fillText(f.pic, 440, 150);
-    g.fillStyle = beltColor(); g.fillRect(86, 160, 68, 10);
-    g.fillStyle = "#fff4e2"; g.font = '700 19px "Baloo 2", sans-serif';
-    g.fillText(who(), 120, 198); g.fillText(f.name, 440, 198);
-
-    g.fillStyle = "#2a3350"; g.fillRect(50, 235, 460, 42);
-    g.fillStyle = "#92e46f"; g.fillRect(50, 235, 460 * mini.m, 42);
-    g.fillStyle = "#fff4e2"; g.fillRect(50 + 460 * mini.m - 4, 222, 9, 68);
-    g.strokeStyle = "rgba(255,255,255,.35)"; g.lineWidth = 3; g.strokeRect(50, 235, 460, 42);
-
-    if (mini.note) {
-      g.fillStyle = mini.note.charAt(0) === "Y" ? "#92e46f" : "#ff5d8f";
-      g.font = '800 33px "Baloo 2", sans-serif';
-      g.fillText(mini.note, 280, 350);
+  function paintRow() {
+    if (!mini) return;
+    row.innerHTML = "";
+    if (mini.phase === "pick") {
+      MOVES.forEach(m => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.style.fontSize = "15px";
+        b.innerHTML = '<span style="font-size:28px;display:block;line-height:1.1">' + m.pic + "</span>" + m.name;
+        b.addEventListener("click", () => choose(m.id));
+        row.appendChild(b);
+      });
+      hint.textContent = "Grab catches a sweep \u00b7 sweep goes under a block \u00b7 block stops a grab";
     } else {
-      g.fillStyle = "rgba(255,244,226,.6)"; g.font = '600 15px "Figtree", sans-serif';
-      g.fillText("left \u2192 right \u2192 left \u2192 right", 280, 350);
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "primary"; b.style.fontSize = "17px";
+      b.textContent = mini.phase === "matchend"
+        ? (mini.round >= 2 ? "See how you did" : "Next fight")
+        : "Next point";
+      b.addEventListener("click", advanceBout);
+      row.appendChild(b);
+      hint.textContent = mini.note;
     }
+  }
+
+  function theirMove(f) {
+    if (Math.random() < f.bias) return f.fav;
+    const rest = MOVES.filter(m => m.id !== f.fav);
+    return rest[Math.floor(Math.random() * rest.length)].id;
+  }
+
+  function choose(id) {
+    if (!mini || mini.over || mini.phase !== "pick") return;
+    const f = FIGHTERS[Math.min(2, mini.round)];
+    mini.mine = id;
+    mini.theirs = theirMove(f);
+    mini.flash = 1;
+    const mine = moveById(mini.mine), theirs = moveById(mini.theirs);
+    if (mine.id === theirs.id) {
+      mini.note = "Same move — nobody scores. Go again.";
+      beep(330, .08);
+    } else if (mine.beats === theirs.id) {
+      mini.you++;
+      mini.note = mine.name + " beats " + theirs.name.toLowerCase() + ". Your point.";
+      sfxGood();
+    } else {
+      mini.them++;
+      mini.note = theirs.name + " beats " + mine.name.toLowerCase() + ". Their point.";
+      sfxNope();
+    }
+    if (mini.you >= 3 || mini.them >= 3) {
+      const won = mini.you >= 3;
+      if (won) mini.won++;
+      mini.phase = "matchend";
+      mini.note = won
+        ? "You beat " + f.name + " " + mini.you + "–" + mini.them + "."
+        : f.name + " takes it " + mini.them + "–" + mini.you + ".";
+    } else {
+      mini.phase = "reveal";
+    }
+    paintRow();
+  }
+
+  window.advanceBout = function () {
+    if (!mini || mini.over) return;
+    if (mini.phase === "reveal") {
+      mini.phase = "pick"; mini.mine = null; mini.theirs = null; mini.note = "";
+      paintRow(); return;
+    }
+    if (mini.phase === "matchend") {
+      mini.round++;
+      if (mini.round >= 3) { mini.end(); return; }
+      mini.you = 0; mini.them = 0; mini.mine = null; mini.theirs = null;
+      mini.phase = "pick"; mini.note = "";
+      paintRow(); return;
+    }
+  };
+
+  function pips(gx, gy, k, col) {
+    for (let i = 0; i < 3; i++) {
+      g.fillStyle = i < k ? col : "rgba(255,255,255,.16)";
+      g.beginPath(); g.arc(gx + i * 22, gy, 7, 0, Math.PI * 2); g.fill();
+    }
+  }
+
+  function frame() {
+    if (!mini || mini.over) return;
+    const f = FIGHTERS[Math.min(2, mini.round)];
+    g.fillStyle = "#101828"; g.fillRect(0, 0, 560, 300);
+    g.fillStyle = "#18233a"; g.fillRect(0, 186, 560, 114);
+    g.textAlign = "center";
+
+    /* you, as whatever animal you picked */
+    critterHead(g, 118, 64, 29, S.look.animal, S.look.colour, "down");
+    g.fillStyle = beltColor(); g.fillRect(90, 98, 56, 9);
+    g.fillStyle = "#fff4e2"; g.font = '700 17px "Baloo 2", sans-serif';
+    g.fillText(who(), 118, 132);
+    pips(96, 152, mini.you, "#92e46f");
+
+    g.font = "50px sans-serif"; g.fillText(f.pic, 442, 82);
+    g.fillStyle = "#fff4e2"; g.font = '700 17px "Baloo 2", sans-serif';
+    g.fillText(f.name, 442, 132);
+    pips(420, 152, mini.them, "#ff5d8f");
+
+    if (S.dojo.skill >= 2) {
+      g.fillStyle = "rgba(255,214,102,.8)"; g.font = '600 12.5px "Figtree", sans-serif';
+      g.fillText(f.tell, 280, 176);
+    }
+
+    if (mini.phase === "pick") {
+      g.fillStyle = "rgba(255,244,226,.55)"; g.font = '700 19px "Baloo 2", sans-serif';
+      g.fillText("Pick your move", 280, 250);
+    } else {
+      const win = moveById(mini.mine).beats === mini.theirs;
+      const draw = mini.mine === mini.theirs;
+      if (!draw) {
+        g.fillStyle = win ? "rgba(146,228,111,.15)" : "rgba(255,93,143,.15)";
+        g.beginPath(); g.arc(win ? 150 : 410, 232, 40, 0, Math.PI * 2); g.fill();
+        g.strokeStyle = win ? "#92e46f" : "#ff5d8f"; g.lineWidth = 4;
+        g.beginPath(); g.arc(win ? 150 : 410, 232, 40, 0, Math.PI * 2); g.stroke();
+      }
+      g.font = "44px sans-serif";
+      g.fillText(moveById(mini.mine).pic, 150, 248);
+      g.fillText(moveById(mini.theirs).pic, 410, 248);
+      g.fillStyle = "rgba(255,244,226,.45)"; g.font = '700 22px "Baloo 2", sans-serif';
+      g.fillText("vs", 280, 240);
+      g.fillStyle = draw ? "#ffd166" : (win ? "#92e46f" : "#ff5d8f");
+      g.font = '800 19px "Baloo 2", sans-serif';
+      g.fillText(mini.phase === "matchend" ? mini.note
+        : (draw ? "Same move \u2014 no point" : (win ? "Your point" : "Their point")), 280, 290);
+    }
+
     const rEl = document.getElementById("tRound"), wEl = document.getElementById("tWon");
     if (!rEl || !wEl) { mini.end(); return; }
     rEl.textContent = Math.min(3, mini.round + 1); wEl.textContent = mini.won;
     mini.raf = requestAnimationFrame(frame);
   }
+
+  paintRow();
   mini.raf = requestAnimationFrame(frame);
 }
 
 function finishBout(won) {
   if (!mini) return;
   mini.over = true; cancelAnimationFrame(mini.raf); mini = null;
+  try { delete window.advanceBout; } catch (e) {}
   const before = beltIndex();
   S.dojo.wins += won; S.dojo.entries++;
   S.doneToday.job_dojo = true; S.jobsEver.dojo = (S.jobsEver.dojo || 0) + 1;
@@ -3943,16 +4049,28 @@ function finishBout(won) {
     S.dojo.cups = (S.dojo.cups || 0) + 1;
     if (S.prizes.indexOf("Jujitsu trophy") < 0) S.prizes.push("Jujitsu trophy");
     completeGoal("champion"); sfxGood();
-    toast("CHAMPION. Three matches, three wins, and a cup. +" + money(pay), "win");
-  } else toast("You won " + won + " of 3. +" + money(pay), won ? "win" : "bad");
-  const after = beltIndex();
-  if (after > before) {
-    sfxGood(); toast("New belt: " + BELTS[after].name + "!", "win");
-    if (after >= BELTS.length - 1) completeGoal("blackBelt");
   }
+  const after = beltIndex();
+  if (after > before && after >= BELTS.length - 1) completeGoal("blackBelt");
   checkGoals(); save();
-  paused = false;
-  document.getElementById("overlay").classList.remove("show");
+  showBoutResult(won, pay, before, after);
+}
+
+/* The result waits for a tap. It is the thing a child wants to look at. */
+function showBoutResult(won, pay, before, after) {
+  openOverlay(won >= 3 ? "Champion" : won ? "Good fighting" : "Next time",
+    won + (won === 1 ? " fight won" : " fights won") + " of 3", won >= 3 ? "#2f6b3c" : "#2b4468");
+  const b = document.getElementById("cardBody");
+  b.innerHTML =
+    '<div class="winbig">' + (won >= 3 ? "\uD83C\uDFC6" : won ? "\uD83E\uDD4B" : "\uD83D\uDCAA") + "</div>" +
+    '<p class="winname">' + esc((S.name || "You").toUpperCase()) + "</p>" +
+    '<p class="hint">You won ' + won + ' of 3 and earned ' + money(pay) + ".</p>" +
+    (after > before ? '<p class="winlabel">New belt: ' + BELTS[after].name + "</p>" : "") +
+    '<p class="hint">' + (S.dojo.skill < 8
+      ? "Drill on the dummy to learn what the others always do."
+      : "You know every one of their habits now.") + "</p>" +
+    '<button id="boutClose" class="primary" type="button">Back to the dojo</button>';
+  document.getElementById("boutClose").addEventListener("click", closeOverlay);
 }
 
 /* ========================= THE FRIDAY CHALLENGE =========================
@@ -4049,34 +4167,186 @@ function showSettings() {
   document.getElementById("resetBtn2").addEventListener("click", resetGame);
 }
 
-/* ============================== THIS IS ME ============================== */
-const SKINS = ["#f8ddc0", "#f0c08a", "#e0a76a", "#c98d5a", "#96603a", "#5e3a24"];
-const HAIRS = ["#2b2018", "#4a3526", "#8a5a34", "#c98a4b", "#e0b84f", "#e0538f", "#7a3bb5", "#e8e2d8"];
+/* ============================== THIS IS ME ==============================
+   You are an animal in the colour you pick. No faces to match, nothing to
+   get wrong, and a purple bear is funnier than any of it. */
+const CRITTERS = [
+  { id: "fox",     name: "Fox" },
+  { id: "bunny",   name: "Bunny" },
+  { id: "cat",     name: "Cat" },
+  { id: "dog",     name: "Dog" },
+  { id: "bear",    name: "Bear" },
+  { id: "panda",   name: "Panda" },
+  { id: "frog",    name: "Frog" },
+  { id: "owl",     name: "Owl" },
+  { id: "tiger",   name: "Tiger" },
+  { id: "penguin", name: "Penguin" },
+  { id: "dragon",  name: "Dragon" },
+  { id: "unicorn", name: "Unicorn" }
+];
+const COLOURS = ["#ff7a3c", "#ffd166", "#92e46f", "#3ad1c0", "#7ac6e0", "#5b8dd6",
+                 "#8a5ac9", "#ff5d8f", "#f4f6f8", "#c98a4b"];
+function critterOk(id) { return CRITTERS.some(c => c.id === id) ? id : "fox"; }
+
+/* One head, drawn into whatever canvas is asked for — the world, or a
+   44-pixel button in the picker. */
+function critterHead(g, x, y, r, kind, col, dir) {
+  const up = dir === "up";
+  const ox = dir === "left" ? -r * .22 : dir === "right" ? r * .22 : 0;
+  const ink = "#241a14";
+  function blob(dx, dy, w, h, c2, rot) {
+    g.save(); g.translate(x + dx, y + dy); g.rotate(rot || 0);
+    g.fillStyle = c2 || col; g.beginPath(); g.ellipse(0, 0, w, h, 0, 0, Math.PI * 2); g.fill(); g.restore();
+  }
+  function tri(ax, ay, bx, by, cx2, cy2, c2) {
+    g.fillStyle = c2 || col; g.beginPath();
+    g.moveTo(x + ax, y + ay); g.lineTo(x + bx, y + by); g.lineTo(x + cx2, y + cy2);
+    g.closePath(); g.fill();
+  }
+  function eyes(dx, dy, rad) {
+    g.fillStyle = ink;
+    g.beginPath(); g.arc(x - dx + ox, y + dy, rad, 0, Math.PI * 2); g.fill();
+    g.beginPath(); g.arc(x + dx + ox, y + dy, rad, 0, Math.PI * 2); g.fill();
+  }
+
+  /* ears, horns and tufts go behind the head */
+  if (kind === "fox" || kind === "cat" || kind === "tiger") {
+    tri(-r * .98, -r * .42, -r * .92, -r * 1.62, -r * .12, -r * .9);
+    tri(r * .98, -r * .42, r * .92, -r * 1.62, r * .12, -r * .9);
+  } else if (kind === "bunny") {
+    blob(-r * .42, -r * 1.48, r * .25, r * .84, col, -.15);
+    blob(r * .42, -r * 1.48, r * .25, r * .84, col, .15);
+    blob(-r * .42, -r * 1.48, r * .12, r * .55, "#f2b8c6", -.15);
+    blob(r * .42, -r * 1.48, r * .12, r * .55, "#f2b8c6", .15);
+  } else if (kind === "bear" || kind === "panda") {
+    const c2 = kind === "panda" ? "#2b2f3e" : col;
+    blob(-r * .8, -r * .76, r * .37, r * .37, c2);
+    blob(r * .8, -r * .76, r * .37, r * .37, c2);
+  } else if (kind === "dog") {
+    blob(-r * .95, -r * .05, r * .29, r * .62, col, -.22);
+    blob(r * .95, -r * .05, r * .29, r * .62, col, .22);
+  } else if (kind === "owl") {
+    tri(-r * .96, -r * .5, -r * .62, -r * 1.45, -r * .18, -r * .68);
+    tri(r * .96, -r * .5, r * .62, -r * 1.45, r * .18, -r * .68);
+  } else if (kind === "dragon") {
+    tri(-r * .5, -r * .82, -r * 1.2, -r * 1.55, -r * .08, -r * 1.02, "#ffd166");
+    tri(r * .5, -r * .82, r * 1.2, -r * 1.55, r * .08, -r * 1.02, "#ffd166");
+  } else if (kind === "unicorn") {
+    tri(-r * .2, -r * .88, 0, -r * 1.95, r * .2, -r * .88, "#ffd166");
+    blob(-r * .76, -r * .6, r * .19, r * .4, col, -.3);
+    blob(r * .76, -r * .6, r * .19, r * .4, col, .3);
+  }
+
+  /* the head */
+  g.fillStyle = kind === "penguin" ? "#2b2f3e" : col;
+  g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill();
+
+  if (kind === "tiger") {
+    g.fillStyle = "rgba(0,0,0,.34)";
+    [-.46, 0, .46].forEach(o => { g.fillRect(x + o * r - r * .07, y - r * .95, r * .14, r * .5); });
+  }
+  if (kind === "dragon") {
+    g.fillStyle = "rgba(255,255,255,.22)";
+    g.beginPath(); g.ellipse(x, y + r * .1, r * .72, r * .5, 0, 0, Math.PI * 2); g.fill();
+  }
+  if (up) return;
+
+  /* muzzles, beaks and bellies */
+  if (kind === "fox" || kind === "dog" || kind === "bear" || kind === "tiger" || kind === "unicorn" || kind === "dragon") {
+    g.fillStyle = "rgba(255,255,255,.72)";
+    g.beginPath(); g.ellipse(x + ox, y + r * .42, r * .52, r * .38, 0, 0, Math.PI * 2); g.fill();
+    g.fillStyle = ink;
+    g.beginPath(); g.ellipse(x + ox, y + r * .24, r * .15, r * .11, 0, 0, Math.PI * 2); g.fill();
+  }
+  if (kind === "cat") {
+    g.strokeStyle = "rgba(0,0,0,.4)"; g.lineWidth = Math.max(1, r * .07); g.lineCap = "round";
+    [-1, 1].forEach(sgn => {
+      g.beginPath(); g.moveTo(x + sgn * r * .35 + ox, y + r * .3); g.lineTo(x + sgn * r * 1.15 + ox, y + r * .18); g.stroke();
+      g.beginPath(); g.moveTo(x + sgn * r * .35 + ox, y + r * .42); g.lineTo(x + sgn * r * 1.12 + ox, y + r * .52); g.stroke();
+    });
+    g.fillStyle = "#f2b8c6";
+    g.beginPath(); g.ellipse(x + ox, y + r * .32, r * .13, r * .1, 0, 0, Math.PI * 2); g.fill();
+  }
+  if (kind === "penguin") {
+    g.fillStyle = "#f4f1e8";
+    g.beginPath(); g.ellipse(x + ox, y + r * .3, r * .62, r * .58, 0, 0, Math.PI * 2); g.fill();
+    g.fillStyle = "#e0a63f";
+    g.beginPath(); g.moveTo(x + ox - r * .2, y + r * .16); g.lineTo(x + ox + r * .2, y + r * .16); g.lineTo(x + ox, y + r * .6); g.closePath(); g.fill();
+  }
+  if (kind === "owl") {
+    g.fillStyle = "#fff8ea";
+    g.beginPath(); g.arc(x - r * .38 + ox, y - r * .06, r * .38, 0, Math.PI * 2); g.fill();
+    g.beginPath(); g.arc(x + r * .38 + ox, y - r * .06, r * .38, 0, Math.PI * 2); g.fill();
+    g.fillStyle = "#e0a63f";
+    g.beginPath(); g.moveTo(x + ox - r * .16, y + r * .24); g.lineTo(x + ox + r * .16, y + r * .24); g.lineTo(x + ox, y + r * .62); g.closePath(); g.fill();
+    eyes(r * .38, -r * .06, r * .17);
+    return;
+  }
+  if (kind === "frog") {
+    g.fillStyle = "#fff8ea";
+    g.beginPath(); g.arc(x - r * .58 + ox, y - r * .68, r * .36, 0, Math.PI * 2); g.fill();
+    g.beginPath(); g.arc(x + r * .58 + ox, y - r * .68, r * .36, 0, Math.PI * 2); g.fill();
+    eyes(r * .58, -r * .68, r * .16);
+    g.strokeStyle = ink; g.lineWidth = Math.max(1, r * .1); g.lineCap = "round";
+    g.beginPath(); g.arc(x + ox, y + r * .12, r * .54, .15 * Math.PI, .85 * Math.PI); g.stroke();
+    return;
+  }
+  if (kind === "panda") {
+    g.fillStyle = "#2b2f3e";
+    g.beginPath(); g.ellipse(x - r * .38 + ox, y - r * .04, r * .3, r * .36, .3, 0, Math.PI * 2); g.fill();
+    g.beginPath(); g.ellipse(x + r * .38 + ox, y - r * .04, r * .3, r * .36, -.3, 0, Math.PI * 2); g.fill();
+    g.fillStyle = "#fff8ea";
+    eyes(r * .38, -r * .04, r * .13);
+    g.fillStyle = ink;
+    g.beginPath(); g.ellipse(x + ox, y + r * .38, r * .16, r * .12, 0, 0, Math.PI * 2); g.fill();
+    return;
+  }
+  eyes(r * .36, -r * .12, r * .15);
+}
+
+/* the one used by the picker buttons */
+function critterButton(kind, col) {
+  const c = document.createElement("canvas");
+  c.width = 92; c.height = 92; c.className = "critcv";
+  const g = c.getContext("2d");
+  g.fillStyle = col; g.globalAlpha = .18;
+  g.beginPath(); g.arc(46, 46, 44, 0, Math.PI * 2); g.fill();
+  g.globalAlpha = 1;
+  critterHead(g, 46, 50, 27, kind, col, "down");
+  return c;
+}
 
 function showLook(first) {
-  openOverlay("This is me", first ? "Put your name in, then pick a face" : "Change the person you walk around as", "#3f5f8c");
+  openOverlay("This is me", first ? "Put your name in, then pick who you are" : "Change who you walk around as", "#3f5f8c");
   const b = document.getElementById("cardBody");
-  const faceHTML = (skin, hair, long) =>
-    '<span class="face' + (long ? " long" : "") + '" style="background:' + skin + '"><i style="background:' + hair + '"></i></span>';
   b.innerHTML =
     '<p class="rowlabel">My name</p>' +
     '<div class="namebox"><input id="myName" type="text" maxlength="12" autocomplete="off" spellcheck="false" placeholder="type it here" value="' + esc(S.name) + '"></div>' +
-    '<p class="rowlabel">Face</p>' +
-    '<div class="picks small" id="skinRow">' + SKINS.map(k =>
-      '<button type="button" data-skin="' + k + '">' + faceHTML(k, S.look.hair, S.look.long) + '</button>').join("") + '</div>' +
-    '<p class="rowlabel">Hair</p>' +
-    '<div class="picks small" id="hairRow">' + HAIRS.map(k =>
-      '<button type="button" data-hair="' + k + '">' + faceHTML(S.look.skin, k, S.look.long) + '</button>').join("") + '</div>' +
-    '<div class="lanebtns"><button id="hairLen" type="button" style="font-size:16px">' +
-      (S.look.long ? "Long hair" : "Short hair") + '</button></div>' +
+    '<p class="rowlabel">Who are you</p>' +
+    '<div class="picks small" id="critRow"></div>' +
+    '<p class="rowlabel">What colour</p>' +
+    '<div class="picks small" id="colRow">' + COLOURS.map(k =>
+      '<button type="button" class="swatch-btn" data-col="' + k + '" aria-pressed="' +
+      String(k === S.look.colour) + '" style="background:' + k + '" aria-label="colour"></button>').join("") + "</div>" +
     '<button id="lookClose" class="primary" type="button">' + (first ? "Start playing" : "That\u2019s me") + '</button>';
   const field = document.getElementById("myName");
   const keepName = () => { S.name = field.value.trim().slice(0, 12); save(); };
   field.addEventListener("input", keepName);
   field.addEventListener("keydown", e => { if (e.key === "Enter") { keepName(); closeOverlay(); } });
-  b.querySelectorAll("[data-skin]").forEach(btn => btn.addEventListener("click", () => { keepName(); S.look.skin = btn.dataset.skin; save(); showLook(first); }));
-  b.querySelectorAll("[data-hair]").forEach(btn => btn.addEventListener("click", () => { keepName(); S.look.hair = btn.dataset.hair; save(); showLook(first); }));
-  document.getElementById("hairLen").addEventListener("click", () => { keepName(); S.look.long = !S.look.long; save(); showLook(first); });
+  const critRow = document.getElementById("critRow");
+  CRITTERS.forEach(cr => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.setAttribute("aria-pressed", String(cr.id === S.look.animal));
+    btn.setAttribute("aria-label", cr.name);
+    btn.title = cr.name;
+    btn.appendChild(critterButton(cr.id, S.look.colour));
+    btn.addEventListener("click", () => { keepName(); S.look.animal = cr.id; save(); showLook(first); });
+    critRow.appendChild(btn);
+  });
+  b.querySelectorAll("[data-col]").forEach(btn => btn.addEventListener("click", () => {
+    keepName(); S.look.colour = btn.dataset.col; save(); showLook(first);
+  }));
   document.getElementById("lookClose").addEventListener("click", () => {
     keepName();
     closeOverlay();
@@ -4125,10 +4395,9 @@ function takePeer(m) {
   if (p.r !== where) { p.rx = x; p.ry = y; }         // they walked into another building
   p.r = where; p.x = x; p.y = y;
   p.n = cleanName(m.n);
-  p.k = colourOr(m.k, "#f0c08a");
-  p.h = colourOr(m.h, "#4a3526");
-  p.t = colourOr(m.t, "#ff7a3c");
-  p.l = !!m.l;
+  p.an = critterOk(typeof m.an === "string" ? m.an : "fox");
+  p.co = colourOr(m.co, "#ff7a3c");
+  p.t = colourOr(m.t, p.co);
   p.d = ["up", "down", "left", "right"].indexOf(m.d) >= 0 ? m.d : "down";
   p.mv = !!m.m;
   p.car = typeof m.c === "string" ? m.c : null;
@@ -4150,8 +4419,8 @@ function myPacket() {
   const mc = myCar();
   return {
     i: MEID, n: S.name || "Someone",
-    k: S.look.skin, h: S.look.hair, l: S.look.long ? 1 : 0,
-    t: worn("top") ? worn("top").c : "#ff7a3c",
+    an: S.look.animal, co: S.look.colour,
+    t: worn("top") ? worn("top").c : S.look.colour,
     r: (mode === "inside" && room) ? roomId(room) : "city",
     x: Math.round(driving ? car.x : hero.x),
     y: Math.round(driving ? car.y : hero.y),
@@ -4307,7 +4576,7 @@ function drawPeers(where) {
       nameTag(p.rx, p.ry - 8, p.n);
     } else {
       ctx.globalAlpha = .95;
-      drawPerson(p.rx, p.ry, p.d, p.mv ? now / 70 : 0, p.t, p.k, p.h, false, null, p.l);
+      drawPerson(p.rx, p.ry, p.d, p.mv ? now / 70 : 0, p.t, null, null, false, null, { a: p.an, c: p.co });
       ctx.globalAlpha = 1;
       nameTag(p.rx, p.ry, p.n);
     }
