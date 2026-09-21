@@ -243,6 +243,24 @@
   .namebox input:focus { outline: none; border-color: var(--sun); }
   .namebox input::placeholder { color: #6b77a3; font-weight: 700; }
 
+  .codebox {
+    font-family: var(--mono); font-weight: 500; font-size: 46px; letter-spacing: .22em;
+    color: var(--sun); background: #2e2712; border: 3px solid #6a5726;
+    border-radius: 16px; padding: 10px 6px 10px 26px; text-align: center; width: min(320px, 100%);
+  }
+  .codein {
+    font-family: var(--mono); font-size: 30px; letter-spacing: .2em; text-transform: uppercase;
+    width: min(260px, 100%); text-align: center; color: var(--cream); background: #1d2643;
+    border: 3px solid var(--line); border-radius: 14px; padding: 9px 10px 9px 22px;
+  }
+  .codein:focus { outline: none; border-color: var(--sun); }
+  .herelist { display: flex; flex-wrap: wrap; gap: 7px; justify-content: center; }
+  .herelist span {
+    font-family: var(--display); font-weight: 700; font-size: 14px;
+    border-radius: 99px; padding: 4px 12px; background: #1d2643; border: 2px solid var(--line);
+  }
+  .herelist span.me { border-color: var(--cash); color: var(--cash); }
+
   .winbig { font-size: 78px; line-height: 1; }
   .winname { margin: 0; font-family: var(--display); font-weight: 800; font-size: 34px; color: var(--cash); text-align: center; line-height: 1.1; }
   .winlabel { margin: 0; font-family: var(--display); font-weight: 800; font-size: 27px; text-align: center; }
@@ -266,11 +284,10 @@
     <span class="quest" id="quest"></span>
     <div class="hudbtns">
       <button id="fridayBtn" type="button">&#127881; Challenge</button>
+      <button id="togetherBtn" type="button">&#128101; Together</button>
       <button id="lookBtn" type="button">&#128578; Me</button>
       <button id="goalsBtn" type="button">Goals</button>
-      <button id="musicBtn" type="button">♪ Radio</button>
-      <button id="soundBtn" type="button" aria-pressed="false">Sound off</button>
-      <button id="resetBtn" type="button">New game</button>
+      <button id="gearBtn" type="button" aria-label="Sound and settings">&#9881;</button>
     </div>
   </header>
 
@@ -299,6 +316,7 @@
 
 <div id="toasts" aria-live="polite"></div>
 
+<script defer src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
 <script>
 "use strict";
 
@@ -1667,10 +1685,10 @@ ROOMS.dojo = {
     { id: "tatami", kind: "tatami", walkable: true, x: 80, y: 60, w: 560, h: 260,
       info() { return { title: "Roll around on the mat", chips: [{ t: "free", cls: "earn" }, { t: "20 min", cls: "time" }, { t: "+8 Fun", cls: "good" }], why: "" }; },
       use() { S.needs.fun = clamp(S.needs.fun + 8, 0, 100); advance(20); toast("You practised your break-falls until the room stopped spinning."); } },
-    { id: "ladder", kind: "ladder", x: 720, y: 62, w: 260, h: 108, caption: "Today's ladder",
+    { id: "ladder", kind: "ladder", x: 720, y: 62, w: 260, h: 108, caption: "Who you fight today",
       info() {
         return { title: "Enter today's tournament",
-          chips: [{ t: "3 bouts", cls: "" }, { t: "up to +$200", cls: "earn" }, { t: "2 hr", cls: "time" }, { t: beltName(), cls: "good" }],
+          chips: [{ t: "3 matches", cls: "" }, { t: "up to +$200", cls: "earn" }, { t: "2 hr", cls: "time" }, { t: beltName(), cls: "good" }],
           why: S.doneToday.job_dojo ? "You already fought today. The next one is tomorrow."
             : (S.needs.energy < 24 ? "You're too tired to compete." : "") };
       },
@@ -1680,10 +1698,10 @@ ROOMS.dojo = {
         const next = BELTS[Math.min(BELTS.length - 1, beltIndex() + 1)];
         const togo = Math.max(0, next.need - S.dojo.wins);
         return { title: "Look at the belt rack",
-          chips: [{ t: beltName(), cls: "good" }, { t: S.dojo.wins + " bouts won", cls: "" }].concat(togo ? [{ t: togo + " more for " + next.name.toLowerCase(), cls: "time" }] : []),
+          chips: [{ t: beltName(), cls: "good" }, { t: S.dojo.wins + " matches won", cls: "" }].concat(togo ? [{ t: togo + " more for " + next.name.toLowerCase(), cls: "time" }] : []),
           why: "" };
       },
-      use() { advance(5); toast("You are a " + beltName().toLowerCase() + ". " + S.dojo.wins + " bouts won so far."); } },
+      use() { advance(5); toast("You are a " + beltName().toLowerCase() + ". " + S.dojo.wins + " matches won so far."); } },
     { id: "cups", kind: "trophycase", x: 865, y: 242, w: 120, h: 88, caption: "Trophies",
       info() { return { title: "Look at the trophy case", chips: [{ t: (S.dojo.cups || 0) + " cups", cls: "good" }, { t: "5 min", cls: "time" }], why: "" }; },
       use() { advance(5); S.needs.fun = clamp(S.needs.fun + 4, 0, 100); toast((S.dojo.cups || 0) ? "Your name is on " + S.dojo.cups + " of these." : "No cup with your name on it yet. Win all three bouts."); } },
@@ -2119,6 +2137,7 @@ function drawCityScene() {
   });
 
   traffic.forEach(t => drawCar(t.x, t.y, t.vx !== 0 ? (t.vx > 0 ? 0 : Math.PI) : (t.vy > 0 ? Math.PI / 2 : -Math.PI / 2), t.c, false));
+  drawPeers("city");
   const mc0 = myCar();
   drawCar(car.x, car.y, car.a, mc0.color, true, mc0.shape, mc0.trim, S.pets.slice(0, mc0.seats), Math.abs(car.sp));
   if (mode === "walk") { S.pets.forEach((pt, i) => { if (petTrail[i]) drawPetBody(petTrail[i].x, petTrail[i].y, pt); }); drawHero(); }
@@ -2540,6 +2559,7 @@ function drawRoom() {
 
   room.props.forEach(p => drawProp(p, focus && focus.prop === p));
   if (room.npc) { drawNu(room.npc.x, room.npc.y); }
+  drawPeers(roomId(room));
 
   if (room === ROOMS.home) S.pets.forEach((pt, i) => { if (petTrail[i]) drawPetBody(petTrail[i].x, petTrail[i].y, pt); });
   drawHero();
@@ -3420,6 +3440,7 @@ function drawHud() {
     document.getElementById("i-" + m.key).style.width = v + "%";
     document.getElementById("b-" + m.key).classList.toggle("low", v < 20);
   });
+  if (roomCode) paintTogether();
   const meLabel = "\uD83D\uDE42 " + (S.name || "Me");
   if (meLabel !== lastMeLabel) { document.getElementById("lookBtn").textContent = meLabel; lastMeLabel = meLabel; }
   const qEl = document.getElementById("quest");
@@ -3822,14 +3843,14 @@ function finishAcro(paid, landed) {
   document.getElementById("overlay").classList.remove("show");
 }
 
-/* ====================== THE TOURNAMENT: three bouts ======================
+/* ===================== THE TOURNAMENT: three matches ====================
    A grip battle. Left, right, left, right pulls the rope your way; the
    other one pulls steadily back. Drilling and your belt make you stronger. */
 function startBout() {
-  openOverlay("Today's tournament", "Three opponents, one after the other", "#2b4468");
+  openOverlay("Today's tournament", "Three people to beat, one after the other", "#2b4468");
   const body = document.getElementById("cardBody");
   body.innerHTML =
-    '<div id="miniStat"><span>Bout <b id="tRound">1</b> of 3</span><span>Won <b id="tWon">0</b></span></div>' +
+    '<div id="miniStat"><span>Match <b id="tRound">1</b> of 3</span><span>Won <b id="tWon">0</b></span></div>' +
     '<canvas id="miniCanvas" width="560" height="420"></canvas>' +
     '<div class="lanebtns"><button type="button" data-p="L" style="color:#ff5d8f">\u25C0</button>' +
     '<button type="button" data-p="R" style="color:#7ac6e0">\u25B6</button></div>' +
@@ -3853,7 +3874,7 @@ function startBout() {
   function endRound(win) {
     if (!mini || mini.pause) return;
     mini.pause = true;
-    mini.note = win ? "YOU WIN THIS BOUT" : "THEY GOT YOU";
+    mini.note = win ? "YOU WON!" : "THEY GOT YOU";
     if (win) { mini.won++; sfxGood(); } else sfxNope();
     setTimeout(() => {
       if (!mini || mini.over) return;
@@ -3917,12 +3938,12 @@ function finishBout(won) {
   S.needs.fun = clamp(S.needs.fun + 16, 0, 100);
   S.needs.clean = clamp(S.needs.clean - 14, 0, 100);
   advance(120); checkJobsGoal();
-  if (won >= 1) challengeDone("belt");
+  if (won >= 1) challengeDone("belt");   // one win is enough for the Friday card
   if (won >= 3) {
     S.dojo.cups = (S.dojo.cups || 0) + 1;
     if (S.prizes.indexOf("Jujitsu trophy") < 0) S.prizes.push("Jujitsu trophy");
     completeGoal("champion"); sfxGood();
-    toast("CHAMPION. Three bouts, three wins, and a cup. +" + money(pay), "win");
+    toast("CHAMPION. Three matches, three wins, and a cup. +" + money(pay), "win");
   } else toast("You won " + won + " of 3. +" + money(pay), won ? "win" : "bad");
   const after = beltIndex();
   if (after > before) {
@@ -3939,7 +3960,7 @@ function finishBout(won) {
    Northgate. The coach calls one challenge; the race is who finishes it. */
 const CHALLENGES = [
   { id: "roll",    pic: "\uD83C\uDF63", label: "Nu's special",     mins: "2 min",  line: "Buy today's half-price roll from Nu at Sprouts.", at: "sprouts" },
-  { id: "belt",    pic: "\uD83E\uDD4B", label: "Win a bout",       mins: "5 min",  line: "Enter the tournament and beat somebody.", at: "dojo" },
+  { id: "belt",    pic: "\uD83E\uDD4B", label: "Win a match",     mins: "5 min",  line: "Go to the dojo and beat somebody at jujitsu.", at: "dojo" },
   { id: "bunny",   pic: "\uD83D\uDC30", label: "Bunny home",       mins: "6 min",  line: "Earn the money, buy a bunny, give her a name.", at: "pets" },
   { id: "flip",    pic: "\uD83E\uDD38", label: "Triple flip",      mins: "6 min",  line: "Land all three tricks on the acrobatics mat.", at: "studio" },
   { id: "cash",    pic: "\uD83D\uDCB5", label: "Earn $200",        mins: "8 min",  line: "Work any job in town until you have made two hundred dollars.", at: null },
@@ -4006,6 +4027,28 @@ function pickChallenge(id) {
   toast(c.pic + "  " + c.line, "win");
 }
 
+/* ============================== SETTINGS ============================== */
+function showSettings() {
+  openOverlay("Settings", "Sound, music, and starting over", "#3f5f8c");
+  const b = document.getElementById("cardBody");
+  b.innerHTML =
+    '<div class="lanebtns">' +
+    '<button id="soundBtn" type="button" style="font-size:17px" aria-pressed="' + String(audioOn) + '">' +
+      (audioOn ? "Sound on" : "Sound off") + '</button>' +
+    '<button id="musicBtn2" type="button" style="font-size:17px">' +
+      (S.song == null ? "\u266a Radio" : "\u266a " + SONGS[S.song].name) + '</button>' +
+    '</div>' +
+    '<p class="hint">Sound is off every time somebody new opens this, so nothing ever makes a noise by itself. Turning it on is remembered on this computer only.</p>' +
+    '<button id="resetBtn2" type="button">Start a brand new life</button>';
+  document.getElementById("soundBtn").addEventListener("click", e => toggleSound(e.target));
+  document.getElementById("musicBtn2").addEventListener("click", () => {
+    musicNext();
+    const mb = document.getElementById("musicBtn2");
+    if (mb) mb.textContent = S.song == null ? "\u266a Radio" : "\u266a " + SONGS[S.song].name;
+  });
+  document.getElementById("resetBtn2").addEventListener("click", resetGame);
+}
+
 /* ============================== THIS IS ME ============================== */
 const SKINS = ["#f8ddc0", "#f0c08a", "#e0a76a", "#c98d5a", "#96603a", "#5e3a24"];
 const HAIRS = ["#2b2018", "#4a3526", "#8a5a34", "#c98a4b", "#e0b84f", "#e0538f", "#7a3bb5", "#e8e2d8"];
@@ -4042,6 +4085,235 @@ function showLook(first) {
   if (first) setTimeout(() => { try { field.focus(); } catch (e) {} }, 120);
 }
 
+/* ======================= EVERYBODY ON EVERYBODY'S SCREEN =======================
+   Each person still plays their own Northgate — their own money, their own
+   pets, their own day. The only thing that travels is where they are
+   standing, so you see each other walking round the same town.
+
+   Nothing that arrives from the relay is allowed to change this game. It is
+   only ever drawn. A stranger on a public broker can make a cartoon walk
+   across the screen and nothing else. And if nothing connects, the game is
+   exactly as it was — a Friday call must never be wrecked by a relay having
+   a bad day. */
+const RELAY = "wss://broker.emqx.io:8084/mqtt";     // free, no account needed
+const TOPIC = "northgate-city/room/";
+const MEID = Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+const PEERS = Object.create(null);
+let roomCode = null, sock = null, bc = null, netState = "off", lastBeat = 0, lastSent = "";
+
+function codeOf() {
+  const L = "BCDFGHJKLMNPRSTVWXZ";                  // no vowels, so it never spells anything
+  let c = "";
+  for (let i = 0; i < 4; i++) c += L[Math.floor(Math.random() * L.length)];
+  return c;
+}
+
+const HEXOK = /^#[0-9a-fA-F]{3,8}$/;
+function colourOr(v, fallback) { return (typeof v === "string" && HEXOK.test(v)) ? v : fallback; }
+function cleanName(v) {
+  return String(v == null ? "" : v).replace(/[^\p{L}\p{N} '\-]/gu, "").trim().slice(0, 12) || "Someone";
+}
+
+/* Everything a peer sends is treated as decoration and clamped into range. */
+function takePeer(m) {
+  if (!m || typeof m !== "object" || typeof m.i !== "string" || m.i === MEID) return;
+  if (m.bye) { delete PEERS[m.i]; return; }
+  const where = (m.r === "city" || ROOMS[m.r]) ? m.r : "city";
+  const lim = where === "city" ? WORLD : ROOMS[where];
+  const x = clamp(Number(m.x) || 0, 0, lim.w), y = clamp(Number(m.y) || 0, 0, lim.h);
+  const p = PEERS[m.i] || (PEERS[m.i] = { rx: x, ry: y });
+  if (p.r !== where) { p.rx = x; p.ry = y; }         // they walked into another building
+  p.r = where; p.x = x; p.y = y;
+  p.n = cleanName(m.n);
+  p.k = colourOr(m.k, "#f0c08a");
+  p.h = colourOr(m.h, "#4a3526");
+  p.t = colourOr(m.t, "#ff7a3c");
+  p.l = !!m.l;
+  p.d = ["up", "down", "left", "right"].indexOf(m.d) >= 0 ? m.d : "down";
+  p.mv = !!m.m;
+  p.car = typeof m.c === "string" ? m.c : null;
+  p.cc = colourOr(m.cc, "#ff7a3c");
+  p.ct = colourOr(m.ct, "#2b2f3e");
+  p.a = Number(m.a) || 0;
+  p.at = performance.now();
+}
+
+function peerCount() {
+  const now = performance.now();
+  let k = 0;
+  for (const id in PEERS) { if (now - PEERS[id].at > 6000) delete PEERS[id]; else k++; }
+  return k;
+}
+
+function myPacket() {
+  const driving = mode === "drive";
+  const mc = myCar();
+  return {
+    i: MEID, n: S.name || "Someone",
+    k: S.look.skin, h: S.look.hair, l: S.look.long ? 1 : 0,
+    t: worn("top") ? worn("top").c : "#ff7a3c",
+    r: (mode === "inside" && room) ? roomId(room) : "city",
+    x: Math.round(driving ? car.x : hero.x),
+    y: Math.round(driving ? car.y : hero.y),
+    d: hero.dir, m: hero.moving ? 1 : 0,
+    c: driving ? mc.shape : null, cc: driving ? mc.color : null, ct: driving ? mc.trim : null,
+    a: driving ? +car.a.toFixed(2) : 0
+  };
+}
+
+function netSend(obj) {
+  const txt = JSON.stringify(obj);
+  try { if (bc) bc.postMessage(txt); } catch (e) {}
+  try { if (sock && sock.connected) sock.publish(TOPIC + roomCode, txt, { qos: 0 }); } catch (e) {}
+}
+
+function netTick() {
+  if (!roomCode) return;
+  const now = performance.now();
+  const pkt = myPacket();
+  const sig = pkt.r + "|" + pkt.x + "|" + pkt.y + "|" + pkt.d + "|" + pkt.m + "|" + pkt.c;
+  if (sig !== lastSent || now - lastBeat > 900) {
+    lastSent = sig; lastBeat = now;
+    netSend(pkt);
+  }
+}
+
+function netReceive(raw) {
+  let m = null;
+  try { m = JSON.parse(String(raw)); } catch (e) { return; }
+  takePeer(m);
+}
+
+function joinRoom(c) {
+  leaveRoom(true);
+  roomCode = c;
+  netState = "connecting";
+  try {
+    bc = new BroadcastChannel("northgate-" + c);     // two windows on one computer
+    bc.onmessage = e => netReceive(e.data);
+  } catch (e) {}
+  if (typeof mqtt === "undefined") { netState = "blocked"; paintTogether(); return; }
+  try {
+    sock = mqtt.connect(RELAY, {
+      clientId: "ng_" + MEID.slice(0, 12),
+      clean: true, reconnectPeriod: 4000, connectTimeout: 8000, keepalive: 30
+    });
+    sock.on("connect", () => {
+      sock.subscribe(TOPIC + c, { qos: 0 }, err => {
+        netState = err ? "blocked" : "open";
+        paintTogether();
+        if (!err) netSend(myPacket());
+      });
+    });
+    sock.on("message", (t, payload) => netReceive(payload.toString()));
+    sock.on("error", () => { netState = "blocked"; paintTogether(); });
+    sock.on("close", () => { if (netState === "open") netState = "closed"; paintTogether(); });
+  } catch (e) { netState = "blocked"; }
+  setTimeout(() => { if (netState === "connecting") { netState = "blocked"; paintTogether(); } }, 10000);
+  paintTogether();
+}
+
+function leaveRoom(quiet) {
+  if (roomCode) { try { netSend({ i: MEID, bye: 1 }); } catch (e) {} }
+  try { if (bc) bc.close(); } catch (e) {}
+  try { if (sock) sock.end(true); } catch (e) {}
+  bc = null; sock = null; roomCode = null; netState = "off"; lastSent = "";
+  for (const id in PEERS) delete PEERS[id];
+  if (!quiet) paintTogether();
+}
+window.addEventListener("pagehide", () => leaveRoom(true));
+
+function netWord() {
+  if (netState === "open") return peerCount() ? "" : "Nobody else yet. Read the four letters out.";
+  if (netState === "connecting") return "Connecting\u2026";
+  if (netState === "blocked") return "This network is blocking it. Everyone can still play on their own.";
+  if (netState === "closed") return "The connection dropped. It will try again by itself.";
+  return "";
+}
+
+function paintTogether() {
+  const btn = document.getElementById("togetherBtn");
+  if (btn) {
+    const k = peerCount();
+    btn.textContent = roomCode ? "\uD83D\uDC65 " + roomCode + (k ? " \u00b7 " + (k + 1) : "") : "\uD83D\uDC65 Together";
+  }
+  const st = document.getElementById("netStatus");
+  if (st) st.textContent = netWord();
+  const list = document.getElementById("hereList");
+  if (list) list.innerHTML = hereHTML();
+}
+
+function hereHTML() {
+  const names = ['<span class="me">' + esc(S.name || "You") + "</span>"];
+  const now = performance.now();
+  for (const id in PEERS) if (now - PEERS[id].at <= 6000) names.push("<span>" + esc(PEERS[id].n) + "</span>");
+  return names.join("");
+}
+
+function showTogether() {
+  openOverlay("Play together", "Everybody walks round the same town", "#2f6b3c");
+  const b = document.getElementById("cardBody");
+  if (roomCode) {
+    b.innerHTML =
+      '<p class="rowlabel">Your four letters</p>' +
+      '<div class="codebox">' + roomCode + "</div>" +
+      '<p class="hint">Everybody else opens the same link, taps Together, and types these four letters.</p>' +
+      '<p class="rowlabel">Who is here</p>' +
+      '<div class="herelist" id="hereList">' + hereHTML() + "</div>" +
+      '<p class="hint" id="netStatus">' + netWord() + "</p>" +
+      '<button id="leaveRoom" type="button">Play on my own again</button>';
+    document.getElementById("leaveRoom").addEventListener("click", () => { leaveRoom(); closeOverlay(); });
+  } else {
+    b.innerHTML =
+      '<p class="hint">You still play your own Northgate — your own money, your own animals, your own day. This just lets you see each other walking round.</p>' +
+      '<button id="startRoom" class="primary" type="button">Start a room</button>' +
+      '<p class="rowlabel">Or join one</p>' +
+      '<div class="namebox"><input id="joinCode" class="codein" type="text" maxlength="4" autocomplete="off" spellcheck="false" placeholder="CODE"></div>' +
+      '<button id="doJoin" type="button">Join</button>';
+    document.getElementById("startRoom").addEventListener("click", () => { joinRoom(codeOf()); showTogether(); });
+    const field = document.getElementById("joinCode");
+    const go = () => {
+      const c = field.value.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 4);
+      if (c.length === 4) { joinRoom(c); showTogether(); } else field.focus();
+    };
+    document.getElementById("doJoin").addEventListener("click", go);
+    field.addEventListener("keydown", e => { if (e.key === "Enter") go(); });
+    setTimeout(() => { try { field.focus(); } catch (e) {} }, 120);
+  }
+}
+
+/* ---- drawing the others ---- */
+function nameTag(x, y, text) {
+  ctx.font = '700 12px "Baloo 2", sans-serif';
+  ctx.textAlign = "center";
+  const w = Math.min(130, ctx.measureText(text).width + 16);
+  ctx.fillStyle = "rgba(22,28,48,.82)";
+  rr(x - w / 2, y - 56, w, 19, 9); ctx.fill();
+  ctx.fillStyle = "#fff4e2";
+  ctx.fillText(text, x, y - 42);
+}
+
+function drawPeers(where) {
+  if (!roomCode) return;
+  const now = performance.now();
+  for (const id in PEERS) {
+    const p = PEERS[id];
+    if (now - p.at > 6000) { delete PEERS[id]; continue; }
+    if (p.r !== where) continue;
+    p.rx += (p.x - p.rx) * .22;
+    p.ry += (p.y - p.ry) * .22;
+    if (p.car) {
+      drawCar(p.rx, p.ry, p.a, p.cc, false, p.car, p.ct, [], 0);
+      nameTag(p.rx, p.ry - 8, p.n);
+    } else {
+      ctx.globalAlpha = .95;
+      drawPerson(p.rx, p.ry, p.d, p.mv ? now / 70 : 0, p.t, p.k, p.h, false, null, p.l);
+      ctx.globalAlpha = 1;
+      nameTag(p.rx, p.ry, p.n);
+    }
+  }
+}
+
 /* ============================== INPUT ============================== */
 window.addEventListener("keydown", e => {
   const tag = (e.target && e.target.tagName) || "";
@@ -4074,23 +4346,24 @@ document.querySelectorAll(".pad button").forEach(b => hold(b, b.dataset.key));
 document.getElementById("useBtn").addEventListener("click", () => interact());
 document.getElementById("goalsBtn").addEventListener("click", showGoals);
 document.getElementById("fridayBtn").addEventListener("click", showChallenges);
-document.getElementById("lookBtn").addEventListener("click", showLook);
-document.getElementById("musicBtn").addEventListener("click", musicNext);
-document.getElementById("soundBtn").addEventListener("click", e => {
+document.getElementById("lookBtn").addEventListener("click", () => showLook());
+document.getElementById("gearBtn").addEventListener("click", showSettings);
+document.getElementById("togetherBtn").addEventListener("click", showTogether);
+
+function toggleSound(btn) {
   audioOn = !audioOn;
   try { localStorage.setItem(SOUND_KEY, audioOn ? "yes" : "no"); } catch (err) {}
   if (!audioOn) musicStop(); else if (S.song != null) musicPlay(S.song);
-  e.target.textContent = audioOn ? "Sound on" : "Sound off";
-  e.target.setAttribute("aria-pressed", String(audioOn));
-  if (audioOn) toast("Sound on. The Radio button picks a track.");
-});
+  if (btn) { btn.textContent = audioOn ? "Sound on" : "Sound off"; btn.setAttribute("aria-pressed", String(audioOn)); }
+  if (audioOn) toast("Sound on. Radio picks a track.");
+}
 
 /* A tab left open in the background must not keep playing to itself. */
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) musicStop();
   else if (audioOn && S.song != null) musicPlay(S.song);
 });
-document.getElementById("resetBtn").addEventListener("click", () => {
+function resetGame() {
   if (confirm("Start a brand new life? Your money, pet and goals will be gone.")) {
     S = freshState();
     car.x = 420; car.y = 545; car.a = -Math.PI / 2; car.sp = 0;
@@ -4099,7 +4372,7 @@ document.getElementById("resetBtn").addEventListener("click", () => {
     save(); closeOverlay(); drawHud();
     toast("New game. Day 1, 7:00 AM.", "win");
   }
-});
+}
 document.getElementById("overlay").addEventListener("click", e => { if (e.target.id === "overlay" && !mini) closeOverlay(); });
 
 /* ============================== LOOP ============================== */
@@ -4113,16 +4386,13 @@ function loop(now) {
   }
   if (mode === "inside" && room) drawRoom(); else drawCityScene();
   drawHud(); drawPrompt();
+  netTick();
   requestAnimationFrame(loop);
 }
 
 rebuildHome();
 buildHud(); fit(); updateMusicBtn();
-(function () {
-  const sb = document.getElementById("soundBtn");
-  sb.textContent = audioOn ? "Sound on" : "Sound off";
-  sb.setAttribute("aria-pressed", String(audioOn));
-})();
+
 requestAnimationFrame(loop);
 
 if (S.firstBoot) {
