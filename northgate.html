@@ -226,6 +226,7 @@
   .pick .pic { font-size: 40px; line-height: 1.1; }
   .pick .lab { font-family: var(--display); font-size: 16.5px; font-weight: 800; }
   .pick .line { font-family: var(--body); font-size: 11.5px; font-weight: 500; color: var(--muted); line-height: 1.4; }
+  .pick .mins { font-family: var(--mono); font-size: 11px; color: var(--sun); }
   .pick .tick { font-family: var(--mono); font-size: 11px; color: var(--cash); }
   .picks.small button { padding: 7px; min-width: 0; }
   .face { width: 46px; height: 46px; border-radius: 50%; display: block; position: relative; overflow: hidden; }
@@ -3693,6 +3694,7 @@ function finishDance(paid, hits, total) {
     } else toast("You hit " + pct + "% of it. The house paid you " + money(pay) + ".", "win");
   } else {
     if (pct >= 60) S.stage.practice = Math.min(6, S.stage.practice + 1);
+    if (pct >= 85) challengeDone("ovation");        // rehearsing it perfectly counts
     S.needs.energy = clamp(S.needs.energy - 8, 0, 100);
     S.needs.fun = clamp(S.needs.fun + 10, 0, 100);
     advance(45);
@@ -3809,6 +3811,7 @@ function finishAcro(paid, landed) {
     } else toast("You landed " + landed + " of 3. +" + money(pay), "win");
   } else {
     if (landed >= 2) S.stage.acro = Math.min(6, S.stage.acro + 1);
+    if (landed === 3) challengeDone("flip");        // landing all three in practice counts
     S.needs.energy = clamp(S.needs.energy - 8, 0, 100);
     S.needs.fun = clamp(S.needs.fun + 8, 0, 100);
     advance(40);
@@ -3935,12 +3938,12 @@ function finishBout(won) {
    Everybody opens the same link on their own laptop and plays their own
    Northgate. The coach calls one challenge; the race is who finishes it. */
 const CHALLENGES = [
-  { id: "bunny",   pic: "\uD83D\uDC30", label: "Bunny home",     line: "Buy a bunny at Pet Palace and give her a name.", at: "pets" },
-  { id: "ovation", pic: "\uD83D\uDC83", label: "Standing ovation", line: "Dance in tonight's show and hit nearly every arrow.", at: "studio" },
-  { id: "flip",    pic: "\uD83E\uDD38", label: "Triple flip",    line: "Land all three tricks in the acrobatics show.", at: "studio" },
-  { id: "belt",    pic: "\uD83E\uDD4B", label: "Win a bout",     line: "Enter the tournament and beat somebody.", at: "dojo" },
-  { id: "cash",    pic: "\uD83D\uDCB5", label: "Earn $200",      line: "Work any job in town until you have made two hundred dollars.", at: null },
-  { id: "roll",    pic: "\uD83C\uDF63", label: "Nu's special",   line: "Buy today's half-price roll from Nu at Sprouts.", at: "sprouts" }
+  { id: "roll",    pic: "\uD83C\uDF63", label: "Nu's special",     mins: "2 min",  line: "Buy today's half-price roll from Nu at Sprouts.", at: "sprouts" },
+  { id: "belt",    pic: "\uD83E\uDD4B", label: "Win a bout",       mins: "5 min",  line: "Enter the tournament and beat somebody.", at: "dojo" },
+  { id: "bunny",   pic: "\uD83D\uDC30", label: "Bunny home",       mins: "6 min",  line: "Earn the money, buy a bunny, give her a name.", at: "pets" },
+  { id: "flip",    pic: "\uD83E\uDD38", label: "Triple flip",      mins: "6 min",  line: "Land all three tricks on the acrobatics mat.", at: "studio" },
+  { id: "cash",    pic: "\uD83D\uDCB5", label: "Earn $200",        mins: "8 min",  line: "Work any job in town until you have made two hundred dollars.", at: null },
+  { id: "ovation", pic: "\uD83D\uDC83", label: "Standing ovation", mins: "10 min", line: "Dance the routine and hit nearly every arrow.", at: "studio" }
 ];
 
 function challengeDone(id) {
@@ -3974,10 +3977,12 @@ function showChallenges() {
       '<button class="pick" type="button" data-id="' + c.id + '">' +
       '<span class="pic">' + c.pic + '</span>' +
       '<span class="lab">' + c.label + '</span>' +
+      '<span class="mins">' + c.mins + '</span>' +
       '<span class="line">' + c.line + '</span>' +
       (S.challengeDone[c.id] ? '<span class="tick">\u2713 done</span>' : "") +
       '</button>').join("") + '</div>' +
     '<p class="hint">Picking one drops your car outside the right building. Everybody plays their own town — the race is who gets there first.</p>' +
+    '<p class="hint">Coach: say the name out loud, count everyone in, and have them shout when their card comes up.</p>' +
     (S.challenge ? '<button id="dropCh" type="button">Forget this challenge</button>' : "");
   b.querySelectorAll(".pick").forEach(btn => btn.addEventListener("click", () => pickChallenge(btn.dataset.id)));
   const drop = document.getElementById("dropCh");
