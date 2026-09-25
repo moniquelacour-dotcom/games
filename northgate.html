@@ -532,9 +532,9 @@ function vanJingle() {
 }
 
 /* ============================ CITY WORLD ============================ */
-const WORLD = { w: 3180, h: 1850 };
+const WORLD = { w: 4020, h: 1850 };            // the east side is the wild bit
 const ROADS_H = [200, 700, 1200, 1660];
-const ROADS_V = [200, 830, 1450, 2080, 2700];
+const ROADS_V = [200, 830, 1450, 2080, 2700, 3380];
 const ROAD_W = 104;
 
 const PLACES = [
@@ -552,7 +552,12 @@ const PLACES = [
   { id: "build",   name: "Build Site",     tag: "Build houses for real pay",   x: 2150, y: 1300, w: 320, h: 230, wall: "#f0e0c0", roof: "#c8892f", head: "#8a5a18" },
   { id: "threads", name: "Fresh Threads",  tag: "Hats, chains, kicks, packs",  x: 560,  y: 300,  w: 205, h: 175, wall: "#ffe6f5", roof: "#c94f9a", head: "#8a2f6a" },
   { id: "studio",  name: "Spotlight Studio", tag: "Dance, acrobatics, real shows", x: 2800, y: 290,  w: 330, h: 215, wall: "#ffe6f5", roof: "#e0538f", head: "#b02f74" },
-  { id: "dojo",    name: "Northgate Jujitsu", tag: "Train, roll, win the tournament", x: 2800, y: 860, w: 330, h: 205, wall: "#eef2f7", roof: "#3f5f8c", head: "#2b4468" }
+  { id: "dojo",    name: "Northgate Jujitsu", tag: "Train, roll, win the tournament", x: 2800, y: 860, w: 330, h: 205, wall: "#eef2f7", roof: "#3f5f8c", head: "#2b4468" },
+
+  /* ---- out east, off the blocks. No walls, no doors you can shut. ---- */
+  { id: "beach",  name: "Sandpiper Beach", tag: "The ocean, and a pier",        x: 3500, y: 1180, w: 480, h: 470, nature: "beach",    head: "#1f6f97" },
+  { id: "peak",   name: "Eagle Point",     tag: "The mountain and the lookout",  x: 3500, y: 250,  w: 470, h: 430, nature: "mountain", head: "#4a5f3a" },
+  { id: "falls",  name: "Cedar Falls",     tag: "Waterfall, pines, a cold pool", x: 2560, y: 1280, w: 430, h: 360, nature: "falls",    head: "#2f6b5a" }
 ];
 PLACES.forEach(p => { p.door = { x: p.x + p.w / 2, y: p.y + p.h + 20 }; });
 
@@ -1290,6 +1295,110 @@ ROOMS.build = {
     })
   ],
   exit: { x: 470, y: 555, w: 100, h: 40 }
+};
+
+/* ====================== THE WILD BITS ======================
+   Three places with no walls. Every one of them has something free to do,
+   so whoever gets there first is not standing around waiting. */
+
+ROOMS.beach = {
+  name: "Sandpiper Beach", tag: "The ocean, and a pier", head: "#1f6f97",
+  w: 1240, h: 720, floor: "#efdfb4", floorAlt: "#e8d7a9", wall: "#c9a06a",
+  ground: "#efdfb4", outdoor: true,
+  spawn: { x: 620, y: 630 },
+  zones: [{ x: 60, y: 430, w: 1120, h: 230, c: "#ffd166", label: "THE SAND" }],
+  props: [
+    { id: "ocean", kind: "water", water: true, walkable: true, x: 60, y: 40, w: 1120, h: 350,
+      opts: { shallow: "#9fe3ef", mid: "#3aa8d1", deep: "#14507f", rim: "#efdfb4", radius: 30 } },
+    { id: "pier", kind: "board", x: 500, y: 20, w: 240, h: 60, caption: "The pier",
+      info() { return { title: "Walk out to the end of the pier", chips: [{ t: "free", cls: "earn" }, { t: "20 min", cls: "time" }, { t: "+12 Fun", cls: "good" }], why: "" }; },
+      use() { S.needs.fun = clamp(S.needs.fun + 12, 0, 100); advance(20); toast("You could see the whole town from out there."); } },
+    { id: "shells", kind: "path", walkable: true, x: 120, y: 450, w: 220, h: 170,
+      info() { return { title: "Look for shells along the tide line", chips: [{ t: "free", cls: "earn" }, { t: "25 min", cls: "time" }, { t: "+10 Fun", cls: "good" }], why: "" }; },
+      use() {
+        S.needs.fun = clamp(S.needs.fun + 10, 0, 100); advance(25);
+        const found = ["a whole sand dollar", "a scallop, both halves", "a bit of sea glass", "something that turned out to be a bottle cap"];
+        toast("You found " + found[(S.day + S.minutes) % found.length] + ".");
+      } },
+    { id: "beachchair", kind: "lounger", x: 420, y: 470, w: 160, h: 75, caption: "Deck chair",
+      info() { return { title: "Sit in the deck chair", chips: [{ t: "30 min", cls: "time" }, { t: "+14 Energy", cls: "good" }], why: "" }; },
+      use() { S.needs.energy = clamp(S.needs.energy + 14, 0, 100); advance(30); toast("Warm sand, no plans."); } },
+    { id: "shack", kind: "shelf", color: "#e07a9a", x: 650, y: 470, w: 190, h: 80,
+      caption: "Snack shack $4",
+      info() { return { title: "Ice cream from the shack", chips: [{ t: "$4.00", cls: "cost" }, { t: "+15 Full", cls: "good" }, { t: "10 min", cls: "time" }], why: afford(4) ? "" : "Not enough money." }; },
+      use() { pay(4); eat(15, 6); advance(10); toast("It melted faster than you could eat it."); } },
+    jobProp({
+      id: "beachclean", kind: "station", x: 920, y: 460, w: 220, h: 110, color: "#1f6f97",
+      caption: "Beach clean-up", title: "Work a beach clean-up shift",
+      pay: 55, mins: 90, energy: 12, fun: 8,
+      done: "Two full bags and one very confused crab. +$55.00"
+    })
+  ],
+  exit: { x: 570, y: 665, w: 100, h: 40 }
+};
+
+ROOMS.peak = {
+  name: "Eagle Point", tag: "The mountain and the lookout", head: "#4a5f3a",
+  w: 1180, h: 700, floor: "#8fa872", floorAlt: "#88a16b", wall: "#5d7a48",
+  ground: "#8fa872", outdoor: true,
+  spawn: { x: 590, y: 610 },
+  zones: [{ x: 60, y: 40, w: 1060, h: 250, c: "#cfd8c0", label: "THE RIDGE" }],
+  props: [
+    { id: "trail", kind: "path", walkable: true, x: 120, y: 330, w: 900, h: 150,
+      info() { return { title: "Hike the ridge trail", chips: [{ t: "free", cls: "earn" }, { t: "1 hr", cls: "time" }, { t: "+18 Fun", cls: "good" }, { t: "-Energy", cls: "cost" }], why: S.needs.energy < 14 ? "You're too tired for the climb." : "" }; },
+      use() {
+        S.needs.fun = clamp(S.needs.fun + 18, 0, 100);
+        S.needs.energy = clamp(S.needs.energy - 14, 0, 100);
+        advance(60); toast("You went all the way up. Legs are jelly.", "win");
+      } },
+    { id: "scope", kind: "board", x: 500, y: 60, w: 160, h: 60, caption: "The lookout",
+      info() { return { title: "Look out over everything", chips: [{ t: "free", cls: "earn" }, { t: "15 min", cls: "time" }, { t: "+10 Fun", cls: "good" }], why: "" }; },
+      use() { S.needs.fun = clamp(S.needs.fun + 10, 0, 100); advance(15); toast("You can see your own roof from up here."); } },
+    { id: "picnic", kind: "table", x: 200, y: 530, w: 180, h: 100, caption: "Picnic table",
+      info() { return { title: "Eat a snack at the picnic table", chips: [{ t: S.pantry.snacks + " left", cls: "" }, { t: "15 min", cls: "time" }, { t: "+14 Full", cls: "good" }], why: S.pantry.snacks <= 0 ? "Nothing in the pack. Sprouts sells snacks." : "" }; },
+      use() { S.pantry.snacks--; eat(14, 8); advance(15); toast("Food always tastes better up a mountain."); } },
+    jobProp({
+      id: "warden", kind: "station", x: 800, y: 520, w: 230, h: 115, color: "#4a5f3a",
+      caption: "Trail warden hut", title: "Take a trail warden shift",
+      pay: 75, mins: 120, energy: 18, fun: 12,
+      done: "You cleared the path and pointed four people the right way. +$75.00"
+    })
+  ],
+  exit: { x: 540, y: 645, w: 100, h: 40 }
+};
+
+ROOMS.falls = {
+  name: "Cedar Falls", tag: "Waterfall, pines, a cold pool", head: "#2f6b5a",
+  w: 1080, h: 680, floor: "#5f8a5c", floorAlt: "#588353", wall: "#3f6b47",
+  ground: "#5f8a5c", outdoor: true,
+  spawn: { x: 540, y: 590 },
+  zones: [],
+  props: [
+    { id: "pool", kind: "water", water: true, walkable: true, x: 200, y: 110, w: 660, h: 330,
+      opts: { round: true, shallow: "#a8ecf2", mid: "#3fa8d8", deep: "#1c5f96", rim: "#8f9c7a" } },
+    { id: "cascade", kind: "board", x: 470, y: 30, w: 140, h: 70, caption: "The falls",
+      info() { return { title: "Stand under the waterfall", chips: [{ t: "free", cls: "earn" }, { t: "20 min", cls: "time" }, { t: "Clean 100", cls: "good" }, { t: "+14 Fun", cls: "good" }], why: "" }; },
+      use() {
+        S.needs.clean = 100; S.needs.fun = clamp(S.needs.fun + 14, 0, 100);
+        advance(20); toast("Freezing. Completely worth it.", "win");
+      } },
+    { id: "skipping", kind: "ball", x: 240, y: 520, w: 62, h: 62, caption: "Flat stones",
+      info() { return { title: "Skip stones across the pool", chips: [{ t: "free", cls: "earn" }, { t: "20 min", cls: "time" }, { t: "+11 Fun", cls: "good" }], why: "" }; },
+      use() {
+        S.needs.fun = clamp(S.needs.fun + 11, 0, 100); advance(20);
+        toast("Best one went " + (3 + ((S.day * 7 + S.minutes) % 6)) + " skips.");
+      } },
+    { id: "logbench", kind: "bench", x: 400, y: 520, w: 170, h: 62, caption: "Log bench",
+      info() { return { title: "Sit and listen to the water", chips: [{ t: "30 min", cls: "time" }, { t: "+13 Energy", cls: "good" }], why: "" }; },
+      use() { S.needs.energy = clamp(S.needs.energy + 13, 0, 100); advance(30); toast("Just water and birds up here."); } },
+    jobProp({
+      id: "ranger", kind: "station", x: 720, y: 500, w: 230, h: 115, color: "#2f6b5a",
+      caption: "Ranger station", title: "Help the ranger for a shift",
+      pay: 65, mins: 90, energy: 14, fun: 14,
+      done: "You counted fish, fixed a sign, and met a heron. +$65.00"
+    })
+  ],
+  exit: { x: 490, y: 625, w: 100, h: 40 }
 };
 
 /* ===================== YOUR LOT — build it as big as you want ===================== */
@@ -2124,7 +2233,8 @@ function drawCityScene() {
   }));
 
   HOUSES.forEach(h => drawBuilding(h.x, h.y, h.w, h.h, h.wall, h.roof, null, null));
-  PLACES.forEach(p => { if (!p.isPark) drawBuilding(p.x, p.y, p.w, p.h, p.wall, p.roof, p.name, p.head); });
+  PLACES.forEach(p => { if (p.nature) drawNature(p); });
+  PLACES.forEach(p => { if (!p.isPark && !p.nature) drawBuilding(p.x, p.y, p.w, p.h, p.wall, p.roof, p.name, p.head); });
 
   ctx.fillStyle = "#3f6b33"; rr(park.x + park.w / 2 - 92, park.y + park.h + 4, 184, 34, 10); ctx.fill();
   ctx.fillStyle = "#fff4e2"; ctx.font = '700 17px "Baloo 2", sans-serif'; ctx.textAlign = "center";
@@ -2158,12 +2268,98 @@ function drawCityScene() {
     ctx.fillStyle = "rgba(18,24,58," + d + ")"; ctx.fillRect(camX, camY, VW, VH);
     ctx.save(); ctx.globalCompositeOperation = "lighter";
     ROADS_H.forEach(y => { for (let x = 120; x < WORLD.w; x += 320) glow(x, y - ROAD_W / 2 - 12, 90, "rgba(255,214,110,.35)"); });
-    PLACES.concat(HOUSES).forEach(p => { if (!p.isPark) glow(p.x + p.w / 2, p.y + p.h - 10, 80, "rgba(255,196,120,.28)"); });
+    PLACES.concat(HOUSES).forEach(p => { if (!p.isPark && !p.nature) glow(p.x + p.w / 2, p.y + p.h - 10, 80, "rgba(255,196,120,.28)"); });
     if (mode === "drive") glow(car.x + Math.cos(car.a) * 46, car.y + Math.sin(car.a) * 46, 78, "rgba(255,246,210,.4)");
     else glow(hero.x, hero.y, 60, "rgba(255,246,210,.25)");
     ctx.restore();
   }
   ctx.restore();
+}
+
+/* ---- the wild bits, drawn from the top down ----
+   No walls and no roof. Each one is a shape you can recognise from the road:
+   sand and surf, a ridge of peaks, a fall of water into a pool. */
+function natureSign(p) {
+  ctx.fillStyle = p.head;
+  const w = Math.max(150, p.name.length * 12.4);
+  rr(p.x + p.w / 2 - w / 2, p.y + p.h + 4, w, 30, 10); ctx.fill();
+  ctx.fillStyle = "#fff4e2";
+  ctx.font = '700 17px "Baloo 2", sans-serif'; ctx.textAlign = "center";
+  ctx.fillText(p.name, p.x + p.w / 2, p.y + p.h + 25);
+}
+
+function drawNature(p) {
+  const x = p.x, y = p.y, w = p.w, h = p.h;
+  ctx.save();
+
+  if (p.nature === "beach") {
+    ctx.fillStyle = "#efdfb4"; rr(x, y, w, h, 26); ctx.fill();           // sand
+    ctx.save();
+    ctx.beginPath(); rr(x, y, w, h, 26); ctx.clip();
+    drawWater(x + w * .42, y - 20, w * .72, h + 40, { shallow: "#9fe3ef", mid: "#3aa8d1", deep: "#14507f", radius: 0 });
+    ctx.fillStyle = "rgba(255,255,255,.55)";                              // surf line
+    for (let i = 0; i < 5; i++) {
+      const sx = x + w * .42 + Math.sin(T * .8 + i) * 7;
+      ctx.fillRect(sx - 4, y + i * (h / 5) + 10, 7, h / 6);
+    }
+    ctx.restore();
+    ctx.fillStyle = "#c9a06a";                                            // the pier
+    ctx.fillRect(x + 60, y + h * .44, w * .58, 15);
+    ctx.fillStyle = "#8d6a4a";
+    for (let i = 0; i < 7; i++) ctx.fillRect(x + 76 + i * (w * .56 / 7), y + h * .44 + 15, 7, 17);
+    ["#e0538f", "#ffd166", "#3ad1c0"].forEach((c2, i) => {                // parasols
+      ctx.fillStyle = c2;
+      ctx.beginPath(); ctx.ellipse(x + 62 + i * 62, y + h - 64, 24, 13, 0, Math.PI, 0); ctx.fill();
+      ctx.fillStyle = "#8d6a4a"; ctx.fillRect(x + 61 + i * 62, y + h - 64, 3, 20);
+    });
+
+  } else if (p.nature === "mountain") {
+    ctx.fillStyle = "#7f9464"; rr(x, y, w, h, 26); ctx.fill();            // upland grass
+    const peaks = [[.16, .30], [.46, .12], [.76, .34]];
+    peaks.forEach(pk => {
+      const cx = x + w * pk[0], top = y + h * pk[1], base = y + h * .78, half = w * .21;
+      ctx.fillStyle = "#6c6f78";
+      ctx.beginPath(); ctx.moveTo(cx - half, base); ctx.lineTo(cx, top); ctx.lineTo(cx + half, base); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#8b8e97";
+      ctx.beginPath(); ctx.moveTo(cx, top); ctx.lineTo(cx + half, base); ctx.lineTo(cx + half * .3, base); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#f4f7fa";                                          // snow cap
+      ctx.beginPath(); ctx.moveTo(cx - half * .34, top + (base - top) * .3); ctx.lineTo(cx, top);
+      ctx.lineTo(cx + half * .34, top + (base - top) * .3);
+      ctx.lineTo(cx + half * .12, top + (base - top) * .22);
+      ctx.lineTo(cx - half * .1, top + (base - top) * .34); ctx.closePath(); ctx.fill();
+    });
+    ctx.strokeStyle = "#d9cfae"; ctx.lineWidth = 9; ctx.setLineDash([16, 13]);   // the trail
+    ctx.beginPath(); ctx.moveTo(x + 40, y + h - 26);
+    ctx.quadraticCurveTo(x + w * .5, y + h * .62, x + w - 46, y + h - 34);
+    ctx.stroke(); ctx.setLineDash([]);
+
+  } else {                                                                 // falls
+    ctx.fillStyle = "#4f7a52"; rr(x, y, w, h, 26); ctx.fill();
+    ctx.fillStyle = "#6c6f78";                                             // the cliff
+    rr(x + w * .22, y + 16, w * .56, h * .3, 12); ctx.fill();
+    ctx.save();
+    ctx.beginPath(); rr(x, y, w, h, 26); ctx.clip();
+    ctx.fillStyle = "#cfeef7";                                             // falling water
+    ctx.fillRect(x + w * .42, y + h * .22, w * .16, h * .34);
+    ctx.fillStyle = "rgba(255,255,255,.55)";
+    for (let i = 0; i < 4; i++) {
+      ctx.fillRect(x + w * .44 + i * (w * .035), y + h * .22 + ((T * 60 + i * 30) % (h * .34)), 4, 16);
+    }
+    drawWater(x + w * .2, y + h * .5, w * .6, h * .38, { round: true, shallow: "#a8ecf2", mid: "#3fa8d8", deep: "#1c5f96" });
+    ctx.restore();
+    [[.12, .82], [.86, .78], [.2, .26], [.84, .3]].forEach(t => {          // pines
+      const tx = x + w * t[0], ty = y + h * t[1];
+      ctx.fillStyle = "#5b4632"; ctx.fillRect(tx - 4, ty, 8, 22);
+      ctx.fillStyle = "#2f6b4a";
+      for (let k = 0; k < 3; k++) {
+        ctx.beginPath(); ctx.moveTo(tx - 22 + k * 3, ty - k * 17);
+        ctx.lineTo(tx, ty - 34 - k * 17); ctx.lineTo(tx + 22 - k * 3, ty - k * 17); ctx.closePath(); ctx.fill();
+      }
+    });
+  }
+
+  ctx.restore();
+  natureSign(p);
 }
 
 function drawBuilding(x, y, w, h, wall, roof, name, signColor) {
@@ -3243,7 +3439,7 @@ function onRoad(x, y) {
 }
 function blockedWorld(x, y, pad) {
   const p2 = pad === undefined ? 14 : pad;
-  const solids = PLACES.filter(p => !p.isPark).concat(HOUSES);
+  const solids = PLACES.filter(p => !p.isPark && !p.nature).concat(HOUSES);
   for (const b of solids) if (x > b.x - p2 && x < b.x + b.w + p2 && y > b.y - p2 && y < b.y + b.h + p2) return true;
   return false;
 }
@@ -4395,26 +4591,48 @@ function cleanName(v) {
    to disagree about and no order to get wrong. The job itself rides along in
    the same packet; the newest one wins, which is how a room ends up on one. */
 
-const TEAM_GOAL = 500;                       // dollars, for the fund job
+const TEAM_GOAL = 500;                       // dollars, the room's shared pot
+const TEAM_EACH = 60;                        // dollars, what EVERY person has to earn
 const TEAM_PAY = 100;                        // each, on finishing
 
+/* Picture first, so the youngest can point at where you are all going. */
+var PLACE_PICS = {
+  beach:"\uD83C\uDFD6\uFE0F", peak:"\u26F0\uFE0F", falls:"\uD83D\uDCA7", park:"\uD83C\uDF33",
+  zoo:"\uD83E\uDD81", swim:"\uD83C\uDFCA", rink:"\u26F8\uFE0F", arcade:"\uD83D\uDC7E",
+  sprouts:"\uD83C\uDF63", pets:"\uD83D\uDC30", cars:"\uD83D\uDE97", gas:"\u26FD",
+  games:"\uD83C\uDFAE", build:"\uD83C\uDFD7\uFE0F", threads:"\uD83D\uDC55",
+  studio:"\uD83D\uDC83", dojo:"\uD83E\uDD4B"
+};
+function placePic(id){ return PLACE_PICS[id] || "\uD83D\uDCCD"; }
+
+/* Nature first — they are the good ones to meet at, and they are new. */
 function meetPlaces() {
-  return PLACES.filter(p => ROOMS[p.id] && p.id !== "home");   // home is private to each child
+  var wild = [], town = [];
+  PLACES.forEach(function(p){
+    if (!ROOMS[p.id] || p.id === "home") return;        // home is private to each child
+    (p.nature || p.isPark ? wild : town).push(p);
+  });
+  return wild.concat(town);
 }
 function placeName(id) {
-  const p = PLACES.find(q => q.id === id);
+  var p = PLACES.find(function(q){ return q.id === id; });
   return p ? p.name : id;
 }
 function teamJob() { return S.team.job; }
 
-function startTeamJob(kind) {
-  let job = { k: kind, at: Date.now(), by: cleanName(S.name || "Someone") };
+var pickingPlace = false;
+
+function startTeamJob(kind, placeId) {
+  var job = { k: kind, at: Date.now(), by: cleanName(S.name || "Someone") };
   if (kind === "meet") {
-    const list = meetPlaces();
-    job.place = list[Math.floor(Math.random() * list.length)].id;
+    if (!placeId) { pickingPlace = true; showTogether(); return; }   // you choose where
+    job.place = placeId;
+  } else if (kind === "fund") {
+    job.goal = Math.max(TEAM_GOAL, 150 * (peerCount() + 1));         // 150 a head
   } else {
-    job.goal = Math.max(TEAM_GOAL, 150 * (peerCount() + 1));   // 150 a head, so seven is a real haul
+    job.goal = TEAM_EACH;                                            // every single person
   }
+  pickingPlace = false;
   S.team.job = job;
   S.team.earned = 0;
   save();
@@ -4422,34 +4640,38 @@ function startTeamJob(kind) {
   showTogether();
 }
 
-function clearTeamJob() { S.team.job = null; S.team.earned = 0; save(); netSend(myPacket()); }
+function clearTeamJob() {
+  S.team.job = null; S.team.earned = 0; pickingPlace = false;
+  save(); netSend(myPacket());
+}
 
 /* A peer's job offer is adopted only if it is newer than ours. */
 function adoptNewestJob() {
   if (!roomCode) return;
-  const now = performance.now();
-  let best = S.team.job;
-  for (const id in PEERS) {
-    const p = PEERS[id];
+  var now = performance.now();
+  var best = S.team.job;
+  for (var id in PEERS) {
+    var p = PEERS[id];
     if (now - p.at > 6000 || !p.tj) continue;
     if (!best || p.tj.at > best.at) best = p.tj;
   }
   if (best !== S.team.job) {
     S.team.job = best;
     S.team.earned = 0;
+    pickingPlace = false;
     save();
   }
 }
 
-/* Money only ever counts UP toward a fund. Spending is ignored, which keeps
+/* Money only ever counts UP toward a job. Spending is ignored, which keeps
    every machine's contribution a number that never goes backwards. */
-let teamLastMoney = null;
+var teamLastMoney = null;
 function teamTrackEarnings() {
   if (teamLastMoney === null) { teamLastMoney = S.money; return; }
-  const d = S.money - teamLastMoney;
+  var d = S.money - teamLastMoney;
   teamLastMoney = S.money;
-  const job = teamJob();
-  if (d > 0 && job && job.k === "fund") S.team.earned += d;
+  var job = teamJob();
+  if (d > 0 && job && (job.k === "fund" || job.k === "each")) S.team.earned += d;
 }
 
 /* Everybody who is actually connected right now has to be in the building.
@@ -4482,33 +4704,51 @@ function teamTotal() {
   return sum;
 }
 
+/* Who still has not earned their share, on an "everybody" job. */
+function eachLeft() {
+  var job = teamJob();
+  if (!job || job.k !== "each") return [];
+  var left = [];
+  if ((S.team.earned || 0) < job.goal) left.push(S.name || "You");
+  var now = performance.now();
+  for (var id in PEERS) {
+    var p = PEERS[id];
+    if (now - p.at <= 6000 && (p.k || 0) < job.goal) left.push(p.n);
+  }
+  return left;
+}
+
 function teamCheck() {
-  const job = teamJob();
+  var job = teamJob();
   if (!job || !roomCode) return;
-  const key = job.k + job.at;
+  var key = job.k + job.at;
   if (S.team.done[key]) return;
-  let won = false, line = "";
+  var won = false, line = "";
   if (job.k === "meet") {
-    const here = teamHereNow();
+    var here = teamHereNow();
     if (here.length >= teamNeeded()) { won = true; line = here.length + " of you got to " + placeName(job.place) + " at the same time."; }
-  } else {
-    const t = teamTotal();
+  } else if (job.k === "fund") {
+    var t = teamTotal();
     if (t >= job.goal) { won = true; line = "The room earned " + money(t) + " between you."; }
+  } else {
+    if (peerCount() >= 1 && !eachLeft().length) {
+      won = true;
+      line = "Every single one of you earned " + money(job.goal) + ".";
+    }
   }
   if (!won) return;
   S.team.done[key] = true;
   S.money += TEAM_PAY;
   save();
   sfxGood();
-  setTimeout(() => showTeamWin(job, line), 400);
+  setTimeout(function(){ showTeamWin(job, line); }, 400);
 }
-
 function showTeamWin(job, line) {
   openOverlay("Team job done", "You could not have done that one alone", "#2f6b3c");
   document.getElementById("cardBody").innerHTML =
     '<div class="winbig">\uD83E\uDD1D</div>' +
     '<p class="winname">TOGETHER</p>' +
-    '<h3 class="winlabel">' + (job.k === "meet" ? "Meet at " + esc(placeName(job.place)) : "The Town Fund") + "</h3>" +
+    '<h3 class="winlabel">' + (job.k === "meet" ? "Meet at " + esc(placeName(job.place)) : job.k === "each" ? "Everybody earned it" : "The Town Fund") + "</h3>" +
     '<p class="hint">' + esc(line) + "</p>" +
     '<p class="hint">+' + money(TEAM_PAY) + " each. Show everybody your screen.</p>" +
     '<button id="twClose" class="primary" type="button">Back to Northgate</button>';
@@ -4516,54 +4756,90 @@ function showTeamWin(job, line) {
 }
 
 function teamLiveHTML() {
-  const job = teamJob();
+  var job = teamJob();
   if (!job) return "";
   if (job.k === "meet") {
-    const here = teamHereNow();
+    var here = teamHereNow();
     return '<p class="rowlabel">Inside right now \u00b7 ' + here.length + ' of ' + teamNeeded() + '</p>' +
       '<div class="herelist">' +
-      (here.length ? here.map(n => "<span>" + esc(n) + "</span>").join("") : "<span>Nobody yet</span>") +
+      (here.length ? here.map(function(n){ return "<span>" + esc(n) + "</span>"; }).join("") : "<span>Nobody yet</span>") +
       "</div>";
   }
-  const t = teamTotal(), pc = Math.min(100, Math.round(t / job.goal * 100));
+  if (job.k === "each") {
+    var left = eachLeft();
+    return '<p class="rowlabel">' + (left.length ? "Still to earn it" : "Everybody has it") + '</p>' +
+      '<div class="herelist">' +
+      (left.length ? left.map(function(n){ return "<span>" + esc(n) + "</span>"; }).join("") : '<span class="me">All of you</span>') +
+      '</div><p class="hint" style="font-family:var(--mono);color:var(--sun)">You: ' +
+      money(S.team.earned) + " of " + money(job.goal) + "</p>";
+  }
+  var t = teamTotal(), pc = Math.min(100, Math.round(t / job.goal * 100));
   return '<div class="bar" style="height:16px;width:min(320px,100%)"><i style="width:' + pc + '%;background:var(--cash)"></i></div>' +
     '<p class="hint" style="font-family:var(--mono);color:var(--sun)">' + money(t) + " of " + money(job.goal) +
     " \u00b7 yours " + money(S.team.earned) + "</p>";
 }
 
+function placePickerHTML() {
+  return '<p class="rowlabel">Where are you all going?</p>' +
+    '<div class="picks small">' + meetPlaces().map(function(p){
+      return '<button data-place="' + p.id + '" title="' + esc(p.name) + '" ' +
+        'style="display:flex;flex-direction:column;align-items:center;gap:2px;width:104px">' +
+        '<span style="font-size:30px;line-height:1.1">' + placePic(p.id) + '</span>' +
+        '<span style="font-size:12px;font-weight:700;line-height:1.15">' + esc(p.name) + '</span>' +
+        "</button>";
+    }).join("") + "</div>" +
+    '<button id="tjCancel" type="button">Never mind</button>';
+}
+
 function teamPanelHTML() {
-  const job = teamJob();
+  var job = teamJob();
+  if (pickingPlace && !job) return placePickerHTML();
   if (!job) {
     return '<p class="rowlabel">A job for all of you</p>' +
-      '<p class="hint">One of you starts it and everybody gets the same one.</p>' +
+      '<p class="hint">You pick it. Everybody in the room gets the same one.</p>' +
       '<div class="lanebtns">' +
       '<button id="tjMeet" type="button">\uD83E\uDD1D Meet up</button>' +
       '<button id="tjFund" type="button">\uD83D\uDCB0 Town fund</button>' +
+      '<button id="tjEach" type="button">\uD83C\uDF92 Everybody</button>' +
       "</div>";
   }
-  const head = job.k === "meet"
-    ? '<h3 class="winlabel">\uD83E\uDD1D Everybody get to ' + esc(placeName(job.place)) + "</h3>" +
-      '<p class="hint">Drive there, park, and walk inside. It finishes when EVERYBODY in the room is in that building at the same moment.</p>'
-    : '<h3 class="winlabel">\uD83D\uDCB0 Earn ' + money(job.goal) + " between you</h3>" +
-      '<p class="hint">Any job in town counts \u2014 dishes, dog walking, the build site. Spending does not take it back down.</p>';
+  var head;
+  if (job.k === "meet") {
+    head = '<h3 class="winlabel">' + placePic(job.place) + ' Everybody get to ' + esc(placeName(job.place)) + "</h3>" +
+      '<p class="hint">Drive there, park, and walk in. It finishes when EVERYBODY in the room is there at the same moment.</p>';
+  } else if (job.k === "each") {
+    head = '<h3 class="winlabel">\uD83C\uDF92 Everybody earns ' + money(job.goal) + "</h3>" +
+      '<p class="hint">Not a pile between you \u2014 every single person has to earn it. The room is only done when the last one is.</p>';
+  } else {
+    head = '<h3 class="winlabel">\uD83D\uDCB0 Earn ' + money(job.goal) + " between you</h3>" +
+      '<p class="hint">Any job in town counts \u2014 dishes, dog walking, the crane. Spending does not take it back down.</p>';
+  }
   return '<p class="rowlabel">Team job \u00b7 started by ' + esc(job.by || "someone") + "</p>" + head +
     '<div id="teamLive">' + teamLiveHTML() + "</div>" +
     '<button id="tjStop" type="button">Pick a different job</button>';
 }
 
-let lastTeamLive = "";
+var lastTeamLive = "";
 function paintTeamLive() {
-  const el = document.getElementById("teamLive");
+  var el = document.getElementById("teamLive");
   if (!el) { lastTeamLive = ""; return; }
-  const h = teamLiveHTML();
+  var h = teamLiveHTML();
   if (h !== lastTeamLive) { el.innerHTML = h; lastTeamLive = h; }
 }
 
 function wireTeamPanel() {
-  const m = document.getElementById("tjMeet"), f = document.getElementById("tjFund"), s = document.getElementById("tjStop");
-  if (m) m.addEventListener("click", () => startTeamJob("meet"));
-  if (f) f.addEventListener("click", () => startTeamJob("fund"));
-  if (s) s.addEventListener("click", () => { clearTeamJob(); showTogether(); });
+  var m = document.getElementById("tjMeet"), f = document.getElementById("tjFund"),
+      x = document.getElementById("tjEach"), s = document.getElementById("tjStop"),
+      cn = document.getElementById("tjCancel");
+  if (m) m.addEventListener("click", function(){ startTeamJob("meet"); });
+  if (f) f.addEventListener("click", function(){ startTeamJob("fund"); });
+  if (x) x.addEventListener("click", function(){ startTeamJob("each"); });
+  if (s) s.addEventListener("click", function(){ clearTeamJob(); showTogether(); });
+  if (cn) cn.addEventListener("click", function(){ pickingPlace = false; showTogether(); });
+  var body = document.getElementById("cardBody");
+  if (body) body.querySelectorAll("[data-place]").forEach(function(b){
+    b.addEventListener("click", function(){ startTeamJob("meet", b.dataset.place); });
+  });
   lastTeamLive = "";
 }
 /* Everything a peer sends is treated as decoration and clamped into range. */
@@ -4590,13 +4866,13 @@ function takePeer(m) {
      public broker can nudge a shared task along, never break the game. */
   p.k = clamp(Number(m.k) || 0, 0, 5000);
   p.tj = null;
-  if (m.tj && typeof m.tj === "object" && (m.tj.k === "meet" || m.tj.k === "fund")) {
+  if (m.tj && typeof m.tj === "object" && (m.tj.k === "meet" || m.tj.k === "fund" || m.tj.k === "each")) {
     p.tj = {
       k: m.tj.k,
       at: Number(m.tj.at) || 0,
       by: cleanName(m.tj.by),
       place: (m.tj.place && ROOMS[m.tj.place]) ? m.tj.place : null,
-      goal: clamp(Number(m.tj.goal) || TEAM_GOAL, 50, 5000)
+      goal: clamp(Number(m.tj.goal) || TEAM_GOAL, 20, 5000)
     };
     if (p.tj.k === "meet" && !p.tj.place) p.tj = null;
   }
