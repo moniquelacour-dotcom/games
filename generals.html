@@ -1,0 +1,974 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Generals' Table</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya+Sans:wght@400;500;700;800&display=swap">
+<style>
+:root{
+  color-scheme: dark;
+  --table:#171d1a; --panel:#212823; --panel2:#2a332d; --line:#3a453d;
+  --ink:#ece6d3; --muted:#a4a996; --brass:#d2a94e; --brass-d:#9c7a31;
+  --blue:#4a86d6; --blue-d:#274f86; --red:#cf5a3f; --red-d:#7e2f1f;
+  --good:#8fc46e; --warn:#e2b64a; --bad:#e2694a;
+  --display:"IM Fell English SC", "Palatino Linotype", Georgia, serif;
+  --body:"Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+}
+html,body{background:var(--table);color:var(--ink)}
+body{font-family:var(--body);font-size:16px;line-height:1.45;padding-inline:16px;padding-block:14px 32px}
+button{font-family:var(--body);font-size:15px;cursor:pointer;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);padding:.55em .9em;font-weight:700}
+button:hover:not(:disabled){border-color:var(--brass)}
+button:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.primary{background:var(--brass);color:#1d1708;border-color:var(--brass)}
+button.primary:hover:not(:disabled){background:#e0b95e}
+button.ghost{background:transparent}
+h1,h2,h3{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0}
+.wrap{max-width:1180px;margin:0 auto}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.top h1{font-size:28px;letter-spacing:.02em;color:var(--brass)}
+.top .meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:15px;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:99px;font-weight:800;font-size:14px;letter-spacing:.04em;text-transform:uppercase}
+.chip.blue{background:var(--blue-d);color:#dfeaff}
+.chip.red{background:var(--red-d);color:#ffe3da}
+.tabnum{font-variant-numeric:tabular-nums}
+
+/* Menu */
+.menu-hero{display:grid;gap:6px;margin:10px 0 20px}
+.menu-hero h2{font-size:clamp(30px,5vw,46px);color:var(--ink)}
+.menu-hero p{color:var(--muted);max-width:62ch;margin:0}
+.modes{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.modes button[aria-pressed="true"]{border-color:var(--brass);box-shadow:inset 0 0 0 1px var(--brass);color:var(--brass)}
+.scen-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.scen{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:10px;text-align:left;font-weight:400}
+.scen:hover{border-color:var(--brass)}
+.scen h3{font-size:24px}
+.scen .tag{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--brass);font-weight:800}
+.scen p{margin:0;color:var(--muted);font-size:15px}
+.scen svg{width:100%;height:auto;border-radius:4px;display:block}
+.menu-foot{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
+
+/* Game */
+.game{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+@media (max-width:920px){.game{grid-template-columns:1fr}}
+.board-wrap{background:#0f1311;border:1px solid var(--line);border-radius:10px;padding:8px}
+#board{width:100%;height:auto;display:block;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);padding:8px 4px 2px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:14px;height:14px;border-radius:3px;display:inline-block}
+.panel{display:grid;gap:12px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
+.box h3{font-size:20px;margin-bottom:6px}
+.eyebrow{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:800}
+.goal{font-size:15px;margin:4px 0 0}
+.hint{color:var(--muted);font-size:14px;margin:6px 0 0}
+.card-h{display:flex;gap:10px;align-items:center}
+.card-h svg{width:46px;height:46px;flex:none}
+.card-h b{font-size:18px;display:block;line-height:1.1}
+.card-h small{color:var(--muted);font-size:13px}
+.mbar{height:8px;background:#0c0f0d;border-radius:4px;overflow:hidden;margin-top:10px}
+.mbar i{display:block;height:100%}
+.mnum{font-size:13px;color:var(--muted);margin-top:3px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 0}
+.stats div{background:var(--panel2);border-radius:6px;padding:5px 6px;text-align:center}
+.stats dt{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.stats dd{margin:0;font-size:18px;font-weight:800}
+.role{font-size:14px;margin:10px 0 0;color:var(--ink)}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.badge{font-size:12px;font-weight:800;padding:2px 8px;border-radius:99px;background:var(--panel2);border:1px solid var(--line)}
+.badge.warn{border-color:var(--warn);color:var(--warn)}
+.badge.brass{border-color:var(--brass);color:var(--brass)}
+.actions{display:grid;gap:8px}
+.actions .row{display:flex;gap:8px;flex-wrap:wrap}
+.actions .row button{flex:1 1 auto}
+.ability small{display:block;font-weight:400;font-size:12.5px;color:var(--muted);margin-top:2px}
+.ability{text-align:left}
+.preview{background:#1a201c;border:1px solid var(--brass-d);border-radius:8px;padding:10px;display:grid;gap:6px}
+.preview .big{font-size:17px;font-weight:800}
+.preview ul{list-style:none;margin:0;padding:0;font-size:13.5px;display:grid;gap:2px}
+.preview li{display:flex;justify-content:space-between;gap:8px}
+.preview li b{font-variant-numeric:tabular-nums}
+.plus{color:var(--good)} .minus{color:var(--bad)}
+.log{list-style:none;margin:0;padding:0;display:grid;gap:5px;font-size:14px;max-height:220px;overflow:auto}
+.log li{padding-left:10px;border-left:3px solid var(--line)}
+.log li.blue{border-color:var(--blue)} .log li.red{border-color:var(--red)} .log li.sys{border-color:var(--brass);color:var(--brass)}
+.history{font-size:14px;color:var(--muted);border-left:3px solid var(--brass-d);padding-left:10px;margin:8px 0 0}
+
+/* SVG pieces */
+.unit{transition:transform .36s ease}
+.unit.done .tok{opacity:.5}
+.unit.leaving{transition:transform .9s ease, opacity .9s ease;opacity:0}
+.unit.hit .tok{animation:hit .45s ease}
+@keyframes hit{0%{filter:none}30%{filter:brightness(1.9)}100%{filter:none}}
+.float{font:800 17px var(--body);paint-order:stroke;stroke:#0b0d0c;stroke-width:4px;text-anchor:middle;animation:floatup 1.1s ease forwards}
+.float.dmg{fill:#ffb199} .float.heal{fill:#b8f09a} .float.info{fill:#f3d78f}
+@keyframes floatup{from{transform:translateY(0);opacity:1}to{transform:translateY(-22px);opacity:0}}
+.hit-tile{fill:transparent;cursor:pointer}
+.hit-tile:hover{fill:rgba(255,255,255,.07)}
+@media (prefers-reduced-motion: reduce){.unit,.unit.leaving{transition:none}.float{animation-duration:.01s}.unit.hit .tok{animation:none}}
+
+/* Overlays */
+.overlay{position:fixed;inset:0;background:rgba(8,10,9,.78);display:flex;align-items:flex-start;justify-content:center;padding:max(20px, env(safe-area-inset-top,0px)) 16px 20px;overflow:auto;z-index:10}
+.sheet{background:var(--panel);border:1px solid var(--line);border-radius:12px;max-width:860px;width:100%;padding:18px;display:grid;gap:14px;position:relative}
+.sheet .close{position:absolute;top:12px;right:12px}
+.sheet h2{font-size:30px;color:var(--brass);padding-right:90px}
+.guide-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.gcard{background:var(--panel2);border-radius:8px;padding:12px;display:grid;gap:6px;font-size:14px}
+.gcard .card-h b{font-size:18px}
+.gcard p{margin:0}
+.gcard .gw{display:grid;grid-template-columns:auto 1fr;gap:2px 8px}
+.gcard .gw span:nth-child(odd){color:var(--muted)}
+.rules{display:grid;gap:8px;font-size:15px;margin:0;padding-left:20px}
+.terrain-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;font-size:14px}
+.terrain-list div{display:flex;gap:8px;align-items:flex-start}
+.terrain-list i{width:22px;height:22px;border-radius:4px;flex:none;margin-top:2px}
+.result{text-align:center;max-width:520px}
+.result h2{padding-right:0;font-size:38px}
+.result .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>Generals' Table</h1>
+    <div class="meta" id="topmeta"></div>
+  </header>
+  <main id="app"></main>
+</div>
+<div id="overlay"></div>
+
+<script>
+(function(){
+const NS='http://www.w3.org/2000/svg';
+const TILE=60, W=12, H=9;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const wait = ms => new Promise(r=>setTimeout(r, reduce? Math.min(ms,60) : ms));
+const K=(x,y)=>x+','+y;
+const man=(ax,ay,bx,by)=>Math.abs(ax-bx)+Math.abs(ay-by);
+const other=s=>s==='blue'?'red':'blue';
+const cap=s=>s[0].toUpperCase()+s.slice(1);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const TERR={
+  '.':{k:'plain',name:'Open field',c:'#5d6b45',c2:'#617048'},
+  'h':{k:'hill',name:'Hill',c:'#857a4b'},
+  'f':{k:'forest',name:'Woods',c:'#3a5633'},
+  '~':{k:'river',name:'River',c:'#34627a'},
+  '=':{k:'bridge',name:'Bridge',c:'#34627a'},
+  'm':{k:'mud',name:'Mud',c:'#5b4a37'},
+};
+
+const TYPES={
+  general:{name:'General',morale:8,move:3,power:5,def:1,adef:1,range:1,
+    role:'Your banner on the field. Troops within 2 squares fight harder (+1). If the General leaves the field, every unit loses 2 morale.',
+    good:'Keeping the army brave',weak:'Getting caught up front',
+    ability:{id:'rally',name:'Rally',desc:'Friends within 2 squares get +3 morale. Ready again in 3 turns.'}},
+  spear:{name:'Spearmen',morale:10,move:2,power:3,def:2,adef:1,range:1,
+    role:'A wall of long spears. Horses will not run onto them.',
+    good:'Cavalry (+3)',weak:'Swordsmen, arrows',
+    ability:{id:'brace',name:'Brace',desc:'Plant spears. A cavalry charge into them fails and gets hit hard. Ends this unit\'s turn.'}},
+  sword:{name:'Swordsmen',morale:10,move:2,power:4,def:2,adef:1,range:1,
+    role:'Tough fighters with big shields. The strongest hitters up close.',
+    good:'Spearmen (+2)',weak:'Cavalry charges',
+    ability:{id:'wall',name:'Shield Wall',desc:'Lock shields. Arrows do 3 less. Ends this unit\'s turn.'}},
+  archer:{name:'Archers',morale:8,move:2,power:3,melee:1,def:0,adef:0,range:3,
+    role:'Shoot 3 squares away (4 from a hill). Cannot shoot with an enemy right next to them, and cannot shoot through woods unless on a hill.',
+    good:'Wearing enemies down from a distance',weak:'Cavalry, anyone up close',
+    ability:{id:'volley',name:'Volley',desc:'Arrows rain on the target and every enemy next to it. Ready again in 3 turns.'}},
+  cavalry:{name:'Cavalry',morale:9,move:4,power:3,def:1,adef:0,range:1,
+    role:'The fastest unit. Move 2 or more squares before attacking to CHARGE (+3). No charging out of mud or into woods.',
+    good:'Archers (+2), attacking from the side',weak:'Spearmen, braced spears',
+    ability:null},
+};
+
+const SCEN=[
+ {id:'field',name:'Open Field',tag:'Practice battle',rounds:15,night:'morale',ai:'attack',
+  blurb:'Two even armies. A hill in the middle gives archers the high ground.',
+  goal:'Capture the red banner, or make every red unit leave the field.',
+  tip:'Get archers onto a hill early. Keep spearmen between your archers and the red riders.',
+  history:null,
+  map:["............","...ff.......","...ff...h...",".....hh.....",".....hh.....","........ff..","..h.....ff..","............","............"],
+  blueBanner:[0,4],redBanner:[11,4],blueZone:[0,2],redZone:[9,11],
+  blue:[['general',1,4],['spear',2,3],['spear',2,5],['sword',2,2],['sword',2,6],['archer',1,3],['archer',1,5],['cavalry',1,7]],
+  red:[['general',10,4],['spear',9,3],['spear',9,5],['sword',9,2],['sword',9,6],['archer',10,3],['archer',10,5],['cavalry',10,1]]},
+ {id:'bridge',name:'Hold the Bridge',tag:'Defend · Stirling Bridge, 1297',rounds:12,night:'blue',ai:'attack',
+  blurb:'A bigger army must cross a river. There is one bridge and one muddy ford.',
+  goal:'Keep your banner safe until the end of round 12.',
+  nightText:'Night fell and the bridge still held.',
+  tip:'A unit that steps next to an enemy has to stop. One unit at the end of the bridge blocks it. Watch the ford at the bottom too.',
+  history:'Stirling Bridge, Scotland, 1297. Andrew Moray and William Wallace let part of a much bigger English army cross a narrow bridge, then attacked before the rest could follow. A narrow crossing makes a big army come at you a few at a time.',
+  map:["......~.....","..f...~..f..","...h..~.....","......~.....","......=.....","......~.....","...h..~..ff.","......m.....","......~....."],
+  blueBanner:[0,4],redBanner:[11,4],blueZone:[0,5],redZone:[7,11],
+  blue:[['general',1,4],['spear',5,4],['spear',5,7],['sword',4,4],['archer',3,2],['archer',3,6],['archer',2,4],['cavalry',1,6]],
+  red:[['general',11,3],['sword',7,4],['sword',7,3],['sword',7,7],['spear',8,4],['spear',8,6],['spear',9,2],['archer',9,4],['archer',9,5],['cavalry',10,3],['cavalry',10,6]]},
+ {id:'ridge',name:'The Ridge',tag:'Attack · Hastings, 1066',rounds:15,night:'red',ai:'defend',
+  blurb:'The enemy holds a long ridge with a wall of shields. You have more archers and riders.',
+  goal:'Capture the red banner, or make every red unit leave the field, before round 15 ends.',
+  nightText:'Night fell and the ridge was still held.',
+  tip:'Troops on a hill are hard to push. Wear them down with arrows first. The defenders will leave the hill to chase a unit that looks beaten (morale 3 or less).',
+  history:'Hastings, England, 1066. King Harold\'s army made a shield wall along the top of a ridge. For most of the day, William\'s archers and horsemen could not break it. When some defenders chased riders who seemed to be running away, they left the ridge, and the line began to open.',
+  map:["........hh..","....f...hh..","........hh..","........hh..","........hh..","........hh..","....f...hh..","........hh..","........hh.."],
+  blueBanner:[0,4],redBanner:[11,4],blueZone:[0,3],redZone:[8,11],
+  blue:[['general',1,4],['spear',2,4],['sword',2,3],['sword',2,5],['archer',3,2],['archer',3,4],['archer',3,6],['cavalry',1,1],['cavalry',1,7]],
+  red:[['general',10,4],['spear',8,2],['spear',8,4],['spear',8,6],['sword',8,3],['sword',8,5],['archer',9,3],['archer',9,5]]},
+ {id:'mud',name:'The Muddy Field',tag:'Outnumbered · Agincourt, 1415',rounds:15,night:'morale',ai:'attack',
+  blurb:'A small army of archers stands between two woods. Heavy riders must cross deep mud to reach them.',
+  goal:'Capture the red banner, or make every red unit leave the field.',
+  tip:'Horses slow down in mud and cannot charge out of it. Shoot them while they wade. The woods guard your sides.',
+  history:'Agincourt, France, 1415. Henry V\'s small army, most of them archers, stood in a gap between two woods. The French knights had to cross a freshly ploughed field that rain had turned to deep mud. The woods protected the archers\' sides, and the mud slowed every charge.',
+  map:["ffffffffffff","ff........ff","f...mmmm...f","....mmmm....","....mmmm....","....mmmm....","f...mmmm...f","ff........ff","ffffffffffff"],
+  blueBanner:[0,4],redBanner:[11,4],blueZone:[0,3],redZone:[8,11],
+  blue:[['general',1,4],['archer',2,2],['archer',2,3],['archer',2,5],['archer',2,6],['spear',3,3],['spear',3,5],['sword',3,4]],
+  red:[['general',11,4],['cavalry',9,3],['cavalry',9,4],['cavalry',9,5],['sword',10,2],['sword',10,4],['sword',10,6],['spear',9,6],['archer',11,3]]},
+];
+
+const ORD=['1st','2nd','3rd','4th'];
+let S=null, busy=false, mode='ai', hovered=null, diff='easy';
+const DIFF={
+  easy:{name:'Easy',hit:1,guard:1,morale:2,desc:'Your troops hit +1 harder, take 1 less, and start with +2 morale.'},
+  fair:{name:'Fair fight',hit:1,guard:1,morale:0,desc:'Your troops hit +1 harder and take 1 less.'},
+  hard:{name:'Hard',hit:0,guard:0,morale:0,desc:'No help. The red army is bigger in most battles.'}};
+const edge=()=>mode==='ai'?DIFF[diff]:DIFF.hard;
+
+/* ---------- helpers ---------- */
+const live=()=>S.units.filter(u=>!u.gone);
+const unitAt=(x,y)=>S.units.find(u=>!u.gone&&u.x===x&&u.y===y);
+const getU=id=>id&&S.units.find(u=>u.id===id);
+const terr=(x,y)=>TERR[S.sc.map[y][x]].k;
+const inb=(x,y)=>x>=0&&y>=0&&x<W&&y<H;
+const nb4=(x,y)=>[[x+1,y],[x-1,y],[x,y+1],[x,y-1]].filter(([a,b])=>inb(a,b));
+const nm=u=>cap(u.side)+' '+u.label;
+function cost(type,t){ if(t==='river') return Infinity; if(t==='hill') return 2; if(t==='forest'||t==='mud') return type==='cavalry'?3:2; return 1; }
+function adjEnemy(x,y,side){ return nb4(x,y).some(([a,b])=>{const o=unitAt(a,b);return o&&o.side!==side;}); }
+function humanTurn(){ return S.phase==='battle' && (mode==='duo' || S.turn==='blue'); }
+
+function mkUnits(sc){
+  const units=[]; let id=0;
+  for(const side of ['blue','red']){
+    const list=sc[side], counts={}, seen={};
+    list.forEach(([t])=>counts[t]=(counts[t]||0)+1);
+    for(const [t,x,y] of list){
+      seen[t]=(seen[t]||0)+1; const T=TYPES[t];
+      const mb=side==='blue'?edge().morale:0;
+      units.push({id:'u'+(id++),side,type:t,x,y,morale:T.morale+mb,max:T.morale+mb,moved:false,acted:false,steps:0,stance:null,cd:0,gone:false,px:null,
+        label:counts[t]>1? ORD[seen[t]-1]+' '+T.name : T.name});
+    }
+  }
+  return units;
+}
+
+function reachable(u){
+  const T=TYPES[u.type], start=K(u.x,u.y);
+  const best=new Map([[start,{c:0,steps:0}]]);
+  const q=[{x:u.x,y:u.y,c:0,steps:0}];
+  while(q.length){
+    q.sort((a,b)=>a.c-b.c); const cur=q.shift(); const ck=K(cur.x,cur.y);
+    if(best.get(ck).c<cur.c) continue;
+    if(ck!==start && adjEnemy(cur.x,cur.y,u.side)) continue;
+    for(const [nx,ny] of nb4(cur.x,cur.y)){
+      const mc=cost(u.type,terr(nx,ny)); if(!isFinite(mc)) continue;
+      const o=unitAt(nx,ny); if(o&&o.side!==u.side) continue;
+      const nc=cur.c+mc; if(nc>T.move) continue;
+      const nk=K(nx,ny), b=best.get(nk);
+      if(!b||b.c>nc){best.set(nk,{c:nc,steps:cur.steps+1}); q.push({x:nx,y:ny,c:nc,steps:cur.steps+1});}
+    }
+  }
+  const res=new Map();
+  for(const [k,v] of best){ if(k===start) continue; const [x,y]=k.split(',').map(Number); if(!unitAt(x,y)) res.set(k,v); }
+  return res;
+}
+function clearLine(ax,ay,bx,by){
+  const n=Math.max(Math.abs(bx-ax),Math.abs(by-ay))*2;
+  for(let i=1;i<n;i++){
+    const x=Math.round(ax+(bx-ax)*i/n), y=Math.round(ay+(by-ay)*i/n);
+    if((x===ax&&y===ay)||(x===bx&&y===by)) continue;
+    if(terr(x,y)==='forest') return false;
+  }
+  return true;
+}
+const shootRange=(u,fx,fy)=>TYPES[u.type].range+(terr(fx,fy)==='hill'?1:0);
+function canShoot(u,fx,fy,t){
+  if(u.type!=='archer') return false;
+  if(adjEnemy(fx,fy,u.side)) return false;
+  const d=man(fx,fy,t.x,t.y); if(d<2||d>shootRange(u,fx,fy)) return false;
+  return terr(fx,fy)==='hill' || clearLine(fx,fy,t.x,t.y);
+}
+function targetsFrom(u,fx,fy){
+  const out=[];
+  for(const t of live()) if(t.side!==u.side){
+    const d=man(fx,fy,t.x,t.y);
+    if(d===1) out.push({t,ranged:false});
+    else if(canShoot(u,fx,fy,t)) out.push({t,ranged:true});
+  }
+  return out;
+}
+function flankers(a,d){ return Math.min(2, live().filter(u=>u.side===a.side&&u!==a&&man(u.x,u.y,d.x,d.y)===1).length); }
+function generalNear(side,fx,fy){ return live().some(g=>g.side===side&&g.type==='general'&&man(g.x,g.y,fx,fy)<=2); }
+
+function calc(a,d,fx,fy,steps,volley){
+  const A=TYPES[a.type], D=TYPES[d.type];
+  const ranged=man(fx,fy,d.x,d.y)>1;
+  const at=terr(fx,fy), dt=terr(d.x,d.y);
+  const parts=[]; let counter=0, charge=false, cparts=[];
+  if(ranged){
+    parts.push([volley?'Volley':'Arrows', volley?2:A.power]);
+    if(at==='hill') parts.push(['Shooting from high ground',1]);
+    if(a.morale<=3) parts.push(['Shaken',-1]);
+    if(D.adef) parts.push(['Armor',-D.adef]);
+    if(dt==='forest') parts.push(['Cover of the woods',-2]);
+    if(d.stance==='wall') parts.push(['Shield wall',-3]);
+  } else {
+    parts.push(['Attack', a.type==='archer'?A.melee:A.power]);
+    if(a.morale<=3) parts.push(['Shaken',-1]);
+    if(a.type==='spear'&&d.type==='cavalry') parts.push(['Spears beat horses',3]);
+    if(a.type==='sword'&&d.type==='spear') parts.push(['Swords get past spear points',2]);
+    if(a.type==='cavalry'&&d.type==='archer') parts.push(['Riders catch archers',2]);
+    const braced=d.stance==='brace'&&a.type==='cavalry';
+    if(a.type==='cavalry'&&steps>=2&&at!=='mud'&&at!=='forest'&&dt!=='forest'){
+      if(braced) parts.push(['Charge stopped by braced spears',0]); else {parts.push(['Charge!',3]); charge=true;}
+    }
+    const fl=flankers(a,d); if(fl) parts.push(['Flanked by your troops',fl]);
+    if(a.type!=='general'&&generalNear(a.side,fx,fy)) parts.push(['General nearby',1]);
+    parts.push(['Their armor',-D.def]);
+    if(dt==='hill') parts.push(['They hold a hill',-1]);
+    if(dt==='forest') parts.push(['They are in the woods',-1]);
+    if(d.stance==='wall') parts.push(['Shield wall',-1]);
+    if(d.stance==='brace') parts.push(['Braced',-1]);
+  }
+  const E=edge();
+  if(a.side==='blue'&&E.hit) parts.push([E.name+' help',E.hit]);
+  if(a.side==='red'&&E.guard) parts.push([E.name+' help (your side)',-E.guard]);
+  let sum=parts.reduce((s,p)=>s+p[1],0);
+  const dmg=ranged? Math.max(0,sum) : Math.max(1,sum);
+  if(!ranged && d.type!=='archer' && dmg<d.morale){
+    const braced=d.stance==='brace'&&a.type==='cavalry';
+    if(braced){cparts.push(['Braced spears catch the riders',D.power+3]);}
+    else{
+      cparts.push(['They strike back',Math.round(D.power/2)]);
+      if(d.type==='spear'&&a.type==='cavalry') cparts.push(['Spears beat horses',3]);
+    }
+    if(d.morale<=3) cparts.push(['They are shaken',-1]);
+    if(d.side==='blue'&&E.hit) cparts.push([E.name+' help',E.hit]);
+    if(d.side==='red'&&E.guard) cparts.push([E.name+' help (your side)',-E.guard]);
+    counter=Math.max(0,cparts.reduce((s,p)=>s+p[1],0));
+  }
+  return {dmg,counter,ranged,charge,parts,cparts};
+}
+
+/* ---------- actions ---------- */
+function log(txt,cls){ S.log.unshift({txt,cls}); if(S.log.length>40) S.log.pop(); }
+function floatText(u,txt,cls){
+  const fx=document.getElementById('fx'); if(!fx) return;
+  const t=document.createElementNS(NS,'text');
+  t.setAttribute('x',u.x*TILE+30); t.setAttribute('y',u.y*TILE+12);
+  t.setAttribute('class','float '+cls); t.textContent=txt; fx.appendChild(t);
+  setTimeout(()=>t.remove(),1150);
+}
+function flash(u){ const g=document.getElementById('g-'+u.id); if(!g) return; g.classList.remove('hit'); void g.getBBox(); g.classList.add('hit'); }
+function hurt(u,n){ if(n<=0){floatText(u,'no effect','info');return;} u.morale=Math.max(0,u.morale-n); floatText(u,'−'+n,'dmg'); flash(u); }
+
+async function moveUnit(u,x,y,steps){
+  u.px=[u.x,u.y,u.steps]; u.x=x; u.y=y; u.steps+=steps; u.moved=true;
+  drawUnits(); await wait(380);
+  checkWin();
+}
+function animLunge(a,d){
+  return new Promise(res=>{
+    const g=document.getElementById('g-'+a.id); if(!g||reduce){res();return;}
+    const mx=(a.x+(d.x-a.x)*.38)*TILE, my=(a.y+(d.y-a.y)*.38)*TILE;
+    g.style.transform=`translate(${mx}px,${my}px)`;
+    setTimeout(()=>{ g.style.transform=`translate(${a.x*TILE}px,${a.y*TILE}px)`; setTimeout(res,300); },220);
+  });
+}
+function animArrows(a,d,n){
+  return new Promise(res=>{
+    const fx=document.getElementById('fx'); if(!fx||reduce){res();return;}
+    const sx=a.x*TILE+30, sy=a.y*TILE+30, ex=d.x*TILE+30, ey=d.y*TILE+30;
+    const dist=Math.hypot(ex-sx,ey-sy), h=Math.min(80,dist*.32), dur=560; let done=0;
+    for(let i=0;i<n;i++){
+      const g=document.createElementNS(NS,'g');
+      g.innerHTML='<line x1="-10" y1="0" x2="6" y2="0" stroke="#f1e7cc" stroke-width="2"/><path d="M9 0 L3 -3.2 L3 3.2Z" fill="#f1e7cc"/><path d="M-10 0 l-3 -3 M-10 0 l-3 3" stroke="#d2a94e" stroke-width="1.5"/>';
+      fx.appendChild(g);
+      const off=(i-(n-1)/2)*7, t0=performance.now()+i*80;
+      const step=now=>{
+        let t=(now-t0)/dur; if(t<0){requestAnimationFrame(step);return;} if(t>1)t=1;
+        const x=sx+(ex-sx)*t, y=sy+(ey-sy)*t-h*4*t*(1-t)+off*t;
+        const dx=ex-sx, dy=(ey-sy)-h*4*(1-2*t)+off;
+        g.setAttribute('transform',`translate(${x},${y}) rotate(${Math.atan2(dy,dx)*180/Math.PI})`);
+        if(t<1) requestAnimationFrame(step); else { g.remove(); if(++done===n) res(); }
+      };
+      requestAnimationFrame(step);
+    }
+  });
+}
+
+async function attack(a,d,volley){
+  const r=calc(a,d,a.x,a.y,a.steps,volley);
+  a.acted=true; a.moved=true;
+  if(r.ranged){
+    await animArrows(a,d,volley?6:3);
+    if(volley){
+      a.cd=3;
+      const hits=[d,...live().filter(e=>e.side===d.side&&man(e.x,e.y,d.x,d.y)===1)];
+      const bits=[];
+      for(const h of hits){ const v=calc(a,h,a.x,a.y,0,true).dmg; hurt(h,v); bits.push(`${h.label} −${v}`); }
+      log(`${nm(a)} loosed a volley: ${bits.join(', ')}.`,a.side);
+    } else {
+      hurt(d,r.dmg);
+      log(`${nm(a)} shot at ${nm(d)}: ${r.dmg?'−'+r.dmg+' morale':'the arrows bounced off'}.`,a.side);
+    }
+  } else {
+    await animLunge(a,d);
+    hurt(d,r.dmg);
+    let t=`${nm(a)} ${r.charge?'charged':'attacked'} ${nm(d)}: −${r.dmg} morale`;
+    if(r.counter && d.morale>0){ await wait(180); hurt(a,r.counter); t+=`, and took −${r.counter} back`; }
+    log(t+'.',a.side);
+  }
+  await processWithdrawals();
+  checkWin();
+}
+async function processWithdrawals(){
+  let guard=0;
+  while(guard++<20){
+    const u=live().find(x=>x.morale<=0); if(!u) break;
+    withdraw(u);
+    await wait(260);
+    if(u.type==='general'){
+      log(`${cap(u.side)} saw their General leave. Every ${u.side} unit loses 2 morale.`,'sys');
+      for(const f of live().filter(x=>x.side===u.side)) hurt(f,2);
+      await wait(300);
+    }
+  }
+}
+function withdraw(u){
+  u.gone=true;
+  log(`${nm(u)} raised a white flag and left the field.`,'sys');
+  const g=document.getElementById('g-'+u.id);
+  if(g){
+    g.innerHTML=flagMarkup();
+    requestAnimationFrame(()=>{ g.classList.add('leaving'); g.style.transform=`translate(${(u.x+(u.side==='blue'?-1:1))*TILE}px,${u.y*TILE}px)`; });
+    setTimeout(()=>g.remove(),950);
+  }
+}
+function doRally(u){
+  u.acted=true; u.moved=true; u.cd=3;
+  const fr=live().filter(f=>f.side===u.side&&f!==u&&man(f.x,f.y,u.x,u.y)<=2);
+  let n=0;
+  for(const f of fr){ const add=Math.min(3,f.max-f.morale); if(add>0){f.morale+=add; floatText(f,'+'+add,'heal'); n++;} }
+  log(`${nm(u)} rallied the troops${n?` (${n} unit${n>1?'s':''} steadied)`:''}.`,u.side);
+}
+function doStance(u,st){
+  u.stance=st; u.acted=true; u.moved=true; u.locked=true;
+  floatText(u, st==='brace'?'Braced':'Shield wall','info');
+  log(`${nm(u)} ${st==='brace'?'braced their spears':'formed a shield wall'}.`,u.side);
+}
+
+function startTurn(side){
+  S.turn=side; S.sel=null; S.target=null; S.armed=null; S.inspect=null;
+  for(const u of S.units) if(u.side===side){ u.moved=false; u.acted=false; u.locked=false; u.steps=0; u.px=null; u.stance=null; if(u.cd>0) u.cd--; }
+  if(mode==='duo'){ S.handoff=true; }
+  render();
+  if(mode==='ai' && side==='red') aiTurn();
+}
+function endTurn(){
+  if(S.phase!=='battle') return;
+  if(S.turn==='blue') startTurn('red');
+  else {
+    S.round++;
+    if(S.round>S.sc.rounds){ nightfall(); return; }
+    log(`Round ${S.round} begins.`,'sys');
+    startTurn('blue');
+  }
+}
+function nightfall(){
+  S.round=S.sc.rounds;
+  const n=S.sc.night;
+  if(n==='blue'||n==='red') return finish(n, S.sc.nightText);
+  const tot=s=>live().filter(u=>u.side===s).reduce((a,u)=>a+u.morale,0);
+  const b=tot('blue'), r=tot('red');
+  if(b===r) return finish(null,`Night fell with both armies equal (${b} morale each).`);
+  finish(b>r?'blue':'red',`Night fell. ${b>r?'Blue':'Red'} had more fighting spirit left: ${Math.max(b,r)} morale to ${Math.min(b,r)}.`);
+}
+function checkWin(){
+  if(!S||S.phase!=='battle') return;
+  for(const side of ['blue','red']){
+    const foe=other(side), bn=S.sc[foe+'Banner'];
+    if(live().some(u=>u.side===side&&u.x===bn[0]&&u.y===bn[1])) return finish(side,`${cap(side)} captured the ${foe} banner.`);
+  }
+  if(!live().some(u=>u.side==='blue')) return finish('red','Every blue unit left the field.');
+  if(!live().some(u=>u.side==='red')) return finish('blue','Every red unit left the field.');
+}
+function finish(winner,reason){
+  S.phase='over'; S.winner=winner; S.reason=reason; S.sel=null; S.target=null;
+  log(reason,'sys'); busy=false; render();
+}
+
+/* ---------- AI ---------- */
+function field(type,sources){
+  const d=new Map(), q=[];
+  for(const [x,y] of sources){ d.set(K(x,y),0); q.push([x,y,0]); }
+  while(q.length){
+    q.sort((a,b)=>a[2]-b[2]); const [x,y,c]=q.shift();
+    if(d.get(K(x,y))<c) continue;
+    for(const [nx,ny] of nb4(x,y)){
+      const mc=cost(type,terr(nx,ny)); if(!isFinite(mc)) continue;
+      const nc=c+mc, k=K(nx,ny);
+      if(!d.has(k)||d.get(k)>nc){ d.set(k,nc); q.push([nx,ny,nc]); }
+    }
+  }
+  return (x,y)=>d.has(K(x,y))?d.get(K(x,y)):99;
+}
+function threat(u,x,y){ let n=0; for(const e of live()) if(e.side!==u.side&&e.type!=='archer'&&man(e.x,e.y,x,y)<=TYPES[e.type].move+1) n++; return n; }
+function posScore(u,x,y,fe,fb){
+  const foe=other(u.side), en=live().filter(e=>e.side===foe);
+  if(!en.length) return 0;
+  const near=Math.min(...en.map(e=>man(e.x,e.y,x,y)));
+  let s;
+  if(u.type==='archer'){ s=-Math.abs(near-3)*1.2+(terr(x,y)==='hill'?2:0)-threat(u,x,y)*2; }
+  else if(u.type==='general'){
+    const fr=live().filter(f=>f.side===u.side&&f!==u);
+    if(!fr.length) return -fb(x,y);
+    const cx=fr.reduce((a,f)=>a+f.x,0)/fr.length, cy=fr.reduce((a,f)=>a+f.y,0)/fr.length;
+    s=-(Math.abs(x-cx)+Math.abs(y-cy))*0.8-threat(u,x,y)*1.5-(near<3?4:0);
+  } else {
+    s=-fe(x,y)-fb(x,y)*0.35;
+    if(u.type==='cavalry'){
+      const arch=en.filter(e=>e.type==='archer');
+      if(arch.length) s=-Math.min(...arch.map(e=>man(e.x,e.y,x,y)))*0.9-fb(x,y)*0.2;
+      s-=en.filter(e=>e.type==='spear'&&man(e.x,e.y,x,y)<=2).length*2.5;
+    }
+    if(terr(x,y)==='hill') s+=0.6;
+  }
+  return s;
+}
+async function aiTurn(){
+  busy=true; render();
+  await wait(550);
+  const order={archer:0,cavalry:1,sword:2,spear:3,general:4};
+  const mine=live().filter(u=>u.side==='red').sort((a,b)=>order[a.type]-order[b.type]);
+  for(const u of mine){
+    if(S.phase!=='battle') break;
+    if(u.gone) continue;
+    await aiUnit(u); render(); await wait(260);
+  }
+  busy=false;
+  if(S.phase==='battle') endTurn();
+}
+async function aiUnit(u){
+  const side=u.side, foe=other(side), defend=S.sc.ai==='defend';
+  const en=live().filter(e=>e.side===foe);
+  if(!en.length) return;
+  if(u.type==='general'&&u.cd===0){
+    const tired=live().filter(f=>f.side===side&&f!==u&&man(f.x,f.y,u.x,u.y)<=2&&f.max-f.morale>=3).length;
+    if(tired>=2){ doRally(u); await wait(450); return; }
+  }
+  const tiles=[[u.x,u.y,0]];
+  for(const [k,v] of reachable(u)){ const [x,y]=k.split(',').map(Number); tiles.push([x,y,v.steps]); }
+  const bn=S.sc[foe+'Banner'];
+  const onHold=(x,y)=>!defend||(x===u.x&&y===u.y)||terr(x,y)==='hill';
+  let best=null;
+  for(const [x,y,steps] of tiles){
+    if(x===bn[0]&&y===bn[1]){ best={x,y,steps,s:1000}; break; }
+    for(const o of targetsFrom(u,x,y)){
+      const t=o.t;
+      if(defend&&!onHold(x,y)&&t.morale>3) continue;
+      const r=calc(u,t,x,y,steps,false);
+      let s=r.dmg*2-r.counter*1.6+(r.dmg>=t.morale?12:0)+(t.type==='general'?2:0)+(o.ranged?1:0);
+      let volley=false;
+      if(o.ranged&&u.cd===0){
+        const hits=[t,...en.filter(e=>e!==t&&man(e.x,e.y,t.x,t.y)===1)];
+        if(hits.length>1){ const vs=hits.reduce((a,e)=>a+calc(u,e,x,y,0,true).dmg*2,0)+1; if(vs>s){s=vs;volley=true;} }
+      }
+      s-=threat(u,x,y)*(u.type==='archer'?1.5:0.3);
+      if(!best||s>best.s) best={x,y,steps,t,s,volley};
+    }
+  }
+  if(best&&best.s>0){
+    if(best.x!==u.x||best.y!==u.y) await moveUnit(u,best.x,best.y,best.steps);
+    if(S.phase!=='battle') return;
+    if(best.t&&!best.t.gone) await attack(u,best.t,best.volley);
+    return;
+  }
+  if(!defend){
+    const fe=field(u.type,en.map(e=>[e.x,e.y])), fb=field(u.type,[bn]);
+    let bm=null;
+    for(const [x,y,steps] of tiles){ const s=posScore(u,x,y,fe,fb); if(!bm||s>bm.s) bm={x,y,steps,s}; }
+    if(bm&&(bm.x!==u.x||bm.y!==u.y)) await moveUnit(u,bm.x,bm.y,bm.steps);
+    if(S.phase!=='battle') return;
+  }
+  const after=targetsFrom(u,u.x,u.y).map(o=>({t:o.t,r:calc(u,o.t,u.x,u.y,u.steps,false)}))
+    .filter(z=>z.r.dmg*2-z.r.counter*1.6>0||z.r.dmg>=z.t.morale).sort((a,b)=>(b.r.dmg*2-b.r.counter*1.6)-(a.r.dmg*2-a.r.counter*1.6));
+  if(after.length){ await attack(u,after[0].t,false); return; }
+  if(u.type==='spear'&&en.some(e=>e.type==='cavalry'&&man(e.x,e.y,u.x,u.y)<=5)) doStance(u,'brace');
+  else if(u.type==='sword'&&en.some(e=>e.type==='archer'&&man(e.x,e.y,u.x,u.y)<=4)) doStance(u,'wall');
+  else u.acted=true;
+}
+
+/* ---------- drawing ---------- */
+function iconPaths(type,col){
+  const s=`stroke="${col}" stroke-linecap="round" stroke-linejoin="round" fill="none"`;
+  switch(type){
+    case 'spear': return `<path d="M30 20 V46" ${s} stroke-width="3.2"/><path d="M30 11 L25.5 21 H34.5 Z" fill="${col}"/><path d="M26 44 H34" ${s} stroke-width="2"/>`;
+    case 'sword': return `<path d="M30 13 V37" ${s} stroke-width="4"/><path d="M22.5 37 H37.5" ${s} stroke-width="3.2"/><path d="M30 38 V45" ${s} stroke-width="3"/><circle cx="30" cy="47" r="2.4" fill="${col}"/>`;
+    case 'archer': return `<path d="M25 14 Q43 30 25 46" ${s} stroke-width="3.2"/><path d="M25 14 V46" ${s} stroke-width="1.3"/><path d="M19 30 H40" ${s} stroke-width="2.2"/><path d="M41 30 L35.5 26.8 V33.2 Z" fill="${col}"/>`;
+    case 'cavalry': return `<path d="M21.5 15 V30 A8.5 8.5 0 0 0 38.5 30 V15" ${s} stroke-width="5.2"/><circle cx="21.5" cy="21" r="1.1" fill="#222"/><circle cx="38.5" cy="21" r="1.1" fill="#222"/><circle cx="23" cy="31" r="1.1" fill="#222"/><circle cx="37" cy="31" r="1.1" fill="#222"/>`;
+    case 'general': return `<path d="M23 13 V47" ${s} stroke-width="3"/><path d="M24 14 L41 19.5 L24 26 Z" fill="#d2a94e" stroke="#f3d78f" stroke-width="1"/><circle cx="23" cy="12" r="2" fill="${col}"/>`;
+  }
+}
+function tokenSVG(u,withBar=true){
+  const light=u.side==='blue'?'#8fb8ee':'#f09a82', fill=u.side==='blue'?'#2c5a98':'#963a26';
+  const pct=u.morale/u.max, bc=pct>.5?'#9fd07a':pct>.3?'#e0b84a':'#e0674a';
+  let badge='';
+  if(u.stance) badge=`<circle cx="47" cy="12" r="8" fill="#d2a94e" stroke="#171d1a" stroke-width="2"/><text x="47" y="16" text-anchor="middle" font-size="11" font-weight="800" fill="#1d1708" font-family="Alegreya Sans, sans-serif">${u.stance==='brace'?'B':'W'}</text>`;
+  else if(u.morale<=3) badge=`<circle cx="47" cy="12" r="8" fill="#e2694a" stroke="#171d1a" stroke-width="2"/><text x="47" y="16" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" font-family="Alegreya Sans, sans-serif">!</text>`;
+  return `<g class="tok"><ellipse cx="30" cy="48" rx="19" ry="5" fill="rgba(0,0,0,.35)"/>
+    <circle cx="30" cy="29" r="22" fill="${fill}" stroke="${light}" stroke-width="3"/>
+    ${iconPaths(u.type,'#f6f1e4')}</g>
+    ${withBar?`<rect x="10" y="52" width="40" height="5" rx="2" fill="rgba(0,0,0,.6)"/><rect x="10" y="52" width="${40*pct}" height="5" rx="2" fill="${bc}"/>`:''}
+    ${badge}`;
+}
+function flagMarkup(){ return `<path d="M24 12 V50" stroke="#e8e2d0" stroke-width="3" stroke-linecap="round"/><path d="M25 13 Q33 10 41 14 Q35 20 41 26 Q33 22 25 25 Z" fill="#f7f4ea" stroke="#bdb6a2" stroke-width="1"/>`; }
+function iconSVG(type,side){
+  const u={type,side,morale:1,max:1,stance:null};
+  return `<svg viewBox="0 0 60 60" aria-hidden="true">${tokenSVG(u,false)}</svg>`;
+}
+function tileSVG(ch,x,y){
+  const t=TERR[ch]; const X=x*TILE, Y=y*TILE;
+  let base=t.c; if(t.k==='plain'&&(x+y)%2) base=t.c2;
+  let s=`<rect x="${X}" y="${Y}" width="${TILE}" height="${TILE}" fill="${base}"/>`;
+  const seed=(x*7+y*13)%5;
+  if(t.k==='hill') s+=`<path d="M${X+6} ${Y+46} Q${X+30} ${Y+10} ${X+54} ${Y+46}" stroke="rgba(255,236,180,.28)" stroke-width="2" fill="none"/><path d="M${X+17} ${Y+46} Q${X+30} ${Y+25} ${X+43} ${Y+46}" stroke="rgba(255,236,180,.22)" stroke-width="2" fill="none"/>`;
+  if(t.k==='forest') s+=[[16,20,10],[41,17,11],[29,40,11],[48,44,7]].map(([a,b,r])=>`<circle cx="${X+a}" cy="${Y+b}" r="${r}" fill="#2a4424" stroke="#213a1d" stroke-width="1.5"/><circle cx="${X+a-r*.3}" cy="${Y+b-r*.3}" r="${r*.35}" fill="rgba(160,200,120,.18)"/>`).join('');
+  if(t.k==='river'||t.k==='bridge') s+=`<path d="M${X+4} ${Y+18+seed} q7 -5 13 0 t13 0 t13 0 t13 0" stroke="rgba(220,240,255,.25)" stroke-width="2" fill="none"/><path d="M${X+2} ${Y+40-seed} q7 -5 13 0 t13 0 t13 0 t13 0" stroke="rgba(220,240,255,.2)" stroke-width="2" fill="none"/>`;
+  if(t.k==='bridge'){ s+=`<rect x="${X}" y="${Y+13}" width="${TILE}" height="34" fill="#8a6a44"/>`; for(let i=4;i<TILE;i+=8) s+=`<line x1="${X+i}" y1="${Y+13}" x2="${X+i}" y2="${Y+47}" stroke="#6b5033" stroke-width="1.5"/>`; s+=`<line x1="${X}" y1="${Y+14}" x2="${X+60}" y2="${Y+14}" stroke="#4d3a24" stroke-width="3"/><line x1="${X}" y1="${Y+46}" x2="${X+60}" y2="${Y+46}" stroke="#4d3a24" stroke-width="3"/>`; }
+  if(t.k==='mud') s+=[[12,14],[40,10],[26,30],[48,36],[14,46],[36,50]].map(([a,b],i)=>`<ellipse cx="${X+a+(seed*3+i)%6}" cy="${Y+b}" rx="${5+(i%3)}" ry="2.6" fill="rgba(30,20,10,.35)"/>`).join('');
+  s+=`<rect x="${X}" y="${Y}" width="${TILE}" height="${TILE}" fill="none" stroke="rgba(0,0,0,.2)"/>`;
+  return s;
+}
+function bannerSVG(side,[x,y]){
+  const X=x*TILE, Y=y*TILE, col=side==='blue'?'#4a86d6':'#cf5a3f';
+  return `<g><rect x="${X+2}" y="${Y+2}" width="${TILE-4}" height="${TILE-4}" rx="4" fill="none" stroke="${col}" stroke-width="2" stroke-dasharray="5 4" opacity=".9"/>
+    <path d="M${X+9} ${Y+6} V${Y+30}" stroke="#e8e2d0" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M${X+10} ${Y+7} L${X+24} ${Y+11} L${X+10} ${Y+16} Z" fill="${col}" stroke="#f3d78f" stroke-width=".8"/></g>`;
+}
+function buildBoard(){
+  const sc=S.sc;
+  let terrain='', hit='';
+  for(let y=0;y<H;y++) for(let x=0;x<W;x++){ terrain+=tileSVG(sc.map[y][x],x,y); hit+=`<rect class="hit-tile" data-x="${x}" data-y="${y}" x="${x*TILE}" y="${y*TILE}" width="${TILE}" height="${TILE}"/>`; }
+  terrain+=bannerSVG('blue',sc.blueBanner)+bannerSVG('red',sc.redBanner);
+  return `<svg id="board" viewBox="0 0 ${W*TILE} ${H*TILE}" role="img" aria-label="Battlefield">
+    <g id="terrain">${terrain}</g><g id="hl"></g><g id="units"></g><g id="marks"></g><g id="fx"></g><g id="hit">${hit}</g></svg>`;
+}
+function drawHL(){
+  const hl=document.getElementById('hl'), mk=document.getElementById('marks'); if(!hl) return;
+  let h='', m='';
+  const sel=getU(S.sel);
+  if(S.phase==='deploy'){
+    const [x0,x1]=S.sc[S.deploySide+'Zone'], col=S.deploySide==='blue'?'74,134,214':'207,90,63';
+    for(let y=0;y<H;y++) for(let x=x0;x<=x1;x++) if(terr(x,y)!=='river') h+=`<rect x="${x*TILE+1}" y="${y*TILE+1}" width="${TILE-2}" height="${TILE-2}" fill="rgba(${col},.2)" stroke="rgba(${col},.55)"/>`;
+    if(sel) m+=`<rect x="${sel.x*TILE+2}" y="${sel.y*TILE+2}" width="${TILE-4}" height="${TILE-4}" rx="6" fill="none" stroke="#f3d78f" stroke-width="3"/>`;
+  } else if(sel && S.phase==='battle'){
+    const mine=sel.side===S.turn && humanTurn() && !busy;
+    if(mine && !sel.locked && !S.armed){
+      for(const [k] of reachable(sel)){ const [x,y]=k.split(',').map(Number); h+=`<rect x="${x*TILE+3}" y="${y*TILE+3}" width="${TILE-6}" height="${TILE-6}" rx="5" fill="rgba(210,169,78,.3)" stroke="rgba(243,215,143,.75)" stroke-width="1.5"/>`; }
+    }
+    m+=`<rect x="${sel.x*TILE+2}" y="${sel.y*TILE+2}" width="${TILE-4}" height="${TILE-4}" rx="6" fill="none" stroke="#f3d78f" stroke-width="3"/>`;
+    if(sel.type==='archer' && mine && !sel.acted){
+      const R=shootRange(sel,sel.x,sel.y);
+      for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const d=man(x,y,sel.x,sel.y); if(d>=2&&d<=R) h+=`<rect x="${x*TILE+26}" y="${y*TILE+26}" width="8" height="8" rx="4" fill="rgba(243,215,143,.35)"/>`; }
+    }
+    if(mine && !sel.acted){
+      for(const o of targetsFrom(sel,sel.x,sel.y)){
+        if(S.armed==='volley' && !o.ranged) continue;
+        const chosen=S.target===o.t.id;
+        m+=`<circle cx="${o.t.x*TILE+30}" cy="${o.t.y*TILE+29}" r="27" fill="none" stroke="${chosen?'#ffd2c4':'#ff7b5c'}" stroke-width="${chosen?4:2.5}" ${chosen?'':'stroke-dasharray="6 4"'}/>`;
+      }
+    }
+  }
+  const ins=getU(S.inspect);
+  if(ins&&!ins.gone&&(!sel||ins!==sel)) m+=`<rect x="${ins.x*TILE+2}" y="${ins.y*TILE+2}" width="${TILE-4}" height="${TILE-4}" rx="6" fill="none" stroke="#e8e2d0" stroke-width="2" stroke-dasharray="4 3"/>`;
+  hl.innerHTML=h; mk.innerHTML=m;
+}
+function drawUnits(){
+  const layer=document.getElementById('units'); if(!layer) return;
+  for(const u of S.units){
+    let g=document.getElementById('g-'+u.id);
+    if(u.gone){ if(g&&!g.classList.contains('leaving')) g.remove(); continue; }
+    if(!g){ g=document.createElementNS(NS,'g'); g.id='g-'+u.id; g.setAttribute('class','unit'); g.style.transform=`translate(${u.x*TILE}px,${u.y*TILE}px)`; layer.appendChild(g); }
+    g.innerHTML=tokenSVG(u);
+    g.classList.toggle('done', S.phase==='battle' && u.side===S.turn && (u.locked || (u.acted && u.side===S.turn && !(mode==='duo'||u.side==='blue'))));
+    g.style.transform=`translate(${u.x*TILE}px,${u.y*TILE}px)`;
+  }
+}
+
+/* ---------- panel ---------- */
+function unitCard(u){
+  const T=TYPES[u.type], pct=u.morale/u.max, bc=pct>.5?'var(--good)':pct>.3?'var(--warn)':'var(--bad)';
+  const reach=u.type==='archer'?`${T.range}${terr(u.x,u.y)==='hill'?'+1':''}`:'1';
+  const b=[];
+  if(u.stance==='brace') b.push('<span class="badge brass">Braced</span>');
+  if(u.stance==='wall') b.push('<span class="badge brass">Shield wall</span>');
+  if(u.morale<=3) b.push('<span class="badge warn">Shaken: −1 attack</span>');
+  if(S.phase==='battle'&&u.side===S.turn){ if(u.locked) b.push('<span class="badge">Done this turn</span>'); else if(u.acted) b.push('<span class="badge">Attacked, can still move</span>'); else if(u.moved) b.push('<span class="badge">Can keep moving or attack</span>'); }
+  if(T.ability&&u.cd>0) b.push(`<span class="badge">${T.ability.name} ready in ${u.cd}</span>`);
+  b.push(`<span class="badge">On: ${TERR[S.sc.map[u.y][u.x]].name}</span>`);
+  return `<div class="box"><div class="card-h">${iconSVG(u.type,u.side)}<div><b>${esc(u.label)}</b><small>${cap(u.side)} army · ${T.name}</small></div></div>
+    <div class="mbar"><i style="width:${pct*100}%;background:${bc}"></i></div><div class="mnum tabnum">Morale ${u.morale} / ${u.max}</div>
+    <dl class="stats"><div><dt>Move</dt><dd>${T.move}</dd></div><div><dt>Reach</dt><dd>${reach}</dd></div><div><dt>Attack</dt><dd>${T.power}</dd></div><div><dt>Armor</dt><dd>${T.def}</dd></div></dl>
+    <p class="role">${T.role}</p><div class="badges">${b.join('')}</div></div>`;
+}
+function previewBox(a,d){
+  const r=calc(a,d,a.x,a.y,a.steps,S.armed==='volley');
+  const row=([l,v])=>`<li><span>${l}</span><b class="${v>0?'plus':v<0?'minus':''}">${v>0?'+':''}${v}</b></li>`;
+  const after=Math.max(0,d.morale-r.dmg);
+  let extra='';
+  if(S.armed==='volley'){ const n=live().filter(e=>e.side===d.side&&man(e.x,e.y,d.x,d.y)===1).length; extra=n?`<div class="hint">Also hits ${n} enemy unit${n>1?'s':''} next to it.</div>`:''; }
+  return `<div class="preview"><div class="eyebrow">${S.armed==='volley'?'Volley at':r.ranged?'Shoot at':'Attack'} ${esc(nm(d))}</div>
+    <div class="big">They lose ${r.dmg} morale <span class="tabnum" style="color:var(--muted);font-weight:500">(${d.morale} → ${after})</span></div>
+    ${after===0?'<div class="plus" style="font-weight:800">That would make them leave the field.</div>':''}
+    <ul>${r.parts.map(row).join('')}</ul>
+    ${r.counter?`<div class="big minus" style="font-size:15px">You lose ${r.counter} back</div><ul>${r.cparts.map(row).join('')}</ul>`:(r.ranged?'<div class="hint">Arrows: no hit back.</div>':'')}
+    ${extra}
+    <div class="row" style="display:flex;gap:8px"><button class="primary" data-act="confirm">${S.armed==='volley'?'Loose the volley':r.ranged?'Shoot':'Attack'}</button><button class="ghost" data-act="cancel">Cancel</button></div></div>`;
+}
+function actionsBox(u){
+  const T=TYPES[u.type]; const out=[];
+  const tg=getU(S.target);
+  if(tg && !u.acted) out.push(previewBox(u,tg));
+  if(!u.locked){
+    const ab=T.ability;
+    if(ab){
+      let dis='', why='';
+      if(u.acted){dis='disabled'; why='Already acted this turn. It can still move.';}
+      if(u.cd>0){dis='disabled'; why=`Ready in ${u.cd} turn${u.cd>1?'s':''}.`;}
+      if(ab.id==='volley'&&!u.cd){ const any=targetsFrom(u,u.x,u.y).some(o=>o.ranged); if(!any){dis='disabled'; why=adjEnemy(u.x,u.y,u.side)?'Too close to an enemy to shoot.':'No enemy in range.';} }
+      const label=S.armed==='volley'&&ab.id==='volley'?'Pick a target for the volley':ab.name;
+      out.push(`<button class="ability" data-act="ability" ${dis}>${label}<small>${why||ab.desc}</small></button>`);
+    }
+    const r=[];
+    if(u.px&&!u.locked) r.push('<button data-act="undo">Undo move</button>');
+    r.push('<button data-act="hold">Done with this unit</button>');
+    out.push(`<div class="row">${r.join('')}</div>`);
+    if(!tg){
+      const n=u.acted?0:targetsFrom(u,u.x,u.y).filter(o=>S.armed!=='volley'||o.ranged).length;
+      out.push(`<p class="hint">Gold squares: where it can march. You can move as many times as you like this turn. ${u.acted?'It has already attacked this turn.':n?`Red rings: ${n} enem${n>1?'ies':'y'} it can ${u.type==='archer'?'reach':'attack'}.  Click one to see what would happen.`:'No enemy in reach from here.'}</p>`);
+    }
+  }
+  return `<div class="box actions">${out.join('')}</div>`;
+}
+function renderTop(){
+  const el=document.getElementById('topmeta');
+  if(!S){ el.innerHTML=''; return; }
+  const turn=S.phase==='battle'?`<span class="chip ${S.turn}">${cap(S.turn)} General's orders</span>`:S.phase==='deploy'?`<span class="chip ${S.deploySide}">${cap(S.deploySide)} deploys</span>`:'';
+  el.innerHTML=`<span>${esc(S.sc.name)}</span><span class="tabnum">Round ${S.round} of ${S.sc.rounds}</span>${mode==='ai'?`<span>${DIFF[diff].name}</span>`:''}${turn}`;
+}
+function renderPanel(){
+  const p=document.getElementById('panel'); if(!p) return;
+  const sc=S.sc; const html=[];
+  if(S.phase==='deploy'){
+    const side=S.deploySide;
+    html.push(`<div class="box"><div class="eyebrow">${esc(sc.tag)}</div><h3>${esc(sc.name)}</h3><p class="goal"><b>Goal:</b> ${esc(side==='blue'?sc.goal:'Stop Blue, and take their banner if you can.')}</p>
+      <p class="hint"><b>Tip:</b> ${esc(sc.tip)}</p>${sc.history?`<p class="history">${esc(sc.history)}</p>`:''}</div>`);
+    html.push(`<div class="box"><h3>Set up your army</h3><p class="hint" style="margin-top:0">Click one of your units, then click a shaded square to place it. Click two of your units to swap them.</p>
+      <div class="actions" style="margin-top:10px"><button class="primary" data-act="ready">${mode==='duo'&&side==='blue'?'Blue is ready: Red sets up next':'Begin the battle'}</button></div></div>`);
+    const sel=getU(S.sel); if(sel) html.push(unitCard(sel));
+  } else {
+    const waiting=live().filter(u=>u.side===S.turn&&!u.acted).length;
+    html.push(`<div class="box"><div class="eyebrow">Goal</div><p class="goal">${esc(sc.goal)}</p></div>`);
+    const sel=getU(S.sel), ins=getU(S.inspect);
+    if(busy&&!humanTurn()) html.push(`<div class="box"><h3>The Red General is giving orders…</h3><p class="hint">Watch the field.</p></div>`);
+    if(sel&&!sel.gone){ html.push(unitCard(sel)); if(sel.side===S.turn&&humanTurn()&&!busy) html.push(actionsBox(sel)); }
+    else if(ins&&!ins.gone) html.push(unitCard(ins));
+    else if(humanTurn()&&!busy) html.push(`<div class="box"><h3>Your orders, General</h3><p class="hint" style="margin-top:0">Click one of your units to command it. Each unit can move as many times as you like, and act once: attack, shoot, or use its special move. Click an enemy to look at it.</p></div>`);
+    if(humanTurn()&&S.phase==='battle') html.push(`<div class="box actions"><button class="primary" data-act="end" ${busy?'disabled':''}>End ${cap(S.turn)}'s turn</button><p class="hint tabnum" style="margin:0">${waiting?`${waiting} unit${waiting>1?'s have':' has'} not acted yet.`:'Every unit has acted.'}</p></div>`);
+    html.push(`<div class="box"><div class="eyebrow">Battle report</div><ul class="log">${S.log.slice(0,14).map(l=>`<li class="${l.cls}">${esc(l.txt)}</li>`).join('')}</ul></div>`);
+  }
+  html.push(`<div class="actions"><div class="row"><button class="ghost" data-act="guide">Field guide</button><button class="ghost" data-act="menu">Choose battle</button></div></div>`);
+  p.innerHTML=html.join('');
+}
+function render(){
+  renderTop();
+  if(!S) return;
+  drawHL(); drawUnits(); renderPanel(); renderOverlay();
+}
+function renderOverlay(){
+  const o=document.getElementById('overlay');
+  if(S&&S.phase==='over'){
+    const w=S.winner;
+    o.innerHTML=`<div class="overlay"><div class="sheet result" role="dialog" aria-label="Battle result">
+      <h2 style="color:${w==='blue'?'var(--blue)':w==='red'?'var(--red)':'var(--brass)'}">${w?cap(w)+' wins':'A draw'}</h2>
+      <p style="margin:0;font-size:18px">${esc(S.reason)}</p>
+      <p class="hint tabnum" style="margin:0">Battle lasted ${S.round} round${S.round>1?'s':''}. Blue units still on the field: ${live().filter(u=>u.side==='blue').length}. Red: ${live().filter(u=>u.side==='red').length}.</p>
+      <div class="row"><button class="primary" data-act="again">Fight it again</button><button data-act="menu">Choose another battle</button><button class="ghost" data-act="look">Look at the field</button></div></div></div>`;
+    return;
+  }
+  if(S&&S.handoff&&S.phase==='battle'){
+    o.innerHTML=`<div class="overlay"><div class="sheet result" role="dialog" aria-label="Next turn">
+      <h2 style="color:${S.turn==='blue'?'var(--blue)':'var(--red)'}">${cap(S.turn)} General</h2>
+      <p style="margin:0;font-size:18px">Your orders. Round ${S.round} of ${S.sc.rounds}.</p>
+      <div class="row"><button class="primary" data-act="take">Take command</button></div></div></div>`;
+    return;
+  }
+  if(o.dataset.keep!=='1') o.innerHTML='';
+}
+
+/* ---------- field guide ---------- */
+function openGuide(){
+  const o=document.getElementById('overlay'); o.dataset.keep='1';
+  const cards=Object.entries(TYPES).map(([k,T])=>`<div class="gcard"><div class="card-h">${iconSVG(k,'blue')}<div><b>${T.name}</b><small>Morale ${T.morale} · Move ${T.move} · Attack ${T.power} · Armor ${T.def}</small></div></div>
+    <p>${T.role}</p><div class="gw"><span>Strong vs</span><span>${T.good}</span><span>Weak vs</span><span>${T.weak}</span><span>Special</span><span>${T.ability?`<b>${T.ability.name}:</b> ${T.ability.desc}`:'<b>Charge</b> happens by itself when it moves 2+ squares first.'}</span></div></div>`).join('');
+  const tl=[['.','Open field','Easy to march across. No cover.'],['h','Hill','Costs 2 to climb. Defenders get +1. Archers shoot 1 further and over woods.'],['f','Woods','Slow (horses even slower). +1 against attacks, +2 against arrows. Blocks arrows passing through. No charging in.'],['m','Mud','Slow, and horses crawl. Cavalry cannot charge out of mud.'],['~','River','Cannot be crossed. Arrows fly over it.'],['=','Bridge','The only dry way across.']];
+  o.innerHTML=`<div class="overlay"><div class="sheet" role="dialog" aria-label="Field guide">
+    <button class="close" data-act="close-guide">Close ✕</button>
+    <h2>Field Guide</h2>
+    <div><h3 style="font-size:22px;margin-bottom:6px">How a battle works</h3>
+    <ol class="rules">
+      <li>Every unit has <b>morale</b>: its fighting spirit. When morale reaches 0, the unit raises a white flag and leaves the field. Nobody is hurt; they just stop fighting.</li>
+      <li>On your turn, your units can <b>move as many times as you like</b>, and each one can <b>act once</b> (attack, shoot, or use its special move). Bracing or making a shield wall digs a unit in, so it cannot move after that.</li>
+      <li>Fighting up close goes both ways: the unit you attack <b>strikes back</b> if it is still standing. Arrows cannot be hit back.</li>
+      <li><b>Engaged:</b> a unit that steps next to an enemy has to stop there. Use this to block roads and bridges.</li>
+      <li><b>Flanking:</b> each of your other units already next to the target adds +1 (up to +2). Surround them.</li>
+      <li><b>Shaken:</b> a unit with 3 morale or less attacks with −1.</li>
+      <li>Win by putting any unit on the enemy banner, or by making the whole enemy army leave the field.</li>
+    </ol></div>
+    <div class="guide-grid">${cards}</div>
+    <div><h3 style="font-size:22px;margin-bottom:6px">The ground</h3><div class="terrain-list">${tl.map(([c,n,d])=>`<div><i style="background:${TERR[c].c}"></i><span><b>${n}.</b> ${d}</span></div>`).join('')}</div></div>
+    <div><button class="primary" data-act="close-guide">Back to the table</button></div>
+  </div></div>`;
+}
+function closeGuide(){ const o=document.getElementById('overlay'); o.dataset.keep=''; o.innerHTML=''; if(S) renderOverlay(); }
+
+/* ---------- screens ---------- */
+function miniMap(sc){
+  let s=`<svg viewBox="0 0 ${W*10} ${H*10}" aria-hidden="true">`;
+  for(let y=0;y<H;y++) for(let x=0;x<W;x++) s+=`<rect x="${x*10}" y="${y*10}" width="10" height="10" fill="${TERR[sc.map[y][x]].c}"/>`;
+  for(const side of ['blue','red']) for(const [,x,y] of sc[side]) s+=`<circle cx="${x*10+5}" cy="${y*10+5}" r="3.6" fill="${side==='blue'?'#6aa0e8':'#e2735a'}" stroke="#111" stroke-width=".8"/>`;
+  return s+'</svg>';
+}
+function showMenu(){
+  S=null; busy=false; renderTop();
+  const o=document.getElementById('overlay'); o.dataset.keep=''; o.innerHTML='';
+  document.getElementById('app').innerHTML=`
+    <section class="menu-hero"><h2>You are the General.</h2>
+      <p>Place your troops, pick the right unit for each job, and use the ground to your advantage. Units that lose all their morale raise a white flag and leave the field.</p></section>
+    <div class="modes" role="group" aria-label="Players">
+      <button data-mode="ai" aria-pressed="${mode==='ai'}">One general vs the computer</button>
+      <button data-mode="duo" aria-pressed="${mode==='duo'}">Two generals, taking turns</button>
+    </div>
+    <div class="modes" role="group" aria-label="Difficulty against the computer">
+      ${Object.entries(DIFF).map(([k,d])=>`<button data-diff="${k}" aria-pressed="${diff===k}" title="${esc(d.desc)}">${d.name}</button>`).join('')}
+    </div>
+    <p class="hint" id="diffdesc" style="margin:-10px 0 18px">${mode==='ai'?esc(DIFF[diff].desc):'Two generals always play an even fight.'}</p>
+    <div class="scen-grid">${SCEN.map(sc=>`<button class="scen" data-scen="${sc.id}"><span class="tag">${esc(sc.tag)}</span><h3>${esc(sc.name)}</h3>${miniMap(sc)}<p>${esc(sc.blurb)}</p></button>`).join('')}</div>
+    <div class="menu-foot"><button data-act="guide">Read the field guide</button></div>`;
+}
+function startScen(id){
+  const sc=SCEN.find(s=>s.id===id);
+  S={sc,units:mkUnits(sc),phase:'deploy',deploySide:'blue',turn:'blue',round:1,log:[],sel:null,target:null,armed:null,inspect:null,handoff:false};
+  hovered=null;
+  document.getElementById('app').innerHTML=`<div class="game"><div><div class="board-wrap">${buildBoard()}</div>
+    <div class="legend"><span><i style="background:#4a86d6"></i>Your army (blue)</span><span><i style="background:#cf5a3f"></i>Red army</span><span><i style="background:rgba(210,169,78,.6)"></i>Can march here</span><span><i style="border:2px dashed #ff7b5c"></i>Can attack</span><span><i style="border:2px dashed #e8e2d0"></i>Banner</span></div></div>
+    <aside class="panel" id="panel"></aside></div>`;
+  render();
+}
+function beginBattle(){
+  if(mode==='duo'&&S.deploySide==='blue'){ S.deploySide='red'; S.sel=null; render(); return; }
+  S.phase='battle'; S.sel=null;
+  log('Round 1 begins. Blue moves first.','sys');
+  startTurn('blue');
+}
+
+/* ---------- input ---------- */
+function onTile(x,y){
+  if(!S||busy) return;
+  if(S.phase==='deploy') return deployClick(x,y);
+  if(S.phase!=='battle'||!humanTurn()||S.handoff) return;
+  const u=unitAt(x,y), sel=getU(S.sel);
+  if(sel&&sel.side===S.turn&&!sel.locked){
+    if(u&&u.side!==sel.side&&!sel.acted){
+      const o=targetsFrom(sel,sel.x,sel.y).find(z=>z.t===u);
+      if(o&&(S.armed!=='volley'||o.ranged)){
+        if(S.target===u.id){ playerAttack(); return; }
+        S.target=u.id; S.inspect=null; render(); return;
+      }
+    }
+    if(!u&&!S.armed){
+      const r=reachable(sel).get(K(x,y));
+      if(r){ S.target=null; busy=true; moveUnit(sel,x,y,r.steps).then(()=>{busy=false; render();}); render(); return; }
+    }
+  }
+  S.target=null; S.armed=null;
+  if(u&&u.side===S.turn){ S.sel=u.id; S.inspect=null; }
+  else if(u){ S.inspect=u.id; S.sel=null; }
+  else { S.sel=null; S.inspect=null; }
+  render();
+}
+function deployClick(x,y){
+  const side=S.deploySide, [x0,x1]=S.sc[side+'Zone'];
+  const u=unitAt(x,y), sel=getU(S.sel);
+  if(u&&u.side===side){
+    if(sel&&sel!==u){ const t=[sel.x,sel.y]; sel.x=u.x; sel.y=u.y; u.x=t[0]; u.y=t[1]; S.sel=null; }
+    else S.sel=sel===u?null:u.id;
+    render(); return;
+  }
+  if(!u&&sel&&x>=x0&&x<=x1&&terr(x,y)!=='river'){ sel.x=x; sel.y=y; S.sel=null; render(); return; }
+  if(u){ S.sel=null; S.inspect=u.id; render(); }
+}
+async function playerAttack(){
+  const a=getU(S.sel), d=getU(S.target); if(!a||!d) return;
+  const v=S.armed==='volley';
+  S.target=null; S.armed=null; busy=true; render();
+  await attack(a,d,v);
+  busy=false;
+  if(S.phase==='battle') render();
+}
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-x],[data-act],[data-scen],[data-mode],[data-diff]'); if(!t) return;
+  if(t.dataset.diff){ diff=t.dataset.diff; showMenu(); return; }
+  if(t.dataset.x!==undefined){ onTile(+t.dataset.x,+t.dataset.y); return; }
+  if(t.dataset.scen){ startScen(t.dataset.scen); return; }
+  if(t.dataset.mode){ mode=t.dataset.mode; showMenu(); return; }
+  const act=t.dataset.act, sel=S&&getU(S.sel);
+  switch(act){
+    case 'guide': openGuide(); break;
+    case 'close-guide': closeGuide(); break;
+    case 'menu': showMenu(); break;
+    case 'ready': beginBattle(); break;
+    case 'again': startScen(S.sc.id); break;
+    case 'look': document.getElementById('overlay').innerHTML=''; S.phase='ended'; renderTop(); renderPanelEnded(); break;
+    case 'take': S.handoff=false; render(); break;
+    case 'end': if(!busy) endTurn(); break;
+    case 'confirm': if(!busy) playerAttack(); break;
+    case 'cancel': S.target=null; S.armed=null; render(); break;
+    case 'undo': if(sel&&sel.px&&!sel.locked){ sel.x=sel.px[0]; sel.y=sel.px[1]; sel.steps=sel.px[2]; sel.px=null; sel.moved=sel.steps>0; S.target=null; render(); } break;
+    case 'hold': if(sel){ sel.acted=true; sel.moved=true; sel.locked=true; S.sel=null; S.target=null; S.armed=null; render(); } break;
+    case 'ability': {
+      if(!sel||busy) break; const ab=TYPES[sel.type].ability; if(!ab) break;
+      if(ab.id==='brace'||ab.id==='wall'){ doStance(sel,ab.id); S.sel=null; S.target=null; render(); }
+      else if(ab.id==='rally'){ doRally(sel); S.sel=null; render(); }
+      else if(ab.id==='volley'){ S.armed=S.armed==='volley'?null:'volley'; S.target=null; render(); }
+      break;
+    }
+  }
+});
+function renderPanelEnded(){
+  const p=document.getElementById('panel'); if(!p) return;
+  drawHL();
+  p.innerHTML=`<div class="box"><div class="eyebrow">Battle over</div><h3 style="color:${S.winner==='blue'?'var(--blue)':S.winner==='red'?'var(--red)':'var(--brass)'}">${S.winner?cap(S.winner)+' wins':'A draw'}</h3><p class="goal">${esc(S.reason)}</p>
+    <div class="actions" style="margin-top:10px"><button class="primary" data-act="again">Fight it again</button><button data-act="menu">Choose another battle</button></div></div>
+    <div class="box"><div class="eyebrow">Battle report</div><ul class="log">${S.log.slice(0,20).map(l=>`<li class="${l.cls}">${esc(l.txt)}</li>`).join('')}</ul></div>`;
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ const o=document.getElementById('overlay'); if(o.dataset.keep==='1') closeGuide(); else if(S&&S.phase==='battle'){ S.sel=null;S.target=null;S.armed=null;render(); } } });
+
+showMenu();
+})();
+</script>
+
+</body>
+</html>
