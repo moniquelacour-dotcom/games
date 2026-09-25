@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+﻿<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Northgate City Life</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -355,6 +355,7 @@ function freshState() {
     stage: { practice: 0, acro: 0, shows: 0, bestShow: 0, ovations: 0 },
     dojo: { skill: 0, wins: 0, entries: 0, cups: 0 },
     challenge: null, challengeDone: {}, challengeFrom: 0,
+    team: { job: null, earned: 0, done: {} },
     firstBoot: true
   };
 }
@@ -377,6 +378,7 @@ function load() {
       stage: Object.assign(base.stage, d.stage || {}),
       dojo: Object.assign(base.dojo, d.dojo || {}),
       challengeDone: Object.assign({}, d.challengeDone || {}),
+      team: Object.assign(base.team, d.team || {}),
       pets: (d.pets && d.pets.length) ? d.pets : (d.pet ? [d.pet] : [])
     });
     out.pet = out.pets[0] || null;
@@ -4384,6 +4386,186 @@ function cleanName(v) {
   return String(v == null ? "" : v).replace(/[^\p{L}\p{N} '\-]/gu, "").trim().slice(0, 12) || "Someone";
 }
 
+/* ======================= TEAM JOBS (two computers) =======================
+   One job at a time, shared by everyone in the room. Two shapes:
+     MEET  — two or more of you inside the same building at the same moment.
+     FUND  — a pile of money the whole room earns together.
+   Each machine only ever reports ITS OWN doing: where I am, and what I have
+   earned. Nobody's client writes anybody else's number, so there is nothing
+   to disagree about and no order to get wrong. The job itself rides along in
+   the same packet; the newest one wins, which is how a room ends up on one. */
+
+const TEAM_GOAL = 500;                       // dollars, for the fund job
+const TEAM_PAY = 100;                        // each, on finishing
+
+function meetPlaces() {
+  return PLACES.filter(p => ROOMS[p.id] && p.id !== "home");   // home is private to each child
+}
+function placeName(id) {
+  const p = PLACES.find(q => q.id === id);
+  return p ? p.name : id;
+}
+function teamJob() { return S.team.job; }
+
+function startTeamJob(kind) {
+  let job = { k: kind, at: Date.now(), by: cleanName(S.name || "Someone") };
+  if (kind === "meet") {
+    const list = meetPlaces();
+    job.place = list[Math.floor(Math.random() * list.length)].id;
+  } else {
+    job.goal = Math.max(TEAM_GOAL, 150 * (peerCount() + 1));   // 150 a head, so seven is a real haul
+  }
+  S.team.job = job;
+  S.team.earned = 0;
+  save();
+  netSend(myPacket());
+  showTogether();
+}
+
+function clearTeamJob() { S.team.job = null; S.team.earned = 0; save(); netSend(myPacket()); }
+
+/* A peer's job offer is adopted only if it is newer than ours. */
+function adoptNewestJob() {
+  if (!roomCode) return;
+  const now = performance.now();
+  let best = S.team.job;
+  for (const id in PEERS) {
+    const p = PEERS[id];
+    if (now - p.at > 6000 || !p.tj) continue;
+    if (!best || p.tj.at > best.at) best = p.tj;
+  }
+  if (best !== S.team.job) {
+    S.team.job = best;
+    S.team.earned = 0;
+    save();
+  }
+}
+
+/* Money only ever counts UP toward a fund. Spending is ignored, which keeps
+   every machine's contribution a number that never goes backwards. */
+let teamLastMoney = null;
+function teamTrackEarnings() {
+  if (teamLastMoney === null) { teamLastMoney = S.money; return; }
+  const d = S.money - teamLastMoney;
+  teamLastMoney = S.money;
+  const job = teamJob();
+  if (d > 0 && job && job.k === "fund") S.team.earned += d;
+}
+
+/* Everybody who is actually connected right now has to be in the building.
+   Somebody dropping out lowers the bar rather than locking the room out. */
+function teamNeeded() { return Math.max(2, peerCount() + 1); }
+
+function teamHereNow() {
+  const job = teamJob();
+  if (!job || job.k !== "meet") return [];
+  const where = (mode === "inside" && room) ? roomId(room) : "city";
+  const names = [];
+  if (where === job.place) names.push(S.name || "You");
+  const now = performance.now();
+  for (const id in PEERS) {
+    const p = PEERS[id];
+    if (now - p.at <= 6000 && p.r === job.place) names.push(p.n);
+  }
+  return names;
+}
+
+function teamTotal() {
+  const job = teamJob();
+  if (!job || job.k !== "fund") return 0;
+  let sum = S.team.earned;
+  const now = performance.now();
+  for (const id in PEERS) {
+    const p = PEERS[id];
+    if (now - p.at <= 6000) sum += p.k || 0;
+  }
+  return sum;
+}
+
+function teamCheck() {
+  const job = teamJob();
+  if (!job || !roomCode) return;
+  const key = job.k + job.at;
+  if (S.team.done[key]) return;
+  let won = false, line = "";
+  if (job.k === "meet") {
+    const here = teamHereNow();
+    if (here.length >= teamNeeded()) { won = true; line = here.length + " of you got to " + placeName(job.place) + " at the same time."; }
+  } else {
+    const t = teamTotal();
+    if (t >= job.goal) { won = true; line = "The room earned " + money(t) + " between you."; }
+  }
+  if (!won) return;
+  S.team.done[key] = true;
+  S.money += TEAM_PAY;
+  save();
+  sfxGood();
+  setTimeout(() => showTeamWin(job, line), 400);
+}
+
+function showTeamWin(job, line) {
+  openOverlay("Team job done", "You could not have done that one alone", "#2f6b3c");
+  document.getElementById("cardBody").innerHTML =
+    '<div class="winbig">\uD83E\uDD1D</div>' +
+    '<p class="winname">TOGETHER</p>' +
+    '<h3 class="winlabel">' + (job.k === "meet" ? "Meet at " + esc(placeName(job.place)) : "The Town Fund") + "</h3>" +
+    '<p class="hint">' + esc(line) + "</p>" +
+    '<p class="hint">+' + money(TEAM_PAY) + " each. Show everybody your screen.</p>" +
+    '<button id="twClose" class="primary" type="button">Back to Northgate</button>';
+  document.getElementById("twClose").addEventListener("click", closeOverlay);
+}
+
+function teamLiveHTML() {
+  const job = teamJob();
+  if (!job) return "";
+  if (job.k === "meet") {
+    const here = teamHereNow();
+    return '<p class="rowlabel">Inside right now \u00b7 ' + here.length + ' of ' + teamNeeded() + '</p>' +
+      '<div class="herelist">' +
+      (here.length ? here.map(n => "<span>" + esc(n) + "</span>").join("") : "<span>Nobody yet</span>") +
+      "</div>";
+  }
+  const t = teamTotal(), pc = Math.min(100, Math.round(t / job.goal * 100));
+  return '<div class="bar" style="height:16px;width:min(320px,100%)"><i style="width:' + pc + '%;background:var(--cash)"></i></div>' +
+    '<p class="hint" style="font-family:var(--mono);color:var(--sun)">' + money(t) + " of " + money(job.goal) +
+    " \u00b7 yours " + money(S.team.earned) + "</p>";
+}
+
+function teamPanelHTML() {
+  const job = teamJob();
+  if (!job) {
+    return '<p class="rowlabel">A job for all of you</p>' +
+      '<p class="hint">One of you starts it and everybody gets the same one.</p>' +
+      '<div class="lanebtns">' +
+      '<button id="tjMeet" type="button">\uD83E\uDD1D Meet up</button>' +
+      '<button id="tjFund" type="button">\uD83D\uDCB0 Town fund</button>' +
+      "</div>";
+  }
+  const head = job.k === "meet"
+    ? '<h3 class="winlabel">\uD83E\uDD1D Everybody get to ' + esc(placeName(job.place)) + "</h3>" +
+      '<p class="hint">Drive there, park, and walk inside. It finishes when EVERYBODY in the room is in that building at the same moment.</p>'
+    : '<h3 class="winlabel">\uD83D\uDCB0 Earn ' + money(job.goal) + " between you</h3>" +
+      '<p class="hint">Any job in town counts \u2014 dishes, dog walking, the build site. Spending does not take it back down.</p>';
+  return '<p class="rowlabel">Team job \u00b7 started by ' + esc(job.by || "someone") + "</p>" + head +
+    '<div id="teamLive">' + teamLiveHTML() + "</div>" +
+    '<button id="tjStop" type="button">Pick a different job</button>';
+}
+
+let lastTeamLive = "";
+function paintTeamLive() {
+  const el = document.getElementById("teamLive");
+  if (!el) { lastTeamLive = ""; return; }
+  const h = teamLiveHTML();
+  if (h !== lastTeamLive) { el.innerHTML = h; lastTeamLive = h; }
+}
+
+function wireTeamPanel() {
+  const m = document.getElementById("tjMeet"), f = document.getElementById("tjFund"), s = document.getElementById("tjStop");
+  if (m) m.addEventListener("click", () => startTeamJob("meet"));
+  if (f) f.addEventListener("click", () => startTeamJob("fund"));
+  if (s) s.addEventListener("click", () => { clearTeamJob(); showTogether(); });
+  lastTeamLive = "";
+}
 /* Everything a peer sends is treated as decoration and clamped into range. */
 function takePeer(m) {
   if (!m || typeof m !== "object" || typeof m.i !== "string" || m.i === MEID) return;
@@ -4404,6 +4586,20 @@ function takePeer(m) {
   p.cc = colourOr(m.cc, "#ff7a3c");
   p.ct = colourOr(m.ct, "#2b2f3e");
   p.a = Number(m.a) || 0;
+  /* A peer's team job and its own contribution. Clamped hard: a stranger on a
+     public broker can nudge a shared task along, never break the game. */
+  p.k = clamp(Number(m.k) || 0, 0, 5000);
+  p.tj = null;
+  if (m.tj && typeof m.tj === "object" && (m.tj.k === "meet" || m.tj.k === "fund")) {
+    p.tj = {
+      k: m.tj.k,
+      at: Number(m.tj.at) || 0,
+      by: cleanName(m.tj.by),
+      place: (m.tj.place && ROOMS[m.tj.place]) ? m.tj.place : null,
+      goal: clamp(Number(m.tj.goal) || TEAM_GOAL, 50, 5000)
+    };
+    if (p.tj.k === "meet" && !p.tj.place) p.tj = null;
+  }
   p.at = performance.now();
 }
 
@@ -4426,7 +4622,9 @@ function myPacket() {
     y: Math.round(driving ? car.y : hero.y),
     d: hero.dir, m: hero.moving ? 1 : 0,
     c: driving ? mc.shape : null, cc: driving ? mc.color : null, ct: driving ? mc.trim : null,
-    a: driving ? +car.a.toFixed(2) : 0
+    a: driving ? +car.a.toFixed(2) : 0,
+    tj: S.team.job || null,
+    k: Math.round(S.team.earned) || 0
   };
 }
 
@@ -4437,7 +4635,11 @@ function netSend(obj) {
 }
 
 function netTick() {
+  teamTrackEarnings();
+  paintTeamLive();
   if (!roomCode) return;
+  adoptNewestJob();
+  teamCheck();
   const now = performance.now();
   const pkt = myPacket();
   const sig = pkt.r + "|" + pkt.x + "|" + pkt.y + "|" + pkt.d + "|" + pkt.m + "|" + pkt.c;
@@ -4487,6 +4689,7 @@ function leaveRoom(quiet) {
   try { if (bc) bc.close(); } catch (e) {}
   try { if (sock) sock.end(true); } catch (e) {}
   bc = null; sock = null; roomCode = null; netState = "off"; lastSent = "";
+  S.team.job = null; S.team.earned = 0;
   for (const id in PEERS) delete PEERS[id];
   if (!quiet) paintTogether();
 }
@@ -4530,8 +4733,10 @@ function showTogether() {
       '<p class="rowlabel">Who is here</p>' +
       '<div class="herelist" id="hereList">' + hereHTML() + "</div>" +
       '<p class="hint" id="netStatus">' + netWord() + "</p>" +
+      teamPanelHTML() +
       '<button id="leaveRoom" type="button">Play on my own again</button>';
     document.getElementById("leaveRoom").addEventListener("click", () => { leaveRoom(); closeOverlay(); });
+    wireTeamPanel();
   } else {
     b.innerHTML =
       '<p class="hint">You still play your own Northgate — your own money, your own animals, your own day. This just lets you see each other walking round.</p>' +
