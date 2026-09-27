@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Word Stage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Fredoka:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  color-scheme: dark;
+  --stage:#1B1231;        /* night stage */
+  --floor:#261a45;        /* card surface */
+  --floor-2:#31225a;
+  --curtain:#E0336F;      /* raspberry curtain */
+  --spot:#FFD166;         /* spotlight gold */
+  --mint:#20D6A4;
+  --coral:#FF8A5B;
+  --sky:#6EC8FF;
+  --ink:#FFF6E8;
+  --ink-soft:#CFC3E6;
+  --line:#4a3a78;
+  --display:"Bungee","Arial Black",Impact,sans-serif;
+  --body:"Fredoka","Trebuchet MS","Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{background:var(--stage);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;padding-inline:16px;padding-block:0 48px;
+  background-image:radial-gradient(ellipse 60% 40% at 20% -5%, rgba(255,209,102,.18), transparent 70%),radial-gradient(ellipse 50% 35% at 85% -5%, rgba(224,51,111,.22), transparent 70%);}
+.wrap{max-width:1180px;margin:0 auto}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--spot);outline-offset:2px;border-radius:8px}
+
+/* marquee */
+header.marquee{padding-block:22px 12px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.dancers{font-size:34px;display:flex;gap:14px;justify-content:center}
+.dancers span{display:inline-block;animation:bop 1.6s ease-in-out infinite}
+.dancers span:nth-child(2){animation-delay:.2s}.dancers span:nth-child(3){animation-delay:.4s}.dancers span:nth-child(4){animation-delay:.6s}.dancers span:nth-child(5){animation-delay:.8s}
+@keyframes bop{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-8px) rotate(4deg)}}
+@media (prefers-reduced-motion: reduce){.dancers span{animation:none}}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(34px,7vw,60px);line-height:1;margin:0;letter-spacing:.02em;
+  color:var(--spot);text-shadow:0 0 18px rgba(255,209,102,.45),3px 3px 0 var(--curtain)}
+.tag{margin:0;color:var(--ink-soft);font-size:16px}
+.bulbs{height:10px;width:min(560px,90%);background:radial-gradient(circle,var(--spot) 2.5px,transparent 3.5px) 0 50%/18px 10px repeat-x;opacity:.85}
+
+.layout{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:22px;align-items:start;margin-top:14px}
+@media (max-width:860px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--floor);border:2px solid var(--line);border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:16px}
+h2{font-family:var(--display);font-weight:400;font-size:22px;margin:0;color:var(--ink);letter-spacing:.03em}
+h2 small{font-family:var(--body);font-size:15px;color:var(--ink-soft);letter-spacing:0;display:block;margin-top:2px}
+label{font-weight:600;font-size:15px;display:block;margin-bottom:6px}
+.hint{font-weight:400;color:var(--ink-soft);font-size:14px}
+input[type=text],textarea{width:100%;background:var(--stage);border:2px solid var(--line);border-radius:14px;padding:10px 12px;font-size:17px}
+input[type=text]:focus,textarea:focus{border-color:var(--spot);outline:none}
+textarea{min-height:64px;resize:vertical}
+#w-word{font-size:24px;font-weight:600}
+.field{display:flex;flex-direction:column}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+.btn{border:0;border-radius:999px;padding:9px 16px;font-weight:600;background:var(--floor-2);border:2px solid var(--line)}
+.btn:hover{border-color:var(--ink-soft)}
+.btn.gold{background:var(--spot);color:#2a1a00;border-color:var(--spot)}
+.btn.pink{background:var(--curtain);color:#fff;border-color:var(--curtain)}
+.btn.mint{background:var(--mint);color:#062a20;border-color:var(--mint)}
+.btn.small{padding:6px 12px;font-size:15px}
+.iconbtn{border:2px solid var(--line);background:var(--floor-2);border-radius:999px;padding:6px 12px;font-size:16px;font-weight:600}
+
+/* chunks */
+.chunks{display:flex;gap:6px;flex-wrap:wrap}
+.chunk{background:var(--stage);border:2px dashed var(--sky);color:var(--sky);border-radius:12px;padding:4px 12px;font-size:20px;font-weight:600}
+.chunk:hover{background:rgba(110,200,255,.12)}
+.linkbtn{background:none;border:0;padding:0;margin-top:8px;color:var(--ink-soft);text-decoration:underline;font-size:14px;align-self:flex-start}
+
+/* reveal */
+.reveal{border:2px solid var(--line);border-radius:16px;padding:14px;background:linear-gradient(160deg,rgba(255,209,102,.10),rgba(224,51,111,.08))}
+.reveal .pos{display:inline-block;background:var(--curtain);color:#fff;border-radius:999px;padding:1px 10px;font-size:13px;font-weight:600;margin-right:6px}
+.reveal ol{margin:8px 0 0;padding-left:22px}
+.reveal li{margin-bottom:6px}
+.reveal .ex{color:var(--ink-soft);font-style:italic}
+.links a{color:var(--sky)}
+
+/* comfort */
+.comfort{display:flex;gap:8px;flex-wrap:wrap}
+.cbtn{flex:1 1 120px;border:2px solid var(--line);background:var(--stage);border-radius:16px;padding:8px 10px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:14px;line-height:1.2}
+.cbtn .e{font-size:30px}
+.cbtn[aria-pressed=true]{border-color:var(--spot);background:rgba(255,209,102,.14);box-shadow:0 0 14px rgba(255,209,102,.35)}
+
+.cognate{display:flex;gap:8px;align-items:center;font-size:15px;margin-top:6px}
+.cognate input{width:20px;height:20px;accent-color:var(--spot)}
+
+/* dictionary */
+.tools{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;align-items:center}
+.seg{display:inline-flex;flex-wrap:wrap;border:2px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{border:0;background:transparent;padding:6px 14px;font-weight:600;font-size:15px}
+.seg button[aria-pressed=true]{background:var(--spot);color:#2a1a00}
+.az{display:flex;flex-wrap:wrap;gap:4px}
+.az button{width:32px;height:32px;border-radius:9px;border:0;background:var(--stage);color:#6d5f92;font-weight:700;font-size:15px}
+.az button.has{color:var(--ink);background:var(--floor-2)}
+.az button[aria-pressed=true]{background:var(--curtain);color:#fff}
+.letter{font-family:var(--display);font-size:26px;color:var(--curtain);margin:6px 0 -4px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.card{background:var(--stage);border:2px solid var(--line);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:8px;position:relative}
+.card.c3{border-color:rgba(255,209,102,.7);box-shadow:0 0 18px rgba(255,209,102,.28)}
+.card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.card .word{font-size:26px;font-weight:700;line-height:1.1;word-break:break-word}
+.card .mood{font-size:26px;border:0;background:none;padding:0}
+.card .meta{color:var(--ink-soft);font-size:14px}
+.card .es{font-size:15px}
+.card .sent{font-size:15px;border-left:3px solid var(--mint);padding-left:8px}
+.card .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.fam{display:flex;flex-direction:column;gap:8px}
+.famhead{font-family:var(--display);font-size:22px;color:var(--mint)}
+.empty{color:var(--ink-soft);text-align:center;padding:20px;border:2px dashed var(--line);border-radius:18px}
+
+/* practice */
+.practice{background:linear-gradient(160deg,rgba(32,214,164,.12),rgba(110,200,255,.08));border:2px solid var(--line);border-radius:22px;padding:22px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.practice .big{font-size:clamp(34px,6vw,52px);font-weight:700;line-height:1.1}
+.practice .meaning{max-width:52ch;font-size:18px}
+
+.ilist{list-style:none;margin:6px 0 0;padding:0;columns:2 200px;column-gap:18px}
+.ilist li{display:flex;gap:8px;align-items:baseline;break-inside:avoid;padding:3px 0}
+.ie{font-size:18px}
+.iword{background:none;border:0;padding:0;font-size:19px;font-weight:600;text-align:left}
+.iword:hover{color:var(--spot)}
+.weekbox{white-space:pre-wrap;background:var(--stage);border:2px dashed var(--line);border-radius:16px;padding:14px;font-family:var(--body);font-size:16px;margin:0}
+.share{border-top:2px dashed var(--line);padding-top:14px;display:flex;flex-direction:column;gap:10px}
+.status{min-height:22px;font-size:15px;color:var(--mint)}
+.confirm{background:var(--floor-2);border:2px solid var(--curtain);border-radius:14px;padding:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:15px}
+.saved{font-size:13px;color:var(--ink-soft);text-align:center}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+
+<div class="wrap">
+<header class="marquee">
+  <div class="dancers" aria-hidden="true"><span>💃</span><span>🩰</span><span>🕺</span><span>🎶</span><span>💃</span></div>
+  <h1>Word Stage</h1>
+  <div class="bulbs" aria-hidden="true"></div>
+  <p class="tag">Every new word gets its turn in the spotlight.</p>
+</header>
+
+<div class="layout">
+  <!-- ADD A WORD -->
+  <section class="panel" aria-labelledby="add-h">
+    <h2 id="add-h">Add a word <small>Found a word you don't know? Put it on stage.</small></h2>
+
+    <div class="field">
+      <label for="w-word">The word</label>
+      <input type="text" id="w-word" autocomplete="off" spellcheck="false" placeholder="e.g. preserve">
+      <div class="row" style="margin-top:8px">
+        <button class="iconbtn" type="button" id="say-word">🔊 Hear it</button>
+        <button class="iconbtn" type="button" id="say-slow">🐢 Slowly</button>
+      </div>
+    </div>
+
+    <div class="field" id="parts-field" hidden>
+      <label>The parts <span class="hint">— tap each part to hear it, then say the whole word.</span></label>
+      <div class="chunks" id="chunk-view"></div>
+      <button type="button" class="linkbtn" id="parts-fix">Parts look wrong? Fix them</button>
+      <div id="parts-edit" hidden style="margin-top:8px">
+        <label for="w-chunks" class="hint" style="font-weight:500">Put a dot between the parts, like pre.serve</label>
+        <input type="text" id="w-chunks" autocomplete="off" spellcheck="false">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="w-guess">My guess: what do you think it means?</label>
+      <textarea id="w-guess" placeholder="Take a guess first. Look at the parts and the sentence you found it in."></textarea>
+      <div class="row" style="margin-top:8px">
+        <button class="btn gold" type="button" id="reveal-btn">✨ Reveal the meaning</button>
+      </div>
+    </div>
+
+    <div id="reveal" class="reveal" hidden></div>
+
+    <div class="field">
+      <label for="w-meaning">The meaning, in my own words</label>
+      <textarea id="w-meaning" placeholder="Write it the way you'd explain it to a friend."></textarea>
+    </div>
+
+    <div class="field">
+      <label for="w-es">In Spanish</label>
+      <input type="text" id="w-es" autocomplete="off" placeholder="e.g. preservar">
+      <div class="cognate"><input type="checkbox" id="w-cog"><label for="w-cog" style="margin:0;font-weight:500">⭐ It looks like the Spanish word (a cognate)</label></div>
+    </div>
+
+
+    <div class="field">
+      <label for="w-where">Where I found it <span class="hint">(optional)</span></label>
+      <input type="text" id="w-where" autocomplete="off" placeholder="e.g. Reading lesson about the Olympics">
+    </div>
+
+    <div class="field">
+      <label id="comfort-l">How comfortable do I feel using it?</label>
+      <div class="comfort" role="group" aria-labelledby="comfort-l" id="comfort-pick">
+        <button type="button" class="cbtn" data-c="1" aria-pressed="true"><span class="e">🌱</span>New to me</button>
+        <button type="button" class="cbtn" data-c="2" aria-pressed="false"><span class="e">🙂</span>Getting there</button>
+        <button type="button" class="cbtn" data-c="3" aria-pressed="false"><span class="e">💃</span>I've got it</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <button class="btn pink" type="button" id="save-btn">💃 Put it on stage</button>
+      <button class="btn" type="button" id="clear-btn">Clear</button>
+    </div>
+    <div class="status" id="add-status" role="status"></div>
+  </section>
+
+  <!-- DICTIONARY -->
+  <section class="panel" aria-labelledby="dict-h">
+    <h2 id="dict-h">My dictionary <small id="dict-sub">All your words, A to Z.</small></h2>
+
+    <div class="tools">
+      <div class="seg" role="group" aria-label="View">
+        <button type="button" data-view="az" aria-pressed="true">A–Z</button>
+        <button type="button" data-view="fam" aria-pressed="false">Word families</button>
+        <button type="button" data-view="index" aria-pressed="false">Index</button>
+        <button type="button" data-view="week" aria-pressed="false">New this week</button>
+        <button type="button" data-view="practice" aria-pressed="false">5-minute practice</button>
+      </div>
+      <div class="seg" role="group" aria-label="Show me">
+        <button type="button" data-f="0" aria-pressed="true">All</button>
+        <button type="button" data-f="1" aria-pressed="false" title="New to me">🌱</button>
+        <button type="button" data-f="2" aria-pressed="false" title="Getting there">🙂</button>
+        <button type="button" data-f="3" aria-pressed="false" title="I've got it">💃</button>
+      </div>
+    </div>
+
+    <div class="az" id="az" aria-label="Jump to a letter"></div>
+    <div id="dict"></div>
+
+    <div class="share">
+      <h2 style="font-size:18px">Share with my coach</h2>
+      <div class="row">
+        <button class="btn mint small" type="button" id="share-btn">📋 Copy all my words (backup)</button>
+        <button class="btn small" type="button" id="restore-open">Bring back my words</button>
+      </div>
+      <div id="restore-box" hidden class="field">
+        <label for="restore-in">Paste your backup here</label>
+        <textarea id="restore-in" placeholder="Paste the whole message you copied before."></textarea>
+        <div class="row" style="margin-top:8px"><button class="btn gold small" type="button" id="restore-go">Bring them back</button></div>
+      </div>
+      <textarea id="share-out" class="sr" aria-hidden="true" tabindex="-1"></textarea>
+      <div class="status" id="share-status" role="status"></div>
+      <div class="saved" id="saved-light">Saved on this computer</div>
+    </div>
+  </section>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var KEY="wordstage.v1";
+var PREFIXES=["inter","trans","under","over","super","anti","mis","dis","pre","pro","sub","non","un","re","in","im","ex","de"];
+var SUFFIXES=["ation","tion","sion","ment","ness","able","ible","ful","less","ous","ive","ing","est","ly","er","ed"];
+var EMO={1:"🌱",2:"🙂",3:"💃"};
+var LABEL={1:"New to me",2:"Getting there",3:"I've got it"};
+var STARTER=[
+ {w:"preserve",ch:["pre","serve"],m:"To keep something safe so it lasts and doesn't get spoiled.",es:"preservar",cog:true,where:"Reading lesson",c:1,t:1},
+ {w:"summarize",ch:["sum","ma","rize"],m:"To tell the most important parts in a short way.",es:"resumir",cog:false,where:"Reading lesson",c:2,t:2}
+];
+
+var words=[], comfort=1, view="az", filt=0, letter=null, editingIdx=-1, storageOK=true;
+
+/* ---------- storage ---------- */
+function load(){
+  try{var raw=localStorage.getItem(KEY); if(raw){var d=JSON.parse(raw); if(Array.isArray(d)) return d;}}
+  catch(e){storageOK=false;}
+  return STARTER.slice();
+}
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(words)); storageOK=true;}catch(e){storageOK=false;}
+  document.getElementById("saved-light").textContent=storageOK?"Saved on this computer":"This computer won't save. Use “Copy my words” so you don't lose them.";
+}
+
+/* ---------- speech (only when tapped) ---------- */
+var voice=null;
+function pickVoice(){
+  try{var vs=speechSynthesis.getVoices(); voice=vs.find(function(v){return /en[-_]US/i.test(v.lang)&&/female|samantha|google us/i.test(v.name);})||vs.find(function(v){return /en[-_]US/i.test(v.lang);})||vs.find(function(v){return /^en/i.test(v.lang);})||null;}catch(e){}
+}
+try{pickVoice(); speechSynthesis.onvoiceschanged=pickVoice;}catch(e){}
+function say(text,rate){
+  if(!text) return;
+  try{speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(text); u.lang="en-US"; u.rate=rate||0.9; if(voice) u.voice=voice; speechSynthesis.speak(u);}
+  catch(e){setStatus("add-status","This computer can't read words aloud. Try the Cambridge link after you reveal the meaning.");}
+}
+
+/* ---------- chunks ---------- */
+/* Breaks a word into parts for her: prefix, syllables, suffix. */
+var DIGRAPH_NEXT=["ch","sh","th","ph","wh","qu","bl","br","cl","cr","dr","fl","fr","gl","gr","pl","pr","sc","sk","sl","sm","sn","sp","st","sw","tr","tw"];
+var DIGRAPH_PREV=["ck","ng","gh","nk","x"];
+function isV(s,i){var c=s[i]; return "aeiou".indexOf(c)>=0 || (c==="y" && i>0);}
+function splitRoot(s){
+  if(s.length<=3) return [s];
+  var le=null;
+  if(/[^aeiouy]le$/.test(s) && s.length>4){ le=s.slice(-3); s=s.slice(0,-3); }
+  var groups=[], i=0;
+  while(i<s.length){ if(isV(s,i)){ var st=i; while(i<s.length && isV(s,i)) i++; groups.push([st,i]); } else i++; }
+  if(groups.length && s[s.length-1]==="e" && groups[groups.length-1][0]===s.length-1 && groups.length>1) groups.pop();
+  if(groups.length<=1){ return le? [s,le] : [s]; }
+  var cuts=[];
+  for(var g=0; g<groups.length-1; g++){
+    var a=groups[g][1], b=groups[g+1][0], cons=s.slice(a,b), cut;
+    if(cons.length===0) cut=a;
+    else if(cons.length===1) cut= cons==="x"? a+1 : a;
+    else if(cons.length===2){
+      if(DIGRAPH_PREV.indexOf(cons)>=0) cut=b;
+      else if(DIGRAPH_NEXT.indexOf(cons)>=0) cut=a;
+      else cut=a+1;
+    } else {
+      var two=cons.slice(0,2);
+      cut = (DIGRAPH_PREV.indexOf(two)>=0 || cons.slice(1,3)==="" ) ? a+2 : a+1;
+    }
+    cuts.push(cut);
+  }
+  var out=[], last=0; cuts.forEach(function(c){ if(c>last){ out.push(s.slice(last,c)); last=c; } }); out.push(s.slice(last));
+  out=out.filter(Boolean); if(le) out.push(le);
+  return out;
+}
+function suggestChunks(w){
+  w=(w||"").toLowerCase().trim().replace(/[^a-z'-]/g,""); if(!w) return [];
+  var rest=w, pre="", suf="";
+  for(var i=0;i<PREFIXES.length;i++){var p=PREFIXES[i]; if(rest.indexOf(p)===0 && rest.length-p.length>=4){pre=p; rest=rest.slice(p.length); break;}}
+  for(var j=0;j<SUFFIXES.length;j++){var s=SUFFIXES[j]; if(rest.length-s.length>=3 && rest.slice(-s.length)===s){suf=s; rest=rest.slice(0,-s.length); break;}}
+  var parts=[]; if(pre) parts.push(pre); parts=parts.concat(splitRoot(rest)); if(suf==="ation"){ parts.push("a","tion"); } else if(suf) parts.push(suf);
+  return parts.filter(Boolean);
+}
+function readChunks(){
+  var v=document.getElementById("w-chunks").value.trim();
+  return v? v.split(/[.\-·•\s]+/).filter(Boolean):[];
+}
+function drawChunks(){
+  var box=document.getElementById("chunk-view"); box.innerHTML="";
+  document.getElementById("parts-field").hidden = !readChunks().length;
+  readChunks().forEach(function(c){var b=document.createElement("button"); b.type="button"; b.className="chunk"; b.textContent=c; b.setAttribute("aria-label","Hear "+c); b.onclick=function(){say(c,0.7);}; box.appendChild(b);});
+}
+
+/* ---------- families ---------- */
+function families(entry){
+  var f=[], ch=(entry.ch||[]).map(function(x){return x.toLowerCase();});
+  if(ch.length>1 && PREFIXES.indexOf(ch[0])>=0) f.push(ch[0]+"–");
+  if(ch.length>1 && SUFFIXES.indexOf(ch[ch.length-1])>=0) f.push("–"+ch[ch.length-1]);
+  return f;
+}
+
+/* ---------- reveal ---------- */
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function lookLinks(w){
+  var q=encodeURIComponent(w);
+  return '<p class="links" style="margin:10px 0 0;font-size:15px">Look it up: <a href="https://dictionary.cambridge.org/dictionary/english-spanish/'+q+'" target="_blank" rel="noopener">Cambridge English–Spanish</a> · <a href="https://www.spanishdict.com/translate/'+q+'" target="_blank" rel="noopener">SpanishDict</a></p>';
+}
+function reveal(){
+  var w=document.getElementById("w-word").value.trim(), box=document.getElementById("reveal");
+  if(!w){setStatus("add-status","Type the word first."); return;}
+  if(!document.getElementById("w-guess").value.trim()){
+    box.hidden=false; box.innerHTML='<strong>🎭 Guess first!</strong> Write what you think it means. Any guess is a good guess — then reveal it.';
+    document.getElementById("w-guess").focus(); return;
+  }
+  box.hidden=false; box.innerHTML="Opening the curtain…";
+  fetch("https://api.dictionaryapi.dev/api/v2/entries/en/"+encodeURIComponent(w.toLowerCase()))
+   .then(function(r){ if(!r.ok) throw new Error(r.status===404?"notfound":"net"); return r.json(); })
+   .then(function(data){
+      var e=data[0]||{}, html='<div style="font-size:20px;font-weight:700">'+esc(e.word||w)+(e.phonetic?' <span style="font-weight:400;color:var(--ink-soft)">'+esc(e.phonetic)+'</span>':'')+'</div>', n=0;
+      (e.meanings||[]).forEach(function(m){ if(n>=3) return;
+        var defs=(m.definitions||[]).slice(0,2); if(!defs.length) return;
+        html+='<div style="margin-top:8px"><span class="pos">'+esc(m.partOfSpeech)+'</span><ol>';
+        defs.forEach(function(d){n++; html+='<li>'+esc(d.definition)+(d.example?'<div class="ex">“'+esc(d.example)+'”</div>':'')+'</li>';});
+        html+='</ol></div>';
+      });
+      html+='<p style="margin:10px 0 0;font-size:15px">Was your guess close? Now write it in your own words below.</p>'+lookLinks(w);
+      box.innerHTML=html;
+   })
+   .catch(function(err){
+      box.innerHTML=(err.message==="notfound"
+        ? "Hmm, the dictionary doesn't know that spelling. Check the letters, or look it up here:"
+        : "The dictionary didn't load on this page. Look it up here instead:")+lookLinks(w);
+   });
+}
+
+/* ---------- add / edit ---------- */
+function setComfort(c){comfort=c; document.querySelectorAll("#comfort-pick .cbtn").forEach(function(b){b.setAttribute("aria-pressed",String(+b.dataset.c===c));});}
+function clearForm(){
+  ["w-word","w-chunks","w-guess","w-meaning","w-es","w-where"].forEach(function(id){document.getElementById(id).value="";});
+  document.getElementById("w-cog").checked=false; document.getElementById("reveal").hidden=true; setComfort(1); editingIdx=-1;
+  document.getElementById("w-chunks").dataset.touched="";
+  document.getElementById("save-btn").textContent="💃 Put it on stage"; drawChunks();
+}
+function saveWord(){
+  var w=document.getElementById("w-word").value.trim();
+  if(!w){setStatus("add-status","Type the word first."); document.getElementById("w-word").focus(); return;}
+  var entry={w:w,ch:readChunks(),m:document.getElementById("w-meaning").value.trim(),es:document.getElementById("w-es").value.trim(),
+    cog:document.getElementById("w-cog").checked,where:document.getElementById("w-where").value.trim(),c:comfort,t:Date.now()};
+  if(!entry.ch.length) entry.ch=suggestChunks(w);
+  if(editingIdx>=0){ entry.t=words[editingIdx].t; words[editingIdx]=entry; setStatus("add-status","Updated “"+w+"”."); }
+  else{
+    var dup=words.findIndex(function(x){return x.w.toLowerCase()===w.toLowerCase();});
+    if(dup>=0){ words[dup]=Object.assign(words[dup],entry); setStatus("add-status","“"+w+"” was already on stage, so I updated it."); }
+    else{ words.push(entry); setStatus("add-status","“"+w+"” is on stage! "+EMO[comfort]); }
+  }
+  save(); clearForm(); letter=null; render();
+}
+function editWord(i){
+  var e=words[i]; editingIdx=i;
+  document.getElementById("w-word").value=e.w; document.getElementById("w-chunks").value=(e.ch||[]).join("."); document.getElementById("w-guess").value="";
+  document.getElementById("w-meaning").value=e.m||""; document.getElementById("w-es").value=e.es||""; document.getElementById("w-cog").checked=!!e.cog;
+  document.getElementById("w-where").value=e.where||""; setComfort(e.c||1); drawChunks();
+  document.getElementById("save-btn").textContent="💾 Save changes"; document.getElementById("w-word").scrollIntoView({behavior:"smooth",block:"center"});
+}
+function cycleComfort(i){ words[i].c = words[i].c>=3?1:words[i].c+1; save(); render(); }
+
+/* ---------- dictionary render ---------- */
+function visible(){ return words.map(function(e,i){return {e:e,i:i};}).filter(function(x){return !filt || x.e.c===filt;}); }
+function cardHTML(x){
+  var e=x.e, i=x.i;
+  var chunks=(e.ch||[]).map(function(c){return '<button type="button" class="chunk" data-say="'+esc(c)+'" style="font-size:16px;padding:2px 10px">'+esc(c)+'</button>';}).join("");
+  return '<article class="card'+(e.c===3?' c3':'')+'">'+
+   '<div class="top"><div class="word">'+esc(e.w)+'</div>'+
+   '<button type="button" class="mood" data-cycle="'+i+'" title="'+LABEL[e.c]+' — tap to change" aria-label="'+LABEL[e.c]+'. Tap to change.">'+EMO[e.c]+'</button></div>'+
+   (chunks?'<div class="chunks">'+chunks+'</div>':'')+
+   (e.m?'<div>'+esc(e.m)+'</div>':'<div class="meta">No meaning yet — tap Edit to add one.</div>')+
+   (e.es?'<div class="es">🇪🇸 '+esc(e.es)+(e.cog?' ⭐':'')+'</div>':'')+
+   (e.where?'<div class="meta">Found in: '+esc(e.where)+'</div>':'')+
+   '<div class="acts"><button type="button" class="iconbtn" data-say="'+esc(e.w)+'">🔊</button><button type="button" class="iconbtn" data-slow="'+esc(e.w)+'">🐢</button><button type="button" class="iconbtn" data-edit="'+i+'">Edit</button><button type="button" class="iconbtn" data-del="'+i+'">Remove</button></div>'+
+   '<div data-confirm="'+i+'"></div></article>';
+}
+function renderAZ(){
+  var az=document.getElementById("az"); az.hidden=false; az.innerHTML="";
+  var have={}; words.forEach(function(e){have[e.w[0].toUpperCase()]=true;});
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(function(L){
+    var b=document.createElement("button"); b.type="button"; b.textContent=L; if(have[L]) b.className="has"; b.setAttribute("aria-pressed",String(letter===L));
+    b.onclick=function(){letter=(letter===L?null:L); render();}; az.appendChild(b);
+  });
+  var list=visible().filter(function(x){return !letter || x.e.w[0].toUpperCase()===letter;}).sort(function(a,b){return a.e.w.localeCompare(b.e.w);});
+  if(!list.length) return '<div class="empty">'+(words.length?"No words here yet. Try another letter or “All”.":"Your stage is empty. Add your first word!")+'</div>';
+  var html="", cur="", group="";
+  list.forEach(function(x){var L=x.e.w[0].toUpperCase(); if(L!==cur){ if(group) html+=group+'</div>'; html+='<div class="letter">'+L+'</div>'; group='<div class="cards">'; cur=L;} group+=cardHTML(x);});
+  return html+group+'</div>';
+}
+function renderFam(){
+  document.getElementById("az").hidden=true;
+  var groups={}, other=[];
+  visible().forEach(function(x){var f=families(x.e); if(!f.length) other.push(x); f.forEach(function(k){(groups[k]=groups[k]||[]).push(x);});});
+  var keys=Object.keys(groups).sort();
+  var html='<p class="meta" style="margin:0">Words that share a beginning or an ending are in the same family. Learn one part, and you can read the whole family.</p>';
+  keys.forEach(function(k){html+='<div class="fam"><div class="famhead">'+esc(k)+'</div><div class="cards">'+groups[k].map(cardHTML).join("")+'</div></div>';});
+  if(other.length) html+='<div class="fam"><div class="famhead" style="color:var(--ink-soft)">Still looking for a family</div><div class="cards">'+other.map(cardHTML).join("")+'</div></div>';
+  if(!keys.length && !other.length) html+='<div class="empty">No words to show.</div>';
+  return html;
+}
+var pq=[], pi=0, pshow=false;
+function startPractice(){ pq=words.map(function(e,i){return i;}).filter(function(i){return filt? words[i].c===filt : words[i].c<3;}); pi=0; pshow=false; }
+function renderPractice(){
+  document.getElementById("az").hidden=true;
+  if(!pq.length) return '<div class="practice"><div class="big">🌟</div><p>'+(filt?"No words with that feeling yet.":"All your words are 💃! Add some new ones, or tap 💃 above to practice those.")+'</p></div>';
+  if(pi>=pq.length) return '<div class="practice"><div class="big">🎉 Bravo!</div><p>You practiced '+(pq.length===1?"your word":"all "+pq.length+" words")+'.</p><button type="button" class="btn gold" id="p-again">Practice again</button></div>';
+  var e=words[pq[pi]];
+  return '<div class="practice"><div class="meta">Word '+(pi+1)+' of '+pq.length+'</div><div class="big">'+esc(e.w)+'</div>'+
+   '<div class="chunks" style="justify-content:center">'+(e.ch||[]).map(function(c){return '<button type="button" class="chunk" data-say="'+esc(c)+'">'+esc(c)+'</button>';}).join("")+'</div>'+
+   '<div class="row" style="justify-content:center"><button type="button" class="iconbtn" data-say="'+esc(e.w)+'">🔊 Hear it</button><button type="button" class="iconbtn" data-slow="'+esc(e.w)+'">🐢 Slowly</button></div>'+
+   (pshow? '<div class="meaning">'+(e.m?esc(e.m):'<span class="meta">No meaning written yet.</span>')+'</div>'+
+     '<p style="margin:4px 0 0;font-weight:600">How do you feel about it now?</p><div class="comfort" style="width:100%;max-width:460px">'+
+     [1,2,3].map(function(c){return '<button type="button" class="cbtn" data-pc="'+c+'" aria-pressed="'+(e.c===c)+'"><span class="e">'+EMO[c]+'</span>'+LABEL[c]+'</button>';}).join("")+'</div>'
+   : '<p class="meta" style="margin:0">Say what it means out loud first.</p><button type="button" class="btn gold" id="p-show">Show the meaning</button>')+
+   '</div>';
+}
+function renderIndex(){
+  document.getElementById("az").hidden=true;
+  var list=visible().sort(function(a,b){return a.e.w.localeCompare(b.e.w);});
+  if(!list.length) return '<div class="empty">No words to show.</div>';
+  var html='<div class="index">', cur="";
+  list.forEach(function(x){ var L=x.e.w[0].toUpperCase();
+    if(L!==cur){ if(cur) html+='</ul>'; html+='<div class="letter">'+L+'</div><ul class="ilist">'; cur=L; }
+    html+='<li><span class="ie">'+EMO[x.e.c]+'</span><button type="button" class="iword" data-say="'+esc(x.e.w)+'" title="Hear it">'+esc(x.e.w)+'</button>'+(x.e.es?'<span class="meta">'+esc(x.e.es)+(x.e.cog?' ⭐':'')+'</span>':'')+'</li>';
+  });
+  return html+'</ul></div>';
+}
+function weekStart(){ var d=new Date(); d.setHours(0,0,0,0); var day=(d.getDay()+6)%7; d.setDate(d.getDate()-day); return d; }
+function weekWords(){ var s=weekStart().getTime(); return words.filter(function(e){return (e.t||0)>=s;}).sort(function(a,b){return a.w.localeCompare(b.w);}); }
+function weekText(){
+  var s=weekStart(), e=new Date(s); e.setDate(e.getDate()+6);
+  var f=function(d){return d.toLocaleDateString("en-US",{month:"short",day:"numeric"});};
+  var ww=weekWords(), lines=["My new words this week ("+f(s)+" – "+f(e)+"):",""];
+  ww.forEach(function(x){ lines.push(EMO[x.c]+" "+x.w+((x.ch&&x.ch.length>1)?" ("+x.ch.join(" · ")+")":"")+(x.m?" — "+x.m:"")+(x.es?" | "+x.es+(x.cog?" ⭐":""):"")); });
+  return lines.join("\n");
+}
+function renderWeek(){
+  document.getElementById("az").hidden=true;
+  var ww=weekWords();
+  if(!ww.length) return '<div class="empty">No new words yet this week. When you add a word, it shows up here.</div>';
+  return '<p class="meta" style="margin:0">Words you added since Monday. Copy them and paste them into the chat with your coach.</p>'+
+    '<div><button type="button" class="btn gold" id="week-copy">📋 Copy this week\'s words</button></div>'+
+    '<pre class="weekbox" id="week-text">'+esc(weekText())+'</pre>';
+}
+function render(){
+  var sub=document.getElementById("dict-sub"), n=words.length, got=words.filter(function(e){return e.c===3;}).length;
+  sub.textContent = n? (n+(n===1?" word":" words")+" on stage"+(got?" · "+got+" 💃":"")) : "All your words, A to Z.";
+  var html = view==="fam"?renderFam(): view==="practice"?renderPractice(): view==="index"?renderIndex(): view==="week"?renderWeek(): renderAZ();
+  document.getElementById("dict").innerHTML='<div style="display:flex;flex-direction:column;gap:12px">'+html+'</div>';
+}
+
+/* ---------- share / restore ---------- */
+function shareText(){
+  var lines=["My Word Stage words ("+words.length+"):",""];
+  words.slice().sort(function(a,b){return a.w.localeCompare(b.w);}).forEach(function(e){
+    lines.push(EMO[e.c]+" "+e.w+((e.ch&&e.ch.length>1)?" ("+e.ch.join(" · ")+")":"")+(e.m?" — "+e.m:"")+(e.es?" | "+e.es+(e.cog?" ⭐":""):""));
+  });
+  var code; try{code=btoa(unescape(encodeURIComponent(JSON.stringify(words))));}catch(e){code="";}
+  lines.push("","Backup (keep this):","WS1:"+code);
+  return lines.join("\n");
+}
+function share(){
+  var t=shareText(), out=document.getElementById("share-out"); out.value=t;
+  var done=function(){setStatus("share-status","Copied! Paste it into your chat with your coach.");};
+  try{ navigator.clipboard.writeText(t).then(done,function(){fallbackCopy(out,done);}); }catch(e){ fallbackCopy(out,done); }
+}
+function fallbackCopy(out,done){
+  out.classList.remove("sr"); out.style.height="120px"; out.select();
+  try{ if(document.execCommand("copy")){ out.classList.add("sr"); done(); return; } }catch(e){}
+  setStatus("share-status","Select all the text in the box and copy it.");
+}
+function restore(){
+  var txt=document.getElementById("restore-in").value, m=txt.match(/WS1:([A-Za-z0-9+\/=]+)/);
+  if(!m){ setStatus("share-status","I couldn't find the backup in that. Paste the whole message, including the line that starts with WS1:"); return; }
+  try{ var got=JSON.parse(decodeURIComponent(escape(atob(m[1])))); if(!Array.isArray(got)) throw 0;
+    var added=0; got.forEach(function(e){ if(e&&e.w&&!words.some(function(x){return x.w.toLowerCase()===e.w.toLowerCase();})){words.push(e); added++;} });
+    save(); render(); document.getElementById("restore-box").hidden=true; document.getElementById("restore-in").value="";
+    setStatus("share-status", added? "Welcome back! "+added+" word"+(added===1?"":"s")+" returned to the stage." : "Those words are already on stage.");
+  }catch(e){ setStatus("share-status","That backup didn't work. Try copying it again."); }
+}
+
+function setStatus(id,msg){var el=document.getElementById(id); el.textContent=msg; clearTimeout(el._t); el._t=setTimeout(function(){el.textContent="";},6000);}
+
+/* ---------- events ---------- */
+document.getElementById("w-word").addEventListener("input",function(){ var c=document.getElementById("w-chunks"); if(!c.dataset.touched){ c.value=suggestChunks(this.value).join("."); drawChunks(); } });
+document.getElementById("w-chunks").addEventListener("input",function(){ this.dataset.touched=this.value?"1":""; drawChunks(); });
+document.getElementById("parts-fix").onclick=function(){var e=document.getElementById("parts-edit"); e.hidden=!e.hidden; if(!e.hidden) document.getElementById("w-chunks").focus();};
+document.getElementById("say-word").onclick=function(){say(document.getElementById("w-word").value.trim(),0.9);};
+document.getElementById("say-slow").onclick=function(){say(document.getElementById("w-word").value.trim(),0.55);};
+document.getElementById("reveal-btn").onclick=reveal;
+document.querySelectorAll("#comfort-pick .cbtn").forEach(function(b){b.onclick=function(){setComfort(+b.dataset.c);};});
+document.getElementById("save-btn").onclick=saveWord;
+document.getElementById("clear-btn").onclick=function(){clearForm(); document.getElementById("w-chunks").dataset.touched="";};
+document.querySelectorAll("[data-view]").forEach(function(b){b.onclick=function(){view=b.dataset.view; document.querySelectorAll("[data-view]").forEach(function(x){x.setAttribute("aria-pressed",String(x===b));}); if(view==="practice") startPractice(); render();};});
+document.querySelectorAll("[data-f]").forEach(function(b){b.onclick=function(){filt=+b.dataset.f; document.querySelectorAll("[data-f]").forEach(function(x){x.setAttribute("aria-pressed",String(x===b));}); if(view==="practice") startPractice(); render();};});
+document.getElementById("share-btn").onclick=share;
+document.getElementById("restore-open").onclick=function(){var b=document.getElementById("restore-box"); b.hidden=!b.hidden; if(!b.hidden) document.getElementById("restore-in").focus();};
+document.getElementById("restore-go").onclick=restore;
+
+document.getElementById("dict").addEventListener("click",function(ev){
+  var t=ev.target.closest("button"); if(!t) return;
+  if(t.dataset.say!=null){say(t.dataset.say,t.classList.contains("chunk")?0.7:0.9);return;}
+  if(t.dataset.slow!=null){say(t.dataset.slow,0.55);return;}
+  if(t.dataset.cycle!=null){cycleComfort(+t.dataset.cycle);return;}
+  if(t.dataset.edit!=null){editWord(+t.dataset.edit);return;}
+  if(t.dataset.del!=null){ var i=+t.dataset.del, box=document.querySelector('[data-confirm="'+i+'"]');
+    box.innerHTML='<div class="confirm">Take “'+esc(words[i].w)+'” off the stage? <button type="button" class="btn pink small" data-yes="'+i+'">Yes, remove</button><button type="button" class="btn small" data-no="1">Keep it</button></div>'; return; }
+  if(t.dataset.yes!=null){ words.splice(+t.dataset.yes,1); save(); render(); return; }
+  if(t.dataset.no!=null){ t.closest("[data-confirm]").innerHTML=""; return; }
+  if(t.id==="week-copy"){ var txt=weekText(), out=document.getElementById("share-out"); out.value=txt;
+    var ok=function(){setStatus("share-status","Copied! Paste it into your chat with your coach.");};
+    try{ navigator.clipboard.writeText(txt).then(ok,function(){fallbackCopy(out,ok);}); }catch(e){ fallbackCopy(out,ok); } return; }
+  if(t.id==="p-show"){pshow=true; render(); return;}
+  if(t.id==="p-again"){startPractice(); render(); return;}
+  if(t.dataset.pc!=null){ words[pq[pi]].c=+t.dataset.pc; save(); pi++; pshow=false; render(); return; }
+});
+
+words=load(); save(); drawChunks(); render();
+})();
+</script>
+
+</body>
+</html>
