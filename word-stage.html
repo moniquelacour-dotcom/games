@@ -234,15 +234,16 @@ textarea{min-height:64px;resize:vertical}
     <div id="dict"></div>
 
     <div class="share">
-      <h2 style="font-size:18px">Share with my coach</h2>
+      <h2 style="font-size:18px">Keep my words safe</h2>
+      <p class="meta" style="margin:0">Your words save on this computer. To be extra safe, copy a backup and paste it into your chat with your coach.</p>
       <div class="row">
-        <button class="btn mint small" type="button" id="share-btn">📋 Copy all my words (backup)</button>
-        <button class="btn small" type="button" id="restore-open">Bring back my words</button>
+        <button class="btn mint small" type="button" id="share-btn">📋 Copy a backup</button>
       </div>
+      <button type="button" class="linkbtn" id="restore-open">Lost your words? Get them back</button>
       <div id="restore-box" hidden class="field">
-        <label for="restore-in">Paste your backup here</label>
-        <textarea id="restore-in" placeholder="Paste the whole message you copied before."></textarea>
-        <div class="row" style="margin-top:8px"><button class="btn gold small" type="button" id="restore-go">Bring them back</button></div>
+        <label for="restore-in">Find your backup in the chat with your coach, copy it, and paste it here</label>
+        <textarea id="restore-in" placeholder="Paste your backup here"></textarea>
+        <div class="row" style="margin-top:8px"><button class="btn gold small" type="button" id="restore-go">Get my words back</button></div>
       </div>
       <textarea id="share-out" class="sr" aria-hidden="true" tabindex="-1"></textarea>
       <div class="status" id="share-status" role="status"></div>
@@ -505,7 +506,7 @@ function render(){
 
 /* ---------- share / restore ---------- */
 function shareText(){
-  var lines=["My Word Stage words ("+words.length+"):",""];
+  var lines=["My Word Stage backup ("+words.length+" words):",""];
   words.slice().sort(function(a,b){return a.w.localeCompare(b.w);}).forEach(function(e){
     lines.push(EMO[e.c]+" "+e.w+((e.ch&&e.ch.length>1)?" ("+e.ch.join(" · ")+")":"")+(e.m?" — "+e.m:"")+(e.es?" | "+e.es+(e.cog?" ⭐":""):""));
   });
@@ -515,7 +516,7 @@ function shareText(){
 }
 function share(){
   var t=shareText(), out=document.getElementById("share-out"); out.value=t;
-  var done=function(){setStatus("share-status","Copied! Paste it into your chat with your coach.");};
+  var done=function(){setStatus("share-status","Backup copied! Paste it into your chat with your coach.");};
   try{ navigator.clipboard.writeText(t).then(done,function(){fallbackCopy(out,done);}); }catch(e){ fallbackCopy(out,done); }
 }
 function fallbackCopy(out,done){
