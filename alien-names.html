@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Alien Name Dash</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@600;700&display=swap">
+<style>
+:root{
+  --sky:#101B3D; --sky-2:#1A2A5C; --card:#FFFDF6; --ink:#1C2440; --soft:#6B7596;
+  --vowel:#E8612C; --cons:#2F5FD0; --good:#2E9E5B; --good-ink:#FFFFFF; --retry:#F2B63D; --retry-ink:#3A2A00;
+  --line:#D8DDEB; --glow:#9BE7C4;
+  --display:"Fredoka","Trebuchet MS",system-ui,sans-serif;
+  --read:"Andika","Century Gothic","Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(120% 90% at 50% 0%,var(--sky-2),var(--sky));color:#EEF2FF;font-family:var(--display);padding-inline:16px;padding-block:14px;display:flex;flex-direction:column;gap:14px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+h1{margin:0;font-size:clamp(22px,3.4vw,32px)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{font:inherit;font-size:16px;border:2px solid #3B4B83;background:transparent;color:#EEF2FF;border-radius:999px;padding:6px 14px;cursor:pointer}
+.tab[aria-pressed="true"]{background:#EEF2FF;color:var(--ink);border-color:#EEF2FF}
+button:focus-visible{outline:3px solid var(--glow);outline-offset:3px}
+main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;min-height:0}
+.alien{font-size:clamp(46px,8vw,72px);line-height:1}
+.card{background:var(--card);color:var(--ink);border-radius:28px;padding:clamp(18px,3vw,30px) clamp(24px,5vw,56px);box-shadow:0 10px 0 #0A1230;min-width:min(88vw,520px);max-width:100%;text-align:center}
+.label{font-size:15px;color:var(--soft);margin:0 0 6px}
+.word{font-family:var(--read);font-weight:700;font-size:clamp(64px,13vw,132px);line-height:1.05;letter-spacing:.02em;display:flex;justify-content:center;gap:.08em}
+.word .ch{display:inline-block;padding:0 .04em;border-radius:12px}
+.word.split{gap:.28em}
+.word.split .ch{background:#F1F3FA}
+.v{color:var(--vowel)} .c{color:var(--cons)}
+.row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.big{font:inherit;font-size:clamp(20px,2.6vw,26px);border:0;border-radius:18px;padding:14px 24px;cursor:pointer}
+.got{background:var(--good);color:var(--good-ink);box-shadow:0 5px 0 #1D6B3D}
+.again{background:var(--retry);color:var(--retry-ink);box-shadow:0 5px 0 #A67A1C}
+.soft{background:#EEF2FF;color:var(--ink);box-shadow:0 5px 0 #9AA6CC}
+.hint{margin:0;color:#B9C2E6;font-size:16px;text-align:center;max-width:46ch}
+.stats{display:flex;gap:18px;align-items:center;font-size:20px}
+.pill{background:#22346E;border-radius:999px;padding:6px 16px;font-variant-numeric:tabular-nums}
+.timer{position:relative;width:120px;height:120px}
+.timer svg{width:100%;height:100%;transform:rotate(-90deg)}
+.timer .n{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:36px;font-variant-numeric:tabular-nums}
+.done{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
+.done .num{font-size:clamp(64px,12vw,110px);line-height:1;color:var(--glow)}
+.lv{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.wall{background:#FFFFFF;color:#111;border-radius:14px;padding:clamp(14px,2.4vw,26px);width:min(100%,860px);box-shadow:0 8px 0 #0A1230}
+.wallgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.w{font:inherit;font-family:var(--read);font-weight:400;font-size:clamp(24px,3.6vw,38px);color:#111;background:none;border:0;border-bottom:1px solid #E6E6E6;padding:6px 4px;cursor:pointer;text-align:center;position:relative}
+.w.ok{color:#1D7A45;font-weight:700}
+.w.miss{color:#B0B0B0;text-decoration:line-through;text-decoration-color:#C0392B;text-decoration-thickness:3px}
+.wallbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center}
+.wallbar .pill{font-size:20px}
+.mini{font:inherit;font-size:17px;border:0;border-radius:12px;padding:10px 16px;cursor:pointer}
+@media (max-width:520px){.w{font-size:22px}}
+@media (prefers-reduced-motion:no-preference){.card{animation:pop .18s ease-out}@keyframes pop{from{transform:scale(.94)}to{transform:scale(1)}}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>👽 Alien Name Dash</h1>
+  <div class="tabs" role="group" aria-label="Word level">
+    <button class="tab" data-lv="1" aria-pressed="true" type="button">Level 1 · zot</button>
+    <button class="tab" data-lv="2" aria-pressed="false" type="button">Level 2 · shib</button>
+    <button class="tab" data-lv="3" aria-pressed="false" type="button">Mixed</button>
+    <button class="tab" id="wallBtn" type="button">📋 Word wall</button>
+  </div>
+</header>
+<main id="main"></main>
+
+<script>
+(function(){
+  var L1="tob zot vap nif mub zam keb lom pum rup sib tud wef yat jod kig bez fut pim hib sov fom lek mip nud pof sut tav vob wug zeb cag dov fep gub vek jit kom lup meb jub pem ril sab tep vun wib yom zid heb jat kel fod gan"
+    .split(" ");
+  var L2="shib chom thep frep glub stom clid drup skib plom trem grob flun snev brop crub spov slem shug chab thon blet prot twib smep flig"
+    .split(" ");
+  var ALIENS=["👽","👾","🛸","🐙","🦑","🪐","🌟","🤖"];
+  var CHUNKS=["sh","ch","th"];
+  var st={wall:[],marks:[],wleft:60,wtimer:null,wdone:false,lv:1,mode:"warm",deck:[],cur:null,split:false,got:0,tries:0,left:60,timer:null};
+  var best={};try{best=JSON.parse(localStorage.getItem("alien.best")||"{}")}catch(e){}
+  function pool(){return st.lv===1?L1:st.lv===2?L2:L1.concat(L2)}
+  function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+  function next(){if(!st.deck.length)st.deck=shuffle(pool());st.cur={w:st.deck.pop(),a:ALIENS[Math.floor(Math.random()*ALIENS.length)]};st.split=false;}
+  function parts(w){var out=[],i=0;while(i<w.length){var two=w.slice(i,i+2);if(CHUNKS.indexOf(two)>=0){out.push(two);i+=2}else{out.push(w[i]);i++}}return out}
+  function wordHTML(w){return '<div class="word'+(st.split?' split':'')+'" aria-label="'+w+'">'+parts(w).map(function(p){return '<span class="ch '+(/[aeiou]/.test(p)?'v':'c')+'">'+p+'</span>'}).join("")+'</div>'}
+  var main=document.getElementById("main");
+  function newWall(){var p=pool(),out=[],d=[];while(out.length<40){if(!d.length)d=shuffle(p);var w=d.pop();if(out.length&&out[out.length-1]===w)continue;out.push(w)}st.wall=out;st.marks=out.map(function(){return 0});st.wdone=false;st.wleft=60;stopWall();}
+  function stopWall(){if(st.wtimer){clearInterval(st.wtimer);st.wtimer=null}}
+  function wallCount(){return st.marks.filter(function(m){return m===1}).length}
+  function render(){
+    if(st.mode==="wall"){
+      var running=!!st.wtimer;
+      main.innerHTML='<div class="wallbar"><span class="pill" id="wt">⏱ '+st.wleft+'s</span><span class="pill">✔ '+wallCount()+'</span>'+
+        (st.wdone?'<span class="pill">Time’s up!</span>':'<button class="mini got" id="wgo" type="button">'+(running?'Pause':(st.wleft<60?'Keep going':'Start 1 minute'))+'</button>')+
+        '<button class="mini soft" id="wnew" type="button">New wall</button><button class="mini soft" id="wclr" type="button">Clear marks</button><button class="mini soft" id="wback" type="button">← Aliens</button></div>'+
+        '<div class="wall"><div class="wallgrid">'+st.wall.map(function(w,i){return '<button class="w'+(st.marks[i]===1?' ok':st.marks[i]===2?' miss':'')+'" data-wi="'+i+'" type="button" aria-label="'+w+'">'+w+'</button>'}).join("")+'</div></div>'+
+        '<p class="hint">Read each row from left to right. Tap a word once when you read it, twice if you want to come back to it, three times to clear.</p>';
+      return;
+    }
+    if(st.mode==="warm"){
+      main.innerHTML='<div class="alien">'+st.cur.a+'</div><div class="card"><p class="label">This alien’s name is…</p>'+wordHTML(st.cur.w)+'</div>'+
+      '<div class="row"><button class="big soft" id="sp" type="button">'+(st.split?'Put it together':'Sound it out')+'</button><button class="big got" id="ok" type="button">✔ Got it</button><button class="big again" id="nx" type="button">Next alien →</button></div>'+
+      '<p class="hint">Not a real word — it’s an alien’s name! Say each sound, then zip them together.</p>'+
+      '<div class="row"><button class="big soft" id="go" type="button">⏱ 1-minute dash</button></div>';
+    } else if(st.mode==="dash"){
+      main.innerHTML='<div class="stats"><div class="timer"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="#22346E" stroke-width="12"/><circle id="arc" cx="60" cy="60" r="52" fill="none" stroke="var(--glow)" stroke-width="12" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="'+(326.7*(1-st.left/60))+'"/></svg><div class="n" id="tn">'+st.left+'</div></div><span class="pill">✔ '+st.got+'</span></div>'+
+      '<div class="alien">'+st.cur.a+'</div><div class="card">'+wordHTML(st.cur.w)+'</div>'+
+      '<div class="row"><button class="big got" id="dg" type="button">✔ Got it</button><button class="big again" id="dt" type="button">↻ Try again</button><button class="big soft" id="dk" type="button">Skip</button></div>';
+    } else {
+      var k="lv"+st.lv,b=best[k]||0;
+      main.innerHTML='<div class="done"><div class="alien">🚀</div><div>Alien names read:</div><div class="num">'+st.got+'</div><div>'+(st.got>b?'🌟 New best!':'Best so far: '+b)+'</div>'+
+      '<div class="row"><button class="big got" id="again" type="button">Go again</button><button class="big soft" id="back" type="button">Practice mode</button></div></div>';
+      if(st.got>b){best[k]=st.got;try{localStorage.setItem("alien.best",JSON.stringify(best))}catch(e){}}
+    }
+  }
+  function stop(){if(st.timer){clearInterval(st.timer);st.timer=null}}
+  function startDash(){stop();st.mode="dash";st.got=0;st.left=60;st.deck=[];next();render();
+    st.timer=setInterval(function(){st.left--;var a=document.getElementById("arc"),n=document.getElementById("tn");if(a)a.setAttribute("stroke-dashoffset",326.7*(1-st.left/60));if(n)n.textContent=st.left;if(st.left<=0){stop();st.mode="end";render();}},1000);}
+  document.addEventListener("click",function(e){
+    var t=e.target.closest("button");if(!t)return;
+    if(t.id==="wallBtn"){stop();st.mode="wall";if(!st.wall.length)newWall();return render();}
+    if(t.dataset.wi!==undefined){if(st.wdone)return;var i=+t.dataset.wi;st.marks[i]=(st.marks[i]+1)%3;return render();}
+    if(t.id==="wnew"){newWall();return render();}
+    if(t.id==="wclr"){st.marks=st.wall.map(function(){return 0});st.wdone=false;st.wleft=60;stopWall();return render();}
+    if(t.id==="wback"){stopWall();st.mode="warm";next();return render();}
+    if(t.id==="wgo"){if(st.wtimer){stopWall();return render();}
+      st.wtimer=setInterval(function(){st.wleft--;var el=document.getElementById("wt");if(el)el.textContent="⏱ "+st.wleft+"s";if(st.wleft<=0){stopWall();st.wdone=true;render();}},1000);return render();}
+    if(t.dataset.lv){stop();st.lv=+t.dataset.lv;document.querySelectorAll(".tab[data-lv]").forEach(function(b){b.setAttribute("aria-pressed",b===t)});st.deck=[];if(st.mode==="wall"){newWall();return render();}st.mode="warm";next();return render();}
+    switch(t.id){
+      case"sp":st.split=!st.split;return render();
+      case"ok":case"nx":next();return render();
+      case"go":case"again":return startDash();
+      case"back":stop();st.mode="warm";next();return render();
+      case"dg":st.got++;next();return render();
+      case"dt":st.split=true;return render();
+      case"dk":next();return render();
+    }
+  });
+  document.addEventListener("keydown",function(e){if(st.mode!=="dash")return;if(e.key===" "||e.key==="Enter"){e.preventDefault();st.got++;next();render();}if(e.key==="ArrowRight"){next();render();}});
+  next();render();
+})();
+</script>
+
+</body>
+</html>
