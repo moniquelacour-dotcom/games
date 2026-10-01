@@ -137,7 +137,7 @@ button:focus-visible{outline:3px solid var(--me);outline-offset:2px}
 <script>
 (function(){
 const PLAN=[{"id":"math","name":"Math","icon":"🔢","goal":55},{"id":"read","name":"Reading","icon":"📖","goal":50},{"id":"fm","name":"Fast Math","icon":"⚡","goal":15}];
-const SCENE={"hero":"🐈","flip":true,"stop":"🐟","treat":"🥛","brk":"Break time! Kitty gets a treat 🥛","goal":"🧺","start":"Kitty is ready for an adventure!","going":"Kitty is on the way 🐾","half":"Kitty is halfway home!","done":"Kitty is home for a cozy nap 😺"};
+const SCENE={"hero":"🐈","flip":true,"stop":"🐟","goal":"🧺","story":[{"at":30,"icon":"🥛","msg":"30 minutes of work: Kitty found some milk! Break time 🥛"},{"at":60,"icon":"🧶","msg":"60 minutes: Kitty played with the yarn! Break time 🧶"},{"at":90,"icon":"🐟","msg":"90 minutes: Kitty caught a fish! Break time 🐟"}],"start":"Kitty is ready for an adventure!","going":"Kitty is on the way 🐾","half":"Kitty is halfway home!","done":"Kitty is home for a cozy nap 😺"};
 const KEY="minutes-l-v1";
 const ORD=["1st","2nd","3rd","4th","5th","6th"];
 const pad=n=>String(n).padStart(2,"0");
