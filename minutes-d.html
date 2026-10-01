@@ -43,6 +43,7 @@ h1{font-family:var(--display);font-size:30px;line-height:1.1;margin:0}
 .ic{font-size:42px;line-height:1;text-align:center}
 .top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .nm{font-family:var(--display);font-size:24px;font-weight:800;line-height:1}
+.goalpill{display:inline-block;margin-top:4px;padding:2px 10px;border-radius:999px;background:var(--me-soft);color:var(--me);font-weight:800;font-size:15px;font-family:var(--display)}
 .ord{font-size:13px;color:var(--muted);font-weight:700}
 .time{font-family:var(--display);font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
 .time small{font-size:16px;color:var(--muted);font-weight:600}
@@ -75,6 +76,8 @@ button:focus-visible{outline:3px solid var(--me);outline-offset:2px}
 .goalic{font-size:38px;right:6px;transform:none;left:auto}
 .hero{font-size:44px;bottom:16px}
 .hero.flip{transform:translateX(-50%) scaleX(-1)}
+.totgoal{color:var(--muted);font-size:14px}
+.breakline{margin:0;text-align:center;font-size:14px;color:var(--muted)}
 .treats{display:flex;justify-content:center;gap:6px;font-size:26px;min-height:30px;flex-wrap:wrap}
 .treats span{font-size:14px;color:var(--muted);align-self:center;font-family:var(--body);font-weight:700}
 .brk{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;background:var(--go-soft);border:2px solid var(--go);border-radius:14px;padding:10px 12px;font-family:var(--display);font-weight:800;font-size:19px;text-align:center}
@@ -103,10 +106,11 @@ button:focus-visible{outline:3px solid var(--me);outline-offset:2px}
   </header>
 
   <div class="total">
-    <div class="row"><span>🌱 Minutes today</span><span class="big" id="tot">0 min</span></div>
+    <div class="row"><span>🌱 All subjects today <small class="totgoal">(goal 120 min)</small></span><span class="big" id="tot">0 min</span></div>
     <div class="bar" aria-hidden="true"><i id="totbar" style="width:0%"></i></div>
     <div class="scene" id="scene" aria-hidden="true"><div class="ground"></div><div id="stops"></div><span class="goalic" id="goalic"></span><span class="hero" id="hero"></span></div>
     <p class="scenetxt" id="scenetxt"></p>
+    <p class="breakline">A break every 30 minutes of work, in any subject.</p>
     <div class="treats" id="treats" aria-label="Breaks earned"></div>
     <div class="brk" id="brk" hidden><span id="brktxt"></span> <button type="button" class="brkok" id="brkok">OK</button></div>
   </div>
@@ -127,13 +131,13 @@ button:focus-visible{outline:3px solid var(--me);outline-offset:2px}
     <span id="confirm" hidden><b>Erase all of today's minutes?</b> <button type="button" class="danger" id="yes">Yes, start over</button> <button type="button" class="grown" id="no">Keep them</button></span>
   </div>
   <p class="note grownnote" id="gnote">Grown-up: the timer counts clock time, but TimeBack only counts <b>active</b> time. Use <b>Sync to TimeBack</b> below with the Active time from the family dashboard, and the bars match what TimeBack counted.</p>
-  <p class="note">Press <b>Go</b> when you start a subject. Press <b>Break</b> when you finish or take a break. Every minute counts. The little line on each bar is 10 minutes, which keeps your streak. Your TimeBack rings count something different, so they can look different, and that is okay.</p>
+  <p class="note">Press <b>Go</b> when you start a subject. Press <b>Break</b> when you finish or take a break. Every minute counts. Each subject has its own 🎯 goal. The little line on each bar is 10 minutes, which keeps your streak. Breaks come every 30 minutes of work, whatever subject you are on. Your TimeBack rings count something different, so they can look different, and that is okay.</p>
 </div>
 
 <script>
 (function(){
 const PLAN=[{"id":"read","name":"Reading","icon":"📖","goal":60},{"id":"math","name":"Math","icon":"🔢","goal":40},{"id":"fm","name":"Fast Math","icon":"⚡","goal":10},{"id":"voc","name":"Vocabulary","icon":"🔤","goal":10}];
-const SCENE={"hero":"🥷","flip":false,"stop":"📜","goal":"🏯","ride":60,"story":[{"at":30,"icon":"🎒","msg":"Supplies packed! Break time 🎒"},{"at":60,"icon":"🐎","msg":"The ninja jumped on a horse! Break time 🐎"},{"at":90,"icon":"📜","msg":"Found the secret scroll! Break time 📜"}],"start":"The ninja is getting ready.","going":"The ninja sets off","half":"Riding toward the castle!","done":"The ninja made it to the castle! 🏯"};
+const SCENE={"hero":"🥷","flip":false,"stop":"📜","goal":"🏯","ride":60,"story":[{"at":30,"icon":"🎒","msg":"30 minutes of work: supplies packed! Break time 🎒"},{"at":60,"icon":"🐎","msg":"60 minutes: the ninja jumped on a horse! Break time 🐎"},{"at":90,"icon":"📜","msg":"90 minutes: found the secret scroll! Break time 📜"}],"start":"The ninja is getting ready.","going":"The ninja sets off","half":"Riding toward the castle!","done":"The ninja made it to the castle! 🏯"};
 const KEY="minutes-d-v1";
 const ORD=["1st","2nd","3rd","4th","5th","6th"];
 const pad=n=>String(n).padStart(2,"0");
@@ -153,7 +157,7 @@ PLAN.forEach((p,i)=>{
   const t=document.createElement("div");t.className="tile";t.id="t-"+p.id;
   const tick=Math.min(100,10/p.goal*100).toFixed(1);
   t.innerHTML='<div class="ic" aria-hidden="true">'+p.icon+'</div>'+
-   '<div class="top"><div><div class="nm">'+p.name+'</div><div class="ord">'+ORD[i]+'</div></div><div class="time" id="m-'+p.id+'"></div></div>'+
+   '<div class="top"><div><div class="nm">'+p.name+'</div><div class="goalpill">🎯 Goal: '+p.goal+' min</div><div class="ord">'+ORD[i]+'</div></div><div class="time" id="m-'+p.id+'"></div></div>'+
    '<div class="bar" aria-hidden="true"><i id="b-'+p.id+'" style="width:0%"></i>'+(p.goal>10?'<b style="left:'+tick+'%"></b>':'')+'</div>'+
    '<div class="ctrl"><button type="button" class="go" id="btn-'+p.id+'">▶ Go</button><span class="star" id="s-'+p.id+'" aria-hidden="true"></span><span class="ten" id="ten-'+p.id+'"></span>'+
    '<span class="fix"><button type="button" data-a="-5">−5</button><button type="button" data-a="-1">−1</button><button type="button" data-a="1">+1</button><button type="button" data-a="5">+5</button></span></div>';
@@ -184,7 +188,7 @@ function draw(){
   let tot=0,goal=0,all=true;
   PLAN.forEach(p=>{
     const m=secs(p.id)/60,done=m>=p.goal;tot+=Math.min(m,p.goal);goal+=p.goal;if(!done)all=false;
-    document.getElementById("m-"+p.id).innerHTML=Math.floor(m)+'<small> of '+p.goal+' min</small>';
+    document.getElementById("m-"+p.id).innerHTML=Math.floor(m)+'<small> min done</small>';
     document.getElementById("b-"+p.id).style.width=Math.min(100,m/p.goal*100).toFixed(1)+"%";
     const run=st.run===p.id,btn=document.getElementById("btn-"+p.id);
     btn.textContent=run?"☕ Break":"▶ Go";btn.className=run?"ps":"go";
