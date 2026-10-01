@@ -69,7 +69,9 @@ button:focus-visible{outline:3px solid var(--me);outline-offset:2px}
 .stop,.goalic,.hero{position:absolute;bottom:18px;transform:translateX(-50%);line-height:1}
 .stop{font-size:26px;opacity:.28;filter:grayscale(1)}
 .stop.got{opacity:1;filter:none}
-.stop.rest{font-size:22px;bottom:44px}
+.hero.riding{display:flex;flex-direction:column;align-items:center;bottom:12px}
+.rider{font-size:30px;line-height:.8;margin-bottom:-10px;position:relative;z-index:1}
+.horse{font-size:44px;line-height:1;display:inline-block;transform:scaleX(-1)}
 .goalic{font-size:38px;right:6px;transform:none;left:auto}
 .hero{font-size:44px;bottom:16px}
 .hero.flip{transform:translateX(-50%) scaleX(-1)}
@@ -162,8 +164,8 @@ PLAN.forEach((p,i)=>{
 const heroEl=document.getElementById("hero"),stopsEl=document.getElementById("stops");
 heroEl.textContent=SCENE.hero;if(SCENE.flip)heroEl.classList.add("flip");document.getElementById("goalic").textContent=SCENE.goal;
 const GOALSUM=PLAN.reduce((a,p)=>a+p.goal,0);let cum=0;
-const restEls=[];if(SCENE.path){for(let k=30;k<GOALSUM;k+=30){const e=document.createElement("span");e.className="stop rest";e.textContent=SCENE.rest;e.style.left=(6+k/GOALSUM*80).toFixed(1)+"%";stopsEl.appendChild(e);restEls.push([k,e]);}}
-const stopEls=PLAN.map((p,i)=>{cum+=p.goal;if(i===PLAN.length-1)return null;const e=document.createElement("span");e.className="stop";e.textContent=SCENE.stop;e.style.left=(6+cum/GOALSUM*80).toFixed(1)+"%";stopsEl.appendChild(e);return e;});
+const restEls=[];if(SCENE.story){SCENE.story.forEach(it=>{const e=document.createElement("span");e.className="stop";e.textContent=it.icon;e.style.left=(6+it.at/GOALSUM*80).toFixed(1)+"%";stopsEl.appendChild(e);restEls.push([it.at,e,it]);});}
+const stopEls=PLAN.map((p,i)=>{cum+=p.goal;if(i===PLAN.length-1||SCENE.story)return null;const e=document.createElement("span");e.className="stop";e.textContent=SCENE.stop;e.style.left=(6+cum/GOALSUM*80).toFixed(1)+"%";stopsEl.appendChild(e);return e;});
 const app=document.getElementById("app"),grown=document.getElementById("grown");
 const rows=document.getElementById("syncrows");
 PLAN.forEach(p=>{const l=document.createElement("label");l.innerHTML=p.icon+" "+p.name+'<input type="number" min="0" max="300" inputmode="numeric" id="sy-'+p.id+'" placeholder="min">';rows.appendChild(l);});
@@ -197,11 +199,12 @@ function draw(){
   let raw=0;PLAN.forEach(p=>raw+=secs(p.id)/60);
   const earned=Math.floor(raw/30);
   restEls.forEach(([k,e])=>e.classList.toggle("got",raw>=k));
-  const lastRest=Math.floor(raw/30)*30, resting=SCENE.path&&lastRest>0&&lastRest<goal&&raw-lastRest<5;
-  if(SCENE.path){document.getElementById("treats").hidden=true;}
+  let storyMsg="";if(SCENE.story){document.getElementById("treats").hidden=true;
+    const hit=SCENE.story.filter(it=>raw>=it.at).pop();if(hit&&raw-hit.at<5)storyMsg=hit.msg;
+    const riding=SCENE.ride&&raw>=SCENE.ride;heroEl.innerHTML=riding?'<span class="rider">'+SCENE.hero+'</span><span class="horse">🐎</span>':SCENE.hero;heroEl.classList.toggle("riding",riding);}
   else document.getElementById("treats").innerHTML=earned?Array(earned).fill(SCENE.treat).join("")+"<span>"+(earned===1?"1 break earned":earned+" breaks earned")+"</span>":"<span>A break every 30 minutes "+SCENE.treat+"</span>";
-  if(!SCENE.path&&earned>(st.seen||0)){st.seen=earned;save();document.getElementById("brktxt").textContent="30 minutes! "+SCENE.brk;document.getElementById("brk").hidden=false;}
-  const f=tot/goal;document.getElementById("scenetxt").textContent=all?SCENE.done:resting?SCENE.brk:(f>=0.5?SCENE.half:(tot>=1?SCENE.going:SCENE.start));
+  if(!SCENE.story&&earned>(st.seen||0)){st.seen=earned;save();document.getElementById("brktxt").textContent="30 minutes! "+SCENE.brk;document.getElementById("brk").hidden=false;}
+  const f=tot/goal;document.getElementById("scenetxt").textContent=all?SCENE.done:storyMsg?storyMsg:(f>=0.5?SCENE.half:(tot>=1?SCENE.going:SCENE.start));
   document.getElementById("totbar").style.width=Math.min(100,tot/goal*100).toFixed(1)+"%";
   app.classList.toggle("alldone",all);
 }
