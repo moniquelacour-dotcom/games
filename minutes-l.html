@@ -75,6 +75,9 @@ button:focus-visible{outline:3px solid var(--me);outline-offset:2px}
 .scenetxt{margin:0;font-family:var(--display);font-weight:800;font-size:18px;color:var(--me);text-align:center}
 @media (prefers-reduced-motion:no-preference){.hero{transition:left 1s ease}.alldone .hero{animation:hop 1.6s ease-in-out infinite}}
 @keyframes hop{0%,100%{bottom:16px}50%{bottom:30px}}
+.resetbox{display:none;align-items:center;gap:8px;flex-wrap:wrap}
+.fixing .resetbox{display:flex}
+.danger{font-family:var(--body);font-size:15px;min-height:40px;padding:6px 12px;background:var(--ink);color:var(--bg)}
 .grownnote{display:none;background:var(--me-soft);color:var(--ink);padding:10px 12px;border-radius:12px}
 .fixing .grownnote{display:block}
 @media (prefers-reduced-motion:no-preference){.bar i{transition:width .5s linear}}
@@ -98,6 +101,10 @@ button:focus-visible{outline:3px solid var(--me);outline-offset:2px}
   <div class="yay">🎉 All done today. Great work! 🎉</div>
 
   <button class="grown" id="grown" type="button">Grown-up: fix minutes</button>
+  <div class="resetbox" id="resetbox">
+    <button type="button" class="grown" id="reset">Start today over (all subjects to 0)</button>
+    <span id="confirm" hidden><b>Erase all of today's minutes?</b> <button type="button" class="danger" id="yes">Yes, start over</button> <button type="button" class="grown" id="no">Keep them</button></span>
+  </div>
   <p class="note grownnote" id="gnote">Grown-up: the timer counts clock time, but TimeBack only counts <b>active</b> time. When a subject reaches its goal, check its Active time on the family dashboard and type it into "TimeBack says". The bar then shows what is really left.</p>
   <p class="note">Press <b>Go</b> when you start a subject. Press <b>Break</b> when you finish or take a break. Every minute counts. The little line on each bar is 10 minutes, which keeps your streak. Your TimeBack rings count something different, so they can look different, and that is okay.</p>
 </div>
@@ -139,6 +146,10 @@ heroEl.textContent=SCENE.hero;if(SCENE.flip)heroEl.classList.add("flip");documen
 const GOALSUM=PLAN.reduce((a,p)=>a+p.goal,0);let cum=0;
 const stopEls=PLAN.map((p,i)=>{cum+=p.goal;if(i===PLAN.length-1)return null;const e=document.createElement("span");e.className="stop";e.textContent=SCENE.stop;e.style.left=(6+cum/GOALSUM*80).toFixed(1)+"%";stopsEl.appendChild(e);return e;});
 const app=document.getElementById("app"),grown=document.getElementById("grown");
+const conf=document.getElementById("confirm"),rbtn=document.getElementById("reset");
+rbtn.addEventListener("click",()=>{conf.hidden=false;rbtn.hidden=true;});
+document.getElementById("no").addEventListener("click",()=>{conf.hidden=true;rbtn.hidden=false;});
+document.getElementById("yes").addEventListener("click",()=>{st=blank();save();conf.hidden=true;rbtn.hidden=false;draw();});
 grown.addEventListener("click",()=>{app.classList.toggle("fixing");grown.textContent=app.classList.contains("fixing")?"Done fixing":"Grown-up: fix minutes";});
 function cheer(m,g,run){if(m>=g)return "You did it!";if(m>=g*0.75)return "Almost there 🌟";if(m>=g/2)return "Halfway! 💪";if(m>=10)return "Streak ✔ Nice work";if(m>=1)return "Great start 🙂";return "";}
 function draw(){
