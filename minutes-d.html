@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>My Minutes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: one tall column of big subject tiles in plan order; the running tile turns green. */
+:root{
+  --bg:#f2f6fb; --tile:#ffffff; --ink:#15202c; --muted:#5d6b7b; --line:#d9e1ea;
+  --me:#a5326e; --me-soft:#f7e6ef; --go:#1f8a52; --go-soft:#dff3e7; --pause:#6b7f96; --track:#e6ebf1; --on:#ffffff;
+  --display:"Baloo 2", "Comic Sans MS", system-ui, sans-serif; --body:"Atkinson Hyperlegible", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10161d; --tile:#18212b; --ink:#eef3f8; --muted:#a3b0bf; --line:#2a3644;
+  --me:#e47fb3; --me-soft:#33192a; --go:#3fbf7f; --go-soft:#143222; --pause:#8fa3b8; --track:#26313d; --on:#0d1318; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10161d; --tile:#18212b; --ink:#eef3f8; --muted:#a3b0bf; --line:#2a3644;
+  --me:#e47fb3; --me-soft:#33192a; --go:#3fbf7f; --go-soft:#143222; --pause:#8fa3b8; --track:#26313d; --on:#0d1318; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px}
+.wrap{max-width:640px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
+header{display:flex;align-items:center;gap:14px}
+.av{width:56px;height:56px;border-radius:50%;background:var(--me-soft);color:var(--me);display:grid;place-items:center;font-family:var(--display);font-size:30px;font-weight:800;flex:none;border:3px solid var(--me)}
+h1{font-family:var(--display);font-size:30px;line-height:1.1;margin:0}
+.sub{color:var(--muted);font-size:15px;margin:2px 0 0}
+.total{background:var(--tile);border:1px solid var(--line);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.big{font-family:var(--display);font-size:28px;font-weight:800;font-variant-numeric:tabular-nums}
+.bar{position:relative;height:16px;border-radius:9px;background:var(--track);overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--me);border-radius:9px}
+.bar b{position:absolute;top:0;bottom:0;width:3px;background:var(--ink);opacity:.35}
+#tiles{display:flex;flex-direction:column;gap:12px}
+.tile{background:var(--tile);border:2px solid var(--line);border-radius:20px;padding:14px;display:grid;grid-template-columns:56px 1fr;gap:8px 14px;align-items:center}
+.tile>*{min-width:0}
+.tile.run{border-color:var(--go);background:var(--go-soft)}
+.tile.done{border-color:var(--me)}
+.ic{font-size:42px;line-height:1;text-align:center}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.nm{font-family:var(--display);font-size:24px;font-weight:800;line-height:1}
+.ord{font-size:13px;color:var(--muted);font-weight:700}
+.time{font-family:var(--display);font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.time small{font-size:16px;color:var(--muted);font-weight:600}
+.tile .bar,.ctrl{grid-column:1/-1}
+.ctrl{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+button{font:inherit;font-family:var(--display);font-weight:800;font-size:22px;border-radius:14px;border:0;padding:10px 22px;cursor:pointer;min-height:54px}
+.go{background:var(--go);color:var(--on)}
+.ps{background:var(--pause);color:var(--on)}
+button:focus-visible{outline:3px solid var(--me);outline-offset:2px}
+.star{font-size:30px}
+.ten{font-size:16px;color:var(--ink);font-weight:700}
+.fix{display:none;gap:6px;flex-wrap:wrap}
+.fixing .fix{display:flex}
+.fix button{font-size:16px;min-height:40px;padding:6px 12px;background:var(--track);color:var(--ink)}
+.match{display:flex;align-items:center;gap:6px;font-size:15px;color:var(--muted);font-weight:700}
+.match input{width:5em;font:inherit;font-size:16px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.fix .set{background:var(--me);color:var(--on)}
+.grown{align-self:flex-start;background:transparent;color:var(--muted);font-family:var(--body);font-size:14px;font-weight:700;min-height:36px;padding:6px 10px;border:1px solid var(--line)}
+.note{font-size:14px;color:var(--muted);line-height:1.45;margin:0}
+.yay{display:none;text-align:center;font-family:var(--display);font-size:26px;font-weight:800;color:var(--me);background:var(--me-soft);border-radius:18px;padding:14px}
+.alldone .yay{display:block}
+.grownnote{display:none;background:var(--me-soft);color:var(--ink);padding:10px 12px;border-radius:12px}
+.fixing .grownnote{display:block}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .5s linear}}
+</style>
+
+<div class="wrap" id="app">
+  <header>
+    <div class="av" aria-hidden="true">D</div>
+    <div><h1>My Minutes</h1><p class="sub" id="date"></p></div>
+  </header>
+
+  <div class="total">
+    <div class="row"><span>🌱 Minutes today</span><span class="big" id="tot">0 min</span></div>
+    <div class="bar" aria-hidden="true"><i id="totbar" style="width:0%"></i></div>
+  </div>
+
+  <div id="tiles"></div>
+
+  <div class="yay">🎉 All done today. Great work! 🎉</div>
+
+  <button class="grown" id="grown" type="button">Grown-up: fix minutes</button>
+  <p class="note grownnote" id="gnote">Grown-up: the timer counts clock time, but TimeBack only counts <b>active</b> time. When a subject reaches its goal, check its Active time on the family dashboard and type it into "TimeBack says". The bar then shows what is really left.</p>
+  <p class="note">Press <b>Go</b> when you start a subject. Press <b>Stop</b> when you finish or take a break. Every minute counts. The little line on each bar is 10 minutes, which keeps your streak. Your TimeBack rings count something different, so they can look different, and that is okay.</p>
+</div>
+
+<script>
+(function(){
+const PLAN=[{"id":"read","name":"Reading","icon":"📖","goal":60},{"id":"math","name":"Math","icon":"🔢","goal":40},{"id":"fm","name":"Fast Math","icon":"⚡","goal":10},{"id":"voc","name":"Vocabulary","icon":"🔤","goal":10}];
+const KEY="minutes-d-v1";
+const ORD=["1st","2nd","3rd","4th","5th","6th"];
+const pad=n=>String(n).padStart(2,"0");
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());};
+function blank(){const sec={};PLAN.forEach(p=>sec[p.id]=0);return {day:today(),sec,run:null,since:null};}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&s.day===today()&&s.sec)return s;}catch(e){}return blank();}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+let st=load();
+function secs(id){let s=st.sec[id]||0;if(st.run===id&&st.since)s+=(Date.now()-st.since)/1000;return s;}
+function stop(){if(st.run&&st.since)st.sec[st.run]=(st.sec[st.run]||0)+(Date.now()-st.since)/1000;st.run=null;st.since=null;}
+function rollover(){if(st.day!==today()){st=blank();save();}}
+function toggle(id){rollover();if(st.run===id){stop();}else{stop();st.run=id;st.since=Date.now();}save();draw();}
+function setTo(id,m){rollover();const was=st.run===id;if(was)stop();st.sec[id]=Math.max(0,m*60);if(was){st.run=id;st.since=Date.now();}save();draw();}
+function adj(id,m){rollover();const was=st.run===id;if(was)stop();st.sec[id]=Math.max(0,(st.sec[id]||0)+m*60);if(was){st.run=id;st.since=Date.now();}save();draw();}
+const box=document.getElementById("tiles");
+PLAN.forEach((p,i)=>{
+  const t=document.createElement("div");t.className="tile";t.id="t-"+p.id;
+  const tick=Math.min(100,10/p.goal*100).toFixed(1);
+  t.innerHTML='<div class="ic" aria-hidden="true">'+p.icon+'</div>'+
+   '<div class="top"><div><div class="nm">'+p.name+'</div><div class="ord">'+ORD[i]+'</div></div><div class="time" id="m-'+p.id+'"></div></div>'+
+   '<div class="bar" aria-hidden="true"><i id="b-'+p.id+'" style="width:0%"></i>'+(p.goal>10?'<b style="left:'+tick+'%"></b>':'')+'</div>'+
+   '<div class="ctrl"><button type="button" class="go" id="btn-'+p.id+'">▶ Go</button><span class="star" id="s-'+p.id+'" aria-hidden="true"></span><span class="ten" id="ten-'+p.id+'"></span>'+
+   '<span class="fix"><button type="button" data-a="-5">−5</button><button type="button" data-a="-1">−1</button><button type="button" data-a="1">+1</button><button type="button" data-a="5">+5</button><label class="match">TimeBack says <input type="number" min="0" max="300" inputmode="numeric" id="in-'+p.id+'" aria-label="TimeBack active minutes for '+p.name+'"> min</label><button type="button" class="set" id="set-'+p.id+'">Set</button></span></div>';
+  box.appendChild(t);
+  document.getElementById("btn-"+p.id).addEventListener("click",()=>toggle(p.id));
+  t.querySelectorAll(".fix button[data-a]").forEach(b=>b.addEventListener("click",()=>adj(p.id,Number(b.dataset.a))));
+  document.getElementById("set-"+p.id).addEventListener("click",()=>{const v=document.getElementById("in-"+p.id).value;if(v==="")return;setTo(p.id,Number(v));document.getElementById("in-"+p.id).value="";});
+});
+const app=document.getElementById("app"),grown=document.getElementById("grown");
+grown.addEventListener("click",()=>{app.classList.toggle("fixing");grown.textContent=app.classList.contains("fixing")?"Done fixing":"Grown-up: fix minutes";});
+function cheer(m,g,run){if(m>=g)return "You did it!";if(m>=g*0.75)return "Almost there 🌟";if(m>=g/2)return "Halfway! 💪";if(m>=10)return "Streak ✔ Nice work";if(m>=1)return "Great start 🙂";return "";}
+function draw(){
+  rollover();
+  document.getElementById("date").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"});
+  let tot=0,goal=0,all=true;
+  PLAN.forEach(p=>{
+    const m=secs(p.id)/60,done=m>=p.goal;tot+=Math.min(m,p.goal);goal+=p.goal;if(!done)all=false;
+    document.getElementById("m-"+p.id).innerHTML=Math.floor(m)+'<small> of '+p.goal+' min</small>';
+    document.getElementById("b-"+p.id).style.width=Math.min(100,m/p.goal*100).toFixed(1)+"%";
+    const run=st.run===p.id,btn=document.getElementById("btn-"+p.id);
+    btn.textContent=run?"⏹ Stop":"▶ Go";btn.className=run?"ps":"go";
+    btn.setAttribute("aria-label",(run?"Stop the timer for ":"Start the timer for ")+p.name);
+    document.getElementById("t-"+p.id).className="tile"+(run?" run":"")+(done?" done":"");
+    document.getElementById("s-"+p.id).textContent=done?"⭐":"";
+    document.getElementById("ten-"+p.id).textContent=[run?"⏱ Timer is on":"",cheer(m,p.goal,run)].filter(Boolean).join(" · ");
+  });
+  document.getElementById("tot").textContent=Math.floor(tot)+" min";
+  document.getElementById("totbar").style.width=Math.min(100,tot/goal*100).toFixed(1)+"%";
+  app.classList.toggle("alldone",all);
+}
+draw();setInterval(draw,15000);
+document.addEventListener("visibilitychange",draw);
+})();
+</script>
+
+</html>
