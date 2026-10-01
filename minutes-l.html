@@ -80,6 +80,11 @@ button:focus-visible{outline:3px solid var(--me);outline-offset:2px}
 .scenetxt{margin:0;font-family:var(--display);font-weight:800;font-size:18px;color:var(--me);text-align:center}
 @media (prefers-reduced-motion:no-preference){.hero{transition:left 1s ease}.alldone .hero{animation:hop 1.6s ease-in-out infinite}}
 @keyframes hop{0%,100%{bottom:16px}50%{bottom:30px}}
+.sync{display:none;flex-direction:column;gap:8px;background:var(--tile);border:2px dashed var(--line);border-radius:16px;padding:12px 14px}
+.fixing .sync{display:flex}
+.syncrows{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.syncrows label{display:flex;flex-direction:column;gap:4px;font-size:14px;font-weight:700;color:var(--muted)}
+.syncrows input{font:inherit;font-size:18px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
 .resetbox{display:none;align-items:center;gap:8px;flex-wrap:wrap}
 .fixing .resetbox{display:flex}
 .danger{font-family:var(--body);font-size:15px;min-height:40px;padding:6px 12px;background:var(--ink);color:var(--bg)}
@@ -108,11 +113,17 @@ button:focus-visible{outline:3px solid var(--me);outline-offset:2px}
   <div class="yay">🎉 All done today. Great work! 🎉</div>
 
   <button class="grown" id="grown" type="button">Grown-up: fix minutes</button>
+  <div class="sync" id="sync">
+    <b>Sync to TimeBack</b>
+    <p class="note">On the family dashboard, turn on View all metrics and copy today's <b>Active time</b> for each subject. Leave a box empty to keep that subject as it is.</p>
+    <div class="syncrows" id="syncrows"></div>
+    <div class="row"><button type="button" class="danger" id="syncbtn">Sync</button><span class="note" id="syncmsg" role="status"></span></div>
+  </div>
   <div class="resetbox" id="resetbox">
     <button type="button" class="grown" id="reset">Start today over (all subjects to 0)</button>
     <span id="confirm" hidden><b>Erase all of today's minutes?</b> <button type="button" class="danger" id="yes">Yes, start over</button> <button type="button" class="grown" id="no">Keep them</button></span>
   </div>
-  <p class="note grownnote" id="gnote">Grown-up: the timer counts clock time, but TimeBack only counts <b>active</b> time. When a subject reaches its goal, check its Active time on the family dashboard and type it into "TimeBack says". The bar then shows what is really left.</p>
+  <p class="note grownnote" id="gnote">Grown-up: the timer counts clock time, but TimeBack only counts <b>active</b> time. Use <b>Sync to TimeBack</b> below with the Active time from the family dashboard, and the bars match what TimeBack counted.</p>
   <p class="note">Press <b>Go</b> when you start a subject. Press <b>Break</b> when you finish or take a break. Every minute counts. The little line on each bar is 10 minutes, which keeps your streak. Your TimeBack rings count something different, so they can look different, and that is okay.</p>
 </div>
 
@@ -142,17 +153,20 @@ PLAN.forEach((p,i)=>{
    '<div class="top"><div><div class="nm">'+p.name+'</div><div class="ord">'+ORD[i]+'</div></div><div class="time" id="m-'+p.id+'"></div></div>'+
    '<div class="bar" aria-hidden="true"><i id="b-'+p.id+'" style="width:0%"></i>'+(p.goal>10?'<b style="left:'+tick+'%"></b>':'')+'</div>'+
    '<div class="ctrl"><button type="button" class="go" id="btn-'+p.id+'">▶ Go</button><span class="star" id="s-'+p.id+'" aria-hidden="true"></span><span class="ten" id="ten-'+p.id+'"></span>'+
-   '<span class="fix"><button type="button" data-a="-5">−5</button><button type="button" data-a="-1">−1</button><button type="button" data-a="1">+1</button><button type="button" data-a="5">+5</button><label class="match">TimeBack says <input type="number" min="0" max="300" inputmode="numeric" id="in-'+p.id+'" aria-label="TimeBack active minutes for '+p.name+'"> min</label><button type="button" class="set" id="set-'+p.id+'">Set</button></span></div>';
+   '<span class="fix"><button type="button" data-a="-5">−5</button><button type="button" data-a="-1">−1</button><button type="button" data-a="1">+1</button><button type="button" data-a="5">+5</button></span></div>';
   box.appendChild(t);
   document.getElementById("btn-"+p.id).addEventListener("click",()=>toggle(p.id));
   t.querySelectorAll(".fix button[data-a]").forEach(b=>b.addEventListener("click",()=>adj(p.id,Number(b.dataset.a))));
-  document.getElementById("set-"+p.id).addEventListener("click",()=>{const v=document.getElementById("in-"+p.id).value;if(v==="")return;setTo(p.id,Number(v));document.getElementById("in-"+p.id).value="";});
 });
 const heroEl=document.getElementById("hero"),stopsEl=document.getElementById("stops");
 heroEl.textContent=SCENE.hero;if(SCENE.flip)heroEl.classList.add("flip");document.getElementById("goalic").textContent=SCENE.goal;
 const GOALSUM=PLAN.reduce((a,p)=>a+p.goal,0);let cum=0;
 const stopEls=PLAN.map((p,i)=>{cum+=p.goal;if(i===PLAN.length-1)return null;const e=document.createElement("span");e.className="stop";e.textContent=SCENE.stop;e.style.left=(6+cum/GOALSUM*80).toFixed(1)+"%";stopsEl.appendChild(e);return e;});
 const app=document.getElementById("app"),grown=document.getElementById("grown");
+const rows=document.getElementById("syncrows");
+PLAN.forEach(p=>{const l=document.createElement("label");l.innerHTML=p.icon+" "+p.name+'<input type="number" min="0" max="300" inputmode="numeric" id="sy-'+p.id+'" placeholder="min">';rows.appendChild(l);});
+document.getElementById("syncbtn").addEventListener("click",()=>{let n=0;PLAN.forEach(p=>{const el=document.getElementById("sy-"+p.id);if(el.value!==""){setTo(p.id,Number(el.value));el.value="";n++;}});
+  const t=new Date().toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});document.getElementById("syncmsg").textContent=n?("Synced "+n+(n===1?" subject":" subjects")+" at "+t+"."):"Type at least one number first.";});
 const conf=document.getElementById("confirm"),rbtn=document.getElementById("reset");
 rbtn.addEventListener("click",()=>{conf.hidden=false;rbtn.hidden=true;});
 document.getElementById("no").addEventListener("click",()=>{conf.hidden=true;rbtn.hidden=false;});
