@@ -85,7 +85,7 @@ button:focus-visible{outline:3px solid var(--me);outline-offset:2px}
 
   <button class="grown" id="grown" type="button">Grown-up: fix minutes</button>
   <p class="note grownnote" id="gnote">Grown-up: the timer counts clock time, but TimeBack only counts <b>active</b> time. When a subject reaches its goal, check its Active time on the family dashboard and type it into "TimeBack says". The bar then shows what is really left.</p>
-  <p class="note">Press <b>Go</b> when you start a subject. Press <b>Stop</b> when you finish or take a break. Every minute counts. The little line on each bar is 10 minutes, which keeps your streak. Your TimeBack rings count something different, so they can look different, and that is okay.</p>
+  <p class="note">Press <b>Go</b> when you start a subject. Press <b>Break</b> when you finish or take a break. Every minute counts. The little line on each bar is 10 minutes, which keeps your streak. Your TimeBack rings count something different, so they can look different, and that is okay.</p>
 </div>
 
 <script>
@@ -131,8 +131,8 @@ function draw(){
     document.getElementById("m-"+p.id).innerHTML=Math.floor(m)+'<small> of '+p.goal+' min</small>';
     document.getElementById("b-"+p.id).style.width=Math.min(100,m/p.goal*100).toFixed(1)+"%";
     const run=st.run===p.id,btn=document.getElementById("btn-"+p.id);
-    btn.textContent=run?"⏹ Stop":"▶ Go";btn.className=run?"ps":"go";
-    btn.setAttribute("aria-label",(run?"Stop the timer for ":"Start the timer for ")+p.name);
+    btn.textContent=run?"☕ Break":"▶ Go";btn.className=run?"ps":"go";
+    btn.setAttribute("aria-label",(run?"Take a break from ":"Go on ")+p.name);
     document.getElementById("t-"+p.id).className="tile"+(run?" run":"")+(done?" done":"");
     document.getElementById("s-"+p.id).textContent=done?"⭐":"";
     document.getElementById("ten-"+p.id).textContent=[run?"⏱ Timer is on":"",cheer(m,p.goal,run)].filter(Boolean).join(" · ");
