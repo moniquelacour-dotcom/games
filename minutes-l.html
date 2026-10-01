@@ -106,7 +106,7 @@ button:focus-visible{outline:3px solid var(--me);outline-offset:2px}
   </header>
 
   <div class="total">
-    <div class="row"><span>🌱 All subjects today <small class="totgoal">(goal 130 min)</small></span><span class="big" id="tot">0 min</span></div>
+    <div class="row"><span>🌱 All subjects today <small class="totgoal">(goal 120 min)</small></span><span class="big" id="tot">0 min</span></div>
     <div class="bar" aria-hidden="true"><i id="totbar" style="width:0%"></i></div>
     <div class="scene" id="scene" aria-hidden="true"><div class="ground"></div><div id="stops"></div><span class="goalic" id="goalic"></span><span class="hero" id="hero"></span></div>
     <p class="scenetxt" id="scenetxt"></p>
@@ -130,13 +130,13 @@ button:focus-visible{outline:3px solid var(--me);outline-offset:2px}
     <button type="button" class="grown" id="reset">Start today over (all subjects to 0)</button>
     <span id="confirm" hidden><b>Erase all of today's minutes?</b> <button type="button" class="danger" id="yes">Yes, start over</button> <button type="button" class="grown" id="no">Keep them</button></span>
   </div>
-  <p class="note grownnote" id="gnote">Grown-up: the timer is the count. Goals include about 10% extra so a full bar covers TimeBack's active time. Use the box below only for minutes done while the timer was off.</p>
+  <p class="note grownnote" id="gnote">Grown-up: the timer is the count. Use the box below only for minutes done while the timer was off.</p>
   <p class="note">Press <b>Go</b> when you start a subject. Press <b>Break</b> when you finish or take a break. Every minute counts. Each subject has its own 🎯 goal. The little line on each bar is 10 minutes, which keeps your streak. Breaks come every 30 minutes of work, whatever subject you are on. Your TimeBack rings count something different, so they can look different, and that is okay.</p>
 </div>
 
 <script>
 (function(){
-const PLAN=[{"id":"math","name":"Math","icon":"🔢","goal":60},{"id":"read","name":"Reading","icon":"📖","goal":55},{"id":"fm","name":"Fast Math","icon":"⚡","goal":15}];
+const PLAN=[{"id":"math","name":"Math","icon":"🔢","goal":55},{"id":"read","name":"Reading","icon":"📖","goal":50},{"id":"fm","name":"Fast Math","icon":"⚡","goal":15}];
 const SCENE={"hero":"🐈","flip":true,"stop":"🐟","goal":"🧺","story":[{"at":30,"icon":"🥛","msg":"30 minutes of work: Kitty found some milk! Break time 🥛"},{"at":60,"icon":"🧶","msg":"60 minutes: Kitty played with the yarn! Break time 🧶"},{"at":90,"icon":"🐟","msg":"90 minutes: Kitty caught a fish! Break time 🐟"}],"start":"Kitty is ready for an adventure!","going":"Kitty is on the way 🐾","half":"Kitty is halfway home!","done":"Kitty is home for a cozy nap 😺"};
 const KEY="minutes-l-v1";
 const ORD=["1st","2nd","3rd","4th","5th","6th"];
