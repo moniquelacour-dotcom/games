@@ -13,14 +13,15 @@
 :root{
   --bg:#f2f6fb; --tile:#ffffff; --ink:#15202c; --muted:#5d6b7b; --line:#d9e1ea;
   --me:#a5326e; --me-soft:#f7e6ef; --go:#1f8a52; --go-soft:#dff3e7; --pause:#6b7f96; --track:#e6ebf1; --on:#ffffff;
+  --sky:#f6e4ee; --groundc:#b8a3c7;
   --display:"Baloo 2", "Comic Sans MS", system-ui, sans-serif; --body:"Atkinson Hyperlegible", system-ui, sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#10161d; --tile:#18212b; --ink:#eef3f8; --muted:#a3b0bf; --line:#2a3644;
-  --me:#e47fb3; --me-soft:#33192a; --go:#3fbf7f; --go-soft:#143222; --pause:#8fa3b8; --track:#26313d; --on:#0d1318; color-scheme:dark}}
+  --me:#e47fb3; --me-soft:#33192a; --sky:#2a1c2a; --groundc:#4a3a55; --go:#3fbf7f; --go-soft:#143222; --pause:#8fa3b8; --track:#26313d; --on:#0d1318; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#10161d; --tile:#18212b; --ink:#eef3f8; --muted:#a3b0bf; --line:#2a3644;
-  --me:#e47fb3; --me-soft:#33192a; --go:#3fbf7f; --go-soft:#143222; --pause:#8fa3b8; --track:#26313d; --on:#0d1318; color-scheme:dark}
+  --me:#e47fb3; --me-soft:#33192a; --sky:#2a1c2a; --groundc:#4a3a55; --go:#3fbf7f; --go-soft:#143222; --pause:#8fa3b8; --track:#26313d; --on:#0d1318; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px}
 .wrap{max-width:640px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
@@ -63,6 +64,17 @@ button:focus-visible{outline:3px solid var(--me);outline-offset:2px}
 .note{font-size:14px;color:var(--muted);line-height:1.45;margin:0}
 .yay{display:none;text-align:center;font-family:var(--display);font-size:26px;font-weight:800;color:var(--me);background:var(--me-soft);border-radius:18px;padding:14px}
 .alldone .yay{display:block}
+.scene{position:relative;height:92px;border-radius:14px;background:var(--sky);overflow:hidden;margin-top:4px}
+.ground{position:absolute;left:0;right:0;bottom:0;height:26px;background:var(--groundc)}
+.stop,.goalic,.hero{position:absolute;bottom:18px;transform:translateX(-50%);line-height:1}
+.stop{font-size:26px;opacity:.28;filter:grayscale(1)}
+.stop.got{opacity:1;filter:none}
+.goalic{font-size:38px;right:6px;transform:none;left:auto}
+.hero{font-size:44px;bottom:16px}
+.hero.flip{transform:translateX(-50%) scaleX(-1)}
+.scenetxt{margin:0;font-family:var(--display);font-weight:800;font-size:18px;color:var(--me);text-align:center}
+@media (prefers-reduced-motion:no-preference){.hero{transition:left 1s ease}.alldone .hero{animation:hop 1.6s ease-in-out infinite}}
+@keyframes hop{0%,100%{bottom:16px}50%{bottom:30px}}
 .grownnote{display:none;background:var(--me-soft);color:var(--ink);padding:10px 12px;border-radius:12px}
 .fixing .grownnote{display:block}
 @media (prefers-reduced-motion:no-preference){.bar i{transition:width .5s linear}}
@@ -77,6 +89,8 @@ button:focus-visible{outline:3px solid var(--me);outline-offset:2px}
   <div class="total">
     <div class="row"><span>🌱 Minutes today</span><span class="big" id="tot">0 min</span></div>
     <div class="bar" aria-hidden="true"><i id="totbar" style="width:0%"></i></div>
+    <div class="scene" id="scene" aria-hidden="true"><div class="ground"></div><div id="stops"></div><span class="goalic" id="goalic"></span><span class="hero" id="hero"></span></div>
+    <p class="scenetxt" id="scenetxt"></p>
   </div>
 
   <div id="tiles"></div>
@@ -91,6 +105,7 @@ button:focus-visible{outline:3px solid var(--me);outline-offset:2px}
 <script>
 (function(){
 const PLAN=[{"id":"read","name":"Reading","icon":"📖","goal":60},{"id":"math","name":"Math","icon":"🔢","goal":40},{"id":"fm","name":"Fast Math","icon":"⚡","goal":10},{"id":"voc","name":"Vocabulary","icon":"🔤","goal":10}];
+const SCENE={"hero":"🥷","flip":false,"stop":"📜","goal":"🏯","start":"The ninja is ready.","going":"The ninja is on the move","half":"Halfway to the castle!","done":"The ninja made it to the castle! 🏯"};
 const KEY="minutes-d-v1";
 const ORD=["1st","2nd","3rd","4th","5th","6th"];
 const pad=n=>String(n).padStart(2,"0");
@@ -119,6 +134,10 @@ PLAN.forEach((p,i)=>{
   t.querySelectorAll(".fix button[data-a]").forEach(b=>b.addEventListener("click",()=>adj(p.id,Number(b.dataset.a))));
   document.getElementById("set-"+p.id).addEventListener("click",()=>{const v=document.getElementById("in-"+p.id).value;if(v==="")return;setTo(p.id,Number(v));document.getElementById("in-"+p.id).value="";});
 });
+const heroEl=document.getElementById("hero"),stopsEl=document.getElementById("stops");
+heroEl.textContent=SCENE.hero;if(SCENE.flip)heroEl.classList.add("flip");document.getElementById("goalic").textContent=SCENE.goal;
+const GOALSUM=PLAN.reduce((a,p)=>a+p.goal,0);let cum=0;
+const stopEls=PLAN.map((p,i)=>{cum+=p.goal;if(i===PLAN.length-1)return null;const e=document.createElement("span");e.className="stop";e.textContent=SCENE.stop;e.style.left=(6+cum/GOALSUM*80).toFixed(1)+"%";stopsEl.appendChild(e);return e;});
 const app=document.getElementById("app"),grown=document.getElementById("grown");
 grown.addEventListener("click",()=>{app.classList.toggle("fixing");grown.textContent=app.classList.contains("fixing")?"Done fixing":"Grown-up: fix minutes";});
 function cheer(m,g,run){if(m>=g)return "You did it!";if(m>=g*0.75)return "Almost there 🌟";if(m>=g/2)return "Halfway! 💪";if(m>=10)return "Streak ✔ Nice work";if(m>=1)return "Great start 🙂";return "";}
@@ -138,6 +157,9 @@ function draw(){
     document.getElementById("ten-"+p.id).textContent=[run?"⏱ Timer is on":"",cheer(m,p.goal,run)].filter(Boolean).join(" · ");
   });
   document.getElementById("tot").textContent=Math.floor(tot)+" min";
+  heroEl.style.left=(6+Math.min(1,tot/goal)*80).toFixed(1)+"%";
+  PLAN.forEach((p,i)=>{if(stopEls[i])stopEls[i].classList.toggle("got",secs(p.id)/60>=p.goal);});
+  const f=tot/goal;document.getElementById("scenetxt").textContent=all?SCENE.done:(f>=0.5?SCENE.half:(tot>=1?SCENE.going:SCENE.start));
   document.getElementById("totbar").style.width=Math.min(100,tot/goal*100).toFixed(1)+"%";
   app.classList.toggle("alldone",all);
 }
