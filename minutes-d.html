@@ -206,7 +206,7 @@ function draw(){
   let storyMsg="";if(SCENE.story){document.getElementById("treats").hidden=true;
     const hit=SCENE.story.filter(it=>raw>=it.at).pop();if(hit&&raw-hit.at<5)storyMsg=hit.msg;
     const riding=SCENE.ride&&raw>=SCENE.ride;heroEl.innerHTML=riding?'<span class="rider">'+SCENE.hero+'</span><span class="horse">🐎</span>':SCENE.hero;heroEl.classList.toggle("riding",riding);}
-  else document.getElementById("treats").innerHTML=earned?Array(earned).fill(SCENE.treat).join("")+"<span>"+(earned===1?"1 break earned":earned+" breaks earned")+"</span>":"<span>A break every 30 minutes "+SCENE.treat+"</span>";
+  else document.getElementById("treats").innerHTML=earned?Array(earned).fill(SCENE.treat).join("")+"<span>"+(earned===1?"1 break earned":earned+" breaks earned")+"</span>":"";
   if(!SCENE.story&&earned>(st.seen||0)){st.seen=earned;save();document.getElementById("brktxt").textContent="30 minutes! "+SCENE.brk;document.getElementById("brk").hidden=false;}
   const f=tot/goal;document.getElementById("scenetxt").textContent=all?SCENE.done:storyMsg?storyMsg:(f>=0.5?SCENE.half:(tot>=1?SCENE.going:SCENE.start));
   document.getElementById("totbar").style.width=Math.min(100,tot/goal*100).toFixed(1)+"%";
