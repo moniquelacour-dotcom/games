@@ -4589,6 +4589,14 @@ let roomCode = null, sock = null, bc = null, netState = "off", lastBeat = 0, las
 let iHost = false, lastHostAt = 0;
 function roomOpen() { return iHost || (performance.now() - lastHostAt <= 6000); }
 
+/* AND ONLY THE COACH CAN OPEN ONE. Starting a room is hers to give out, so it
+   can be a reward rather than something any child can switch on. The Start
+   button only exists if the link carries #coach -- her bookmark has it, the
+   link she pastes in the Zoom chat does not. This is not security, it is a
+   lock on a drawer: nobody can start a room by accident, and a child who went
+   looking would still need the coach in it for anyone to appear. */
+const COACH = /(^|[#?&])coach(=|&|$)/i.test(location.hash + location.search);
+
 function codeOf() {
   const L = "BCDFGHJKLMNPRSTVWXZ";                  // no vowels, so it never spells anything
   let c = "";
@@ -5044,11 +5052,13 @@ function showTogether() {
   } else {
     b.innerHTML =
       '<p class="hint">You still play your own Northgate — your own money, your own animals, your own day. This just lets you see each other walking round.</p>' +
-      '<button id="startRoom" class="primary" type="button">Start a room</button>' +
-      '<p class="rowlabel">Or join one</p>' +
+      (COACH
+        ? '<button id="startRoom" class="primary" type="button">Start a room</button>' +
+          '<p class="rowlabel">Or join one</p>'
+        : '<p class="rowlabel">Type the four letters your coach reads out</p>') +
       '<div class="namebox"><input id="joinCode" class="codein" type="text" maxlength="4" autocomplete="off" spellcheck="false" placeholder="CODE"></div>' +
       '<button id="doJoin" type="button">Join</button>';
-    document.getElementById("startRoom").addEventListener("click", () => { joinRoom(codeOf(), true); showTogether(); });
+    if (COACH) document.getElementById("startRoom").addEventListener("click", () => { joinRoom(codeOf(), true); showTogether(); });
     const field = document.getElementById("joinCode");
     const go = () => {
       const c = field.value.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 4);
