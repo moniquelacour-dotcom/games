@@ -1058,6 +1058,8 @@ ROOMS.park = {
 /* ------------------------- jobs you can take ------------------------- */
 function checkJobsGoal() { if (Object.keys(S.jobsEver).length >= 5) completeGoal("fiveJobs"); }
 
+function workedHere(place) { return place ? !!S.doneToday["shift_" + place] : false; }
+
 function jobProp(cfg) {
   return {
     id: cfg.id, kind: cfg.kind, x: cfg.x, y: cfg.y, w: cfg.w, h: cfg.h,
@@ -1068,12 +1070,14 @@ function jobProp(cfg) {
       if (cfg.fun) chips.push({ t: "+" + cfg.fun + " Fun", cls: "good" });
       let why = "";
       if (S.doneToday["job_" + cfg.id]) why = cfg.doneMsg || "You already worked this shift today.";
+      else if (workedHere(cfg.place)) why = "You have done your shift here today. Try somewhere else in town.";
       else if (S.needs.energy < (cfg.energy || 10) + 4) why = "You're too tired for this shift.";
       else if (cfg.need && !cfg.need()) why = cfg.needWhy;
       return { title: cfg.title, chips: chips, why: why };
     },
     use() {
       S.doneToday["job_" + cfg.id] = true;
+      if (cfg.place) S.doneToday["shift_" + cfg.place] = true;
       S.jobsEver[cfg.id] = (S.jobsEver[cfg.id] || 0) + 1;
       S.money += cfg.pay;
       if (cfg.energy) S.needs.energy = clamp(S.needs.energy - cfg.energy, 0, 100);
@@ -1124,9 +1128,9 @@ CARS.forEach((c, i) => {
 });
 
 ROOMS.cars.props.push(jobProp({
-  id: "delivery", kind: "counter", x: 900, y: 490, w: 210, h: 95, color: "#8a6a18",
+  id: "delivery", kind: "counter", place: "cars", x: 900, y: 490, w: 210, h: 95, color: "#8a6a18",
   caption: "Delivery desk — top pay", title: "Deliver a new car across town",
-  pay: 150, mins: 120, energy: 10, fun: 8,
+  pay: 150, mins: 120, energy: 24, fun: 8,
   done: "Delivered with the plates still in plastic. +$150.00"
 }));
 
@@ -1139,7 +1143,7 @@ ROOMS.rink = {
   props: [
     { id: "rinkfloor", kind: "rinkfloor", walkable: true, x: 70, y: 60, w: 620, h: 400 },
     jobProp({
-      id: "rinkjob", kind: "counter", x: 760, y: 70, w: 200, h: 110, color: "#b05ac9",
+      id: "rinkjob", kind: "counter", place: "rink", x: 760, y: 70, w: 200, h: 110, color: "#b05ac9",
       caption: "Skate counter — work a shift", title: "Work the skate counter",
       pay: 45, mins: 90, energy: 12, fun: 6,
       done: "You handed out 40 pairs of skates. +$45.00"
@@ -1174,13 +1178,13 @@ ROOMS.swim = {
   props: [
     { id: "pool", kind: "water", water: true, walkable: true, x: 80, y: 90, w: 700, h: 370, opts: { lanes: true } },
     jobProp({
-      id: "swimteach", kind: "counter", x: 830, y: 300, w: 130, h: 110, color: "#1f6f97",
+      id: "swimteach", kind: "counter", place: "swim", x: 830, y: 300, w: 130, h: 110, color: "#1f6f97",
       caption: "Lesson desk", title: "Teach a swim lesson",
       pay: 95, mins: 90, energy: 12, fun: 10, clean: 8,
       done: "Four kids, four floaters, nobody sank. +$95.00"
     }),
     jobProp({
-      id: "lifeguard", kind: "guardchair", x: 830, y: 100, w: 120, h: 180, color: "#e05a5a",
+      id: "lifeguard", kind: "guardchair", place: "swim", x: 830, y: 100, w: 120, h: 180, color: "#e05a5a",
       caption: "Lifeguard chair", title: "Take the lifeguard shift",
       pay: 60, mins: 120, energy: 16, fun: 4,
       done: "Two hours on the chair, nobody drowned. +$60.00"
@@ -1239,14 +1243,14 @@ ROOMS.zoo = {
       x: 680, y: 360, w: 660, h: 350, opts: { shallow: "#8fe0ee", mid: "#3aa0d8", deep: "#14507f", rim: "#d8cfa8", radius: 70 } },
 
     jobProp({
-      id: "otters", kind: "station", x: 300, y: 740, w: 230, h: 110, color: "#7b5232",
+      id: "otters", kind: "station", place: "zoo", x: 300, y: 740, w: 230, h: 110, color: "#7b5232",
       caption: "Otter keeper station", title: "Swim with the otters (keeper shift)",
       pay: 70, mins: 120, energy: 14, fun: 22, clean: 10,
       done: "Two hours in the lagoon. One otter held your hand. +$70.00",
       after() { S.otterShifts = (S.otterShifts || 0) + 1; }
     }),
     jobProp({
-      id: "dolphins", kind: "station", x: 700, y: 750, w: 240, h: 110, color: "#5f7f9c",
+      id: "dolphins", kind: "station", place: "zoo", x: 700, y: 750, w: 240, h: 110, color: "#5f7f9c",
       caption: "Dolphin trainer stand", title: "Train the dolphins",
       pay: 120, mins: 120, energy: 18, fun: 30, clean: 10,
       need() { return (S.otterShifts || 0) >= 2; },
@@ -1267,19 +1271,19 @@ ROOMS.build = {
   zones: [{ x: 60, y: 50, w: 680, h: 280, c: "#e0b84f", label: "HOUSES GOING UP" }],
   props: [
     jobProp({
-      id: "framing", kind: "frame", x: 100, y: 80, w: 280, h: 220, color: "#b5793f",
+      id: "framing", kind: "frame", place: "build", x: 100, y: 80, w: 280, h: 220, color: "#b5793f",
       caption: "Frame a house", title: "Frame the walls of a house",
       pay: 80, mins: 120, energy: 20,
       done: "Walls up, straight and square. +$80.00"
     }),
     jobProp({
-      id: "roofing", kind: "roof", x: 430, y: 80, w: 280, h: 220, color: "#8a5a34",
+      id: "roofing", kind: "roof", place: "build", x: 430, y: 80, w: 280, h: 220, color: "#8a5a34",
       caption: "Roof a house", title: "Put the roof on",
       pay: 90, mins: 120, energy: 22,
       done: "Every shingle nailed down. +$90.00"
     }),
     jobProp({
-      id: "sweeping", kind: "shed", x: 790, y: 80, w: 180, h: 150, color: "#7ac6e0",
+      id: "sweeping", kind: "shed", place: "build", x: 790, y: 80, w: 180, h: 150, color: "#7ac6e0",
       caption: "Clean-up shift", title: "Sweep up the site",
       pay: 25, mins: 60, energy: 6,
       done: "Site swept. The foreman nodded at you. +$25.00"
@@ -1288,7 +1292,7 @@ ROOMS.build = {
       info() { return { title: "Read the house plans", chips: [{ t: "free", cls: "earn" }, { t: "10 min", cls: "time" }], why: "" }; },
       use() { advance(10); toast("You can build rooms onto your own house at home — walk to an empty lot in the yard."); } },
     jobProp({
-      id: "crane", kind: "crane", x: 790, y: 300, w: 200, h: 250,
+      id: "crane", kind: "crane", place: "build", x: 790, y: 300, w: 200, h: 250,
       caption: "Crane — top pay", title: "Run the tower crane",
       pay: 160, mins: 180, energy: 26,
       done: "Three hours on the sticks, not one dropped beam. +$160.00"
@@ -1737,7 +1741,8 @@ ROOMS.studio = {
         return { title: "Dance in tonight's show",
           chips: [{ t: "+$40 to $180", cls: "earn" }, { t: "1.5 hr", cls: "time" }, { t: "best " + S.stage.bestShow + "%", cls: "good" }],
           why: S.doneToday.job_stage ? "Tonight's show is over. Come back tomorrow."
-            : (S.needs.energy < 16 ? "You're too tired to perform." : "") };
+            : (workedHere("studio") ? "You have already performed here today."
+            : (S.needs.energy < 16 ? "You're too tired to perform." : "")) };
       },
       use() { startDance(true); } },
     { id: "tumble", kind: "mat", x: 90, y: 380, w: 240, h: 150,
@@ -1747,7 +1752,9 @@ ROOMS.studio = {
       info() {
         return { title: "Do the acrobatics show",
           chips: [{ t: "+$35 to $170", cls: "earn" }, { t: "1.5 hr", cls: "time" }, { t: "3 tricks", cls: "" }],
-          why: S.doneToday.job_acro ? "You already performed today." : (S.needs.energy < 16 ? "You're too tired." : "") };
+          why: S.doneToday.job_acro ? "You already performed today."
+            : (workedHere("studio") ? "You have already performed here today."
+            : (S.needs.energy < 16 ? "You're too tired." : "")) };
       },
       use() { startAcro(true); } },
     shopRack("cos1", "leo_pink", 700, 380, 105, 105),
@@ -3914,7 +3921,8 @@ function finishDance(paid, hits, total) {
   S.stage.bestShow = Math.max(S.stage.bestShow, pct);
   if (paid) {
     const pay = 40 + Math.round(pct * 1.1) + S.stage.practice * 6;
-    S.doneToday.job_stage = true; S.jobsEver.stage = (S.jobsEver.stage || 0) + 1;
+    S.doneToday.job_stage = true; S.doneToday.shift_studio = true;
+    S.jobsEver.stage = (S.jobsEver.stage || 0) + 1;
     S.money += pay; S.stage.shows++;
     S.needs.energy = clamp(S.needs.energy - 14, 0, 100);
     S.needs.fun = clamp(S.needs.fun + 20, 0, 100);
@@ -4027,7 +4035,8 @@ function finishAcro(paid, landed) {
   mini.over = true; cancelAnimationFrame(mini.raf); mini = null;
   if (paid) {
     const pay = 35 + landed * 45;
-    S.doneToday.job_acro = true; S.jobsEver.acro = (S.jobsEver.acro || 0) + 1;
+    S.doneToday.job_acro = true; S.doneToday.shift_studio = true;
+    S.jobsEver.acro = (S.jobsEver.acro || 0) + 1;
     S.money += pay; S.stage.shows++;
     S.needs.energy = clamp(S.needs.energy - 14, 0, 100);
     S.needs.fun = clamp(S.needs.fun + 18, 0, 100);
@@ -4279,7 +4288,7 @@ const CHALLENGES = [
   { id: "belt",    pic: "\uD83E\uDD4B", label: "Win a match",     mins: "5 min",  line: "Go to the dojo and beat somebody at jujitsu.", at: "dojo" },
   { id: "bunny",   pic: "\uD83D\uDC30", label: "Bunny home",       mins: "6 min",  line: "Earn the money, buy a bunny, give her a name.", at: "pets" },
   { id: "flip",    pic: "\uD83E\uDD38", label: "Triple flip",      mins: "6 min",  line: "Land all three tricks on the acrobatics mat.", at: "studio" },
-  { id: "cash",    pic: "\uD83D\uDCB5", label: "Earn $200",        mins: "8 min",  line: "Work any job in town until you have made two hundred dollars.", at: null },
+  { id: "cash",    pic: "\uD83D\uDCB5", label: "Earn $200",        mins: "8 min",  line: "One shift per place, so you will need two good jobs.", at: null },
   { id: "ovation", pic: "\uD83D\uDC83", label: "Standing ovation", mins: "10 min", line: "Dance the routine and hit nearly every arrow.", at: "studio" }
 ];
 
@@ -4569,17 +4578,6 @@ const MEID = Math.random().toString(36).slice(2, 10) + Date.now().toString(36).s
 const PEERS = Object.create(null);
 let roomCode = null, sock = null, bc = null, netState = "off", lastBeat = 0, lastSent = "";
 
-/* THE HOST GATE. A room is only a channel name on a public relay — there is no
-   server, so a code can never be switched off, and a child who remembers last
-   week's four letters can walk back in whenever she likes. Two of them did.
-   So the room is only OPEN while whoever started it is still in it. The starter
-   stamps h:1 on every packet; everyone else ignores each other until they have
-   heard one in the last six seconds. Nobody is locked out of their own game —
-   Northgate itself carries on exactly as before, they just cannot see each
-   other without the coach there. */
-let iHost = false, lastHostAt = 0;
-function roomOpen() { return iHost || (performance.now() - lastHostAt <= 6000); }
-
 function codeOf() {
   const L = "BCDFGHJKLMNPRSTVWXZ";                  // no vowels, so it never spells anything
   let c = "";
@@ -4602,7 +4600,7 @@ function cleanName(v) {
    to disagree about and no order to get wrong. The job itself rides along in
    the same packet; the newest one wins, which is how a room ends up on one. */
 
-const TEAM_GOAL = 500;                       // dollars, the room's shared pot
+const TEAM_GOAL = 300;                       // dollars, the room's shared pot
 const TEAM_EACH = 60;                        // dollars, what EVERY person has to earn
 const TEAM_PAY = 100;                        // each, on finishing
 
@@ -4639,7 +4637,7 @@ function startTeamJob(kind, placeId) {
     if (!placeId) { pickingPlace = true; showTogether(); return; }   // you choose where
     job.place = placeId;
   } else if (kind === "fund") {
-    job.goal = Math.max(TEAM_GOAL, 150 * (peerCount() + 1));         // 150 a head
+    job.goal = Math.max(TEAM_GOAL, 100 * (peerCount() + 1));         // 100 a head
   } else {
     job.goal = TEAM_EACH;                                            // every single person
   }
@@ -4856,8 +4854,6 @@ function wireTeamPanel() {
 /* Everything a peer sends is treated as decoration and clamped into range. */
 function takePeer(m) {
   if (!m || typeof m !== "object" || typeof m.i !== "string" || m.i === MEID) return;
-  if (m.h) lastHostAt = performance.now();        // the coach is here
-  if (!roomOpen()) return;                          // no coach, no room
   if (m.bye) { delete PEERS[m.i]; return; }
   const where = (m.r === "city" || ROOMS[m.r]) ? m.r : "city";
   const lim = where === "city" ? WORLD : ROOMS[where];
@@ -4912,7 +4908,6 @@ function myPacket() {
     d: hero.dir, m: hero.moving ? 1 : 0,
     c: driving ? mc.shape : null, cc: driving ? mc.color : null, ct: driving ? mc.trim : null,
     a: driving ? +car.a.toFixed(2) : 0,
-    h: iHost ? 1 : 0,
     tj: S.team.job || null,
     k: Math.round(S.team.earned) || 0
   };
@@ -4979,7 +4974,6 @@ function leaveRoom(quiet) {
   try { if (bc) bc.close(); } catch (e) {}
   try { if (sock) sock.end(true); } catch (e) {}
   bc = null; sock = null; roomCode = null; netState = "off"; lastSent = "";
-  iHost = false; lastHostAt = 0;
   S.team.job = null; S.team.earned = 0;
   for (const id in PEERS) delete PEERS[id];
   if (!quiet) paintTogether();
@@ -4987,10 +4981,7 @@ function leaveRoom(quiet) {
 window.addEventListener("pagehide", () => leaveRoom(true));
 
 function netWord() {
-  if (netState === "open") {
-    if (!roomOpen()) return "Waiting for your coach to open the room.";
-    return peerCount() ? "" : "Nobody else yet. Read the four letters out.";
-  }
+  if (netState === "open") return peerCount() ? "" : "Nobody else yet. Read the four letters out.";
   if (netState === "connecting") return "Connecting\u2026";
   if (netState === "blocked") return "This network is blocking it. Everyone can still play on their own.";
   if (netState === "closed") return "The connection dropped. It will try again by itself.";
@@ -5038,11 +5029,11 @@ function showTogether() {
       '<p class="rowlabel">Or join one</p>' +
       '<div class="namebox"><input id="joinCode" class="codein" type="text" maxlength="4" autocomplete="off" spellcheck="false" placeholder="CODE"></div>' +
       '<button id="doJoin" type="button">Join</button>';
-    document.getElementById("startRoom").addEventListener("click", () => { iHost = true; joinRoom(codeOf()); showTogether(); });
+    document.getElementById("startRoom").addEventListener("click", () => { joinRoom(codeOf()); showTogether(); });
     const field = document.getElementById("joinCode");
     const go = () => {
       const c = field.value.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 4);
-      if (c.length === 4) { iHost = false; joinRoom(c); showTogether(); } else field.focus();
+      if (c.length === 4) { joinRoom(c); showTogether(); } else field.focus();
     };
     document.getElementById("doJoin").addEventListener("click", go);
     field.addEventListener("keydown", e => { if (e.key === "Enter") go(); });
@@ -5166,7 +5157,7 @@ requestAnimationFrame(loop);
 if (S.firstBoot) {
   S.firstBoot = false; save();
   setTimeout(() => toast("Press E to hop out of the car, then walk to the door of your house.", "win"), 500);
-  setTimeout(() => toast("Need money? The crane at the build site pays $160 a shift.", "win"), 3200);
+  setTimeout(() => toast("Need money? One shift per place, per day — the crane at the build site pays $160.", "win"), 3200);
   setTimeout(() => toast("Your animals ride with you — heads out the window, or the sidecar.", "win"), 6200);
 } else {
   setTimeout(() => toast("Welcome back. It's day " + S.day + ".", "win"), 500);
