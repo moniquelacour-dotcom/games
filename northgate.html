@@ -1,4 +1,4 @@
-﻿<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Northgate City Life</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4569,6 +4569,17 @@ const MEID = Math.random().toString(36).slice(2, 10) + Date.now().toString(36).s
 const PEERS = Object.create(null);
 let roomCode = null, sock = null, bc = null, netState = "off", lastBeat = 0, lastSent = "";
 
+/* THE HOST GATE. A room is only a channel name on a public relay — there is no
+   server, so a code can never be switched off, and a child who remembers last
+   week's four letters can walk back in whenever she likes. Two of them did.
+   So the room is only OPEN while whoever started it is still in it. The starter
+   stamps h:1 on every packet; everyone else ignores each other until they have
+   heard one in the last six seconds. Nobody is locked out of their own game —
+   Northgate itself carries on exactly as before, they just cannot see each
+   other without the coach there. */
+let iHost = false, lastHostAt = 0;
+function roomOpen() { return iHost || (performance.now() - lastHostAt <= 6000); }
+
 function codeOf() {
   const L = "BCDFGHJKLMNPRSTVWXZ";                  // no vowels, so it never spells anything
   let c = "";
@@ -4845,6 +4856,8 @@ function wireTeamPanel() {
 /* Everything a peer sends is treated as decoration and clamped into range. */
 function takePeer(m) {
   if (!m || typeof m !== "object" || typeof m.i !== "string" || m.i === MEID) return;
+  if (m.h) lastHostAt = performance.now();        // the coach is here
+  if (!roomOpen()) return;                          // no coach, no room
   if (m.bye) { delete PEERS[m.i]; return; }
   const where = (m.r === "city" || ROOMS[m.r]) ? m.r : "city";
   const lim = where === "city" ? WORLD : ROOMS[where];
@@ -4899,6 +4912,7 @@ function myPacket() {
     d: hero.dir, m: hero.moving ? 1 : 0,
     c: driving ? mc.shape : null, cc: driving ? mc.color : null, ct: driving ? mc.trim : null,
     a: driving ? +car.a.toFixed(2) : 0,
+    h: iHost ? 1 : 0,
     tj: S.team.job || null,
     k: Math.round(S.team.earned) || 0
   };
@@ -4965,6 +4979,7 @@ function leaveRoom(quiet) {
   try { if (bc) bc.close(); } catch (e) {}
   try { if (sock) sock.end(true); } catch (e) {}
   bc = null; sock = null; roomCode = null; netState = "off"; lastSent = "";
+  iHost = false; lastHostAt = 0;
   S.team.job = null; S.team.earned = 0;
   for (const id in PEERS) delete PEERS[id];
   if (!quiet) paintTogether();
@@ -4972,7 +4987,10 @@ function leaveRoom(quiet) {
 window.addEventListener("pagehide", () => leaveRoom(true));
 
 function netWord() {
-  if (netState === "open") return peerCount() ? "" : "Nobody else yet. Read the four letters out.";
+  if (netState === "open") {
+    if (!roomOpen()) return "Waiting for your coach to open the room.";
+    return peerCount() ? "" : "Nobody else yet. Read the four letters out.";
+  }
   if (netState === "connecting") return "Connecting\u2026";
   if (netState === "blocked") return "This network is blocking it. Everyone can still play on their own.";
   if (netState === "closed") return "The connection dropped. It will try again by itself.";
@@ -5020,11 +5038,11 @@ function showTogether() {
       '<p class="rowlabel">Or join one</p>' +
       '<div class="namebox"><input id="joinCode" class="codein" type="text" maxlength="4" autocomplete="off" spellcheck="false" placeholder="CODE"></div>' +
       '<button id="doJoin" type="button">Join</button>';
-    document.getElementById("startRoom").addEventListener("click", () => { joinRoom(codeOf()); showTogether(); });
+    document.getElementById("startRoom").addEventListener("click", () => { iHost = true; joinRoom(codeOf()); showTogether(); });
     const field = document.getElementById("joinCode");
     const go = () => {
       const c = field.value.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 4);
-      if (c.length === 4) { joinRoom(c); showTogether(); } else field.focus();
+      if (c.length === 4) { iHost = false; joinRoom(c); showTogether(); } else field.focus();
     };
     document.getElementById("doJoin").addEventListener("click", go);
     field.addEventListener("keydown", e => { if (e.key === "Enter") go(); });
