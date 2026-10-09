@@ -1864,6 +1864,11 @@ const GOALS = [
   { id: "newGame",   text: "Buy a new video game for your room", reward: 25 },
   { id: "arcade500", text: "Score 500 at Blip Arcade",           reward: 40 },
   { id: "save250",   text: "Save up $250 at one time",           reward: 50 },
+  { id: "save500",   text: "Save up $500 at one time",           reward: 100 },
+  { id: "save1000",  text: "Save up $1,000 at one time",         reward: 200 },
+  { id: "save2500",  text: "Save up $2,500 at one time",         reward: 400 },
+  { id: "save5000",  text: "Save up $5,000 at one time",         reward: 750 },
+  { id: "bigSpender",text: "Own the $3,000 car",                 reward: 500 },
   { id: "goodDay",   text: "End a day with every meter over 60", reward: 50 },
   { id: "buyCar",      text: "Buy a cooler car at Northgate Auto",  reward: 75 },
   { id: "buildRoom",   text: "Build a new room onto your house",    reward: 75 },
@@ -1895,6 +1900,11 @@ function checkGoals() {
   if (S.games.length > 1) completeGoal("newGame");
   if (S.bestArcade >= 500) completeGoal("arcade500");
   if (S.money >= 250) completeGoal("save250");
+  if (S.money >= 500) completeGoal("save500");
+  if (S.money >= 1000) completeGoal("save1000");
+  if (S.money >= 2500) completeGoal("save2500");
+  if (S.money >= 5000) completeGoal("save5000");
+  if (S.car && S.car.price >= 3000) completeGoal("bigSpender");
   if (S.money >= (S.challengeFrom || 0) + 200) challengeDone("cash");
 }
 
