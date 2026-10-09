@@ -1904,7 +1904,7 @@ function checkGoals() {
   if (S.money >= 1000) completeGoal("save1000");
   if (S.money >= 2500) completeGoal("save2500");
   if (S.money >= 5000) completeGoal("save5000");
-  if (S.car && S.car.price >= 3000) completeGoal("bigSpender");
+  if (myCar().price >= 3000) completeGoal("bigSpender");
   if (S.money >= (S.challengeFrom || 0) + 200) challengeDone("cash");
 }
 
