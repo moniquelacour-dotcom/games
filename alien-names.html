@@ -91,6 +91,10 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
   var CHUNKS=["sh","ch","th"];
   var st={wall:[],marks:[],wleft:60,wtimer:null,wdone:false,lv:1,mode:"warm",deck:[],cur:null,split:false,got:0,tries:0,left:60,timer:null};
   var GOAL=25;
+  // the real Grade 1 bar is 25 whole nonsense words in a minute, so she can see the gap
+  function goalLine(n){return '<div class="goal">'+(n>=GOAL
+    ? '🎯 You hit the goal of '+GOAL+'!'
+    : 'Goal: '+GOAL+' in a minute — '+(GOAL-n)+' to go')+'</div>'}
   var best={};try{best=JSON.parse(localStorage.getItem("alien.best")||"{}")}catch(e){}
   // every FINISHED 1-minute dash, so the count is practice done, never practice started
   var runs=[];try{runs=JSON.parse(localStorage.getItem("alien.runs")||"[]")}catch(e){}
@@ -141,7 +145,7 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
       '<div class="row"><button class="big got" id="dg" type="button">✔ Got it</button><button class="big again" id="dt" type="button">↻ Try again</button><button class="big soft" id="dk" type="button">Skip</button></div>';
     } else {
       var k="lv"+st.lv,b=best[k]||0;
-      main.innerHTML='<div class="done"><div class="alien">🚀</div><div>Alien names read:</div><div class="num">'+st.got+'</div><div>'+(st.got>b?'🌟 New best!':'Best so far: '+b)+'</div>'+
+      main.innerHTML='<div class="done"><div class="alien">🚀</div><div>Alien names read:</div><div class="num">'+st.got+'</div>'+goalLine(st.got)+'<div>'+(st.got>b?'🌟 New best!':'Best so far: '+b)+'</div>'+
       '<div>That’s '+runs.length+' practice'+(runs.length===1?'':'s')+' this week — '+runs.length+' alpha'+(runs.length===1?'':'s')+' on Friday.</div>'+'<div class="row"><button class="big got" id="again" type="button">Go again</button><button class="big soft" id="back" type="button">Practice mode</button></div></div>';
       if(st.got>b){best[k]=st.got;try{localStorage.setItem("alien.best",JSON.stringify(best))}catch(e){}}
     }
