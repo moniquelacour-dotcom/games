@@ -64,6 +64,7 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 .alphabar .pill{display:inline-flex;align-items:center;gap:6px}
 .days{font-size:13px;opacity:.8;width:100%;text-align:center}
 .resetw{font-size:12px;opacity:.6;background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer;padding:4px}
+.goal{font-size:17px;opacity:.92;margin-top:2px}
 </style>
 </head>
 <body>
@@ -89,22 +90,24 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
   var ALIENS=["👽","👾","🛸","🐙","🦑","🪐","🌟","🤖"];
   var CHUNKS=["sh","ch","th"];
   var st={wall:[],marks:[],wleft:60,wtimer:null,wdone:false,lv:1,mode:"warm",deck:[],cur:null,split:false,got:0,tries:0,left:60,timer:null};
+  var GOAL=25;
   var best={};try{best=JSON.parse(localStorage.getItem("alien.best")||"{}")}catch(e){}
   // every FINISHED 1-minute dash, so the count is practice done, never practice started
   var runs=[];try{runs=JSON.parse(localStorage.getItem("alien.runs")||"[]")}catch(e){}
   var since="";try{since=localStorage.getItem("alien.since")||""}catch(e){}
   function saveRuns(){try{localStorage.setItem("alien.runs",JSON.stringify(runs));localStorage.setItem("alien.since",since)}catch(e){}}
+  var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   function dayName(d){return ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()]}
-  function shortDate(iso){var d=new Date(iso);return dayName(d)+" "+d.getDate()+" "+["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][d.getMonth()]}
+  function shortDate(iso){var d=new Date(iso);return MON[d.getMonth()]+" "+d.getDate()}
   function logRun(){var now=new Date().toISOString();if(!since)since=now;runs.push(now);saveRuns();drawAlphas()}
   function drawAlphas(){
     var bar=document.getElementById("alphabar");if(!bar)return;
     var n=runs.length;
     var byDay={},order=[];
-    runs.forEach(function(iso){var d=new Date(iso),k=dayName(d)+" "+d.getDate();if(!byDay[k]){byDay[k]=0;order.push(k)}byDay[k]++});
+    runs.forEach(function(iso){var d=new Date(iso),k=MON[d.getMonth()]+" "+d.getDate();if(!byDay[k]){byDay[k]=0;order.push(k)}byDay[k]++});
     bar.innerHTML='<span class="pill">⭐ <span class="big-n">'+n+'</span> practice'+(n===1?'':'s')+'</span>'
       +'<span class="pill">= '+n+' alpha'+(n===1?'':'s')+' on Friday</span>'
-      +(n?'<div class="days">'+order.map(function(k){return k+": "+byDay[k]}).join(" · ")
+      +(n?'<div class="days">'+order.map(function(k){return k+": "+byDay[k]+" alpha"+(byDay[k]===1?"":"s")}).join(" · ")
           +'<br>counting since '+shortDate(since)+' — <button class="resetw" id="newweek" type="button">Coach: start a new week</button></div>'
         :'<div class="days">Finish a 1-minute dash and it counts here.</div>');
   }

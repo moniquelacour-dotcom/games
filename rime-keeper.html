@@ -170,9 +170,12 @@ select{font-family:var(--display);font-size:.88rem;padding:9px 10px;border-radiu
     id:["b","d","h","k","l"],ot:["c","d","g","h","j","l","n","p"],op:["c","h","m","p","t"],
     og:["d","f","h","j","l"],ob:["c","j","m","r"],ut:["b","c","g","h","n"],
     un:["b","f","p","r","s"],ug:["b","d","h","j","m","r","t"],ub:["c","h","r","t"],um:["g","h","s"]};
-  var CONFUSE={b:["d","p"],d:["b","p"],p:["b","d"],m:["n","w"],n:["m","h"],w:["m","v"],
-    g:["j","q"],j:["g","y"],f:["t","l"],t:["f","l"],s:["z","c"],c:["k","s"],h:["n","b"],
-    r:["n","v"],l:["t","f"],v:["w","y"],k:["h","x"],y:["v","j"],z:["s","n"],x:["k","y"]};
+  /* Her own errors are voiced/unvoiced PAIRS - p/b and f/v - same mouth position, voice on or off.
+     So every consonant here is offered against its voicing partner first, then a look-alike. */
+  var CONFUSE={b:["p","d"],p:["b","d"],f:["v","t"],v:["f","w"],d:["t","b"],t:["d","f"],
+    g:["k","j"],k:["g","c"],c:["g","k"],s:["z","c"],z:["s","v"],j:["g","y"],
+    m:["n","w"],n:["m","h"],w:["v","m"],h:["n","b"],r:["n","w"],l:["t","f"],
+    y:["v","j"],x:["k","s"],q:["p","g"]};
   var POOL="bcdfghjklmnprstvwyz".split("");
 
   var PICS={
