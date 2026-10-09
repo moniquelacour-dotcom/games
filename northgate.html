@@ -876,10 +876,139 @@ ROOMS.airport = {
       completeGoal("firstFlight");
       if (FLIGHTS.every(x => trips()[x.id])) completeGoal("fourCities");
       toast(f.line, "win"); sfxGood();
+      const dest = ROOMS[f.id];
+      if (dest) {
+        room = dest; mode = "inside";
+        hero.x = dest.spawn.x; hero.y = dest.spawn.y; hero.dir = "up";
+        syncPets(hero.x - 24, hero.y + 20);
+        document.getElementById("banner").textContent = dest.name;
+      }
     }
   })),
   exit: { x: 510, y: 560, w: 100, h: 40 }
 };
+
+/* ---- the four cities. You can only reach these through the airport. ---- */
+ROOMS.nyc = {
+  name: "New York", tag: "Broadway and the big park", head: "#a8331f", returnTo: "airport",
+  w: 1120, h: 600, floor: "#d8d2c6", floorAlt: "#cfc9bd", wall: "#a8331f",
+  spawn: { x: 560, y: 520 },
+  zones: [{ x: 60, y: 40, w: 520, h: 210, c: "#e0a94f", label: "BROADWAY" },
+          { x: 640, y: 40, w: 420, h: 210, c: "#7fc46a", label: "CENTRAL PARK" }],
+  props: [
+    P({ id: "nyc_show", kind: "shelf", x: 110, y: 150, w: 170, h: 80, color: "#e0a94f",
+      info() { return foodPropInfo("See a show on Broadway",
+        [{ t: "$60.00", cls: "cost" }, { t: "3 hr", cls: "time" }, { t: "+40 Fun", cls: "good" }],
+        afford(60) ? "" : "Tickets are $60."); },
+      use() { pay(60); S.needs.fun = clamp(S.needs.fun + 40, 0, 100); advance(180);
+        completeGoal("broadwayShow"); toast("The whole theatre stood up at the end. You did too.", "win"); sfxGood(); }
+    }),
+    P({ id: "nyc_stage", kind: "shelf", x: 360, y: 150, w: 170, h: 80, color: "#c9483f",
+      info() { return foodPropInfo("Perform on a Broadway stage",
+        [{ t: "+$250.00", cls: "earn" }, { t: "4 hr", cls: "time" }, { t: "+45 Fun", cls: "good" }],
+        !S.goals.firstShow ? "Do a show at Spotlight Studio back home first." : (S.needs.energy < 25 ? "You are too tired to perform." : "")); },
+      use() { S.money += 250; S.needs.fun = clamp(S.needs.fun + 45, 0, 100);
+        S.needs.energy = clamp(S.needs.energy - 25, 0, 100); advance(240);
+        completeGoal("broadwayStar"); toast("You performed on Broadway. Actual Broadway.", "win"); sfxGood(); }
+    }),
+    P({ id: "nyc_park", kind: "shelf", x: 740, y: 150, w: 190, h: 80, color: "#7fc46a",
+      info() { return foodPropInfo("Play in Central Park",
+        [{ t: "Free", cls: "" }, { t: "2 hr", cls: "time" }, { t: "+25 Fun", cls: "good" }], ""); },
+      use() { S.needs.fun = clamp(S.needs.fun + 25, 0, 100); S.needs.energy = clamp(S.needs.energy - 8, 0, 100);
+        advance(120); completeGoal("centralPark"); toast("Eight hundred acres in the middle of a city. Wild.", "win"); sfxGood(); }
+    })
+  ],
+  exit: { x: 510, y: 560, w: 100, h: 40 }
+};
+
+ROOMS.paris = {
+  name: "Paris", tag: "Patisserie and a cafe", head: "#2f4f9e", returnTo: "airport",
+  w: 1120, h: 600, floor: "#efe6d6", floorAlt: "#e7dcc9", wall: "#3f6bd1",
+  spawn: { x: 560, y: 520 },
+  zones: [{ x: 60, y: 40, w: 520, h: 210, c: "#f0c987", label: "PATISSERIE" },
+          { x: 640, y: 40, w: 420, h: 210, c: "#c9a6d6", label: "CAFE" }],
+  props: [
+    P({ id: "par_croissant", kind: "shelf", x: 110, y: 150, w: 170, h: 80, color: "#f0c987",
+      info() { return foodPropInfo("Buy a croissant",
+        [{ t: "$6.00", cls: "cost" }, { t: "+Food", cls: "good" }], afford(6) ? "" : "Not enough money."); },
+      use() { pay(6); eat(26, 6); advance(15); completeGoal("croissant");
+        toast("Still warm. Flakes absolutely everywhere.", "win"); sfxGood(); }
+    }),
+    P({ id: "par_box", kind: "shelf", x: 360, y: 150, w: 170, h: 80, color: "#e0a0b8",
+      info() { return foodPropInfo("A box of pastries to take home",
+        [{ t: "$18.00", cls: "cost" }, { t: "5 snacks", cls: "" }], afford(18) ? "" : "Not enough money."); },
+      use() { pay(18); S.pantry.snacks += 5; advance(10); toast("Five pastries, boxed and tied with string."); }
+    }),
+    P({ id: "par_cafe", kind: "shelf", x: 740, y: 150, w: 190, h: 80, color: "#c9a6d6",
+      info() { return foodPropInfo("Sit at a cafe and watch the street",
+        [{ t: "$9.00", cls: "cost" }, { t: "1 hr", cls: "time" }, { t: "+Fun +Energy", cls: "good" }],
+        afford(9) ? "" : "Not enough money."); },
+      use() { pay(9); S.needs.fun = clamp(S.needs.fun + 20, 0, 100);
+        S.needs.energy = clamp(S.needs.energy + 10, 0, 100); advance(60);
+        toast("You sat outside for an hour and did nothing at all. Excellent."); sfxGood(); }
+    })
+  ],
+  exit: { x: 510, y: 560, w: 100, h: 40 }
+};
+
+ROOMS.london = {
+  name: "London", tag: "The wizarding castle", head: "#5b3b86", returnTo: "airport",
+  w: 1120, h: 600, floor: "#d9d4e2", floorAlt: "#d0cbdb", wall: "#8e52b6",
+  spawn: { x: 560, y: 520 },
+  zones: [{ x: 60, y: 40, w: 520, h: 210, c: "#a98fd1", label: "THE CASTLE" },
+          { x: 640, y: 40, w: 420, h: 210, c: "#c4a06a", label: "THE CROOKED VILLAGE" }],
+  props: [
+    P({ id: "lon_castle", kind: "shelf", x: 110, y: 150, w: 170, h: 80, color: "#a98fd1",
+      info() { return foodPropInfo("Tour the wizarding castle",
+        [{ t: "$40.00", cls: "cost" }, { t: "3 hr", cls: "time" }, { t: "+45 Fun", cls: "good" }],
+        afford(40) ? "" : "The tour is $40."); },
+      use() { pay(40); S.needs.fun = clamp(S.needs.fun + 45, 0, 100); advance(180);
+        completeGoal("castleTour"); toast("Moving staircases, a hall full of candles, one very long table.", "win"); sfxGood(); }
+    }),
+    P({ id: "lon_wand", kind: "shelf", x: 360, y: 150, w: 170, h: 80, color: "#8a6a3a",
+      info() { return foodPropInfo("Be chosen by a wand",
+        [{ t: "$35.00", cls: "cost" }, { t: "+30 Fun", cls: "good" }], afford(35) ? "" : "Not enough money."); },
+      use() { pay(35); S.needs.fun = clamp(S.needs.fun + 30, 0, 100); advance(45);
+        toast("You tried eleven. The eleventh made the windows rattle.", "win"); sfxGood(); }
+    }),
+    P({ id: "lon_village", kind: "shelf", x: 740, y: 150, w: 190, h: 80, color: "#c4a06a",
+      info() { return foodPropInfo("Wander the crooked village",
+        [{ t: "Free", cls: "" }, { t: "1 hr", cls: "time" }, { t: "+20 Fun", cls: "good" }], ""); },
+      use() { S.needs.fun = clamp(S.needs.fun + 20, 0, 100); advance(60);
+        toast("Every house leans on the one next door. Nobody seems worried."); sfxGood(); }
+    })
+  ],
+  exit: { x: 510, y: 560, w: 100, h: 40 }
+};
+
+ROOMS.tokyo = {
+  name: "Tokyo", tag: "Sushi and the night market", head: "#b02f5a", returnTo: "airport",
+  w: 1120, h: 600, floor: "#e8e2e4", floorAlt: "#ded8da", wall: "#e0538f",
+  spawn: { x: 560, y: 520 },
+  zones: [{ x: 60, y: 40, w: 520, h: 210, c: "#f08fae", label: "SUSHI COUNTER" },
+          { x: 640, y: 40, w: 420, h: 210, c: "#6ac4d1", label: "NIGHT MARKET" }],
+  props: [
+    P({ id: "tok_sushi", kind: "shelf", x: 110, y: 150, w: 170, h: 80, color: "#f08fae",
+      info() { return foodPropInfo("Sushi at the counter",
+        [{ t: "$22.00", cls: "cost" }, { t: "+Food +Fun", cls: "good" }], afford(22) ? "" : "Not enough money."); },
+      use() { pay(22); eat(45, 14); advance(50); completeGoal("sushiTokyo");
+        toast("The chef put it in front of you one piece at a time.", "win"); sfxGood(); }
+    }),
+    P({ id: "tok_ramen", kind: "shelf", x: 360, y: 150, w: 170, h: 80, color: "#e0a94f",
+      info() { return foodPropInfo("A bowl of ramen",
+        [{ t: "$12.00", cls: "cost" }, { t: "+Food", cls: "good" }], afford(12) ? "" : "Not enough money."); },
+      use() { pay(12); eat(34, 6); advance(30); toast("You drank the rest of the broth. Obviously."); sfxGood(); }
+    }),
+    P({ id: "tok_market", kind: "shelf", x: 740, y: 150, w: 190, h: 80, color: "#6ac4d1",
+      info() { return foodPropInfo("Walk the night market",
+        [{ t: "Free", cls: "" }, { t: "2 hr", cls: "time" }, { t: "+25 Fun", cls: "good" }], ""); },
+      use() { S.needs.fun = clamp(S.needs.fun + 25, 0, 100); S.needs.energy = clamp(S.needs.energy - 6, 0, 100);
+        advance(120); toast("Brightest street you have ever stood in."); sfxGood(); }
+    })
+  ],
+  exit: { x: 510, y: 560, w: 100, h: 40 }
+};
+
 ROOMS.pets = {
   name: "Pet Palace", tag: "Puppies, kittens, fish", head: "#a95f18",
   w: 1120, h: 580, floor: "#f2e2c4", floorAlt: "#eadaba", wall: "#e08a2e",
@@ -1924,7 +2053,13 @@ const GOALS = [
   { id: "champion",    text: "Win a jujitsu tournament",             reward: 200 },
   { id: "blackBelt",   text: "Earn your black belt",                 reward: 400 },
   { id: "firstFlight", text: "Take a flight from Northgate Airport",  reward: 100 },
-  { id: "fourCities",  text: "Visit New York, Paris, London and Tokyo", reward: 400 }
+  { id: "fourCities",  text: "Visit New York, Paris, London and Tokyo", reward: 400 },
+  { id: "broadwayShow", text: "See a show on Broadway",                reward: 80 },
+  { id: "broadwayStar", text: "Perform on a Broadway stage",           reward: 250 },
+  { id: "centralPark",  text: "Play in Central Park",                  reward: 50 },
+  { id: "croissant",    text: "Eat a croissant in Paris",              reward: 60 },
+  { id: "castleTour",   text: "Tour the wizarding castle in London",   reward: 80 },
+  { id: "sushiTokyo",   text: "Eat sushi in Tokyo",                    reward: 60 }
 ];
 function completeGoal(id) {
   if (S.goals[id]) return;
@@ -3664,6 +3799,16 @@ function interact() {
     return;
   }
   if (focus.kind === "leave") {
+    const backTo = room && room.returnTo;
+    if (backTo) {
+      const back = ROOMS[backTo];
+      room = back; mode = "inside";
+      hero.x = back.spawn.x; hero.y = back.spawn.y; hero.dir = "up";
+      syncPets(hero.x - 24, hero.y + 20);
+      document.getElementById("banner").textContent = back.name;
+      speech = null; sfxStep();
+      return;
+    }
     mode = "walk";
     const p = PLACES.find(pl => pl.id === roomId(room));
     hero.x = p.door.x; hero.y = p.door.y + 40;
