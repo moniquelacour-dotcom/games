@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Short vowels, word endings, and putting the first letter back on.">
+<title>Rime Keeper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Outfit:wght@400;500;600&display=swap">
+<style>
+:root{color-scheme:light}
+[hidden]{display:none!important}
+img{max-width:100%}
+
+/* Layout: one path, top to bottom. A rail says where we are; the card shows the one thing to do now. */
+:root{
+  --ground:#eceef1; --card:#ffffff; --ink:#191f26; --quiet:#6f7d8c; --edge:#d2d9e0;
+  --rime:#15463f; --rime-ink:#eafaf5; --slot:#f0b429; --slot-ink:#43300a;
+  --pick:#b23a48; --pick-ink:#ffffff; --ok:#1f6f5c;
+  --display:"Outfit","Avenir Next",system-ui,sans-serif;
+  --read:"Andika","Comic Sans MS","Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0e1319; --card:#171f28; --ink:#e8eef4; --quiet:#718697; --edge:#28333f;
+  --rime:#2f9c87; --rime-ink:#06201b; --slot:#f3bc45; --slot-ink:#36260a;
+  --pick:#d85f6c; --pick-ink:#1a0b0e; --ok:#4fc2a6; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --ground:#0e1319; --card:#171f28; --ink:#e8eef4; --quiet:#718697; --edge:#28333f;
+  --rime:#2f9c87; --rime-ink:#06201b; --slot:#f3bc45; --slot-ink:#36260a;
+  --pick:#d85f6c; --pick-ink:#1a0b0e; --ok:#4fc2a6; color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--ground);color:var(--ink);font-family:var(--read);margin:0}
+.wrap{max-width:820px;margin:0 auto;padding-inline:16px;padding-block:16px 36px;
+  display:flex;flex-direction:column;gap:12px;min-height:100%;box-sizing:border-box}
+h1{font-family:var(--display);font-weight:600;font-size:clamp(1.25rem,4.2vw,1.7rem);margin:0;letter-spacing:-.01em}
+button{font:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--pick);outline-offset:2px}
+
+.rail{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.rail button{font-family:var(--display);font-size:.78rem;text-align:left;line-height:1.25;
+  border:0;border-top:4px solid var(--edge);background:transparent;color:var(--quiet);
+  padding:8px 4px 0;min-height:52px;min-width:0}
+.rail button .n{display:block;font-size:.66rem;letter-spacing:.09em;text-transform:uppercase;opacity:.8}
+.rail button[aria-current="step"]{border-top-color:var(--rime);color:var(--ink);font-weight:500}
+.rail button.past{border-top-color:var(--rime);opacity:.75}
+
+.where{font-family:var(--display);font-size:.84rem;color:var(--quiet);
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.where b{color:var(--ink);font-weight:500}
+
+.stage{background:var(--card);border:1px solid var(--edge);border-radius:18px;padding:24px 18px;
+  display:flex;flex-direction:column;align-items:center;gap:16px;min-height:min(38vh,290px);justify-content:center}
+.prompt{font-family:var(--display);font-size:1rem;color:var(--quiet);text-align:center;max-width:46ch}
+.big{font-family:var(--read);font-size:clamp(3rem,15vw,5.5rem);line-height:1}
+.pairline{display:flex;align-items:center;gap:clamp(14px,5vw,34px);flex-wrap:wrap;justify-content:center}
+.picbox{display:flex;flex-direction:column;align-items:center;gap:6px}
+.picbox svg{width:clamp(104px,28vw,150px);height:auto;max-width:100%;display:block}
+.keyword{font-family:var(--read);font-size:clamp(1.25rem,4.6vw,1.75rem);line-height:1}
+.keyword b{color:var(--pick);font-weight:700}
+
+.three{display:flex;gap:14px}
+.three button{width:52px;height:52px;border-radius:50%;border:3px solid var(--edge);
+  background:var(--card);color:var(--quiet);font-family:var(--display);font-size:1.05rem;padding:0}
+.three button.on{background:var(--rime);border-color:var(--rime);color:var(--rime-ink)}
+
+.word{display:flex;gap:8px;font-family:var(--read)}
+.chunk{font-size:clamp(2.1rem,9.5vw,3.4rem);line-height:1;padding:14px 20px;border-radius:14px;
+  background:var(--rime);color:var(--rime-ink)}
+.slot{font-size:clamp(2.1rem,9.5vw,3.4rem);line-height:1;padding:14px 22px;border-radius:14px;
+  background:var(--slot);color:var(--slot-ink);min-width:1.3em;text-align:center;
+  border:3px dashed rgba(0,0,0,.22);box-sizing:border-box}
+.slot.filled{border-style:solid}
+.slot.wrong{background:var(--pick);color:var(--pick-ink)}
+.letters{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.letters button{font-family:var(--read);font-size:clamp(1.7rem,7vw,2.5rem);line-height:1;
+  min-width:2.4em;padding:14px 10px;border-radius:14px;border:2px solid var(--edge);
+  background:var(--card);color:var(--ink)}
+.letters button[disabled]{opacity:.35;cursor:default}
+
+.acts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.btn{font-family:var(--display);font-size:.96rem;border:1px solid var(--edge);border-radius:12px;
+  background:var(--card);color:var(--ink);padding:12px 18px;min-height:48px}
+.btn.solid{background:var(--rime);color:var(--rime-ink);border-color:transparent;font-weight:500}
+.btn.yes{border-color:var(--ok);color:var(--ok)}
+.btn.no{border-color:var(--pick);color:var(--pick)}
+.btn[disabled]{opacity:.35;cursor:default}
+
+.foot{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap}
+.panel{background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:13px 15px;
+  display:flex;flex-direction:column;gap:9px}
+.panel.dash{border-style:dashed}
+.who{font-family:var(--display);font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--quiet)}
+.q{font-family:var(--display);font-size:.94rem}
+.cells{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:8px}
+.cell{border:1px solid var(--edge);border-radius:10px;padding:9px 11px;min-width:0}
+.cell .n{font-family:var(--display);font-size:1.5rem;font-variant-numeric:tabular-nums;line-height:1.1}
+.cell .t{font-family:var(--display);font-size:.76rem;color:var(--quiet);line-height:1.3}
+.cell.flag{border-color:var(--pick)} .cell.flag .n{color:var(--pick)}
+.log{font-family:var(--display);font-size:.8rem;color:var(--quiet);max-height:8em;overflow-y:auto;
+  display:flex;flex-direction:column;gap:3px}
+select{font-family:var(--display);font-size:.88rem;padding:9px 10px;border-radius:10px;
+  border:1px solid var(--edge);background:var(--card);color:var(--ink);max-width:100%;min-width:0}
+.vrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.note{color:var(--quiet);font-size:.8rem;margin:0;font-family:var(--display);max-width:62ch}
+</style>
+
+<div class="wrap">
+  <h1>Rime Keeper</h1>
+
+  <nav class="rail" id="rail" aria-label="Where we are"></nav>
+  <div class="where"><span id="where"></span><span id="count"></span></div>
+
+  <div class="stage" id="stage" aria-live="polite"></div>
+
+  <div class="foot">
+    <button type="button" class="btn" id="back">Back</button>
+    <button type="button" class="btn solid" id="fwd">Continue</button>
+  </div>
+
+  <div class="panel dash" id="mark" hidden>
+    <span class="who">Tap one</span>
+    <span class="q" id="markq"></span>
+    <div class="acts" style="justify-content:flex-start">
+      <button type="button" class="btn yes" id="saidyes">Yes, said it right</button>
+      <button type="button" class="btn no" id="saidno">No, said it wrong</button>
+    </div>
+  </div>
+
+  <div class="panel" id="voicebox" hidden>
+    <span class="who">Voice</span>
+    <div class="vrow">
+      <select id="voice" aria-label="Which voice says the word"></select>
+      <button type="button" class="btn" id="test">Test it</button>
+      <button type="button" class="btn" id="peek">Show me the word</button>
+    </div>
+    <p class="note" id="vnote">Pick a voice that sounds human. If none of them do, turn voice off and say the word out loud yourself.</p>
+  </div>
+
+  <div class="panel" id="record" hidden>
+    <span class="who">What happened</span>
+    <div class="cells">
+      <div class="cell"><div class="n" id="c-both">0</div><div class="t">Said it right, picked it right</div></div>
+      <div class="cell flag"><div class="n" id="c-saidonly">0</div><div class="t">Said it right, picked the wrong letter</div></div>
+      <div class="cell"><div class="n" id="c-pickonly">0</div><div class="t">Said it wrong, picked it right</div></div>
+      <div class="cell"><div class="n" id="c-neither">0</div><div class="t">Said it wrong, picked it wrong</div></div>
+    </div>
+    <div class="log" id="log"></div>
+    <div class="acts" style="justify-content:flex-start">
+      <button type="button" class="btn" id="copy">Copy the record</button>
+      <button type="button" class="btn" id="clear">Clear</button>
+    </div>
+  </div>
+
+  <p class="note">Nothing is saved when you close this. Copy the record before you go if you want to keep it.</p>
+</div>
+
+<script>
+(function(){
+  var VOWELS=["a","e","i","o","u"];
+  var RIMES={a:["at","an","ap","ag","ad","am"],e:["et","en","ed","eg"],
+             i:["it","in","ig","ip","id"],o:["ot","op","og","ob"],u:["ut","un","ug","ub","um"]};
+  var ONSETS={at:["b","c","h","m","p","r","s","f"],an:["b","c","f","m","p","r","t","v"],
+    ap:["c","g","l","m","n","t","s"],ag:["b","g","r","t","w","n"],ad:["b","d","h","m","p","s"],
+    am:["h","j","r","y","d"],et:["b","g","j","l","m","n","p","s"],en:["d","h","m","p","t","w"],
+    ed:["b","f","l","r","w"],eg:["b","l","p"],it:["b","f","h","k","l","p","s"],
+    "in":["b","f","p","t","w"],ig:["b","d","f","j","p","w"],ip:["d","h","l","r","s","t","z"],
+    id:["b","d","h","k","l"],ot:["c","d","g","h","j","l","n","p"],op:["c","h","m","p","t"],
+    og:["d","f","h","j","l"],ob:["c","j","m","r"],ut:["b","c","g","h","n"],
+    un:["b","f","p","r","s"],ug:["b","d","h","j","m","r","t"],ub:["c","h","r","t"],um:["g","h","s"]};
+  var CONFUSE={b:["d","p"],d:["b","p"],p:["b","d"],m:["n","w"],n:["m","h"],w:["m","v"],
+    g:["j","q"],j:["g","y"],f:["t","l"],t:["f","l"],s:["z","c"],c:["s","e"],h:["n","b"],
+    r:["n","v"],l:["i","t"],v:["w","y"],k:["h","x"],y:["v","j"],z:["s","n"],x:["k","y"]};
+  var POOL="bcdfghjklmnprstvwyz".split("");
+
+  var PICS={
+    a:{word:"apple",svg:'<svg viewBox="0 0 100 100" role="img" aria-label="apple">'
+      +'<path d="M50 32C36 20 20 31 23 50c3 21 17 36 27 36s24-15 27-36c3-19-13-30-27-18Z" fill="#cf3d3c"/>'
+      +'<path d="M50 32c-6-5-13-6-18-3 4 18 10 30 18 36 8-6 14-18 18-36-5-3-12-2-18 3Z" fill="#e05c54"/>'
+      +'<rect x="47" y="15" width="6" height="18" rx="3" fill="#6d4526"/>'
+      +'<path d="M53 23c9-11 22-8 20 2-10 7-18 5-20-2Z" fill="#4d9d45"/></svg>'},
+    e:{word:"elephant",svg:'<svg viewBox="0 0 100 100" role="img" aria-label="elephant">'
+      +'<rect x="33" y="68" width="12" height="22" rx="5" fill="#76838f"/>'
+      +'<rect x="56" y="68" width="12" height="22" rx="5" fill="#76838f"/>'
+      +'<ellipse cx="52" cy="52" rx="30" ry="24" fill="#8c99a6"/>'
+      +'<circle cx="28" cy="43" r="18" fill="#8c99a6"/><circle cx="24" cy="40" r="11" fill="#788593"/>'
+      +'<path d="M20 54c-6 8-6 18 0 26" fill="none" stroke="#8c99a6" stroke-width="11" stroke-linecap="round"/>'
+      +'<circle cx="33" cy="38" r="3.4" fill="#232a31"/></svg>'},
+    i:{word:"igloo",svg:'<svg viewBox="0 0 100 100" role="img" aria-label="igloo">'
+      +'<path d="M10 76a40 34 0 0 1 80 0Z" fill="#dceaf4" stroke="#9db8cb" stroke-width="2.5"/>'
+      +'<path d="M38 76V60a12 12 0 0 1 24 0v16Z" fill="#46637a"/>'
+      +'<path d="M18 61h64M27 48h46" stroke="#9db8cb" stroke-width="2.5" fill="none"/>'
+      +'<path d="M30 61v15M70 61v15M44 48v13M56 48v13" stroke="#9db8cb" stroke-width="2.5"/>'
+      +'<path d="M6 76h88" stroke="#9db8cb" stroke-width="3" stroke-linecap="round"/></svg>'},
+    o:{word:"octopus",svg:'<svg viewBox="0 0 100 100" role="img" aria-label="octopus">'
+      +'<path d="M24 58c-5 10-4 20 1 28M38 62c-4 11-4 20-1 27M62 62c4 11 4 20 1 27M76 58c5 10 4 20-1 28" '
+      +'fill="none" stroke="#8e52b6" stroke-width="10" stroke-linecap="round"/>'
+      +'<path d="M50 14c-17 0-28 12-28 27v18h56V41c0-15-11-27-28-27Z" fill="#9d5fc6"/>'
+      +'<circle cx="39" cy="38" r="8" fill="#fff"/><circle cx="61" cy="38" r="8" fill="#fff"/>'
+      +'<circle cx="40" cy="39" r="3.6" fill="#241233"/><circle cx="62" cy="39" r="3.6" fill="#241233"/></svg>'},
+    u:{word:"umbrella",svg:'<svg viewBox="0 0 100 100" role="img" aria-label="umbrella">'
+      +'<path d="M50 58V82a9 9 0 0 1-16 6" fill="none" stroke="#6b5338" stroke-width="5.5" stroke-linecap="round"/>'
+      +'<path d="M8 56a42 36 0 0 1 84 0q-10.5 9-21 0-10.5 9-21 0-10.5 9-21 0Z" fill="#c8392f"/>'
+      +'<path d="M50 20q-12 14-13 40 6 4 13 0Z" fill="#e05c54"/>'
+      +'<path d="M8 56a42 36 0 0 1 21-31q-8 14-8 31-6.5 4-13 0Z" fill="#e05c54"/>'
+      +'<circle cx="50" cy="19" r="4" fill="#6b5338"/></svg>'}
+  };
+
+  var STEPS=[
+    {k:"pic",  n:"Step 1", t:"Short vowels, with a picture"},
+    {k:"bare", n:"Step 2", t:"Short vowels, no picture"},
+    {k:"build",n:"Step 3", t:"Endings, then the first letter"}
+  ];
+  /* one flat path through every ending, in vowel order */
+  var ALLRIMES=[];
+  VOWELS.forEach(function(v){ RIMES[v].forEach(function(r){ ALLRIMES.push({v:v,r:r}); }); });
+  var PER_RIME=3;
+
+  var stepIx=0, vIx=0, rIx=0, tries=0, item=null, picked=null, said=0, phase="say";
+  var tally={both:0,saidonly:0,pickonly:0,neither:0}, lines=[];
+  var voices=[], voiceIx=-1;
+
+  var railEl=document.getElementById("rail"), stageEl=document.getElementById("stage");
+  var whereEl=document.getElementById("where"), countEl=document.getElementById("count");
+  var backBtn=document.getElementById("back"), fwdBtn=document.getElementById("fwd");
+  var markEl=document.getElementById("mark"), markQ=document.getElementById("markq");
+  var voiceBox=document.getElementById("voicebox"), voiceSel=document.getElementById("voice");
+  var recordEl=document.getElementById("record"), logEl=document.getElementById("log");
+
+  STEPS.forEach(function(s,i){
+    var b=document.createElement("button");
+    b.type="button";
+    b.innerHTML='<span class="n">'+s.n+'</span>'+s.t;
+    b.addEventListener("click",function(){ goStep(i); });
+    railEl.appendChild(b);
+  });
+
+  function el(tag,cls,txt){ var e=document.createElement(tag); if(cls)e.className=cls; if(txt!=null)e.textContent=txt; return e; }
+
+  function goStep(i){
+    stepIx=i; vIx=0; rIx=0; tries=0; item=null; picked=null; phase="say";
+    draw();
+  }
+
+  function loadVoices(){
+    try{ voices=window.speechSynthesis.getVoices()||[]; }catch(e){ voices=[]; }
+    voiceSel.innerHTML="";
+    var off=document.createElement("option"); off.value="-1"; off.textContent="Voice off - I will say it";
+    voiceSel.appendChild(off);
+    voices.forEach(function(v,i){
+      var o=document.createElement("option"); o.value=String(i);
+      o.textContent=v.name+(v.lang?" ("+v.lang+")":"");
+      voiceSel.appendChild(o);
+    });
+    if(voiceIx<0 && voices.length){
+      var pref=-1;
+      voices.forEach(function(v,i){
+        var n=(v.name||"").toLowerCase();
+        if(pref<0 && /natural|online|premium|enhanced|siri|google us/.test(n) && /en[-_]?us|english/i.test(v.lang+v.name)) pref=i;
+      });
+      if(pref<0) voices.forEach(function(v,i){ if(pref<0 && /en[-_]?US/i.test(v.lang)) pref=i; });
+      voiceIx=pref;
+    }
+    voiceSel.value=String(voiceIx);
+  }
+  try{
+    if("speechSynthesis" in window){
+      loadVoices();
+      window.speechSynthesis.onvoiceschanged=loadVoices;
+    }
+  }catch(e){}
+  voiceSel.addEventListener("change",function(){ voiceIx=parseInt(voiceSel.value,10); });
+  document.getElementById("test").addEventListener("click",function(){ say("bat"); });
+  document.getElementById("peek").addEventListener("click",function(){
+    var b=this;
+    if(!item) return;
+    b.textContent=item.word;
+    setTimeout(function(){ b.textContent="Show me the word"; },2200);
+  });
+
+  function say(text){
+    if(voiceIx<0) return false;
+    try{
+      window.speechSynthesis.cancel();
+      var u=new SpeechSynthesisUtterance(text);
+      if(voices[voiceIx]) u.voice=voices[voiceIx];
+      u.rate=0.95;
+      window.speechSynthesis.speak(u);
+      return true;
+    }catch(e){ return false; }
+  }
+
+  function distractors(t){
+    var d=(CONFUSE[t]||[]).slice(0,2);
+    while(d.length<2){ var c=POOL[Math.floor(Math.random()*POOL.length)];
+      if(c!==t && d.indexOf(c)<0) d.push(c); }
+    return d;
+  }
+  function newItem(rime){
+    var ons=ONSETS[rime]||["b","c","m"];
+    var onset=ons[Math.floor(Math.random()*ons.length)];
+    var ch=distractors(onset).concat([onset]);
+    for(var i=ch.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)),t=ch[i]; ch[i]=ch[j]; ch[j]=t; }
+    return {rime:rime,onset:onset,word:onset+rime,choices:ch};
+  }
+
+  function draw(){
+    [].forEach.call(railEl.children,function(b,i){
+      b.className = i<stepIx ? "past" : "";
+      if(i===stepIx) b.setAttribute("aria-current","step"); else b.removeAttribute("aria-current");
+    });
+    stageEl.innerHTML=""; markEl.hidden=true;
+    var k=STEPS[stepIx].k;
+    voiceBox.hidden = !(k==="build" && phase==="word");
+    recordEl.hidden = k!=="build";
+    backBtn.disabled = stepIx===0 && vIx===0 && rIx===0;
+    fwdBtn.hidden=false; fwdBtn.disabled=false;
+
+    if(k==="pic"||k==="bare") drawVowel(k==="pic");
+    else if(phase==="say") drawRime();
+    else drawWord();
+  }
+
+  /* three taps: she says it, you tap. They go in order and the Continue button waits. */
+  function threeTaps(onDone){
+    said=0;
+    var three=el("div","three");
+    for(var i=0;i<3;i++){ (function(n){
+      var b=document.createElement("button"); b.type="button"; b.textContent=String(n+1);
+      b.setAttribute("aria-label","Say it, time "+(n+1));
+      b.addEventListener("click",function(){
+        if(n!==said) return;
+        b.classList.add("on"); said++;
+        if(said===3 && onDone) onDone();
+      });
+      three.appendChild(b);
+    })(i); }
+    return three;
+  }
+
+  function drawVowel(withPic){
+    var v=VOWELS[vIx], p=PICS[v];
+    whereEl.innerHTML="<b>"+STEPS[stepIx].t+"</b>";
+    countEl.textContent="Sound "+(vIx+1)+" of 5";
+    stageEl.appendChild(el("div","prompt", withPic
+      ? "Say the sound three times, then the word."
+      : "Same sound, no picture now. Say it three times."));
+    var line=el("div","pairline");
+    if(withPic){
+      var box=el("div","picbox");
+      var art=document.createElement("div"); art.innerHTML=p.svg; box.appendChild(art);
+      var kw=el("div","keyword"); kw.innerHTML="<b>"+p.word.charAt(0)+"</b>"+p.word.slice(1);
+      box.appendChild(kw); line.appendChild(box);
+    }
+    line.appendChild(el("div","big",v));
+    stageEl.appendChild(line);
+
+    stageEl.appendChild(threeTaps(null));
+    var skip=el("div","acts");
+    var s=el("button","btn","Skip the vowels - go to the endings");
+    s.addEventListener("click",function(){ goStep(2); });
+    skip.appendChild(s); stageEl.appendChild(skip);
+    fwdBtn.textContent = (vIx+1<5) ? "Next sound" : "On to the endings";
+  }
+
+  function drawRime(){
+    var cur=ALLRIMES[rIx];
+    whereEl.innerHTML="<b>The &ldquo;"+cur.r+"&rdquo; ending</b> &middot; the &ldquo;"+cur.v+"&rdquo; family";
+    countEl.textContent="Ending "+(rIx+1)+" of "+ALLRIMES.length;
+    stageEl.appendChild(el("div","prompt","Say this ending three times. One piece, not letter by letter."));
+    var w=el("div","word"); w.appendChild(el("div","chunk",cur.r)); stageEl.appendChild(w);
+    stageEl.appendChild(threeTaps(null));
+    fwdBtn.textContent="Now the first letter";
+  }
+
+  function drawWord(){
+    var cur=ALLRIMES[rIx];
+    if(!item) item=newItem(cur.r);
+    picked=null;
+    whereEl.innerHTML="<b>&ldquo;"+cur.r+"&rdquo; with the first letter missing</b>";
+    countEl.innerHTML="Ending "+(rIx+1)+" of "+ALLRIMES.length+" &middot; word "+(tries+1)+" of "+PER_RIME;
+    stageEl.appendChild(el("div","prompt","Listen to the word. Say the first sound out loud, then find its letter."));
+    var w=el("div","word");
+    var slot=el("div","slot","?");
+    w.appendChild(slot); w.appendChild(el("div","chunk",item.rime));
+    stageEl.appendChild(w);
+    var acts=el("div","acts");
+    var hear=el("button","btn solid", voiceIx<0 ? "Say it out loud yourself" : "Hear it again");
+    hear.addEventListener("click",function(){ say(item.word); });
+    acts.appendChild(hear); stageEl.appendChild(acts);
+
+    var letters=el("div","letters");
+    item.choices.forEach(function(c){
+      var b=document.createElement("button"); b.type="button"; b.textContent=c;
+      b.addEventListener("click",function(){
+        if(picked) return;
+        picked=c; slot.textContent=c; slot.classList.add("filled");
+        if(c!==item.onset) slot.classList.add("wrong");
+        [].forEach.call(letters.children,function(x){ x.disabled=true; });
+        markQ.textContent="You picked “"+c+"”. Did you say the first sound right?";
+        markEl.hidden=false;
+      });
+      letters.appendChild(b);
+    });
+    stageEl.appendChild(letters);
+    fwdBtn.textContent="Skip to the next ending";
+    say(item.word);
+  }
+
+  function nextEnding(){
+    tries=0; item=null; picked=null; phase="say";
+    if(rIx+1<ALLRIMES.length) rIx++;
+  }
+
+  fwdBtn.addEventListener("click",function(){
+    var k=STEPS[stepIx].k;
+    if(k==="pic"||k==="bare"){
+      if(vIx+1<5){ vIx++; } else { stepIx++; vIx=0; rIx=0; phase="say"; }
+    } else if(phase==="say"){
+      phase="word"; tries=0; item=null; picked=null;
+    } else {
+      nextEnding();
+    }
+    draw();
+  });
+  backBtn.addEventListener("click",function(){
+    var k=STEPS[stepIx].k;
+    if(k==="pic"||k==="bare"){ if(vIx>0) vIx--; else if(stepIx>0){ stepIx--; vIx=4; } }
+    else if(phase==="word"){ phase="say"; tries=0; item=null; picked=null; }
+    else if(rIx>0){ rIx--; phase="word"; tries=0; item=null; }
+    else { stepIx--; vIx=4; }
+    draw();
+  });
+
+  function record(saidRight){
+    var ok = picked===item.onset;
+    var key = saidRight ? (ok?"both":"saidonly") : (ok?"pickonly":"neither");
+    tally[key]++;
+    lines.push(item.word+"  -  said "+(saidRight?"right":"wrong")
+      +", picked “"+picked+"” ("+(ok?"right":"wrong, should be "+item.onset)+")");
+    ["both","saidonly","pickonly","neither"].forEach(function(x){
+      document.getElementById("c-"+x).textContent=tally[x];
+    });
+    logEl.innerHTML="";
+    lines.slice().reverse().forEach(function(l){ logEl.appendChild(el("div",null,l)); });
+    tries++;
+    if(tries>=PER_RIME) nextEnding(); else item=null;
+    draw();
+  }
+  document.getElementById("saidyes").addEventListener("click",function(){ record(true); });
+  document.getElementById("saidno").addEventListener("click",function(){ record(false); });
+
+  document.getElementById("copy").addEventListener("click",function(){
+    var b=this;
+    var txt="Rime Keeper - "+new Date().toLocaleString()+"\n"
+      +"Said right / picked right: "+tally.both+"\n"
+      +"Said right / picked WRONG letter: "+tally.saidonly+"\n"
+      +"Said wrong / picked right: "+tally.pickonly+"\n"
+      +"Said wrong / picked wrong: "+tally.neither+"\n\n"+lines.join("\n");
+    try{ navigator.clipboard.writeText(txt).then(
+      function(){ b.textContent="Copied"; setTimeout(function(){ b.textContent="Copy the record"; },1600); },
+      function(){ b.textContent="Select the list and copy"; }); }
+    catch(e){ b.textContent="Select the list and copy"; }
+  });
+  document.getElementById("clear").addEventListener("click",function(){
+    tally={both:0,saidonly:0,pickonly:0,neither:0}; lines=[]; logEl.innerHTML="";
+    ["both","saidonly","pickonly","neither"].forEach(function(x){ document.getElementById("c-"+x).textContent="0"; });
+  });
+
+  draw();
+})();
+</script>
+
+</html>
