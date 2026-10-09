@@ -553,6 +553,7 @@ const PLACES = [
   { id: "threads", name: "Fresh Threads",  tag: "Hats, chains, kicks, packs",  x: 560,  y: 300,  w: 205, h: 175, wall: "#ffe6f5", roof: "#c94f9a", head: "#8a2f6a" },
   { id: "studio",  name: "Spotlight Studio", tag: "Dance, acrobatics, real shows", x: 2800, y: 290,  w: 330, h: 215, wall: "#ffe6f5", roof: "#e0538f", head: "#b02f74" },
   { id: "dojo",    name: "Northgate Jujitsu", tag: "Train, roll, win the tournament", x: 2800, y: 860, w: 330, h: 205, wall: "#eef2f7", roof: "#3f5f8c", head: "#2b4468" },
+  { id: "airport", name: "Northgate Airport", tag: "New York, Paris, London, Tokyo", x: 3500, y: 740, w: 470, h: 360, wall: "#e8eef4", roof: "#46637a", head: "#2f4759" },
 
   /* ---- out east, off the blocks. No walls, no doors you can shut. ---- */
   { id: "beach",  name: "Sandpiper Beach", tag: "The ocean, and a pier",        x: 3500, y: 1180, w: 480, h: 470, nature: "beach",    head: "#1f6f97" },
@@ -842,6 +843,43 @@ const PETS = [
   { id: "parrot",  name: "Parrot",   price: 220, fun: 16, walks: false, blurb: "Repeats everything you say." }
 ];
 
+const FLIGHTS = [
+  { id: "nyc",    city: "New York", price: 150, fun: 30, hrs: 4, x: 110,  c: "#d1483f",
+    line: "You saw the whole skyline from the plane window." },
+  { id: "paris",  city: "Paris",    price: 400, fun: 45, hrs: 7, x: 360,  c: "#3f6bd1",
+    line: "You ate something buttery at the top of a very tall tower." },
+  { id: "london", city: "London",   price: 450, fun: 45, hrs: 7, x: 610,  c: "#8e52b6",
+    line: "It rained the entire time and you did not mind at all." },
+  { id: "tokyo",  city: "Tokyo",    price: 800, fun: 60, hrs: 12, x: 860, c: "#e0538f",
+    line: "Twelve hours in the air, and then the brightest street you have ever seen." }
+];
+function trips() { if (!S.trips) S.trips = {}; return S.trips; }
+ROOMS.airport = {
+  name: "Northgate Airport", tag: "Four gates. Pick one.", head: "#2f4759",
+  w: 1120, h: 600, floor: "#dfe7ee", floorAlt: "#d6dfe8", wall: "#46637a",
+  spawn: { x: 560, y: 520 },
+  zones: [{ x: 60, y: 40, w: 1000, h: 230, c: "#9fb8cb", label: "DEPARTURES" }],
+  props: FLIGHTS.map(f => P({
+    id: "gate_" + f.id, kind: "shelf", x: f.x, y: 150, w: 170, h: 80, color: f.c,
+    info() {
+      const flown = trips()[f.id];
+      return foodPropInfo("Fly to " + f.city,
+        [{ t: "$" + f.price.toFixed(2), cls: "cost" }, { t: f.hrs + " hr", cls: "time" }, { t: "+" + f.fun + " Fun", cls: "good" }],
+        flown ? "You have been. Worth going again." : (afford(f.price) ? "" : "You need $" + (f.price - S.money).toFixed(2) + " more."));
+    },
+    use() {
+      if (!afford(f.price)) { toast("Not enough money for that flight yet."); return; }
+      pay(f.price); trips()[f.id] = (trips()[f.id] || 0) + 1;
+      S.needs.fun = clamp(S.needs.fun + f.fun, 0, 100);
+      S.needs.energy = clamp(S.needs.energy - 20, 0, 100);
+      advance(f.hrs * 60);
+      completeGoal("firstFlight");
+      if (FLIGHTS.every(x => trips()[x.id])) completeGoal("fourCities");
+      toast(f.line, "win"); sfxGood();
+    }
+  })),
+  exit: { x: 510, y: 560, w: 100, h: 40 }
+};
 ROOMS.pets = {
   name: "Pet Palace", tag: "Puppies, kittens, fish", head: "#a95f18",
   w: 1120, h: 580, floor: "#f2e2c4", floorAlt: "#eadaba", wall: "#e08a2e",
@@ -1884,7 +1922,9 @@ const GOALS = [
   { id: "ovation",     text: "Get a standing ovation on the stage",  reward: 150 },
   { id: "tripleFlip",  text: "Land all three tricks in one show",    reward: 150 },
   { id: "champion",    text: "Win a jujitsu tournament",             reward: 200 },
-  { id: "blackBelt",   text: "Earn your black belt",                 reward: 400 }
+  { id: "blackBelt",   text: "Earn your black belt",                 reward: 400 },
+  { id: "firstFlight", text: "Take a flight from Northgate Airport",  reward: 100 },
+  { id: "fourCities",  text: "Visit New York, Paris, London and Tokyo", reward: 400 }
 ];
 function completeGoal(id) {
   if (S.goals[id]) return;
