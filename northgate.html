@@ -4790,7 +4790,23 @@ function roomOpen() { return iHost || (performance.now() - lastHostAt <= 6000); 
    link she pastes in the Zoom chat does not. This is not security, it is a
    lock on a drawer: nobody can start a room by accident, and a child who went
    looking would still need the coach in it for anyone to appear. */
-const COACH = /(^|[#?&])coach(=|&|$)/i.test(location.hash + location.search);
+const COACHKEY = "northgate-coach";
+function coachInURL() { return /(^|[#?&])coach(=|&|$)/i.test(location.hash + location.search); }
+function coachRemembered() { try { return localStorage.getItem(COACHKEY) === "1"; } catch (e) { return false; } }
+function rememberCoach(on) {
+  try { on ? localStorage.setItem(COACHKEY, "1") : localStorage.removeItem(COACHKEY); } catch (e) {}
+}
+/* Sticky, because the fragment is the easiest part of a link to lose: a
+   bookmark without it, a paste that drops it, or typing #coach into the bar of
+   an already-open page (which fires no reload at all, so the old const never
+   re-ran and the Start button simply was not there). Once her browser has seen
+   the coach link once it stays the coach, and she can hand it back below. */
+if (coachInURL()) rememberCoach(true);
+let COACH = coachInURL() || coachRemembered();
+window.addEventListener("hashchange", () => {
+  if (coachInURL()) { rememberCoach(true); COACH = true; }
+  try { if (document.getElementById("cardBody") && document.getElementById("joinCode")) showTogether(); } catch (e) {}
+});
 
 function codeOf() {
   const L = "BCDFGHJKLMNPRSTVWXZ";                  // no vowels, so it never spells anything
@@ -5241,8 +5257,13 @@ function showTogether() {
       '<div class="herelist" id="hereList">' + hereHTML() + "</div>" +
       '<p class="hint" id="netStatus">' + netWord() + "</p>" +
       teamPanelHTML() +
-      '<button id="leaveRoom" type="button">Play on my own again</button>';
+      '<button id="leaveRoom" type="button">Play on my own again</button>' +
+      (COACH ? '<p class="hint"><a href="#" id="notCoach">Stop being the coach on this device</a></p>' : '');
     document.getElementById("leaveRoom").addEventListener("click", () => { leaveRoom(); closeOverlay(); });
+    const drop = document.getElementById("notCoach");
+    if (drop) drop.addEventListener("click", e => {
+      e.preventDefault(); rememberCoach(false); COACH = false; leaveRoom(); showTogether();
+    });
     wireTeamPanel();
   } else {
     b.innerHTML =
@@ -5250,10 +5271,16 @@ function showTogether() {
       (COACH
         ? '<button id="startRoom" class="primary" type="button">Start a room</button>' +
           '<p class="rowlabel">Or join one</p>'
-        : '<p class="rowlabel">Type the four letters your coach reads out</p>') +
+        : '<p class="rowlabel">Type the four letters your coach reads out</p>' +
+          '<p class="hint">Coach? This is the student link, so there is no Start button. ' +
+          '<a href="#coach" id="beCoach">Make this device the coach</a>.</p>') +
       '<div class="namebox"><input id="joinCode" class="codein" type="text" maxlength="4" autocomplete="off" spellcheck="false" placeholder="CODE"></div>' +
       '<button id="doJoin" type="button">Join</button>';
     if (COACH) document.getElementById("startRoom").addEventListener("click", () => { joinRoom(codeOf(), true); showTogether(); });
+    const claim = document.getElementById("beCoach");
+    if (claim) claim.addEventListener("click", e => {
+      e.preventDefault(); rememberCoach(true); COACH = true; showTogether();
+    });
     const field = document.getElementById("joinCode");
     const go = () => {
       const c = field.value.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 4);
