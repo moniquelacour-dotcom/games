@@ -861,6 +861,7 @@ ROOMS.airport = {
   zones: [{ x: 60, y: 40, w: 1000, h: 230, c: "#9fb8cb", label: "DEPARTURES" }],
   props: FLIGHTS.map(f => P({
     id: "gate_" + f.id, kind: "shelf", x: f.x, y: 150, w: 170, h: 80, color: f.c,
+    caption: f.city + "  $" + f.price.toFixed(2),
     info() {
       const flown = trips()[f.id];
       return foodPropInfo("Fly to " + f.city,
