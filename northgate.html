@@ -2,7 +2,7 @@
 <title>Northgate City Life</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" media="print" onload="this.media='all';this.onload=null" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
 
 <style>
   /* ---------------------------------------------------------------
@@ -319,9 +319,47 @@
 
 <div id="toasts" aria-live="polite"></div>
 
-<script defer src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
 <script>
 "use strict";
+
+/* If anything in here throws, say so in words on the screen. A child on
+   a call can read this out; a white page tells nobody anything. */
+window.addEventListener("error", function (e) {
+  try {
+    if (document.getElementById("oops")) return;
+    var d = document.createElement("div");
+    d.id = "oops";
+    d.style.cssText = "position:fixed;left:12px;right:12px;bottom:12px;z-index:99999;background:#7a1f2f;color:#fff;" +
+      "font:600 14px system-ui,sans-serif;padding:12px 14px;border-radius:10px;line-height:1.4";
+    d.textContent = "Northgate hit a problem: " + (e.message || "something went wrong") +
+      "  —  tell Monique what this says.";
+    document.body.appendChild(d);
+  } catch (err) {}
+});
+
+/* Fetch the Play Together library only when somebody opens a room. */
+var mqttState = 0;            // 0 untried, 1 loading, 2 ready, 3 failed
+var mqttWaiting = [];
+function needMqtt(cb) {
+  if (mqttState === 2) { cb(true); return; }
+  if (mqttState === 3) { cb(false); return; }
+  mqttWaiting.push(cb);
+  if (mqttState === 1) return;
+  mqttState = 1;
+  var done = function (ok) {
+    if (mqttState === 1) mqttState = ok ? 2 : 3;
+    var q = mqttWaiting; mqttWaiting = [];
+    q.forEach(function (f) { try { f(mqttState === 2); } catch (e) {} });
+  };
+  try {
+    var t = document.createElement("script");
+    t.src = "https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js";
+    t.onload = function () { done(typeof mqtt !== "undefined"); };
+    t.onerror = function () { done(false); };
+    document.head.appendChild(t);
+    setTimeout(function () { done(typeof mqtt !== "undefined"); }, 9000);
+  } catch (e) { done(false); }
+}
 
 /* =================================================================
    NORTHGATE CITY LIFE
@@ -532,7 +570,7 @@ function vanJingle() {
 }
 
 /* ============================ CITY WORLD ============================ */
-const WORLD = { w: 4020, h: 1850 };            // the east side is the wild bit
+const WORLD = { w: 4020, h: 2200 };            // the east side is the wild bit
 const ROADS_H = [200, 700, 1200, 1660];
 const ROADS_V = [200, 830, 1450, 2080, 2700, 3380];
 const ROAD_W = 104;
@@ -554,6 +592,10 @@ const PLACES = [
   { id: "studio",  name: "Spotlight Studio", tag: "Dance, acrobatics, real shows", x: 2800, y: 290,  w: 330, h: 215, wall: "#ffe6f5", roof: "#e0538f", head: "#b02f74" },
   { id: "dojo",    name: "Northgate Jujitsu", tag: "Train, roll, win the tournament", x: 2800, y: 860, w: 330, h: 205, wall: "#eef2f7", roof: "#3f5f8c", head: "#2b4468" },
   { id: "airport", name: "Northgate Airport", tag: "New York, Paris, London, Tokyo", x: 3500, y: 740, w: 470, h: 360, wall: "#e8eef4", roof: "#46637a", head: "#2f4759" },
+
+  /* ---- Dottie's two, at the end of the bottom street ---- */
+  { id: "school",  name: "Northgate School",  tag: "Math, language, computers", x: 2160, y: 1740, w: 420, h: 280, wall: "#f6ead2", roof: "#b5643a", head: "#8a4524" },
+  { id: "skydive", name: "Skydive Northgate", tag: "Indoor wind tunnel. Really.", x: 2800, y: 1740, w: 380, h: 280, wall: "#e4f0f6", roof: "#2f8fb0", head: "#1e6b86" },
 
   /* ---- out east, off the blocks. No walls, no doors you can shut. ---- */
   { id: "beach",  name: "Sandpiper Beach", tag: "The ocean, and a pier",        x: 3500, y: 1180, w: 480, h: 470, nature: "beach",    head: "#1f6f97" },
@@ -858,7 +900,8 @@ ROOMS.airport = {
   name: "Northgate Airport", tag: "Four gates. Pick one.", head: "#2f4759",
   w: 1120, h: 600, floor: "#dfe7ee", floorAlt: "#d6dfe8", wall: "#46637a",
   spawn: { x: 560, y: 520 },
-  zones: [{ x: 60, y: 40, w: 1000, h: 230, c: "#9fb8cb", label: "DEPARTURES" }],
+  zones: [{ x: 60, y: 40, w: 1000, h: 230, c: "#9fb8cb", label: "DEPARTURES" },
+          { x: 60, y: 310, w: 430, h: 170, c: "#c9a06a", label: "THE FLIGHT DECK" }],
   props: FLIGHTS.map(f => P({
     id: "gate_" + f.id, kind: "shelf", x: f.x, y: 150, w: 170, h: 80, color: f.c,
     caption: f.city + "  $" + f.price.toFixed(2),
@@ -875,6 +918,7 @@ ROOMS.airport = {
       S.needs.energy = clamp(S.needs.energy - 20, 0, 100);
       advance(f.hrs * 60);
       completeGoal("firstFlight");
+      challengeDone("flight");
       if (FLIGHTS.every(x => trips()[x.id])) completeGoal("fourCities");
       toast(f.line, "win"); sfxGood();
       const dest = ROOMS[f.id];
@@ -888,6 +932,26 @@ ROOMS.airport = {
   })),
   exit: { x: 510, y: 560, w: 100, h: 40 }
 };
+
+/* The cafe by the gates. You walk past it on the way to every flight. */
+ROOMS.airport.props.push(
+  P({ id: "ap_cocoa", kind: "counter", x: 90, y: 350, w: 180, h: 100, color: "#8a5a3a",
+    caption: "Hot chocolate $5",
+    info() { return foodPropInfo("Hot chocolate before your flight",
+      [{ t: "$5.00", cls: "cost" }, { t: "+Full +Fun", cls: "good" }, { t: "15 min", cls: "time" }],
+      afford(5) ? "" : "Not enough money."); },
+    use() { pay(5); eat(16, 5); S.needs.fun = clamp(S.needs.fun + 10, 0, 100); advance(15);
+      completeGoal("flightDeck"); toast("Too hot to drink for the first ten minutes. Always is.", "win"); sfxGood(); }
+  }),
+  P({ id: "ap_coffee", kind: "counter", x: 300, y: 350, w: 180, h: 100, color: "#5a3f2a",
+    caption: "Coffee + pastry $8",
+    info() { return foodPropInfo("Coffee and something warm",
+      [{ t: "$8.00", cls: "cost" }, { t: "+Full +Energy", cls: "good" }, { t: "20 min", cls: "time" }],
+      afford(8) ? "" : "Not enough money."); },
+    use() { pay(8); eat(22, 8); S.needs.energy = clamp(S.needs.energy + 12, 0, 100); advance(20);
+      completeGoal("flightDeck"); toast("You got a window seat at the counter and watched the planes.", "win"); sfxGood(); }
+  })
+);
 
 /* ---- the four cities. You can only reach these through the airport. ---- */
 ROOMS.nyc = {
@@ -1380,6 +1444,126 @@ ROOMS.swim = {
     }
   ],
   exit: { x: 470, y: 600, w: 100, h: 40 }
+};
+
+/* --------------------------- NORTHGATE SCHOOL ---------------------------
+   The little kids are in on a Saturday club, so you are the one helping
+   out rather than the one being taught. One classroom shift a day. */
+ROOMS.school = {
+  name: "Northgate School", tag: "Math, language, computers", head: "#8a4524",
+  w: 1280, h: 700, floor: "#e4d9c4", floorAlt: "#dccfb6", wall: "#b5643a",
+  spawn: { x: 640, y: 600 },
+  zones: [
+    { x: 60,  y: 40,  w: 360, h: 250, c: "#8fb6d6", label: "MATH ROOM" },
+    { x: 460, y: 40,  w: 360, h: 250, c: "#d6b08f", label: "LANGUAGE ROOM" },
+    { x: 860, y: 40,  w: 360, h: 250, c: "#9fd6b0", label: "COMPUTER ROOM" },
+    { x: 60,  y: 350, w: 260, h: 200, c: "#b8d6e0", label: "BATHROOM" }
+  ],
+  props: [
+    jobProp({
+      id: "mathclass", kind: "counter", place: "school", x: 150, y: 150, w: 190, h: 100, color: "#3f6bd1",
+      caption: "Math room", title: "Help the little kids with their math",
+      pay: 70, mins: 60, energy: 10, fun: 6,
+      done: "Six of them, six times tables, nobody cried. +$70.00",
+      after() { challengeDone("classroom"); if (S.jobsEver.readclass) completeGoal("bothRooms"); completeGoal("schoolHelper"); }
+    }),
+    jobProp({
+      id: "readclass", kind: "counter", place: "school", x: 550, y: 150, w: 190, h: 100, color: "#b5643a",
+      caption: "Language room", title: "Read a story out loud to the class",
+      pay: 65, mins: 60, energy: 8, fun: 12,
+      done: "You did all the voices. They made you do the ending twice. +$65.00",
+      after() { challengeDone("classroom"); if (S.jobsEver.mathclass) completeGoal("bothRooms"); completeGoal("schoolHelper"); }
+    }),
+    {
+      id: "computerroom", kind: "shelf", color: "#2f8f6a", x: 950, y: 150, w: 190, h: 100,
+      caption: "Computer room",
+      info() { return { title: "Play the game on the school computers",
+        chips: [{ t: "Free", cls: "" }, { t: "30 min", cls: "time" }, { t: "+Fun", cls: "good" }],
+        why: "Everybody plays Star Catcher in here. Tickets count." }; },
+      use() { startMini("arcade", "The computer room", "Star Catcher, on the school computers"); }
+    },
+    {
+      id: "schoolloo", kind: "shelf", color: "#7ac6e0", x: 120, y: 420, w: 160, h: 90,
+      caption: "Bathroom",
+      info() { return { title: "Wash your hands", chips: [{ t: "5 min", cls: "time" }, { t: "+Clean", cls: "good" }], why: "" }; },
+      use() { S.needs.clean = clamp(S.needs.clean + 12, 0, 100); advance(5);
+        toast("Soap, two rounds of happy birthday, dried them on your sleeve anyway."); }
+    },
+    {
+      id: "schoolfountain", kind: "shelf", color: "#9fb8cb", x: 420, y: 420, w: 150, h: 80,
+      caption: "Water fountain",
+      info() { return { title: "Drink from the fountain", chips: [{ t: "2 min", cls: "time" }, { t: "+Full", cls: "good" }], why: "" }; },
+      use() { eat(5, 2); advance(2); toast("Cold at the back of your throat. The good fountain."); }
+    }
+  ],
+  exit: { x: 590, y: 640, w: 100, h: 40 }
+};
+
+/* -------------------------- SKYDIVE NORTHGATE --------------------------
+   A glass tube with a very large fan underneath. Three flights to work
+   through: hanging on, then on your own, then a spin. */
+function sky() { if (!S.sky) S.sky = { flights: 0, spins: 0 }; return S.sky; }
+ROOMS.skydive = {
+  name: "Skydive Northgate", tag: "Indoor wind tunnel", head: "#1e6b86",
+  w: 1160, h: 680, floor: "#dfeaf0", floorAlt: "#d5e2ea", wall: "#2f8fb0",
+  spawn: { x: 580, y: 580 },
+  zones: [
+    { x: 330, y: 40,  w: 480, h: 300, c: "#9fd0e4", label: "THE TUNNEL" },
+    { x: 60,  y: 400, w: 300, h: 180, c: "#c4d6e0", label: "VIEWING DECK" }
+  ],
+  props: [
+    {
+      id: "tunnel", kind: "shelf", color: "#2f8fb0", x: 470, y: 140, w: 200, h: 120,
+      caption: "Wind tunnel $25",
+      info() {
+        const f = sky().flights;
+        const what = f === 0 ? "First flight, holding the instructor"
+          : f === 1 ? "Fly on your own this time"
+          : "Try a spin";
+        return { title: what,
+          chips: [{ t: "$25.00", cls: "cost" }, { t: "20 min", cls: "time" }, { t: "+30 Fun", cls: "good" }],
+          why: afford(25) ? "" : "A flight is $25." };
+      },
+      use() {
+        if (!afford(25)) { toast("Not enough for a flight yet."); return; }
+        pay(25);
+        const k = sky();
+        k.flights++;
+        S.needs.fun = clamp(S.needs.fun + 30, 0, 100);
+        S.needs.energy = clamp(S.needs.energy - 10, 0, 100);
+        advance(20);
+        completeGoal("windTunnel");
+        challengeDone("skydive");
+        if (k.flights === 1) toast("Feet off the floor and the instructor would not let go. Loud. Brilliant.", "win");
+        else if (k.flights === 2) toast("On your own this time. You wobbled once and then you flew.", "win");
+        else { k.spins++; completeGoal("windSpin"); toast("You spun the whole way round and came out grinning.", "win"); }
+        sfxGood(); checkGoals(); save();
+      }
+    },
+    jobProp({
+      id: "tunneljob", kind: "counter", place: "skydive", x: 860, y: 160, w: 180, h: 110, color: "#1e6b86",
+      caption: "Instructor desk", title: "Spot flyers in the tunnel",
+      pay: 110, mins: 90, energy: 14, fun: 8,
+      need() { return sky().flights > 0; },
+      needWhy: "You have to fly in there yourself before they let you spot.",
+      done: "Ninety minutes of catching people by the ankles. +$110.00"
+    }),
+    {
+      id: "skydeck", kind: "shelf", color: "#c4d6e0", x: 110, y: 450, w: 200, h: 90,
+      caption: "Viewing deck",
+      info() { return { title: "Watch the flyers through the glass",
+        chips: [{ t: "Free", cls: "" }, { t: "20 min", cls: "time" }, { t: "+12 Fun", cls: "good" }], why: "" }; },
+      use() { S.needs.fun = clamp(S.needs.fun + 12, 0, 100); advance(20);
+        toast("One of them did a backflip. You pressed your face to the glass."); }
+    },
+    {
+      id: "skybench", kind: "shelf", color: "#8fa8b8", x: 820, y: 460, w: 180, h: 80,
+      caption: "Bench",
+      info() { return { title: "Sit down and get your breath back", chips: [{ t: "25 min", cls: "time" }, { t: "+14 Energy", cls: "good" }], why: "" }; },
+      use() { S.needs.energy = clamp(S.needs.energy + 14, 0, 100); advance(25); toast("Your ears are still roaring."); }
+    }
+  ],
+  exit: { x: 530, y: 620, w: 100, h: 40 }
 };
 
 /* ---------------------------- NORTHGATE ZOO ---------------------------- */
@@ -2053,6 +2237,11 @@ const GOALS = [
   { id: "tripleFlip",  text: "Land all three tricks in one show",    reward: 150 },
   { id: "champion",    text: "Win a jujitsu tournament",             reward: 200 },
   { id: "blackBelt",   text: "Earn your black belt",                 reward: 400 },
+  { id: "schoolHelper", text: "Help out in a classroom at Northgate School", reward: 60 },
+  { id: "bothRooms",    text: "Work in the math room and the language room", reward: 150 },
+  { id: "windTunnel",   text: "Fly in the wind tunnel at Skydive Northgate", reward: 80 },
+  { id: "windSpin",     text: "Spin all the way round in the wind tunnel",   reward: 150 },
+  { id: "flightDeck",   text: "Get something at the airport cafe before a flight", reward: 40 },
   { id: "firstFlight", text: "Take a flight from Northgate Airport",  reward: 100 },
   { id: "fourCities",  text: "Visit New York, Paris, London and Tokyo", reward: 400 },
   { id: "broadwayShow", text: "See a show on Broadway",                reward: 80 },
@@ -3928,8 +4117,8 @@ function showGoals() {
 
 /* ============================== MINIGAME ============================== */
 let mini = null;
-function startMini(kind) {
-  openOverlay(kind === "arcade" ? "Blip Arcade" : S.games[S.games.length - 1], kind === "arcade" ? "Star Catcher cabinet" : "On the TV in your room", kind === "arcade" ? "#5b2c8c" : "#7c4b3a");
+function startMini(kind, asTitle, asTag) {
+  openOverlay(asTitle || (kind === "arcade" ? "Blip Arcade" : S.games[S.games.length - 1]), asTag || (kind === "arcade" ? "Star Catcher cabinet" : "On the TV in your room"), kind === "arcade" ? "#5b2c8c" : "#7c4b3a");
   const body = document.getElementById("cardBody");
   body.innerHTML =
     '<div id="miniStat"><span>Score <b id="mScore">0</b></span><span>Time <b id="mTime">30</b></span>' +
@@ -4485,7 +4674,10 @@ const CHALLENGES = [
   { id: "bunny",   pic: "\uD83D\uDC30", label: "Bunny home",       mins: "6 min",  line: "Earn the money, buy a bunny, give her a name.", at: "pets" },
   { id: "flip",    pic: "\uD83E\uDD38", label: "Triple flip",      mins: "6 min",  line: "Land all three tricks on the acrobatics mat.", at: "studio" },
   { id: "cash",    pic: "\uD83D\uDCB5", label: "Earn $200",        mins: "8 min",  line: "One shift per place, so you will need two good jobs.", at: null },
-  { id: "ovation", pic: "\uD83D\uDC83", label: "Standing ovation", mins: "10 min", line: "Dance the routine and hit nearly every arrow.", at: "studio" }
+  { id: "ovation", pic: "\uD83D\uDC83", label: "Standing ovation", mins: "10 min", line: "Dance the routine and hit nearly every arrow.", at: "studio" },
+  { id: "skydive",   pic: "\uD83E\uDE82", label: "Wind tunnel",     mins: "4 min",  line: "Fly in the tunnel at Skydive Northgate.", at: "skydive" },
+  { id: "classroom", pic: "\uD83C\uDFEB", label: "Help at school",  mins: "5 min",  line: "Work a shift in one of the classrooms.", at: "school" },
+  { id: "flight",    pic: "\u2708\uFE0F", label: "Fly somewhere",   mins: "9 min",  line: "Earn the fare, then fly anywhere you like.", at: "airport" }
 ];
 
 function challengeDone(id) {
@@ -5183,7 +5375,16 @@ function joinRoom(c, asHost) {
     bc = new BroadcastChannel("northgate-" + c);     // two windows on one computer
     bc.onmessage = e => netReceive(e.data);
   } catch (e) {}
-  if (typeof mqtt === "undefined") { netState = "blocked"; paintTogether(); return; }
+  needMqtt(function (ready) {
+    if (roomCode !== c) return;                      // they left while it loaded
+    if (!ready) { netState = "blocked"; paintTogether(); return; }
+    openRelay(c);
+  });
+  setTimeout(() => { if (netState === "connecting") { netState = "blocked"; paintTogether(); } }, 12000);
+  paintTogether();
+}
+
+function openRelay(c) {
   try {
     sock = mqtt.connect(RELAY, {
       clientId: "ng_" + MEID.slice(0, 12),
@@ -5200,7 +5401,6 @@ function joinRoom(c, asHost) {
     sock.on("error", () => { netState = "blocked"; paintTogether(); });
     sock.on("close", () => { if (netState === "open") netState = "closed"; paintTogether(); });
   } catch (e) { netState = "blocked"; }
-  setTimeout(() => { if (netState === "connecting") { netState = "blocked"; paintTogether(); } }, 10000);
   paintTogether();
 }
 
@@ -5417,6 +5617,11 @@ if (S.firstBoot) {
 if (!S.name && !S.askedName) {
   S.askedName = true; save();
   setTimeout(() => { if (!paused) showLook(true); }, 400);
+}
+if (!S.seenSchool) {
+  S.seenSchool = true; save();
+  setTimeout(() => toast("Dottie's ideas are in: Northgate School and an indoor skydiving place, at the end of the bottom street.", "win"), 8800);
+  setTimeout(() => toast("There is a cafe inside the airport now. Hot chocolate before your flight.", "win"), 12000);
 }
 if (!S.seenStudio) {
   S.seenStudio = true; save();
