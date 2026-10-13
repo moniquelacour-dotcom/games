@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>My Minutes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&display=swap">
+<style>
+:root{--bg:#f2f6fb;--tile:#fff;--ink:#15202c;--muted:#5d6b7b;--line:#d9e1ea;--l:#1f6fb2;--ls:#e3eff9;--d:#a5326e;--ds:#f7e6ef;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#10161d;--tile:#18212b;--ink:#eef3f8;--muted:#a3b0bf;--line:#2a3644;--l:#6fb3ec;--ls:#16293b;--d:#e47fb3;--ds:#33192a;color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Baloo 2","Comic Sans MS",system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.wrap{width:100%;max-width:640px;display:flex;flex-direction:column;gap:18px;text-align:center}
+h1{margin:0;font-size:36px;font-weight:800}
+p{margin:0;color:var(--muted);font-size:18px}
+.pick{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+a.card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:26px 16px;border-radius:24px;background:var(--tile);border:3px solid var(--line);text-decoration:none;color:var(--ink);font-size:26px;font-weight:800}
+a.card .em{font-size:72px;line-height:1}
+a.card .badge{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-size:28px;border:3px solid}
+a.l .badge{color:var(--l);border-color:var(--l);background:var(--ls)}
+a.d .badge{color:var(--d);border-color:var(--d);background:var(--ds)}
+a.l:hover,a.l:focus-visible{border-color:var(--l);outline:none}
+a.d:hover,a.d:focus-visible{border-color:var(--d);outline:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>My Minutes</h1>
+  <p>Tap yours.</p>
+  <div class="pick">
+    <a class="card l" href="minutes-l.html"><span class="em" aria-hidden="true">🐈</span><span class="badge">L</span>Kitty</a>
+    <a class="card d" href="minutes-d.html"><span class="em" aria-hidden="true">🥷</span><span class="badge">D</span>Ninja</a>
+  </div>
+</div>
+</body>
+</html>
