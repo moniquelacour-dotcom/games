@@ -4975,7 +4975,10 @@ let roomCode = null, sock = null, bc = null, netState = "off", lastBeat = 0, las
    Northgate itself carries on exactly as before, they just cannot see each
    other without the coach there. */
 let iHost = false, lastHostAt = 0;
-function roomOpen() { return iHost || (performance.now() - lastHostAt <= 6000); }
+/* Twenty seconds, not six. A free public broker drops a beat now and then, and
+   a laptop that goes to sleep for a moment should not empty the room. This only
+   has to be short enough that a code cannot be reused next week. */
+function roomOpen() { return iHost || (performance.now() - lastHostAt <= 20000); }
 
 /* AND ONLY THE COACH CAN OPEN ONE. Starting a room is hers to give out, so it
    can be a reward rather than something any child can switch on. The Start
@@ -5414,11 +5417,22 @@ function leaveRoom(quiet) {
   for (const id in PEERS) delete PEERS[id];
   if (!quiet) paintTogether();
 }
+/* THE BEAT CANNOT LIVE ONLY IN THE ANIMATION LOOP. requestAnimationFrame stops
+   when a tab is hidden or a window is minimised — which on a Friday call is most
+   of the time. The coach shares her screen, a child clicks back to Zoom, and her
+   heartbeat stops. Seconds later every child is told the coach has not opened the
+   room, and they all disappear from each other. So the beat also runs on a timer,
+   which keeps going in the background. This is what was breaking play-together. */
+setInterval(() => {
+  if (!roomCode) return;
+  try { netSend(myPacket()); lastBeat = performance.now(); } catch (e) {}
+}, 1500);
+
 window.addEventListener("pagehide", () => leaveRoom(true));
 
 function netWord() {
   if (netState === "open") {
-    if (!roomOpen()) return "Waiting for your coach to open the room.";
+    if (!roomOpen()) return "Waiting for your coach. Keep playing — you will see each other as soon as she is back.";
     return peerCount() ? "" : "Nobody else yet. Read the four letters out.";
   }
   if (netState === "connecting") return "Connecting\u2026";
