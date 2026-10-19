@@ -376,7 +376,7 @@ const MIN_PER_SECOND = 0.65;     // the clock crawls while you drive and walk
 /* ------------------------------ state ------------------------------ */
 function freshState() {
   return {
-    day: 1, minutes: DAY_START, money: 60,
+    day: 1, minutes: DAY_START, money: 0,
     needs: { energy: 100, food: 80, fun: 65, clean: 95 },
     fuel: 7.5, maxFuel: 12,
     pantry: { cereal: 0, lunchstuff: 0, petfood: 0, snacks: 0 },
@@ -397,9 +397,45 @@ function freshState() {
     firstBoot: true
   };
 }
+/* NOBODY WALKS IN WITH LAST WEEK'S MONEY. Money used to carry over between
+   sittings, so a child who finished Friday on $900 opened the next call able to
+   buy anything, and no challenge held. A new sitting is a new day: $0, a night's
+   sleep, every shift open again. What they OWN is theirs and stays — cars,
+   animals, rooms, clothes, belts, goals, the lot.
+   A refresh in the middle of a call is the same sitting, so nobody loses what
+   they earned by reloading the page. */
+const SESSION_GAP = 3 * 60 * 60 * 1000;
+function staleSitting(d) {
+  if (!d.playedAt || !d.playedOn) return true;
+  if (d.playedOn !== new Date().toDateString()) return true;
+  return (Date.now() - d.playedAt) > SESSION_GAP;
+}
+function newSitting(d) {
+  d.money = 0;
+  d.day = (d.day || 1) + 1;
+  d.minutes = DAY_START;
+  d.needs = { energy: 100, food: 80, fun: 65, clean: 95 };
+  d.doneToday = {};
+  d.bedMade = false; d.carWashed = false;
+  /* $0 and an empty tank is a child who cannot move and cannot earn. */
+  d.fuel = Math.max(d.fuel || 0, 7.5);
+  d.challenge = null; d.challengeFrom = 0;
+  d.team = { job: null, earned: 0, done: {} };
+  d.freshStart = true;
+  return d;
+}
+
 let S = load() || freshState();
 
-function save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }
+/* Every save carries the real-world moment it happened, so the next time
+   somebody opens the game we can tell a refresh mid-call from a new sitting. */
+function save() {
+  try {
+    S.playedAt = Date.now();
+    S.playedOn = new Date().toDateString();
+    localStorage.setItem(SAVE_KEY, JSON.stringify(S));
+  } catch (e) {}
+}
 function load() {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
@@ -420,6 +456,7 @@ function load() {
       pets: (d.pets && d.pets.length) ? d.pets : (d.pet ? [d.pet] : [])
     });
     out.pet = out.pets[0] || null;
+    if (staleSitting(out)) newSitting(out);
     return out;
   } catch (e) { return null; }
 }
@@ -592,6 +629,7 @@ const PLACES = [
   { id: "studio",  name: "Spotlight Studio", tag: "Dance, acrobatics, real shows", x: 2800, y: 290,  w: 330, h: 215, wall: "#ffe6f5", roof: "#e0538f", head: "#b02f74" },
   { id: "dojo",    name: "Northgate Jujitsu", tag: "Train, roll, win the tournament", x: 2800, y: 860, w: 330, h: 205, wall: "#eef2f7", roof: "#3f5f8c", head: "#2b4468" },
   { id: "airport", name: "Northgate Airport", tag: "New York, Paris, London, Tokyo", x: 3500, y: 740, w: 470, h: 360, wall: "#e8eef4", roof: "#46637a", head: "#2f4759" },
+  { id: "metro",   name: "Northgate Metro",   tag: "Trains to four nearby cities",   x: 3500, y: 1740, w: 430, h: 300, wall: "#e4e8ee", roof: "#3f5f8c", head: "#2b4468" },
 
   /* ---- Dottie's two, at the end of the bottom street ---- */
   { id: "school",  name: "Northgate School",  tag: "Math, language, computers", x: 2160, y: 1740, w: 420, h: 280, wall: "#f6ead2", roof: "#b5643a", head: "#8a4524" },
@@ -907,9 +945,10 @@ ROOMS.airport = {
     caption: f.city + "  $" + f.price.toFixed(2),
     info() {
       const flown = trips()[f.id];
-      return foodPropInfo("Fly to " + f.city,
-        [{ t: "$" + f.price.toFixed(2), cls: "cost" }, { t: f.hrs + " hr", cls: "time" }, { t: "+" + f.fun + " Fun", cls: "good" }],
-        flown ? "You have been. Worth going again." : (afford(f.price) ? "" : "You need $" + (f.price - S.money).toFixed(2) + " more."));
+      const chips = [{ t: "$" + f.price.toFixed(2), cls: "cost" }, { t: f.hrs + " hr", cls: "time" }, { t: "+" + f.fun + " Fun", cls: "good" }];
+      if (flown) chips.push({ t: "been " + flown + "×", cls: "good" });
+      return foodPropInfo((flown ? "Fly back to " : "Fly to ") + f.city, chips,
+        afford(f.price) ? "" : "You need $" + (f.price - S.money).toFixed(2) + " more.");
     },
     use() {
       if (!afford(f.price)) { toast("Not enough money for that flight yet."); return; }
@@ -961,14 +1000,14 @@ ROOMS.nyc = {
   zones: [{ x: 60, y: 40, w: 520, h: 210, c: "#e0a94f", label: "BROADWAY" },
           { x: 640, y: 40, w: 420, h: 210, c: "#7fc46a", label: "CENTRAL PARK" }],
   props: [
-    P({ id: "nyc_show", kind: "shelf", x: 110, y: 150, w: 170, h: 80, color: "#e0a94f",
+    P({ id: "nyc_show", kind: "shelf", caption: "Broadway show $60", x: 110, y: 150, w: 170, h: 80, color: "#e0a94f",
       info() { return foodPropInfo("See a show on Broadway",
         [{ t: "$60.00", cls: "cost" }, { t: "3 hr", cls: "time" }, { t: "+40 Fun", cls: "good" }],
         afford(60) ? "" : "Tickets are $60."); },
       use() { pay(60); S.needs.fun = clamp(S.needs.fun + 40, 0, 100); advance(180);
         completeGoal("broadwayShow"); toast("The whole theatre stood up at the end. You did too.", "win"); sfxGood(); }
     }),
-    P({ id: "nyc_stage", kind: "shelf", x: 360, y: 150, w: 170, h: 80, color: "#c9483f",
+    P({ id: "nyc_stage", kind: "shelf", caption: "Perform on Broadway", x: 360, y: 150, w: 170, h: 80, color: "#c9483f",
       info() { return foodPropInfo("Perform on a Broadway stage",
         [{ t: "+$250.00", cls: "earn" }, { t: "4 hr", cls: "time" }, { t: "+45 Fun", cls: "good" }],
         !S.goals.firstShow ? "Do a show at Spotlight Studio back home first." : (S.needs.energy < 25 ? "You are too tired to perform." : "")); },
@@ -976,7 +1015,7 @@ ROOMS.nyc = {
         S.needs.energy = clamp(S.needs.energy - 25, 0, 100); advance(240);
         completeGoal("broadwayStar"); toast("You performed on Broadway. Actual Broadway.", "win"); sfxGood(); }
     }),
-    P({ id: "nyc_park", kind: "shelf", x: 740, y: 150, w: 190, h: 80, color: "#7fc46a",
+    P({ id: "nyc_park", kind: "shelf", caption: "Central Park", x: 740, y: 150, w: 190, h: 80, color: "#7fc46a",
       info() { return foodPropInfo("Play in Central Park",
         [{ t: "Free", cls: "" }, { t: "2 hr", cls: "time" }, { t: "+25 Fun", cls: "good" }], ""); },
       use() { S.needs.fun = clamp(S.needs.fun + 25, 0, 100); S.needs.energy = clamp(S.needs.energy - 8, 0, 100);
@@ -993,18 +1032,18 @@ ROOMS.paris = {
   zones: [{ x: 60, y: 40, w: 520, h: 210, c: "#f0c987", label: "PATISSERIE" },
           { x: 640, y: 40, w: 420, h: 210, c: "#c9a6d6", label: "CAFE" }],
   props: [
-    P({ id: "par_croissant", kind: "shelf", x: 110, y: 150, w: 170, h: 80, color: "#f0c987",
+    P({ id: "par_croissant", kind: "shelf", caption: "Croissant $6", x: 110, y: 150, w: 170, h: 80, color: "#f0c987",
       info() { return foodPropInfo("Buy a croissant",
         [{ t: "$6.00", cls: "cost" }, { t: "+Food", cls: "good" }], afford(6) ? "" : "Not enough money."); },
       use() { pay(6); eat(26, 6); advance(15); completeGoal("croissant");
         toast("Still warm. Flakes absolutely everywhere.", "win"); sfxGood(); }
     }),
-    P({ id: "par_box", kind: "shelf", x: 360, y: 150, w: 170, h: 80, color: "#e0a0b8",
+    P({ id: "par_box", kind: "shelf", caption: "Box of pastries $18", x: 360, y: 150, w: 170, h: 80, color: "#e0a0b8",
       info() { return foodPropInfo("A box of pastries to take home",
         [{ t: "$18.00", cls: "cost" }, { t: "5 snacks", cls: "" }], afford(18) ? "" : "Not enough money."); },
       use() { pay(18); S.pantry.snacks += 5; advance(10); toast("Five pastries, boxed and tied with string."); }
     }),
-    P({ id: "par_cafe", kind: "shelf", x: 740, y: 150, w: 190, h: 80, color: "#c9a6d6",
+    P({ id: "par_cafe", kind: "shelf", caption: "Street cafe $9", x: 740, y: 150, w: 190, h: 80, color: "#c9a6d6",
       info() { return foodPropInfo("Sit at a cafe and watch the street",
         [{ t: "$9.00", cls: "cost" }, { t: "1 hr", cls: "time" }, { t: "+Fun +Energy", cls: "good" }],
         afford(9) ? "" : "Not enough money."); },
@@ -1023,20 +1062,20 @@ ROOMS.london = {
   zones: [{ x: 60, y: 40, w: 520, h: 210, c: "#a98fd1", label: "THE CASTLE" },
           { x: 640, y: 40, w: 420, h: 210, c: "#c4a06a", label: "THE CROOKED VILLAGE" }],
   props: [
-    P({ id: "lon_castle", kind: "shelf", x: 110, y: 150, w: 170, h: 80, color: "#a98fd1",
+    P({ id: "lon_castle", kind: "shelf", caption: "Castle tour $40", x: 110, y: 150, w: 170, h: 80, color: "#a98fd1",
       info() { return foodPropInfo("Tour the wizarding castle",
         [{ t: "$40.00", cls: "cost" }, { t: "3 hr", cls: "time" }, { t: "+45 Fun", cls: "good" }],
         afford(40) ? "" : "The tour is $40."); },
       use() { pay(40); S.needs.fun = clamp(S.needs.fun + 45, 0, 100); advance(180);
         completeGoal("castleTour"); toast("Moving staircases, a hall full of candles, one very long table.", "win"); sfxGood(); }
     }),
-    P({ id: "lon_wand", kind: "shelf", x: 360, y: 150, w: 170, h: 80, color: "#8a6a3a",
+    P({ id: "lon_wand", kind: "shelf", caption: "Choose a wand $35", x: 360, y: 150, w: 170, h: 80, color: "#8a6a3a",
       info() { return foodPropInfo("Be chosen by a wand",
         [{ t: "$35.00", cls: "cost" }, { t: "+30 Fun", cls: "good" }], afford(35) ? "" : "Not enough money."); },
       use() { pay(35); S.needs.fun = clamp(S.needs.fun + 30, 0, 100); advance(45);
         toast("You tried eleven. The eleventh made the windows rattle.", "win"); sfxGood(); }
     }),
-    P({ id: "lon_village", kind: "shelf", x: 740, y: 150, w: 190, h: 80, color: "#c4a06a",
+    P({ id: "lon_village", kind: "shelf", caption: "Crooked village", x: 740, y: 150, w: 190, h: 80, color: "#c4a06a",
       info() { return foodPropInfo("Wander the crooked village",
         [{ t: "Free", cls: "" }, { t: "1 hr", cls: "time" }, { t: "+20 Fun", cls: "good" }], ""); },
       use() { S.needs.fun = clamp(S.needs.fun + 20, 0, 100); advance(60);
@@ -1053,22 +1092,223 @@ ROOMS.tokyo = {
   zones: [{ x: 60, y: 40, w: 520, h: 210, c: "#f08fae", label: "SUSHI COUNTER" },
           { x: 640, y: 40, w: 420, h: 210, c: "#6ac4d1", label: "NIGHT MARKET" }],
   props: [
-    P({ id: "tok_sushi", kind: "shelf", x: 110, y: 150, w: 170, h: 80, color: "#f08fae",
+    P({ id: "tok_sushi", kind: "shelf", caption: "Sushi counter $22", x: 110, y: 150, w: 170, h: 80, color: "#f08fae",
       info() { return foodPropInfo("Sushi at the counter",
         [{ t: "$22.00", cls: "cost" }, { t: "+Food +Fun", cls: "good" }], afford(22) ? "" : "Not enough money."); },
       use() { pay(22); eat(45, 14); advance(50); completeGoal("sushiTokyo");
         toast("The chef put it in front of you one piece at a time.", "win"); sfxGood(); }
     }),
-    P({ id: "tok_ramen", kind: "shelf", x: 360, y: 150, w: 170, h: 80, color: "#e0a94f",
+    P({ id: "tok_ramen", kind: "shelf", caption: "Ramen $12", x: 360, y: 150, w: 170, h: 80, color: "#e0a94f",
       info() { return foodPropInfo("A bowl of ramen",
         [{ t: "$12.00", cls: "cost" }, { t: "+Food", cls: "good" }], afford(12) ? "" : "Not enough money."); },
       use() { pay(12); eat(34, 6); advance(30); toast("You drank the rest of the broth. Obviously."); sfxGood(); }
     }),
-    P({ id: "tok_market", kind: "shelf", x: 740, y: 150, w: 190, h: 80, color: "#6ac4d1",
+    P({ id: "tok_market", kind: "shelf", caption: "Night market", x: 740, y: 150, w: 190, h: 80, color: "#6ac4d1",
       info() { return foodPropInfo("Walk the night market",
         [{ t: "Free", cls: "" }, { t: "2 hr", cls: "time" }, { t: "+25 Fun", cls: "good" }], ""); },
       use() { S.needs.fun = clamp(S.needs.fun + 25, 0, 100); S.needs.energy = clamp(S.needs.energy - 6, 0, 100);
         advance(120); toast("Brightest street you have ever stood in."); sfxGood(); }
+    })
+  ],
+  exit: { x: 510, y: 560, w: 100, h: 40 }
+};
+
+/* ============================ NORTHGATE METRO ============================
+   Asked for on a call: a subway into other cities too. It is deliberately not
+   a cheaper aeroplane. The airport goes far and costs hundreds; the train goes
+   to the four nearby cities for the price of a couple of chores, so a child
+   with twenty dollars can still get on something and go somewhere.          */
+const METRO = [
+  /* Twelve dollars on purpose: making the bed, the dishes and the bins comes
+     to $13, so the very first train is reachable from chores alone. */
+  { id: "harbor",  city: "Harborside",  price: 12, fun: 18, mins: 35, x: 110, c: "#2f8fb0",
+    line: "Half an hour on the train and you could smell the sea." },
+  { id: "green",   city: "Greenfield",  price: 18, fun: 20, mins: 45, x: 360, c: "#6aa84f",
+    line: "Last stop before the fields. Nobody else got off." },
+  { id: "oldtown", city: "Old Town",    price: 20, fun: 20, mins: 50, x: 610, c: "#b5643a",
+    line: "Every street in Old Town is older than your whole town." },
+  { id: "summit",  city: "Summit City", price: 26, fun: 25, mins: 60, x: 860, c: "#7a3bb5",
+    line: "You came up the escalator and the buildings just kept going." }
+];
+function rides() { if (!S.rides) S.rides = {}; return S.rides; }
+
+ROOMS.metro = {
+  name: "Northgate Metro", tag: "One line. Four stops.", head: "#2b4468",
+  w: 1120, h: 620, floor: "#dfe3ea", floorAlt: "#d6dae2", wall: "#3f5f8c",
+  spawn: { x: 560, y: 540 },
+  zones: [{ x: 60, y: 40, w: 1000, h: 250, c: "#9fb0c4", label: "PLATFORM ONE" },
+          { x: 60, y: 340, w: 430, h: 160, c: "#c9a06a", label: "THE KIOSK" }],
+  props: METRO.map(m => P({
+    id: "train_" + m.id, kind: "train", x: m.x, y: 140, w: 170, h: 100, color: m.c,
+    caption: m.city + "  $" + m.price.toFixed(2),
+    info() {
+      const been = rides()[m.id];
+      const chips = [{ t: "$" + m.price.toFixed(2), cls: "cost" }, { t: m.mins + " min", cls: "time" },
+        { t: "+" + m.fun + " Fun", cls: "good" }];
+      if (been) chips.push({ t: "been " + been + "\u00d7", cls: "good" });
+      return foodPropInfo((been ? "Train back to " : "Take the train to ") + m.city, chips,
+        afford(m.price) ? "" : "You need $" + (m.price - S.money).toFixed(2) + " more.");
+    },
+    use() {
+      pay(m.price); rides()[m.id] = (rides()[m.id] || 0) + 1;
+      S.needs.fun = clamp(S.needs.fun + m.fun, 0, 100);
+      S.needs.energy = clamp(S.needs.energy - 6, 0, 100);
+      advance(m.mins);
+      completeGoal("firstTrain");
+      challengeDone("metro");
+      if (METRO.every(x => rides()[x.id])) completeGoal("wholeLine");
+      toast(m.line, "win"); sfxGood();
+      const dest = ROOMS[m.id];
+      if (dest) {
+        room = dest; mode = "inside";
+        hero.x = dest.spawn.x; hero.y = dest.spawn.y; hero.dir = "up";
+        syncPets(hero.x - 24, hero.y + 20);
+        document.getElementById("banner").textContent = dest.name;
+      }
+    }
+  })),
+  exit: { x: 510, y: 580, w: 100, h: 40 }
+};
+ROOMS.metro.props.push(
+  P({ id: "mt_map", kind: "board", x: 90, y: 360, w: 200, h: 110, caption: "The line map",
+    info() { return foodPropInfo("Read the line map",
+      [{ t: "free", cls: "earn" }, { t: "5 min", cls: "time" }], ""); },
+    use() { advance(5);
+      toast("Four stops: Harborside, Greenfield, Old Town, Summit City. For New York, Paris, London or Tokyo you want the airport."); }
+  }),
+  P({ id: "mt_kiosk", kind: "counter", x: 320, y: 360, w: 170, h: 110, color: "#8a5a3a",
+    caption: "Pretzel $4",
+    info() { return foodPropInfo("A warm pretzel from the kiosk",
+      [{ t: "$4.00", cls: "cost" }, { t: "+Full", cls: "good" }, { t: "10 min", cls: "time" }],
+      afford(4) ? "" : "Not enough money."); },
+    use() { pay(4); eat(14, 5); advance(10); toast("Salt absolutely everywhere."); sfxGood(); }
+  })
+);
+
+/* ---- the four stops. You can only reach these through the metro. ---- */
+ROOMS.harbor = {
+  name: "Harborside", tag: "Boats, fish, cold wind", head: "#1f6f97", returnTo: "metro",
+  w: 1120, h: 600, floor: "#d8dee2", floorAlt: "#cfd6da", wall: "#2f8fb0",
+  spawn: { x: 560, y: 520 },
+  zones: [{ x: 60, y: 40, w: 520, h: 210, c: "#7fc4d6", label: "THE FISH MARKET" },
+          { x: 640, y: 40, w: 420, h: 210, c: "#9fb8cb", label: "THE HARBOUR" }],
+  props: [
+    P({ id: "har_market", kind: "shelf", caption: "Fish market $7", x: 110, y: 150, w: 170, h: 80, color: "#7fc4d6",
+      info() { return foodPropInfo("Breakfast at the fish market",
+        [{ t: "$7.00", cls: "cost" }, { t: "+Food", cls: "good" }, { t: "30 min", cls: "time" }],
+        afford(7) ? "" : "Not enough money."); },
+      use() { pay(7); eat(30, 8); advance(30);
+        toast("You ate it standing up, out of paper, at half past seven.", "win"); sfxGood(); }
+    }),
+    P({ id: "har_boat", kind: "shelf", caption: "Harbour boat $9", x: 740, y: 150, w: 190, h: 80, color: "#3aa8d1",
+      info() { return foodPropInfo("Go out on the harbour boat",
+        [{ t: "$9.00", cls: "cost" }, { t: "1 hr", cls: "time" }, { t: "+22 Fun", cls: "good" }],
+        afford(9) ? "" : "The trip is $9."); },
+      use() { pay(9); S.needs.fun = clamp(S.needs.fun + 22, 0, 100); advance(60);
+        completeGoal("seaLegs"); toast("Spray in your face the whole way out. Seals on the far buoy.", "win"); sfxGood(); }
+    }),
+    jobProp({
+      id: "dockcrew", kind: "station", place: "harbor", x: 400, y: 340, w: 230, h: 115, color: "#1f6f97",
+      caption: "Dock crew", title: "Work a shift on the dock",
+      pay: 70, mins: 120, energy: 16, fun: 6,
+      done: "Crates in, nets out, and one boat tied up properly. +$70.00"
+    })
+  ],
+  exit: { x: 510, y: 560, w: 100, h: 40 }
+};
+
+ROOMS.green = {
+  name: "Greenfield", tag: "Fields, goats, strawberries", head: "#3f6b33", returnTo: "metro",
+  w: 1120, h: 600, floor: "#cfdcb4", floorAlt: "#c7d5ab", wall: "#6aa84f",
+  spawn: { x: 560, y: 520 },
+  zones: [{ x: 60, y: 40, w: 520, h: 210, c: "#9ac47a", label: "THE STRAWBERRY FIELD" },
+          { x: 640, y: 40, w: 420, h: 210, c: "#d6c48a", label: "THE FARM STAND" }],
+  props: [
+    jobProp({
+      id: "pickberries", kind: "station", place: "green", x: 110, y: 130, w: 230, h: 115, color: "#c9483f",
+      caption: "Strawberry rows", title: "Pick strawberries for a shift",
+      pay: 65, mins: 90, energy: 14, fun: 10,
+      done: "A full crate, red hands, three snacks in your pack. +$65.00",
+      after() { S.pantry.snacks += 3; completeGoal("harvest"); challengeDone("berries"); }
+    }),
+    P({ id: "grn_goats", kind: "shelf", caption: "Feed the goats", x: 420, y: 150, w: 170, h: 80, color: "#b6a07a",
+      info() { return foodPropInfo("Feed the goats",
+        [{ t: "free", cls: "earn" }, { t: "40 min", cls: "time" }, { t: "+18 Fun", cls: "good" }], ""); },
+      use() { S.needs.fun = clamp(S.needs.fun + 18, 0, 100); advance(40);
+        toast("One of them ate your sleeve. You let her.", "win"); sfxGood(); }
+    }),
+    P({ id: "grn_stand", kind: "shelf", caption: "Pie $5", x: 740, y: 150, w: 190, h: 80, color: "#e0a94f",
+      info() { return foodPropInfo("A slice of pie from the farm stand",
+        [{ t: "$5.00", cls: "cost" }, { t: "+Food +Fun", cls: "good" }], afford(5) ? "" : "Not enough money."); },
+      use() { pay(5); eat(22, 10); advance(20); toast("Still warm in the middle."); sfxGood(); }
+    })
+  ],
+  exit: { x: 510, y: 560, w: 100, h: 40 }
+};
+
+ROOMS.oldtown = {
+  name: "Old Town", tag: "The library, the bakery, the clock", head: "#8a4524", returnTo: "metro",
+  w: 1120, h: 600, floor: "#e4d8c2", floorAlt: "#dccfb7", wall: "#b5643a",
+  spawn: { x: 560, y: 520 },
+  zones: [{ x: 60, y: 40, w: 520, h: 210, c: "#c4a06a", label: "THE OLD LIBRARY" },
+          { x: 640, y: 40, w: 420, h: 210, c: "#b08a6a", label: "THE SQUARE" }],
+  props: [
+    P({ id: "old_library", kind: "shelf", caption: "The old library", x: 110, y: 150, w: 170, h: 80, color: "#8a6a3a",
+      info() { return foodPropInfo("Find a book in the old library",
+        [{ t: "free", cls: "earn" }, { t: "45 min", cls: "time" }, { t: "+16 Fun", cls: "good" }], ""); },
+      use() {
+        S.needs.fun = clamp(S.needs.fun + 16, 0, 100); advance(45);
+        const books = ["a squid that lives a mile down and glows",
+          "how a bridge holds up a train without bending",
+          "a girl who sailed all the way round the world on her own",
+          "what is actually going on inside a volcano",
+          "a language with no word for left or right"];
+        completeGoal("oldLibrary");
+        toast("You found a whole book about " + books[(S.day * 3 + S.minutes) % books.length] + ".", "win"); sfxGood();
+      }
+    }),
+    P({ id: "old_bakery", kind: "shelf", caption: "Cinnamon bun $6", x: 420, y: 150, w: 170, h: 80, color: "#e0b87a",
+      info() { return foodPropInfo("A cinnamon bun from the bakery",
+        [{ t: "$6.00", cls: "cost" }, { t: "+Food", cls: "good" }], afford(6) ? "" : "Not enough money."); },
+      use() { pay(6); eat(24, 8); advance(15); toast("The window was steamed up from the inside."); sfxGood(); }
+    }),
+    P({ id: "old_clock", kind: "shelf", caption: "Clock tower $8", x: 740, y: 150, w: 190, h: 80, color: "#9a7a52",
+      info() { return foodPropInfo("Climb the clock tower",
+        [{ t: "$8.00", cls: "cost" }, { t: "45 min", cls: "time" }, { t: "+24 Fun", cls: "good" }],
+        afford(8) ? "" : "It costs $8 to go up."); },
+      use() { pay(8); S.needs.fun = clamp(S.needs.fun + 24, 0, 100);
+        S.needs.energy = clamp(S.needs.energy - 8, 0, 100); advance(45);
+        toast("A hundred and sixty steps, and you were up there when it struck.", "win"); sfxGood(); }
+    })
+  ],
+  exit: { x: 510, y: 560, w: 100, h: 40 }
+};
+
+ROOMS.summit = {
+  name: "Summit City", tag: "The tower, the food hall, the corner", head: "#5b2c8c", returnTo: "metro",
+  w: 1120, h: 600, floor: "#dcd8e4", floorAlt: "#d3cfdc", wall: "#7a3bb5",
+  spawn: { x: 560, y: 520 },
+  zones: [{ x: 60, y: 40, w: 520, h: 210, c: "#a98fd1", label: "THE TOWER" },
+          { x: 640, y: 40, w: 420, h: 210, c: "#e0a94f", label: "THE FOOD HALL" }],
+  props: [
+    P({ id: "sum_deck", kind: "shelf", caption: "Up the tower $12", x: 110, y: 150, w: 170, h: 80, color: "#a98fd1",
+      info() { return foodPropInfo("Go up to the observation deck",
+        [{ t: "$12.00", cls: "cost" }, { t: "1 hr", cls: "time" }, { t: "+30 Fun", cls: "good" }],
+        afford(12) ? "" : "The lift up is $12."); },
+      use() { pay(12); S.needs.fun = clamp(S.needs.fun + 30, 0, 100); advance(60);
+        completeGoal("towerTop"); challengeDone("tower");
+        toast("Eighty floors. The cars down there look like crumbs.", "win"); sfxGood(); }
+    }),
+    P({ id: "sum_hall", kind: "shelf", caption: "Food hall $9", x: 740, y: 150, w: 190, h: 80, color: "#e0a94f",
+      info() { return foodPropInfo("Eat your way round the food hall",
+        [{ t: "$9.00", cls: "cost" }, { t: "+Food +Fun", cls: "good" }], afford(9) ? "" : "Not enough money."); },
+      use() { pay(9); eat(28, 12); advance(40); toast("Four stalls, four small things, one very full you."); sfxGood(); }
+    }),
+    jobProp({
+      id: "busk", kind: "station", place: "summit", x: 400, y: 340, w: 230, h: 115, color: "#7a3bb5",
+      caption: "The corner", title: "Perform on the corner for tips",
+      pay: 15, mins: 45, energy: 10, fun: 18,
+      done: "Mostly coins, one note, and a crowd of eleven. +$15.00"
     })
   ],
   exit: { x: 510, y: 560, w: 100, h: 40 }
@@ -1111,8 +1351,10 @@ PETS.forEach((p, i) => {
     info() {
       if (S.pets.some(pt => pt.id === p.id)) return foodPropInfo("A " + p.name.toLowerCase() + " waiting for someone", [{ t: p.blurb, cls: "" }], "You already have a " + p.name.toLowerCase() + " at home.");
       if (S.pets.length >= 4) return foodPropInfo("A " + p.name.toLowerCase() + " waiting for someone", [{ t: p.blurb, cls: "" }], "Four animals is a full van already.");
-      return foodPropInfo("Adopt the " + p.name.toLowerCase(), [{ t: money(p.price), cls: "cost" }, { t: "+" + p.fun + " Fun a day", cls: "good" }].concat(p.walks ? [{ t: "needs daily walks", cls: "time" }] : []),
-        afford(p.price) ? p.blurb : "You need " + money(p.price - S.money) + " more.");
+      /* The blurb is a reason to want her, not a reason you cannot have her. */
+      return foodPropInfo("Adopt the " + p.name.toLowerCase(),
+        [{ t: money(p.price), cls: "cost" }, { t: "+" + p.fun + " Fun a day", cls: "good" }, { t: p.blurb, cls: "" }].concat(p.walks ? [{ t: "needs daily walks", cls: "time" }] : []),
+        afford(p.price) ? "" : "You need " + money(p.price - S.money) + " more.");
     },
     use() {
       const defaults = { dog: "Rocket", bunny: "Clover", cat: "Pepper", parrot: "Mango", fish: "Bubbles", hamster: "Peanut" };
@@ -1345,7 +1587,8 @@ CARS.forEach((c, i) => {
       if (c.grip > 1.2) chips.push({ t: "good on grass", cls: "good" });
       if (S.car === c.id) return { title: "You drive the " + c.name, chips: chips, why: "This is the one parked outside." };
       if (owned) return { title: "Drive the " + c.name + " today", chips: chips, why: "" };
-      return { title: "Buy the " + c.name, chips: chips, why: afford(c.price) ? c.blurb : "You need " + money(c.price - S.money) + " more. " + c.blurb };
+      return { title: "Buy the " + c.name, chips: chips.concat([{ t: c.blurb, cls: "" }]),
+        why: afford(c.price) ? "" : "You need " + money(c.price - S.money) + " more." };
     },
     use() {
       const owned = S.ownedCars.indexOf(c.id) >= 0;
@@ -1478,8 +1721,8 @@ ROOMS.school = {
       id: "computerroom", kind: "shelf", color: "#2f8f6a", x: 950, y: 150, w: 190, h: 100,
       caption: "Computer room",
       info() { return { title: "Play the game on the school computers",
-        chips: [{ t: "Free", cls: "" }, { t: "30 min", cls: "time" }, { t: "+Fun", cls: "good" }],
-        why: "Everybody plays Star Catcher in here. Tickets count." }; },
+        chips: [{ t: "Free", cls: "" }, { t: "30 min", cls: "time" }, { t: "+Fun", cls: "good" }, { t: "tickets count", cls: "good" }],
+        why: "" }; },
       use() { startMini("arcade", "The computer room", "Star Catcher, on the school computers"); }
     },
     {
@@ -1687,7 +1930,8 @@ ROOMS.beach = {
       id: "beachclean", kind: "station", x: 920, y: 460, w: 220, h: 110, color: "#1f6f97",
       caption: "Beach clean-up", title: "Work a beach clean-up shift",
       pay: 55, mins: 90, energy: 12, fun: 8,
-      done: "Two full bags and one very confused crab. +$55.00"
+      done: "Two full bags and one very confused crab. +$55.00",
+      after() { challengeDone("beach"); }
     })
   ],
   exit: { x: 570, y: 665, w: 100, h: 40 }
@@ -1705,11 +1949,13 @@ ROOMS.peak = {
       use() {
         S.needs.fun = clamp(S.needs.fun + 18, 0, 100);
         S.needs.energy = clamp(S.needs.energy - 14, 0, 100);
-        advance(60); toast("You went all the way up. Legs are jelly.", "win");
+        advance(60); challengeDone("peak");
+        toast("You went all the way up. Legs are jelly.", "win");
       } },
     { id: "scope", kind: "board", x: 500, y: 60, w: 160, h: 60, caption: "The lookout",
       info() { return { title: "Look out over everything", chips: [{ t: "free", cls: "earn" }, { t: "15 min", cls: "time" }, { t: "+10 Fun", cls: "good" }], why: "" }; },
-      use() { S.needs.fun = clamp(S.needs.fun + 10, 0, 100); advance(15); toast("You can see your own roof from up here."); } },
+      use() { S.needs.fun = clamp(S.needs.fun + 10, 0, 100); advance(15); challengeDone("peak");
+        toast("You can see your own roof from up here."); } },
     { id: "picnic", kind: "table", x: 200, y: 530, w: 180, h: 100, caption: "Picnic table",
       info() { return { title: "Eat a snack at the picnic table", chips: [{ t: S.pantry.snacks + " left", cls: "" }, { t: "15 min", cls: "time" }, { t: "+14 Full", cls: "good" }], why: S.pantry.snacks <= 0 ? "Nothing in the pack. Sprouts sells snacks." : "" }; },
       use() { S.pantry.snacks--; eat(14, 8); advance(15); toast("Food always tastes better up a mountain."); } },
@@ -1736,7 +1982,8 @@ ROOMS.falls = {
       info() { return { title: "Stand under the waterfall", chips: [{ t: "free", cls: "earn" }, { t: "20 min", cls: "time" }, { t: "Clean 100", cls: "good" }, { t: "+14 Fun", cls: "good" }], why: "" }; },
       use() {
         S.needs.clean = 100; S.needs.fun = clamp(S.needs.fun + 14, 0, 100);
-        advance(20); toast("Freezing. Completely worth it.", "win");
+        advance(20); challengeDone("falls");
+        toast("Freezing. Completely worth it.", "win");
       } },
     { id: "skipping", kind: "ball", x: 240, y: 520, w: 62, h: 62, caption: "Flat stones",
       info() { return { title: "Skip stones across the pool", chips: [{ t: "free", cls: "earn" }, { t: "20 min", cls: "time" }, { t: "+11 Fun", cls: "good" }], why: "" }; },
@@ -2249,7 +2496,13 @@ const GOALS = [
   { id: "centralPark",  text: "Play in Central Park",                  reward: 50 },
   { id: "croissant",    text: "Eat a croissant in Paris",              reward: 60 },
   { id: "castleTour",   text: "Tour the wizarding castle in London",   reward: 80 },
-  { id: "sushiTokyo",   text: "Eat sushi in Tokyo",                    reward: 60 }
+  { id: "sushiTokyo",   text: "Eat sushi in Tokyo",                    reward: 60 },
+  { id: "firstTrain",   text: "Take the Metro to another city",        reward: 60 },
+  { id: "wholeLine",    text: "Ride the Metro to all four stops",      reward: 300 },
+  { id: "seaLegs",      text: "Go out on the harbour boat at Harborside", reward: 60 },
+  { id: "harvest",      text: "Pick strawberries in Greenfield",       reward: 80 },
+  { id: "oldLibrary",   text: "Find a book in the Old Town library",   reward: 60 },
+  { id: "towerTop",     text: "Go up the tower in Summit City",        reward: 80 }
 ];
 function completeGoal(id) {
   if (S.goals[id]) return;
@@ -3411,6 +3664,17 @@ function drawProp(p, hot) {
       ctx.fillStyle = "#e05a5a"; ctx.font = '700 13px "Baloo 2", sans-serif'; ctx.textAlign = "center";
       ctx.fillText("GUARD", x + w / 2, y + 22);
       break;
+    case "train": {
+      box(x - 8, y, w + 16, 30, "#27314f", 8);                       // the tunnel mouth
+      box(x, y + 24, w, h - 24, p.color || "#3f5f8c", 10);
+      box(x + 12, y + 36, w - 24, (h - 24) * .40, "#dff1fb", 7);     // windows
+      ctx.fillStyle = "#ffd166";
+      ctx.fillRect(x + 16, y + h - 24, 28, 13);
+      ctx.fillRect(x + w - 44, y + h - 24, 28, 13);                  // lights
+      ctx.fillStyle = "rgba(255,255,255,.7)";
+      ctx.fillRect(x - 4, y + h - 6, w + 8, 5);                      // platform edge
+      break;
+    }
     case "board":
       box(x, y, w, h, "#eef4f7", 6);
       ctx.fillStyle = "#9fb0be";
@@ -4669,15 +4933,21 @@ function showBoutResult(won, pay, before, after) {
    Everybody opens the same link on their own laptop and plays their own
    Northgate. The coach calls one challenge; the race is who finishes it. */
 const CHALLENGES = [
-  { id: "roll",    pic: "\uD83C\uDF63", label: "Nu's special",     mins: "2 min",  line: "Buy today's half-price roll from Nu at Sprouts.", at: "sprouts" },
-  { id: "belt",    pic: "\uD83E\uDD4B", label: "Win a match",     mins: "5 min",  line: "Go to the dojo and beat somebody at jujitsu.", at: "dojo" },
-  { id: "bunny",   pic: "\uD83D\uDC30", label: "Bunny home",       mins: "6 min",  line: "Earn the money, buy a bunny, give her a name.", at: "pets" },
-  { id: "flip",    pic: "\uD83E\uDD38", label: "Triple flip",      mins: "6 min",  line: "Land all three tricks on the acrobatics mat.", at: "studio" },
-  { id: "cash",    pic: "\uD83D\uDCB5", label: "Earn $200",        mins: "8 min",  line: "One shift per place, so you will need two good jobs.", at: null },
-  { id: "ovation", pic: "\uD83D\uDC83", label: "Standing ovation", mins: "10 min", line: "Dance the routine and hit nearly every arrow.", at: "studio" },
-  { id: "skydive",   pic: "\uD83E\uDE82", label: "Wind tunnel",     mins: "4 min",  line: "Fly in the tunnel at Skydive Northgate.", at: "skydive" },
-  { id: "classroom", pic: "\uD83C\uDFEB", label: "Help at school",  mins: "5 min",  line: "Work a shift in one of the classrooms.", at: "school" },
-  { id: "flight",    pic: "\u2708\uFE0F", label: "Fly somewhere",   mins: "9 min",  line: "Earn the fare, then fly anywhere you like.", at: "airport" }
+  { id: "roll",      pic: "\uD83C\uDF63",        label: "Nu's special",      mins: "2 min",  line: "Buy today's half-price roll from Nu at Sprouts.", at: "sprouts" },
+  { id: "falls",     pic: "\uD83D\uDCA7",        label: "Under the falls",   mins: "4 min",  line: "Drive out to Cedar Falls and stand right under the water.", at: "falls" },
+  { id: "skydive",   pic: "\uD83E\uDE82",        label: "Wind tunnel",       mins: "4 min",  line: "Fly in the tunnel at Skydive Northgate.", at: "skydive" },
+  { id: "belt",      pic: "\uD83E\uDD4B",        label: "Win a match",       mins: "5 min",  line: "Go to the dojo and beat somebody at jujitsu.", at: "dojo" },
+  { id: "classroom", pic: "\uD83C\uDFEB",        label: "Help at school",    mins: "5 min",  line: "Work a shift in one of the classrooms.", at: "school" },
+  { id: "peak",      pic: "\u26F0\uFE0F",        label: "Up the mountain",   mins: "5 min",  line: "Climb to the lookout at Eagle Point.", at: "peak" },
+  { id: "metro",     pic: "\uD83D\uDE87",        label: "Catch a train",     mins: "5 min",  line: "Buy a ticket at Northgate Metro and ride to any city.", at: "metro" },
+  { id: "beach",     pic: "\uD83C\uDFD6\uFE0F", label: "Beach clean-up",    mins: "6 min",  line: "Work a clean-up shift on Sandpiper Beach.", at: "beach" },
+  { id: "bunny",     pic: "\uD83D\uDC30",        label: "Bunny home",        mins: "6 min",  line: "Earn the money, buy a bunny, give her a name.", at: "pets" },
+  { id: "flip",      pic: "\uD83E\uDD38",        label: "Triple flip",       mins: "6 min",  line: "Land all three tricks on the acrobatics mat.", at: "studio" },
+  { id: "tower",     pic: "\uD83C\uDF06",        label: "Top of the tower",  mins: "7 min",  line: "Train to Summit City and go up the observation deck.", at: "metro" },
+  { id: "cash",      pic: "\uD83D\uDCB5",        label: "Earn $200",         mins: "8 min",  line: "One shift per place, so you will need two good jobs.", at: null },
+  { id: "berries",   pic: "\uD83C\uDF53",        label: "Pick strawberries", mins: "8 min",  line: "Train to Greenfield and work the strawberry field.", at: "metro" },
+  { id: "flight",    pic: "\u2708\uFE0F",        label: "Fly somewhere",     mins: "9 min",  line: "Earn the fare, then fly anywhere you like.", at: "airport" },
+  { id: "ovation",   pic: "\uD83D\uDC83",        label: "Standing ovation",  mins: "10 min", line: "Dance the routine and hit nearly every arrow.", at: "studio" }
 ];
 
 function challengeDone(id) {
@@ -4731,7 +5001,19 @@ function pickChallenge(id) {
   S.challengeFrom = S.money;
   if (c.at) {
     const pl = PLACES.find(p => p.id === c.at);
-    car.x = pl.door.x + 24; car.y = pl.door.y + 76; car.a = -Math.PI / 2; car.sp = 0;
+    /* South of the door first. The last three are NORTH of it, which is inside
+       a shop (so they are rejected) but is open ground at the beach, the
+       mountain and the falls — where the building below has taken the whole
+       south side. */
+    const spots = [[24, 76], [-24, 76], [90, 66], [-90, 66], [24, 140], [-140, 96], [140, 96],
+                   [24, -70], [-24, -70], [24, -140]];
+    let put = null;
+    for (let i = 0; i < spots.length && !put; i++) {
+      const x = pl.door.x + spots[i][0], y = pl.door.y + spots[i][1];
+      if (x > 40 && y > 40 && x < WORLD.w - 40 && y < WORLD.h - 40 && !blockedWorld(x, y, 22)) put = [x, y];
+    }
+    if (!put) put = [pl.door.x + 24, pl.door.y + 76];
+    car.x = put[0]; car.y = put[1]; car.a = -Math.PI / 2; car.sp = 0;
     mode = "drive"; room = null; speech = null;
     document.getElementById("banner").textContent = pl.name;
   }
@@ -4752,7 +5034,10 @@ function showSettings() {
       (S.song == null ? "\u266a Radio" : "\u266a " + SONGS[S.song].name) + '</button>' +
     '</div>' +
     '<p class="hint">Sound is off every time somebody new opens this, so nothing ever makes a noise by itself. Turning it on is remembered on this computer only.</p>' +
+    '<button id="freshBtn" type="button">Start today again — everybody back to $0</button>' +
+    '<p class="hint">A fresh day keeps everything they own. Money, energy and every shift start again.</p>' +
     '<button id="resetBtn2" type="button">Start a brand new life</button>';
+  document.getElementById("freshBtn").addEventListener("click", freshDay);
   document.getElementById("soundBtn").addEventListener("click", e => toggleSound(e.target));
   document.getElementById("musicBtn2").addEventListener("click", () => {
     musicNext();
@@ -5036,7 +5321,8 @@ var PLACE_PICS = {
   zoo:"\uD83E\uDD81", swim:"\uD83C\uDFCA", rink:"\u26F8\uFE0F", arcade:"\uD83D\uDC7E",
   sprouts:"\uD83C\uDF63", pets:"\uD83D\uDC30", cars:"\uD83D\uDE97", gas:"\u26FD",
   games:"\uD83C\uDFAE", build:"\uD83C\uDFD7\uFE0F", threads:"\uD83D\uDC55",
-  studio:"\uD83D\uDC83", dojo:"\uD83E\uDD4B"
+  studio:"\uD83D\uDC83", dojo:"\uD83E\uDD4B",
+  airport:"\u2708\uFE0F", metro:"\uD83D\uDE87", school:"\uD83C\uDFEB", skydive:"\uD83E\uDE82"
 };
 function placePic(id){ return PLACE_PICS[id] || "\uD83D\uDCCD"; }
 
@@ -5588,6 +5874,16 @@ document.addEventListener("visibilitychange", () => {
   if (document.hidden) musicStop();
   else if (audioOn && S.song != null) musicPlay(S.song);
 });
+/* Her button, for when a call runs long or two groups share a day. */
+function freshDay() {
+  newSitting(S);
+  S.freshStart = false;
+  car.x = 420; car.y = 545; car.a = -Math.PI / 2; car.sp = 0;
+  hero.x = 470; hero.y = 560; mode = "drive"; room = null;
+  document.getElementById("banner").textContent = "Northgate";
+  save(); closeOverlay(); drawHud();
+  toast("Fresh day. $0, full energy, every shift open again.", "win");
+}
 function resetGame() {
   if (confirm("Start a brand new life? Your money, pet and goals will be gone.")) {
     S = freshState();
@@ -5595,7 +5891,7 @@ function resetGame() {
     hero.x = 470; hero.y = 560; mode = "drive"; room = null;
     document.getElementById("banner").textContent = "Northgate";
     save(); closeOverlay(); drawHud();
-    toast("New game. Day 1, 7:00 AM.", "win");
+    toast("New game. Day 1, 6:00 AM.", "win");
   }
 }
 document.getElementById("overlay").addEventListener("click", e => { if (e.target.id === "overlay" && !mini) closeOverlay(); });
@@ -5625,6 +5921,10 @@ if (S.firstBoot) {
   setTimeout(() => toast("Press E to hop out of the car, then walk to the door of your house.", "win"), 500);
   setTimeout(() => toast("Need money? One shift per place, per day — the crane at the build site pays $160.", "win"), 3200);
   setTimeout(() => toast("Your animals ride with you — heads out the window, or the sidecar.", "win"), 6200);
+} else if (S.freshStart) {
+  S.freshStart = false; save();
+  setTimeout(() => toast("New day in Northgate. Everybody starts on $0 — go and earn it.", "win"), 500);
+  setTimeout(() => toast("Your car, your animals, your rooms and your clothes are all still yours.", "win"), 3400);
 } else {
   setTimeout(() => toast("Welcome back. It's day " + S.day + ".", "win"), 500);
 }
@@ -5641,6 +5941,11 @@ if (!S.seenStudio) {
   S.seenStudio = true; save();
   setTimeout(() => toast("New in town: bunnies at Pet Palace, and two new places east past the roller rink.", "win"), 2400);
   setTimeout(() => toast("Spotlight Studio pays you to dance and do acrobatics. The dojo runs a tournament every day.", "win"), 5600);
+}
+if (!S.seenMetro) {
+  S.seenMetro = true; save();
+  setTimeout(() => toast("New: Northgate Metro, south of the airport. Four nearby cities, tickets from $12.", "win"), 9600);
+  setTimeout(() => toast("The train is the cheap way to go somewhere. The airport is for far away.", "win"), 13200);
 }
 setInterval(save, 15000);
 </script>
