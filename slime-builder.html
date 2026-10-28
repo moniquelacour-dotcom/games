@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Slime Builder</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+:root{
+  --bg:#f3fbf6; --ink:#1d2b33; --soft:#5d6f78; --card:#ffffff; --line:#cfe6da;
+  --slime:#2fbf71; --slime-d:#1f8f53; --berry:#d94f8a; --berry-d:#a33465; --grape:#7a5ad8; --grape-d:#5a3fb0; --sky:#3aa6e0;
+  --warn:#fff4d6; --warn-ink:#7a5a00; --good:#e3f7ec; --good-ink:#17683d;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--bg);color:var(--ink)}
+body{margin:0;font-family:var(--body);font-size:20px;line-height:1.4}
+.wrap{max-width:1040px;margin:0 auto;padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.1;text-wrap:balance}
+h1{font-size:clamp(34px,6vw,54px);color:var(--slime-d)}
+h2{font-size:clamp(26px,4vw,34px)}
+p{margin:0}
+a.home{color:var(--soft);font-size:17px}
+button{font-family:var(--display);font-weight:800;font-size:22px;border:0;border-radius:16px;padding:12px 20px;cursor:pointer;background:var(--slime);color:#fff;box-shadow:0 4px 0 var(--slime-d)}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--slime-d)}
+button:focus-visible,input:focus-visible{outline:4px solid var(--sky);outline-offset:3px}
+button.ghost{background:#fff;color:var(--ink);box-shadow:0 4px 0 var(--line);border:2px solid var(--line)}
+button.pink{background:var(--berry);box-shadow:0 4px 0 var(--berry-d)}
+button.grape{background:var(--grape);box-shadow:0 4px 0 var(--grape-d)}
+button[disabled]{opacity:.35;cursor:default}
+input.num{font-family:var(--display);font-size:34px;font-weight:800;width:5.5ch;text-align:center;border:3px solid var(--line);border-radius:14px;padding:4px 8px;color:var(--ink);background:#fff}
+input.name{font-family:var(--display);font-size:28px;font-weight:800;border:3px solid var(--line);border-radius:14px;padding:6px 12px;width:min(320px,80vw);color:var(--ink);background:#fff}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.layout{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start}
+@media (max-width:760px){.layout{grid-template-columns:1fr}}
+.card{background:var(--card);border:3px solid var(--line);border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.bench{align-items:center;text-align:center;position:sticky;top:12px}
+.bench svg{width:100%;max-width:260px;height:auto}
+.batches{display:flex;gap:8px;justify-content:center}
+.batches i{width:22px;height:22px;border-radius:50%;border:3px solid var(--line);background:#fff}
+.batches i.on{background:var(--berry);border-color:var(--berry)}
+.q{font-size:clamp(22px,3.2vw,28px);font-weight:700;max-width:34ch}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.msg{border-radius:16px;padding:12px 16px;font-size:20px}
+.msg.good{background:var(--good);color:var(--good-ink)}
+.msg.try{background:var(--warn);color:var(--warn-ink)}
+.how{display:flex;gap:16px;flex-wrap:wrap;font-size:18px;color:var(--soft)}
+.how span{display:inline-flex;gap:6px;align-items:center}
+.mat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.col{border:3px solid var(--line);border-radius:18px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:6px;min-height:170px;background:#fbfffd}
+.col.hot{border-color:var(--berry);background:#fff3f8}
+.col h3{font-size:21px}
+.col .big{font-family:var(--display);font-size:38px;font-weight:800;line-height:1}
+.pieces{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;max-width:140px}
+.tub{display:inline-block;width:28px;height:28px;border-radius:8px;background:var(--grape)}
+.cup{display:inline-block;width:12px;height:32px;border-radius:5px;background:var(--sky)}
+.bead{display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--slime)}
+.new{background:var(--berry)!important}
+.vert{font-family:var(--display);font-weight:800;font-size:38px;line-height:1.1;text-align:right;font-variant-numeric:tabular-nums;display:inline-grid;gap:2px;padding:8px 18px;border:3px dashed var(--line);border-radius:16px;background:#fff}
+.vert .carry{font-size:22px;color:var(--berry);min-height:24px;letter-spacing:.9ch}
+.vert .rule{border-top:4px solid var(--ink)}
+.split{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start}
+@media (max-width:640px){.split{grid-template-columns:1fr}.col{min-height:140px}}
+.choices{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.choice{background:#fff;color:var(--ink);border:3px solid var(--line);box-shadow:none;border-radius:18px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:20px}
+.choice:hover{border-color:var(--slime)}
+.choice.sel{border-color:var(--berry);background:#fff3f8}
+.choice svg{width:72px;height:56px}
+.swatch{width:54px;height:54px;border-radius:50%;border:4px solid #fff;box-shadow:0 0 0 3px var(--line)}
+.choice.sel .swatch{box-shadow:0 0 0 4px var(--berry)}
+.shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.jarcard{background:#fff;border:3px solid var(--line);border-radius:18px;padding:10px;text-align:center;font-family:var(--display);font-weight:800;font-size:20px}
+.jarcard svg{width:100%;max-width:140px;height:auto}
+.small{font-size:16px;color:var(--soft);font-family:var(--body);font-weight:400}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@keyframes wob{0%,100%{transform:scale(1)}40%{transform:scale(1.06,.95)}70%{transform:scale(.97,1.03)}}
+.wob{animation:wob .6s ease}
+</style></head>
+<body>
+<div class="wrap">
+  <a class="home" href="index.html">← All games</a>
+  <div class="top"><h1>Slime Builder</h1></div>
+  <div class="layout">
+    <div class="card bench" id="bench"></div>
+    <div class="card" id="card"></div>
+  </div>
+  <div class="card" id="shelfCard"></div>
+</div>
+<script>
+(function(){
+const KEY='slime-builder-shelf-v1';
+const BATCHES=3;
+const BASES=[
+ {id:'classic',name:'Classic',look:{op:1,shine:.35}},
+ {id:'fluffy',name:'Fluffy',look:{op:1,shine:.08,soft:true}},
+ {id:'butter',name:'Butter',look:{op:1,shine:.15,pastel:true}},
+ {id:'cloud',name:'Cloud',look:{op:.92,shine:.05,soft:true,pastel:true}},
+ {id:'clear',name:'Clear',look:{op:.5,shine:.6}},
+ {id:'floam',name:'Floam',look:{op:1,shine:.2,floam:true}}
+];
+const COLORS=[['Mint','#41d39a'],['Berry','#e25596'],['Grape','#8b67e6'],['Sky','#4fb6ef'],['Lemon','#f5cf3a'],['Peach','#ff9a6b'],['Midnight','#3b3f8f'],['Snow','#e9eef2']];
+const MIXINS=[
+ {id:'glitter',name:'Glitter'},{id:'foam',name:'Foam balls'},{id:'stars',name:'Star charms'},
+ {id:'hearts',name:'Heart charms'},{id:'sprinkles',name:'Sprinkles'},{id:'swirl',name:'Color swirl'},
+ {id:'pearls',name:'Pearls'},{id:'gems',name:'Gems'}
+];
+const el=(t,a={},...kids)=>{const e=document.createElement(t);for(const[k,v]of Object.entries(a)){if(v==null)continue;if(k==='class')e.className=v;else if(k==='html')e.innerHTML=v;else if(k.startsWith('on'))e.addEventListener(k.slice(2),v);else e.setAttribute(k,v)}for(const k of kids.flat()){if(k==null)continue;e.append(k.nodeType?k:document.createTextNode(k))}return e};
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function loadShelf(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return[]}}
+function saveShelf(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+
+/* ---------- drawing ---------- */
+function seeded(seed){let s=seed>>>0||1;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}}
+function mix(hex,amt){const n=parseInt(hex.slice(1),16);let r=n>>16,g=n>>8&255,b=n&255;r=Math.round(r+(255-r)*amt);g=Math.round(g+(255-g)*amt);b=Math.round(b+(255-b)*amt);return`rgb(${r},${g},${b})`}
+function drawSlime(sl,opts={}){
+ const base=BASES.find(b=>b.id===sl.base)||BASES[0];const L=base.look;
+ const color=L.pastel?mix(sl.color,.35):sl.color;
+ const grow=opts.full?1:.62+.38*Math.min(sl.mixins.length,BATCHES)/BATCHES;
+ const NS='http://www.w3.org/2000/svg';
+ const svg=document.createElementNS(NS,'svg');svg.setAttribute('viewBox','0 0 200 170');svg.setAttribute('role','img');svg.setAttribute('aria-label',(sl.name||'Your slime'));
+ const add=(tag,attrs,parent=svg)=>{const n=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(attrs))n.setAttribute(k,v);parent.append(n);return n};
+ add('ellipse',{cx:100,cy:156,rx:80*grow,ry:9,fill:'rgba(0,0,0,.10)'});
+ const g=add('g',{transform:`translate(100 150) scale(${grow}) translate(-100 -150)`});
+ const blob='M100,28 C146,24 184,58 182,100 C181,136 146,152 100,151 C56,152 18,138 18,100 C17,58 54,30 100,28Z';
+ const clip='c'+Math.floor(Math.random()*1e9);
+ const defs=add('defs',{},g);const cp=add('clipPath',{id:clip},defs);add('path',{d:blob},cp);
+ add('path',{d:blob,fill:color,'fill-opacity':L.op,stroke:mix(sl.color,0)==color?'rgba(0,0,0,.18)':'rgba(0,0,0,.14)','stroke-width':3},g);
+ const inner=add('g',{'clip-path':`url(#${clip})`},g);
+ const R=seeded(sl.seed||7);
+ const pt=()=>[30+R()*140,40+R()*105];
+ if(L.floam)for(let i=0;i<70;i++){const[x,y]=pt();add('circle',{cx:x,cy:y,r:3.2,fill:mix(sl.color,.55),'fill-opacity':.9},inner)}
+ if(L.soft)for(let i=0;i<6;i++){const[x,y]=pt();add('ellipse',{cx:x,cy:y,rx:16,ry:9,fill:'#fff','fill-opacity':.18},inner)}
+ for(const m of sl.mixins){
+  if(m==='glitter')for(let i=0;i<60;i++){const[x,y]=pt();add('circle',{cx:x,cy:y,r:1.2+R()*1.2,fill:R()<.5?'#fff':'#ffd84a'},inner)}
+  if(m==='foam')for(let i=0;i<22;i++){const[x,y]=pt();add('circle',{cx:x,cy:y,r:5,fill:['#ff6fa8','#6fd3ff','#ffe066','#a98bff'][i%4],stroke:'rgba(0,0,0,.12)'},inner)}
+  if(m==='stars')for(let i=0;i<8;i++){const[x,y]=pt();const s=7;let d='';for(let k=0;k<10;k++){const a=Math.PI/5*k-Math.PI/2;const rr=k%2?s*.45:s;d+=(k?'L':'M')+(x+rr*Math.cos(a)).toFixed(1)+','+(y+rr*Math.sin(a)).toFixed(1)}add('path',{d:d+'Z',fill:'#ffd84a',stroke:'#c99a10','stroke-width':1},inner)}
+  if(m==='hearts')for(let i=0;i<8;i++){const[x,y]=pt();add('path',{d:`M${x},${y+5} C${x-9},${y-2} ${x-5},${y-9} ${x},${y-4} C${x+5},${y-9} ${x+9},${y-2} ${x},${y+5}Z`,fill:'#ff4f8a'},inner)}
+  if(m==='sprinkles')for(let i=0;i<34;i++){const[x,y]=pt();add('rect',{x:x,y:y,width:9,height:3,rx:1.5,fill:['#ff6fa8','#6fd3ff','#ffe066','#7be08a','#a98bff'][i%5],transform:`rotate(${R()*180} ${x} ${y})`},inner)}
+  if(m==='swirl'){for(let i=0;i<3;i++){const y=60+i*30;add('path',{d:`M10,${y} C50,${y-25} 80,${y+25} 120,${y} S170,${y-20} 200,${y}`,fill:'none',stroke:'#fff','stroke-opacity':.55,'stroke-width':7,'stroke-linecap':'round'},inner)}}
+  if(m==='pearls')for(let i=0;i<14;i++){const[x,y]=pt();add('circle',{cx:x,cy:y,r:4.5,fill:'#fbf6ee',stroke:'#d9cbb5'},inner);add('circle',{cx:x-1.5,cy:y-1.5,r:1.3,fill:'#fff'},inner)}
+  if(m==='gems')for(let i=0;i<9;i++){const[x,y]=pt();add('path',{d:`M${x},${y-7} L${x+6},${y} L${x},${y+7} L${x-6},${y}Z`,fill:['#4fd1c5','#b56cff','#ff6b9a'][i%3],stroke:'#fff','stroke-width':1.2},inner)}
+ }
+ add('ellipse',{cx:72,cy:58,rx:26,ry:10,fill:'#fff','fill-opacity':L.shine,transform:'rotate(-18 72 58)'},g);
+ return svg;
+}
+function mixinIcon(id){return drawSlime({base:'classic',color:'#cfe6da',mixins:[id],seed:id.length*97+3},{full:true})}
+
+/* ---------- state ---------- */
+let S=null; // math round
+let slime=null; // the one being built
+let say='',sayType='';
+
+function bench(){
+ const b=document.getElementById('bench');
+ if(!slime){b.replaceChildren(el('h2',{},'Your bench'),el('p',{class:'small'},'Pick a slime to start.'));return}
+ const pic=drawSlime(slime);pic.classList.add('wob');
+ const dots=el('div',{class:'batches'});for(let i=0;i<BATCHES;i++)dots.append(el('i',{class:i<slime.mixins.length?'on':''}));
+ const base=BASES.find(x=>x.id===slime.base);const col=COLORS.find(c=>c[1]===slime.color);
+ b.replaceChildren(el('h2',{},`${col?col[0]:''} ${base.name}`),pic,dots,el('p',{class:'small'},`Mix-ins: ${slime.mixins.length? slime.mixins.map(m=>MIXINS.find(x=>x.id===m).name).join(', '):'none yet'}`));
+}
+
+/* ---------- start: design a slime ---------- */
+function start(){
+ slime=null;bench();
+ let pickBase=null,pickColor=null;
+ const card=document.getElementById('card');
+ const go=el('button',{disabled:''},'Start mixing');
+ const baseRow=el('div',{class:'choices'});const colorRow=el('div',{class:'choices'});
+ function refresh(){
+  baseRow.replaceChildren(...BASES.map(b=>{const btn=el('button',{class:'choice'+(pickBase===b.id?' sel':''),onclick:()=>{pickBase=b.id;refresh()}},drawSlime({base:b.id,color:pickColor||'#41d39a',mixins:[],seed:5},{full:true}),b.name);return btn}));
+  colorRow.replaceChildren(...COLORS.map(([n,c])=>el('button',{class:'choice'+(pickColor===c?' sel':''),onclick:()=>{pickColor=c;refresh()}},el('span',{class:'swatch',style:`background:${c}`}),n)));
+  if(pickBase&&pickColor)go.removeAttribute('disabled');
+ }
+ go.addEventListener('click',()=>{slime={base:pickBase,color:pickColor,mixins:[],seed:rnd(1,1e6)};bench();newProblem(Math.random()<.5?'add':'sub')});
+ refresh();
+ card.replaceChildren(el('p',{class:'q'},'Make a new slime. Pick a base.'),baseRow,el('p',{class:'q'},'Pick a color.'),colorRow,
+  el('p',{class:'small'},`Then solve ${BATCHES} bead problems. Each one you solve lets you add a mix-in.`),el('div',{class:'row'},go));
+}
+
+/* ---------- bead math ---------- */
+function makeAdd(){let a,b;do{a=rnd(105,689);b=rnd(26,289)}while((a%10)+(b%10)<10||a+b>999);return{a,b}}
+function makeSub(){let a,b;do{a=Math.random()<.3?rnd(3,9)*100+rnd(0,9):rnd(312,987);b=rnd(48,a-60)}while((b%10)<=(a%10)||b>=a);return{a,b}}
+function newProblem(kind){
+ const {a,b}=kind==='add'?makeAdd():makeSub();
+ S={kind,a,b,h:Math.floor(a/100),t:Math.floor(a/10)%10,o:a%10,bh:Math.floor(b/100),bt:Math.floor(b/10)%10,bo:b%10,step:'o',carry:{t:'',h:''},done:{o:false,t:false,h:false}};
+ say='';render();
+}
+function render(){
+ const card=document.getElementById('card');
+ const add=S.kind==='add';
+ const cols=[['h','Tubs','hundreds','tub'],['t','Cups','tens','cup'],['o','Beads','ones','bead']];
+ const need={h:S.bh,t:S.bt,o:S.bo};
+ const names={o:'beads',t:'cups',h:'tubs'};const one={o:'bead',t:'cup',h:'tub'};
+ const up={o:'t',t:'h'};
+ const ctl=el('div',{class:'row'});
+ const next=k=>{S.step=k==='o'?'t':k==='t'?'h':'answer';say='';render()};
+ if(S.step==='o'||S.step==='t'||S.step==='h'){
+  const k=S.step;
+  if(add){
+   if(!S.done[k]){
+    ctl.append(el('button',{onclick:()=>{S[k]+=need[k];S.done[k]=true;say='';render()}},`Pour in ${need[k]} ${names[k]}`));
+   } else if(S[k]>=10&&k!=='h'){
+    if(!say){say=`That jar has ${S[k]}. A jar can only hold 9. Make a trade.`;sayType='try'}
+    ctl.append(el('button',{class:'pink',onclick:()=>{S[k]-=10;S[up[k]]+=1;S.carry[up[k]]='1';say=`10 ${names[k]} made 1 ${one[up[k]]}.`;sayType='good';render()}},`Trade 10 ${names[k]} for 1 ${one[up[k]]}`));
+   } else ctl.append(el('button',{onclick:()=>next(k)},k==='h'?'Count it up':'Next jar →'));
+  } else {
+   if(!S.done[k]){
+    if(S[k]<need[k]){
+     const from=up[k];
+     say=`You need ${need[k]} ${names[k]} but only have ${S[k]}. Open a ${one[from]}.`;sayType='try';
+     ctl.append(el('button',{class:'pink',disabled:S[from]===0?'':null,onclick:()=>{S[from]-=1;S[k]+=10;say=`1 ${one[from]} opened into 10 ${names[k]}.`;sayType='good';render()}},`Open 1 ${one[from]} → 10 ${names[k]}`));
+     if(S[from]===0&&k==='o'&&S.h>0){
+      say='No cups left to open. Open a tub first. It turns into 10 cups.';
+      ctl.append(el('button',{class:'grape',onclick:()=>{S.h-=1;S.t+=10;say='1 tub opened into 10 cups.';sayType='good';render()}},'Open 1 tub → 10 cups'));
+     }
+    } else ctl.append(el('button',{onclick:()=>{S[k]-=need[k];S.done[k]=true;say='';render()}},`Use ${need[k]} ${names[k]}`));
+   } else ctl.append(el('button',{onclick:()=>next(k)},k==='h'?'Count it up':'Next jar →'));
+  }
+ } else if(S.step==='answer'){
+  const total=S.h*100+S.t*10+S.o;
+  const inp=el('input',{class:'num',id:'ans',inputmode:'numeric','aria-label':'How many beads now'});
+  const check=()=>{const g=parseInt(inp.value,10);
+   if(g===total){S.step='mixin';say=`Yes! ${S.a} ${add?'+':'−'} ${S.b} = ${total}. Your slime earned a mix-in.`;sayType='good'}
+   else{say=`Not yet. Read the jars: ${S.h} tubs is ${S.h*100}, ${S.t} cups is ${S.t*10}, and ${S.o} beads.`;sayType='try'}
+   render()};
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')check()});
+  ctl.append(el('span',{class:'q'},'How many beads now?'),inp,el('button',{onclick:check},'Check'));
+ } else if(S.step==='mixin'){
+  const left=MIXINS.filter(m=>!slime.mixins.includes(m.id));
+  const opts=shuffle(left).slice(0,3);
+  const box=el('div',{class:'choices'},opts.map(m=>el('button',{class:'choice',onclick:()=>{slime.mixins.push(m.id);bench();
+   if(slime.mixins.length>=BATCHES){finish()}else{newProblem(slime.mixins.length%2?'sub':'add')}}},mixinIcon(m.id),m.name)));
+  card.replaceChildren(el('div',{class:'msg good'},say),el('p',{class:'q'},'Pick a mix-in for your slime.'),box);
+  return;
+ }
+ const mat=el('div',{class:'mat'},cols.map(([k,label,place,cls])=>{
+  const p=el('div',{class:'pieces'});
+  for(let i=0;i<S[k];i++)p.append(el('i',{class:cls}));
+  if(add&&!S.done[k])for(let i=0;i<need[k];i++)p.append(el('i',{class:cls+' new'}));
+  return el('div',{class:'col'+(S.step===k?' hot':'')},el('h3',{},label),el('span',{class:'big'},String(S[k])),el('span',{},place),p);
+ }));
+ const story=add?`You have ${S.a} beads. A delivery brings ${S.b} more.`:`You have ${S.a} beads. You use ${S.b} in your slime.`;
+ const v=el('div',{class:'vert'},el('div',{class:'carry'},(S.carry.h||' ')+(S.carry.t||' ')+' '),
+  el('div',{},String(S.a)),el('div',{},(add?'+ ':'− ')+S.b),el('div',{class:'rule'}),el('div',{},S.step==='answer'?'?':' '));
+ const parts=[el('p',{class:'small'},`Batch ${slime.mixins.length+1} of ${BATCHES}`),el('p',{class:'q'},story),
+  el('div',{class:'how'},el('span',{},el('i',{class:'tub'}),' tub = 100'),el('span',{},el('i',{class:'cup'}),' cup = 10'),el('span',{},el('i',{class:'bead'}),' bead = 1'),el('span',{},'A jar holds 9.')),
+  el('div',{class:'split'},v,mat)];
+ if(say)parts.push(el('div',{class:'msg '+sayType},say));
+ parts.push(ctl);
+ card.replaceChildren(...parts);
+ if(S.step==='answer')setTimeout(()=>{const i=document.getElementById('ans');if(i)i.focus()},0);
+}
+
+/* ---------- finish ---------- */
+function finish(){
+ const card=document.getElementById('card');
+ const inp=el('input',{class:'name',id:'slimeName',maxlength:'24','aria-label':'Name your slime',placeholder:'Name it'});
+ const save=()=>{slime.name=(inp.value||'').trim()||'My slime';const sh=loadShelf();sh.unshift(slime);saveShelf(sh.slice(0,40));shelf();
+  card.replaceChildren(el('div',{class:'msg good'},`${slime.name} is on your shelf!`),el('div',{class:'row'},el('button',{onclick:start},'Make another slime')));slime=null;bench()};
+ inp.addEventListener('keydown',e=>{if(e.key==='Enter')save()});
+ card.replaceChildren(el('h2',{},'Your slime is ready!'),el('p',{class:'q'},'Give it a name.'),el('div',{class:'row'},inp,el('button',{onclick:save},'Put it on my shelf')));
+ setTimeout(()=>inp.focus(),0);
+}
+function shelf(){
+ const sh=loadShelf();const c=document.getElementById('shelfCard');
+ if(!sh.length){c.replaceChildren(el('h2',{},'My slime shelf'),el('p',{class:'small'},'Slimes you finish go here. They stay on this computer.'));return}
+ c.replaceChildren(el('h2',{},`My slime shelf (${sh.length})`),el('div',{class:'shelf'},sh.map(s=>el('div',{class:'jarcard'},drawSlime(s,{full:true}),s.name))),
+  el('p',{class:'small'},'Your shelf stays on this computer.'));
+}
+shelf();start();
+})();
+</script>
+</body>
+</html>
