@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style>
+<title>Fluency Trail at Home</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: one working column — reader bar, the reading strip (the hero), then results and history below. */
+:root{
+  --paper:#f6f8f4; --card:#ffffff; --ink:#1d2a26; --muted:#5e6d68; --line:#d6dfda;
+  --accent:#1f6f62; --accent-ink:#ffffff; --ruler:#fff1a8; --ruler-edge:#e8cf57;
+  --miss:#c2412d; --miss-soft:#fbe3de; --sc:#7a6a12; --ok:#2e7d4f; --ok-soft:#dff1e6; --dim:#a9b5b1;
+  --row1:#bfdcff;--row1e:#2f7fd6; --row2:#ffe08a;--row2e:#d49a00; --row3:#bdeab3;--row3e:#2e9a3e;
+  --f-display:"Fredoka","Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --f-read:"Andika","Atkinson Hyperlegible",Verdana,system-ui,sans-serif;
+  --f-ui:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#121a18; --card:#1a2422; --ink:#e8efec; --muted:#9fb0aa; --line:#2c3a37;
+  --accent:#5cc3ad; --accent-ink:#0d1a17; --ruler:#4a4214; --ruler-edge:#8f7d22;
+  --miss:#ff8a75; --miss-soft:#3d221d; --sc:#e0c95a; --ok:#6fd39a; --ok-soft:#1b3326; --dim:#56645f; --row1:#1f4a78;--row1e:#6fb2ff; --row2:#6b5310;--row2e:#ffcc33; --row3:#24572c;--row3e:#6fdc7e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#121a18; --card:#1a2422; --ink:#e8efec; --muted:#9fb0aa; --line:#2c3a37;
+  --accent:#5cc3ad; --accent-ink:#0d1a17; --ruler:#4a4214; --ruler-edge:#8f7d22;
+  --miss:#ff8a75; --miss-soft:#3d221d; --sc:#e0c95a; --ok:#6fd39a; --ok-soft:#1b3326; --dim:#56645f; --row1:#1f4a78;--row1e:#6fb2ff; --row2:#6b5310;--row2e:#ffcc33; --row3:#24572c;--row3e:#6fdc7e; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-ui);font-size:16px;line-height:1.5}
+.wrap{max-width:980px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(28px,5vw,40px);margin:0;letter-spacing:.2px;text-wrap:balance}
+h2{font-family:var(--f-display);font-weight:600;font-size:22px;margin:0;text-wrap:balance}
+.sub{color:var(--muted);margin:2px 0 0;max-width:68ch}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.spread{justify-content:space-between}
+label.lbl{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+select,input[type=text]{font:inherit;padding:8px 10px;border-radius:9px;border:1px solid var(--line);background:var(--paper);color:var(--ink);min-width:0}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;font-weight:700}
+button:focus-visible,select:focus-visible,input:focus-visible,.w:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.go{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-family:var(--f-display);font-size:18px;padding:10px 22px}
+button.quiet{background:transparent}
+button[disabled]{opacity:.45;cursor:default}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.qclock{font-family:var(--f-display);font-weight:700;font-size:44px;min-width:110px;font-variant-numeric:tabular-nums}
+.qclock.done{color:var(--accent)}
+.qnum{width:90px;font:inherit;font-size:20px;padding:6px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+details.panel>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px}
+details.panel>summary::-webkit-details-marker{display:none}
+details.panel>summary::before{content:"\25B8";font-size:20px;color:var(--accent);transition:transform .15s}
+details.panel[open]>summary::before{transform:rotate(90deg)}
+details.panel>summary .hint{margin-left:auto}
+.focuschip{border-radius:99px;padding:4px 12px;background:var(--ruler);border:1px solid var(--ruler-edge);font-weight:700;font-size:14px}
+.punct-on .p{color:var(--accent);font-weight:700;font-size:1.15em}
+.stabs{display:flex;flex-wrap:wrap;gap:6px}
+.stabs button{border-radius:10px 10px 0 0;padding:8px 16px;font-family:var(--f-display);font-weight:600;font-size:16px}
+.stabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.card{border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.card h3{font-family:var(--f-display);font-weight:600;font-size:20px;margin:0}
+.card .kid{font-family:var(--f-read);font-size:18px;line-height:1.45}
+.card .say{border-left:4px solid var(--ruler-edge);padding-left:10px;font-style:italic}
+.card .try{font-size:14px;color:var(--muted)}
+.card b.k{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:block}
+.tabs button{border-radius:99px;padding:7px 16px;font-family:var(--f-display);font-weight:600;font-size:16px}
+.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.sharing .tabs button[aria-selected="false"]{display:none}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{border:0;border-radius:0;background:transparent;padding:8px 12px;font-weight:700}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.status{font-family:var(--f-display);font-size:18px;font-weight:600}
+.timebar{height:10px;border-radius:99px;background:var(--line);overflow:hidden}
+.timebar i{display:block;height:100%;width:100%;background:var(--accent);transition:width .25s linear}
+
+/* The reading strip */
+.reader{position:relative;border-radius:14px;background:var(--card);border:1px solid var(--line);padding:18px 12px}
+.reader h3{font-family:var(--f-read);font-weight:700;font-size:26px;margin:0 0 6px;text-align:center}
+.lines{font-family:var(--f-read);font-size:clamp(22px,3.6vw,32px);line-height:1.9}
+.ln{display:block;white-space:normal;padding:2px 10px;border-radius:8px;border:2px solid transparent;transition:opacity .15s}
+.mode-ruler .lines{font-size:clamp(19px,2.6vw,26px);line-height:1.75;display:flex;flex-direction:column;gap:3px}
+.mode-ruler .ln{padding:1px 12px}
+.ln:nth-child(3n+1){background:var(--row1);border-left:8px solid var(--row1e)}
+.ln:nth-child(3n+2){background:var(--row2);border-left:8px solid var(--row2e)}
+.ln:nth-child(3n){background:var(--row3);border-left:8px solid var(--row3e)}
+.mode-page .lines{display:flex;flex-direction:column;gap:3px}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.rules h3{font-family:var(--f-display);font-weight:600;font-size:17px;margin:0 0 4px}
+.rules ul{margin:0;padding-left:18px}.rules li{margin:3px 0}
+.src{font-size:12px;color:var(--muted)}
+.mode-page .lines{height:calc(1.9em * 4.5);overflow-y:auto;border:1px dashed var(--line);border-radius:10px;scrollbar-gutter:stable}
+.mode-page .reader-note{display:block}
+.reader-note{display:none;font-size:14px;color:var(--muted);text-align:center;margin-top:8px}
+.studentlink{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center;margin-top:4px}
+.studentlink code{overflow-wrap:anywhere;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:2px 6px}
+.w{display:inline;border-radius:6px;padding:0 2px;cursor:pointer;border-bottom:3px solid transparent}
+.w.err{background:var(--miss-soft);border-bottom-color:var(--miss);color:var(--miss)}
+.quiet-on.reading .w.err{background:transparent;color:inherit;border-bottom:2px solid var(--dim)}
+.quiet-on.reading .w.sc{border-bottom:2px dotted var(--dim)}
+.w.sc{border-bottom:3px dotted var(--sc)}
+.w.after{color:var(--dim)}
+.w.last{outline:3px solid var(--accent);outline-offset:1px}
+.picking .w{cursor:crosshair}
+/* The student copy stays clean: no marks, no tapping. */
+#lines .w{cursor:default;pointer-events:none}
+#lines .w.err,#lines .w.sc{background:transparent;color:inherit;border-bottom-color:transparent}
+#lines .w.after{color:inherit}#lines .w.last{outline:none}
+.copylbl{font:700 12px/1.3 var(--f-ui);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.scorecopy{border:2px dashed var(--accent);border-radius:12px;padding:12px 14px;background:var(--card);display:flex;flex-direction:column;gap:8px}
+.scorecopy h3{font-family:var(--f-display);font-weight:600;font-size:19px;margin:0}
+#score{font-family:var(--f-read);font-size:19px;line-height:2.1}
+#score .w{cursor:pointer}
+.reading #score .w:hover{background:var(--miss-soft)}
+.codes .tagrow{padding:6px 0;border-bottom:1px solid var(--line)}
+/* Rewards */
+.tabs button .stars{display:block;font-family:var(--f-ui);font-weight:700;font-size:12px;letter-spacing:.02em;opacity:.85}
+.reward{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;border-radius:14px;padding:14px;background:var(--ruler);border:2px solid var(--ruler-edge)}
+.badge{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;background:var(--card);border:4px solid var(--ruler-edge);font-family:var(--f-display);font-weight:700;font-size:30px;text-align:center;line-height:1}
+.badge small{display:block;font-size:12px;font-weight:600}
+.reward h3{font-family:var(--f-display);font-weight:700;font-size:22px;margin:0}
+.reward p{margin:2px 0}
+.prog{height:12px;border-radius:99px;background:var(--card);overflow:hidden;border:1px solid var(--ruler-edge)}
+.prog i{display:block;height:100%;background:var(--accent)}
+.accbars{display:flex;align-items:flex-end;gap:5px;height:60px;position:relative;margin-top:6px}
+.accbars .goal{position:absolute;left:0;right:0;border-top:2px dashed var(--ok)}
+.accbars .b{flex:1;max-width:28px;border-radius:5px 5px 0 0;background:var(--dim);position:relative}
+.accbars .b.ok{background:var(--ok)}
+.earned{font-family:var(--f-display);font-weight:700;font-size:20px;color:var(--ok)}
+.lineNav{display:flex;gap:8px;justify-content:center}
+.hint{font-size:14px;color:var(--muted)}
+.lost{font-family:var(--f-display);font-size:16px}
+.lost b{font-variant-numeric:tabular-nums}
+
+/* Trail */
+.trail{position:relative;height:74px;margin:6px 8px 0}
+.trail .track{position:absolute;left:0;right:0;top:34px;height:8px;border-radius:99px;background:repeating-linear-gradient(90deg,var(--line) 0 14px,transparent 14px 22px)}
+.trail .flag{position:absolute;top:2px;transform:translateX(-50%);text-align:center;font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap}
+.trail .flag::after{content:"";display:block;width:2px;height:40px;margin:2px auto 0;background:var(--ok)}
+.trail .dot{position:absolute;top:30px;width:16px;height:16px;border-radius:50%;transform:translateX(-50%);background:var(--dim);border:2px solid var(--card)}
+.trail .dot.now{background:var(--accent);width:22px;height:22px;top:27px}
+.trail .lab{position:absolute;top:52px;transform:translateX(-50%);font-size:12px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* Results */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.stat{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.stat span{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.stat b{font-family:var(--f-display);font-size:28px;font-variant-numeric:tabular-nums;line-height:1.1}
+.stat small{color:var(--muted)}
+.pill{display:inline-block;border-radius:99px;padding:2px 10px;font-size:13px;font-weight:700}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.no{background:var(--miss-soft);color:var(--miss)}
+.tags{display:flex;flex-direction:column;gap:8px}
+.tagrow{display:grid;grid-template-columns:minmax(90px,140px) 1fr;gap:10px;align-items:center}
+.tagrow .word{font-family:var(--f-read);font-size:20px;color:var(--miss);font-weight:700;overflow-wrap:anywhere}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{padding:4px 10px;font-size:13px;border-radius:99px;font-weight:700}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.workon li{margin:4px 0}
+.workon .ws{font-family:var(--f-read);color:var(--miss)}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:14px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.note{font-size:14px;color:var(--muted);max-width:75ch}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 10px;border-radius:10px;background:var(--miss-soft)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Fluency Trail at Home</h1>
+    <p class="sub">Grade 2 reading practice at home. Your child reads a short story aloud for one minute while you follow along and tap any word they miss. You'll see their speed, their accuracy, which kinds of words trip them up, and they earn stars as they go.</p>
+    <p class="hint">Everything you save stays on this computer, in this browser. Nobody else can see it, including your child's coach.</p>
+  </header>
+
+  <details class="panel" aria-label="What it takes to pass">
+    <summary><h2>What it takes to pass</h2><span class="hint">Scoring rules · tap to open</span></summary>
+    <div class="rules">
+      <div>
+        <h3>The Grade 2 fluency check</h3>
+        <ul>
+          <li><b>104 words correct per minute</b> reading a Grade 2 passage aloud</li>
+          <li><b>90% accuracy</b> or better</li>
+          <li>Both have to be met. Fast with too many misses doesn't pass.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>How a read works</h3>
+        <ul>
+          <li>Sit side by side. Your child reads the <b>top copy</b> (colored rows). You tap misses on <b>your scoring copy</b> under it.</li>
+          <li>Pick a strategy as the focus first if you like. The cards above explain each one.</li>
+          <li>One read takes about 2 minutes with tagging. Reread the same passage 2–3 times and end on the best one.</li>
+        </ul>
+      </div>
+      
+      <div>
+        <h3>How to score a read</h3>
+        <ul>
+          <li><b>Counts as a miss:</b> a word read wrong, a word swapped for another, a skipped word, or a stall of about 3 seconds (say the word and move on)</li>
+          <li><b>Doesn't count:</b> fixing it themselves, repeating a word, adding a word, or an accent</li>
+          <li>Skipping a whole line: every word in it is a miss</li>
+          <li><b>Words correct per minute</b> = words read − misses</li>
+        </ul>
+      </div>
+    </div>
+    <p class="src">These practice stories were written for this page. They are not the test's passages. The scoring rules are the standard ones for one-minute reading checks.</p>
+  </details>
+
+
+  <details class="panel" aria-label="Strategies">
+    <summary><h2>Strategies</h2><span class="hint">Teach one, then pick it as the focus for the next read.</span></summary>
+    <div class="stabs" role="tablist" aria-label="Strategy type">
+      <button type="button" role="tab" id="stFlu" aria-selected="true">Fluency strategies</button>
+      <button type="button" role="tab" id="stAcc" aria-selected="false">Accuracy strategies</button>
+      <button type="button" role="tab" id="stCom" aria-selected="false">Comprehension strategies</button>
+    </div>
+    <div class="cards" id="cardsFlu">
+      <div class="card"><h3>Expression</h3>
+        <p class="kid">Read it the way you would say it out loud. Make it sound like talking, not like a robot.</p>
+        <b class="k">Say</b><p class="say">"Read that sentence again like you're telling it to a friend."</p>
+        <b class="k">Try</b><p class="try">Read one sentence in a robot voice, then in a storyteller voice. Which one sounds like the story?</p></div>
+      <div class="card"><h3>Punctuation</h3>
+        <p class="kid">Period: stop and take a breath. Comma: a short pause. Question mark: your voice goes up. Exclamation mark: say it with feeling. Quotation marks: a character is talking.</p>
+        <b class="k">Say</b><p class="say">"What does that mark tell your voice to do?"</p>
+        <b class="k">Try</b><p class="try">Pick Punctuation as the focus and the marks in the passage light up.</p></div>
+      <div class="card"><h3>Accuracy</h3>
+        <p class="kid">Look at every letter, all the way to the end of the word. Sound out the tricky part. Break a long word into chunks.</p>
+        <b class="k">Say</b><p class="say">"Look at the end of that word again. What sound does it make?"</p>
+        <b class="k">Try</b><p class="try">Go slow enough to be right. Speed comes after accuracy, and the test needs 90%.</p></div>
+    </div>
+    <div class="cards" id="cardsAcc" hidden>
+      <div class="card"><h3>Chunk it</h3>
+        <p class="kid">Big word? Cover part of it with your finger. Read one chunk at a time, then put the chunks together.</p>
+        <b class="k">Say</b><p class="say">"Find the first chunk. Now the next one. Put them together."</p>
+        <b class="k">Try</b><p class="try">pan&middot;cake, sun&middot;flow&middot;er, bas&middot;ket. Every chunk has one vowel sound.</p></div>
+      <div class="card"><h3>Check the ending</h3>
+        <p class="kid">Look all the way to the end of the word. Endings like -s, -ed and -ing change the word.</p>
+        <b class="k">Say</b><p class="say">"Look at the end. What does it say?"</p>
+        <b class="k">Try</b><p class="try">jump, jumps, jumped, jumping. Read the base word first, then add the ending.</p></div>
+      <div class="card"><h3>Read the middle</h3>
+        <p class="kid">Don't stop at the first letter. The vowel in the middle tells you the sound.</p>
+        <b class="k">Say</b><p class="say">"What's the vowel in the middle? Short or long?"</p>
+        <b class="k">Try</b><p class="try">hat, hit, hot, hut. Then cap and cape: the silent e makes the vowel say its name.</p></div>
+      <div class="card"><h3>Sight words</h3>
+        <p class="kid">Some words don't follow the rules all the way. Sound out the regular part, and learn the tricky part by heart.</p>
+        <b class="k">Say</b><p class="say">"Which part is tricky? Let's put a heart on it."</p>
+        <b class="k">Try</b><p class="try">said, was, they, one, could, does. Flash a few before the read, then spot them in the story.</p></div>
+    </div>
+    <div class="cards" id="cardsCom" hidden>
+      <div class="card"><h3>Reread</h3>
+        <p class="kid">If it didn't make sense, or you lost your place, go back to the start of the sentence and read it again.</p>
+        <b class="k">Say</b><p class="say">"Let's go back to the start of that sentence."</p>
+        <b class="k">Try</b><p class="try">Good for practice reads. On the timed test, a reread costs time, so use it for the sentence that matters.</p></div>
+      <div class="card"><h3>Does it sound right?</h3>
+        <p class="kid">After you read a sentence, ask: does that sound like the way people talk? If not, look at the word again.</p>
+        <b class="k">Say</b><p class="say">"Does that sound right? Check the letters in that word."</p>
+        <b class="k">Try</b><p class="try">It's a check after sounding out, not a reason to guess. The fix is always to look back at the letters.</p></div>
+      <div class="card"><h3>Does it make sense?</h3>
+        <p class="kid">Make a picture in your head. If the picture doesn't work, find the word that doesn't fit and sound it out again.</p>
+        <b class="k">Say</b><p class="say">"Tell me what just happened in the story."</p>
+        <b class="k">Try</b><p class="try">After the minute, ask one question about the passage before showing the score.</p></div>
+    </div>
+  </details>
+
+  <section class="panel" aria-label="Reader and passage">
+    <div class="row spread">
+      <div class="row">
+        <div class="tabs" role="tablist" aria-label="Reader" id="tabs"></div>
+        <button class="quiet" id="addReaderBtn" type="button">+ Add reader</button>
+      </div>
+      <label class="row" style="gap:6px" hidden><input type="checkbox" id="shareChk"> Show only this reader</label>
+    </div>
+    <div class="row spread">
+      <span class="hint" id="tbLine"></span>
+      <button class="quiet" id="delReaderBtn" type="button">Remove this reader</button>
+    </div>
+    <div class="row">
+      <label class="lbl" for="passSel">Passage</label>
+      <select id="passSel"></select>
+    </div>
+    <form id="addForm" class="row" hidden>
+      <input type="text" id="newName" placeholder="Your child's first name" aria-label="Reader's name">
+      <button type="submit">Save reader</button>
+      <button type="button" class="quiet" id="cancelAdd">Cancel</button>
+    </form>
+    <div id="delConfirm" class="confirm" hidden>
+      <span>Remove this reader and all their reads on this device?</span>
+      <button type="button" id="delYes">Remove</button>
+      <button type="button" class="quiet" id="delNo">Keep</button>
+    </div>
+    <div class="row spread">
+      <div class="row">
+        <span class="lbl">View</span>
+        <div class="seg" role="group" aria-label="How the passage is shown">
+          <button type="button" id="mRuler" aria-pressed="true">Practice: one page, colored rows</button>
+          <button type="button" id="mPage" aria-pressed="false">Add scrolling (when they're strong)</button>
+        </div>
+      </div>
+      <label class="row" style="gap:6px" hidden><input type="checkbox" id="quietChk"> Quiet marks while reading</label>
+      <span class="hint" id="modeHint">The whole passage on one screen, each row a different color for tracking. Nothing for the reader to click or scroll.</span>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="Rewards" id="rewardPanel"></section>
+
+  <section class="panel" aria-label="Quick timer">
+    <div class="row spread"><h2>Quick timer</h2><span class="hint">For a read you score on paper, or one on their own screen. Press start, it stops at 60 seconds, then type in the number.</span></div>
+    <div class="row">
+      <span class="qclock" id="qClock">1:00</span>
+      <button type="button" class="go" id="qStart">Start 60 seconds</button>
+      <button type="button" id="qReset">Reset</button>
+    </div>
+    <div class="timebar" aria-hidden="true"><i id="qFill"></i></div>
+    <div class="row" id="qEntry">
+      <label class="lbl" for="qWcpm">Words correct per minute</label><input type="number" id="qWcpm" min="0" max="250" inputmode="numeric" class="qnum">
+      <label class="lbl" for="qMiss">Mistakes (optional)</label><input type="number" id="qMiss" min="0" max="100" inputmode="numeric" class="qnum">
+      <button type="button" class="go" id="qSave">Save</button>
+      <span class="hint" id="qMsg"></span>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="Reading">
+    <div class="row spread">
+      <span class="status" id="status">Ready when you are.</span>
+      <div class="row">
+        <span class="lost" id="lostWrap" hidden>Lost place: <b id="lostN">0</b></span>
+        <button type="button" id="lostBtn" hidden>+ Lost place</button>
+        <button type="button" class="go" id="goBtn">Start 1 minute</button>
+        <button type="button" id="stopBtn" hidden>Stop early</button>
+      </div>
+    </div>
+    <div class="row">
+      <label class="lbl" for="focusSel">Focus for this read</label>
+      <select id="focusSel">
+        <option value="">None</option>
+        <optgroup label="Fluency"><option value="expression">Expression</option><option value="punctuation">Punctuation</option><option value="accuracy">Accuracy</option></optgroup>
+        <optgroup label="Accuracy"><option value="chunk">Chunk it</option><option value="ending">Check the ending</option><option value="middle">Read the middle</option><option value="sight">Sight words</option></optgroup>
+        <optgroup label="Comprehension"><option value="reread">Reread</option><option value="sound">Does it sound right?</option><option value="sense">Does it make sense?</option></optgroup>
+      </select>
+      <span class="focuschip" id="focusChip" hidden></span>
+    </div>
+    <div class="timebar" aria-hidden="true"><i id="timeFill"></i></div>
+    <span class="copylbl">Student copy &middot; what they read</span>
+    <div class="reader mode-ruler" id="reader">
+      <h3 id="pTitle"></h3>
+      <div class="lines" id="lines"></div>
+      <span class="reader-note">Scroll down to keep reading. Keep a finger on the line you're on.</span><code id="stuLink" hidden></code><button type="button" id="copyLink" hidden></button>
+    </div>
+        <div class="scorecopy" id="scoreBox">
+      <h3>Your scoring copy &middot; tap the word they miss</h3>
+      <div id="score"></div>
+    </div>
+    <p class="hint" id="howTo">Only the grown-up taps, and only on the scoring copy, so your child's copy stays clean. While they read: tap a word once if it's missed (red), twice if they fixed it themselves (dotted, doesn't count), three times to clear. Tap "+ Lost place" each time they lose their spot. Skipped a line? Tap each word in it.</p>
+  </section>
+
+  <section class="panel" id="tagPanel" hidden aria-label="Code the mistakes">
+    <h2>Code each mistake</h2>
+    <p class="hint">Each word you mark shows up here. Pick the mistake type now or after the minute. These match the UFLI skill tags on your scoring sheet.</p>
+    <div class="tags codes" id="tagList"></div>
+    <div class="row"><button class="go" type="button" id="saveBtn" hidden>See the results</button></div>
+  </section>
+
+  <section class="panel" id="resPanel" hidden aria-label="Results">
+    <div class="row spread"><h2 id="resTitle">This read</h2><span id="passPill"></span></div>
+    <div class="earned" id="earned"></div>
+    <div class="stats" id="stats"></div>
+    <div class="trail" id="trail" aria-label="Words correct per minute on the way to the pass mark"></div>
+    <div id="workOn"></div>
+    <div class="row"><button class="go" type="button" id="againBtn">Read it again</button><button type="button" id="newPassBtn">Next passage</button></div>
+  </section>
+
+  <section class="panel" aria-label="One page compared with scrolling">
+    <h2>One page vs scrolling</h2>
+    <p class="note">Average for this reader in each view. A big gap means scrolling and losing their place is costing words.</p>
+    <div class="cmp" id="cmp"></div>
+  </section>
+
+  <section class="panel" aria-label="History">
+    <div class="row spread"><h2>Reads so far</h2><span class="hint">Saved in this browser only.</span></div>
+    <div class="scroll"><table><thead><tr><th>Date</th><th>Passage</th><th>View</th><th>WCPM</th><th>Accuracy</th><th>Test score</th><th>Lost place</th><th>Most missed</th></tr></thead><tbody id="hist"></tbody></table></div>
+  </section>
+
+  <p class="note">Twenty practice stories, about 110&ndash;130 words each, each one checked at a Grade 2.0&ndash;2.5 reading level (Flesch-Kincaid), for practice at home. Reads are saved in this browser only.</p>
+</div>
+
+<script>
+(function(){
+const PASSAGES=[{"id":"h2-bread","g":2,"title":"Baking Bread with Grandma","text":"On Sunday, Nate went to see his grandma. She had a big bowl on the table. \"Today we will bake bread,\" she said. Grandma poured flour into the bowl. Nate added water, salt, and a little bit of yeast. They mixed everything with a wooden spoon until it turned into a soft lump of dough, and then Nate pressed and folded the dough on the table. His hands got white with flour. Grandma put a cloth on the bowl and set it by the warm window. After an hour, the dough was twice as big! Grandma put it in a pan and baked it in the oven. Soon the whole house smelled good. When the bread was done, they each ate a warm slice with jam."},{"id":"h2-shells","g":2,"title":"The Shell Hunt","text":"Rosa and her dad walked along the beach early in the morning. The sand was cool and wet under their feet. Rosa had a small pail to hold the shells she found. First, she found a white shell shaped like a fan. Next, she found a long, thin shell that was dark blue, and then she saw a round shell with a tiny hole in it. \"That one could be a necklace,\" Dad said. A crab ran sideways near a rock, and Rosa laughed. They sat on a log and lined up the shells in a row. Rosa carefully counted nine shells in all. At home, she put them in a glass jar on her bedroom shelf. Now she can see the beach every day."},{"id":"h2-tower","g":2,"title":"The Tallest Tower","text":"Jack and his sister Ana wanted to build the tallest tower in the world. They got out all of their blocks. Jack put the big blocks on the bottom. Ana stacked the small ones on top. The tower grew higher and higher. Soon it was as tall as Jack, and then it was even taller than Ana. \"Be careful!\" said Jack. Ana stood on her toes to add one more block. The tower started to wobble. It swayed to the left and then to the right. Crash! The blocks fell all over the rug. Jack and Ana looked at the mess, and then they both started to giggle. \"Let's build it again,\" said Ana, \"but wider at the bottom this time.\""},{"id":"h2-sunflower","g":2,"title":"Sunflower Race","text":"In the spring, Max and his mom planted three sunflower seeds by the fence. Max gave the seeds water every day. After a week, small green sprouts popped out of the dirt. Max made a chart to keep track of how tall they grew. Every Saturday, he used a tape measure and wrote down the numbers. By June, the plants were taller than Max. By July, they were taller than Mom! Big yellow flowers opened at the top. Bees came to visit the flowers each morning. At the end of the summer, the flowers dried and drooped down. Max and Mom picked out the seeds and saved them. Next spring, Max wants to plant even more."},{"id":"h2-bus","g":2,"title":"The Wrong Bus Stop","text":"Each Friday, Kim rode the school bus to her grandpa's house. She always knew to get off at the stop by the red mailbox. One Friday, Kim was reading her library book and forgot to look out the window. When she looked up, she did not see the red mailbox. Kim felt her heart beat fast. She walked to the front of the bus and spoke to the driver. \"I missed my stop,\" she said. The driver smiled and said, \"That's okay. I will help you.\" At the next stop, the driver called the school, and the school called her grandpa. Grandpa came quickly in his truck to pick her up. \"You did the right thing to ask for help,\" Grandpa said, and gave her a big hug."},{"id":"h2-owl","g":2,"title":"Who Is Hooting?","text":"One night, Ben heard a sound outside his window. \"Hoo, hoo,\" it went. Ben sat up in bed and listened carefully as the sound came again, low and soft. He ran to get his mom. They put on their coats and went out to the back yard with a flashlight. Mom pointed the light at the tall pine tree. Two big yellow eyes looked back at them. It was an owl sitting on a branch! The owl had brown and white feathers and a round face. It turned its head almost all the way around, and then it spread its wings and flew away without a sound. The next day, Ben got a book about owls from the library. He learned that owls usually hunt at night."},{"id":"h2-mitten","g":2,"title":"The Missing Mitten","text":"It was a cold morning, and Ella could not find her red mitten. She looked under her bed, in her coat pocket, and in the basket by the door. The mitten was not there. \"Did you check the car?\" asked her brother. Ella ran out to the car, but the mitten was not there either. She sat on the steps and frowned. Just then, her puppy came around the corner. He had something red in his mouth. It was the mitten! It was a little wet, but it was not torn. Ella laughed and gave her puppy a pat. She carefully set the mitten by the heater to dry. From now on, she will keep her mittens up high."},{"id":"h2-rain","g":2,"title":"A Fort on a Rainy Day","text":"Rain tapped on the windows all day long. Mia and Jonah could not go outside to play. \"Let's make a fort,\" said Mia. They pushed two chairs close and put a big sheet over the top. Jonah brought pillows and a soft blanket. Mia brought a flashlight and a stack of books. They crawled inside and closed the flap. It was dark and cozy in the fort. Mia read a story about a dragon out loud. Jonah made the dragon sounds. Then they played a game with the flashlight and made shadow animals on the sheet. When Dad called them for dinner, they did not want to come out. \"Can we eat in the fort?\" asked Jonah."},{"id":"h2-race","g":2,"title":"The Three-Legged Race","text":"At field day, Omar and his friend Theo signed up for the three-legged race. It was a race for teams of two. A teacher tied Omar's left leg to Theo's right leg with a strip of cloth. At first, they could not walk at all, because Omar stepped up while Theo stepped back. They both fell into the grass. \"Let's count,\" said Theo. \"On one, we move the tied legs. On two, we move the free legs.\" They tried again, counting out loud together, and it worked! When the whistle blew, they did not go very fast, but they did not fall. They crossed the finish line in third place. They did not win, but they got a sticker and a big cup of cold water."},{"id":"h2-snail","g":2,"title":"Slow and Steady","text":"After a rainy night, Ivy found a snail on the sidewalk. It was moving very, very slowly. Ivy knelt down to look. The snail had a brown shell with a swirl on it. Two long feelers poked out of its head. It left a shiny trail behind it as it went. \"Where are you going, little snail?\" Ivy asked. She was afraid someone might step on it. Ivy picked up a leaf and let the snail crawl onto it. Then she carried it to the garden and set it down under a bush. The snail stayed still for a moment. Then it poked its feelers out again and slid under a big green leaf. Ivy was glad it was safe."},{"id":"h2-pancake","g":2,"title":"Pancake Morning","text":"Every Saturday, Dad makes pancakes, and this week Luke got to help. First, Luke cracked two eggs into a bowl. One bit of shell fell in, so Dad helped him fish it out. Next, Luke added milk, flour, and a spoon of sugar. He stirred until the lumps were gone. Dad heated the pan and poured in a scoop of batter. Small bubbles popped on top. \"Now it is time to flip,\" Dad said. Luke watched as Dad flipped the pancake over. It was golden brown! They made a tall stack of pancakes. Luke put berries on top and a little syrup. His sister said they were the best pancakes she had ever eaten."},{"id":"h2-kitten","g":2,"title":"A New Kitten","text":"Grace had wanted a pet for a long time. One day, her family went to the animal shelter. There were cats of every size and color. A small gray kitten reached a paw through the cage and touched Grace's hand. \"I think she likes you,\" said Mom. Grace named the kitten Smoke. At home, Smoke hid under the couch for most of the first day. Grace sat on the floor and waited quietly. She did not try to grab her. At last, Smoke crept out and sniffed her fingers, and then the kitten climbed into her lap and began to purr. Grace held very still and smiled. Smoke was home."},{"id":"h2-pumpkin","g":2,"title":"Picking a Pumpkin","text":"In the fall, the Lopez family went to a pumpkin patch. The field was full of orange pumpkins. Some were small enough to hold in one hand. Some were so big that no one could lift them. Carlos walked up and down the rows. He wanted one that was perfectly round and had a long stem. At last, he found the right one. It was not too big and not too small. Dad put it in a wagon, and Carlos pulled it to the car. That night, they cut the top off the pumpkin and scooped out the seeds. Carlos drew a happy face, and Dad helped him carve it. They put a small light inside, and the face glowed in the dark."},{"id":"h2-library","g":2,"title":"Library Day","text":"On Tuesdays, Hannah goes to the library with her aunt. It is a big brick building with tall windows. Inside, it is quiet and smells like paper. Hannah goes straight to the shelves with books about pets and wild things. This week, she found a book about sharks and a book about frogs. She also picked a funny story about a pig who wanted to fly in the sky. Her aunt helped her look for a book about stars. Then they went to the front desk. Hannah used her own card to check out the books. The man at the desk gave her a slip with the due date. \"Bring them back in two weeks,\" he said. Hannah held the stack tight all the way home."},{"id":"h2-wind","g":2,"title":"The Windy Walk","text":"Owen and his dad went for a walk on a very windy day. The tall trees bent and shook, and colorful leaves flew past them in little swirls. Owen's hat blew off his head and rolled down the path. He ran after it and grabbed it just in time. \"Hold on to it!\" Dad called. They walked to the top of the hill. From there, they could see the whole town. The wind pushed so hard that Owen leaned into it, and it held him up like a hand. He opened his arms wide and pretended he was a bird. Then the wind got even stronger, so they went home. They warmed up with mugs of hot cocoa in the kitchen."},{"id":"h2-picnic","g":2,"title":"Picnic in the Park","text":"On a sunny day, Lucy and her grandma packed a picnic. They made cheese sandwiches and cut up apples. Grandma put in a jug of juice and two cups. They walked to the park and found a spot under a big oak tree. Lucy spread out the blanket. They ate their lunch and watched the ducks on the pond. A few ducks waddled over and quacked. \"Bread is not good for ducks,\" Grandma said, \"so we will just watch them.\" After lunch, Lucy played on the swings. Grandma sat and read. Then they packed up and threw away their trash. Lucy said it was the best lunch of the whole week."},{"id":"h2-teeth","g":2,"title":"The Wiggly Tooth","text":"Zoe had a wiggly tooth in the front of her mouth. She could push it back and forth with her tongue. It wiggled when she ate an apple, and it wiggled when she brushed her teeth. \"When will it come out?\" she asked her mom. \"When it is ready,\" Mom said. On Monday, Zoe was eating a carrot at lunch. All at once, she felt something hard in her mouth, and she realized it was her tooth! She wrapped it in a napkin and kept it safe in her pocket all day. At home, she looked in the mirror and saw a gap in her smile. She put the tooth in a small box by her bed. She could not wait to see what would happen next."},{"id":"h2-paint","g":2,"title":"Painting the Fence","text":"The old wooden fence in the back yard was gray, cracked, and peeling. \"Let's paint it,\" said Mom. She bought a can of bright blue paint. Ali and his mom put on old shirts. First, they swept the dust and cobwebs off the fence with a broom, and then they dipped their brushes in the paint. Ali painted the low part, and Mom painted the high part. They moved their brushes up and down with long, even strokes. A drop of paint fell on Ali's nose, and Mom laughed. By lunch, half of the fence was blue, and by dinner, the whole fence was finished. It looked like a strip of sky. Ali was proud of the work they did together."},{"id":"h2-camp","g":2,"title":"Stars at Camp","text":"Ruby and her family went camping by a lake. They set up a green tent near the tall pine trees. When it got dark, Dad lit a lantern, and they sat on a log and ate crunchy snacks. After a while, Mom turned off the lantern. \"Look up,\" she said. Ruby tipped her head back. The sky was full of stars, more than she had ever seen at home. Some were very bright, and some were dim and tiny. Dad pointed to a group of stars that looked like a big spoon. \"That is called the Big Dipper,\" he said. Ruby tried to count the stars, but there were too many to count. She fell asleep in the tent, still thinking about the sky."},{"id":"h2-lost","g":2,"title":"The Lost Lunch Box","text":"When Eli got to school, he could not find his lunch box. He searched through his backpack two times, but it was not there. Eli felt sad, because his dad had packed his best lunch. At lunch time, he sat down at the table with nothing to eat, and his friend Jada noticed his sad face. \"What is wrong?\" she asked. Eli told her about the lunch box. Jada gave him half of her sandwich and some grapes. A few minutes later, someone from the office called his name. His dad had brought the lunch box to school! Eli ran to the office to thank his dad. Then he gave Jada a cookie from his lunch box. \"Now we both have a treat,\" he said."}];
+const TAGS=["Vowel","Blend/digraph","Ending","Multisyllable","Heart word","Guessed","Skipped"];
+const PASS=104;
+const KEY="fluency-trail-home-v1";
+const SECS=60;
+
+const SEED=[{id:"r1",name:"Reader"}];
+const TB={};
+let store={readers:SEED.map(r=>Object.assign({g:2},r)),reads:[],cur:"r1",mode:"ruler",pass:"h2-bread"};
+try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&s.readers&&s.readers.length)store=Object.assign(store,s);if(!store.v6){store.mode="ruler";store.v6=1;}}catch(e){}
+store.readers=store.readers.filter(r=>!(r.id==="r1"&&!store.reads.some(x=>x.reader==="r1")));
+SEED.forEach(r=>{if(!store.readers.some(x=>x.id===r.id))store.readers.push(Object.assign({g:2},r));});
+if(!store.readers.some(r=>r.id===store.cur))store.cur=store.readers[0].id;
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}};
+
+const $=id=>document.getElementById(id);
+let words=[],lines=[],curLine=0,phase="ready",t0=0,elapsed=0,timer=null,lost=0,lastIdx=-1,lastRun=null;
+
+const reader=()=>store.readers.find(r=>r.id===store.cur)||store.readers[0];
+const passage=()=>PASSAGES.find(p=>p.id===store.pass)||PASSAGES[0];
+
+function renderReaders(){
+  const box=$("tabs");box.innerHTML="";const cur=reader();
+  store.readers.forEach(r=>{const b=document.createElement("button");b.type="button";b.setAttribute("role","tab");b.textContent=r.name;
+    const st=document.createElement("span");st.className="stars";const rs=rewardOf(r.id);st.textContent="★ "+rs.stars+(rs.lastAcc!=null?" · "+rs.lastAcc+"%":"");b.appendChild(st);
+    b.setAttribute("aria-selected",r.id===cur.id);b.onclick=()=>{store.cur=r.id;save();renderReaders();resetView();renderRewards();};box.appendChild(b);});
+  $("delReaderBtn").disabled=store.readers.length<2;
+  const tb=TB[cur.id];$("tbLine").textContent=(cur.id==="r1"&&!store.reads.length)?"Tap \u201c+ Add reader\u201d and type your child's first name.":tb?"Last score: "+tb.s+" on "+tb.d+" (about "+Math.round(tb.s*104/80)+" words a minute; 80 passes)."+(tb.n?" "+tb.n:""):"";
+  document.querySelector(".wrap").classList.toggle("sharing",!!store.share);if($("rewardPanel"))renderRewards();
+}
+function renderPassages(){
+  const sel=$("passSel");sel.innerHTML="";
+  PASSAGES.forEach((p,i)=>{const o=document.createElement("option");o.value=p.id;o.textContent=(i+1)+". "+p.title+" ("+p.text.split(/\s+/).length+" words)";sel.appendChild(o);});
+  if(!PASSAGES.some(p=>p.id===store.pass))store.pass=PASSAGES[0].id;
+  sel.value=store.pass;
+}
+function buildPassage(){
+  const p=passage();$("pTitle").textContent=p.title;
+  const toks=p.text.split(/\s+/);words=toks.map(t=>({t,err:0,tag:""}));
+  const per=store.mode==="ruler"?12:8;lines=[];let line=[];
+  toks.forEach((t,i)=>{line.push(i);if(line.length>=per||/[.!?]$/.test(t)&&line.length>=per-2){lines.push(line);line=[];}});
+  if(line.length)lines.push(line);
+  const box=$("lines");box.innerHTML="";
+  lines.forEach((ln,li)=>{const d=document.createElement("span");d.className="ln";d.dataset.l=li;
+    ln.forEach((wi,k)=>{const s=document.createElement("span");s.className="w";s.tabIndex=0;s.dataset.i=wi;const t=words[wi].t,m=t.match(/^(.*?)([.,!?;:"']+)$/);if(m&&m[1]){s.textContent=m[1];const pu=document.createElement("span");pu.className="p";pu.textContent=m[2];s.appendChild(pu);}else s.textContent=t;s.setAttribute("role","button");d.appendChild(s);if(k<ln.length-1)d.appendChild(document.createTextNode(" "));});
+    box.appendChild(d);});
+  const sc=$("score");sc.innerHTML="";
+  words.forEach((w,wi)=>{const e=document.createElement("span");e.className="w";e.tabIndex=0;e.dataset.i=wi;e.setAttribute("role","button");e.textContent=w.t;sc.appendChild(e);if(wi<words.length-1)sc.appendChild(document.createTextNode(" "));});
+  curLine=0;lost=0;lastIdx=-1;regroup();paintRuler();paintWords();renderCodes();
+}
+function regroup(){
+  const box=$("lines"),ws=[...box.querySelectorAll(".w")];if(!ws.length)return;
+  const one=document.createElement("span");one.className="ln";box.innerHTML="";box.appendChild(one);
+  ws.forEach((s,k)=>{one.appendChild(s);if(k<ws.length-1)one.appendChild(document.createTextNode(" "));});
+  const tops=ws.map(s=>s.offsetTop);if(tops[tops.length-1]-tops[0]<5)return;
+  const groups=[];let g=[];ws.forEach((s,k)=>{if(g.length&&tops[k]>tops[k-1]+5){groups.push(g);g=[];}g.push(s);});if(g.length)groups.push(g);
+  box.innerHTML="";lines=[];
+  groups.forEach((g,li)=>{const d=document.createElement("span");d.className="ln";d.dataset.l=li;g.forEach((s,k)=>{d.appendChild(s);if(k<g.length-1)d.appendChild(document.createTextNode(" "));});box.appendChild(d);lines.push(g.map(s=>+s.dataset.i));});
+  curLine=Math.min(curLine,lines.length-1);paintRuler();
+}
+let rgT;window.addEventListener("resize",()=>{clearTimeout(rgT);rgT=setTimeout(regroup,150);});
+try{document.fonts.ready.then(()=>regroup());}catch(e){}
+function paintRuler(){
+  const box=$("lines");[...box.children].forEach((el,i)=>{el.classList.toggle("cur",i===curLine);el.classList.toggle("near",Math.abs(i-curLine)===1);});
+}
+function paintWords(){
+  document.querySelectorAll("#lines .w, #score .w").forEach(s=>{const w=words[+s.dataset.i];s.classList.toggle("err",w.err===1);s.classList.toggle("sc",w.err===2);
+    s.classList.toggle("after",lastIdx>=0&&+s.dataset.i>lastIdx);s.classList.toggle("last",+s.dataset.i===lastIdx);});
+}
+function setMode(m){store.mode=m;save();$("mRuler").setAttribute("aria-pressed",m==="ruler");$("mPage").setAttribute("aria-pressed",m==="page");
+  $("reader").className="reader mode-"+m+(store.quiet!==false?" quiet-on":"")+(store.focus==="punctuation"?" punct-on":"");
+  $("modeHint").textContent=m==="ruler"?"The whole passage on one screen, each row a different color for tracking. Nothing for the reader to click or scroll.":"Add this once they read the passage strongly on one page. Same colored rows, but only part shows and the reader scrolls, like the test.";
+  if(phase==="ready")buildPassage();setStuLink();
+  paintRuler();}
+
+function start(){
+  buildPassage();phase="reading";$("reader").classList.add("reading");t0=Date.now();elapsed=0;
+  $("goBtn").hidden=true;$("stopBtn").hidden=false;$("lostBtn").hidden=false;$("lostWrap").hidden=false;$("lostN").textContent="0";
+  $("status").textContent="Reading…";$("tagPanel").hidden=true;$("resPanel").hidden=true;
+  timer=setInterval(tick,250);tick();
+}
+function tick(){elapsed=Math.min(SECS,(Date.now()-t0)/1000);$("timeFill").style.width=(100-elapsed/SECS*100)+"%";if(elapsed>=SECS)stop();}
+function stop(){
+  if(phase!=="reading")return;$("reader").classList.remove("reading");clearInterval(timer);elapsed=Math.max(5,Math.min(SECS,(Date.now()-t0)/1000));phase="pick";
+  $("stopBtn").hidden=true;$("lostBtn").hidden=true;$("reader").classList.add("picking");
+  $("status").textContent="Time! Tap the last word they read.";
+}
+function pickLast(i){
+  lastIdx=i;paintWords();phase="tag";$("reader").classList.remove("picking");
+  const errs=words.map((w,k)=>({w,k})).filter(x=>x.k<=lastIdx&&x.w.err===1);
+  $("status").textContent=errs.length?"Now tag the missed words below.":"No missed words. Nice reading!";
+  if(!errs.length){finish();return;}
+  renderCodes();$("saveBtn").hidden=false;
+  $("tagPanel").hidden=false;$("tagPanel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function renderCodes(){
+  const errs=words.map((w,k)=>({w,k})).filter(x=>x.w.err===1&&(lastIdx<0||x.k<=lastIdx));
+  const list=$("tagList");list.innerHTML="";$("tagPanel").hidden=!errs.length;
+  errs.forEach(({w,k})=>{const row=document.createElement("div");row.className="tagrow";
+    row.innerHTML='<div class="word"></div><div class="chips" role="group"></div>';row.firstChild.textContent=w.t.replace(/[.,!?;:"]/g,"");
+    row.firstChild.nextSibling.setAttribute("aria-label","Why "+w.t+" was missed");
+    TAGS.forEach(t=>{const b=document.createElement("button");b.type="button";b.textContent=t;b.setAttribute("aria-pressed",w.tag===t);
+      b.onclick=()=>{w.tag=w.tag===t?"":t;row.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x.textContent===w.tag));};
+      row.lastChild.appendChild(b);});
+    list.appendChild(row);});
+}
+function finish(){
+  const p=passage(),r=reader(),bar=PASS;
+  const read=lastIdx+1,errs=words.filter((w,k)=>k<=lastIdx&&w.err===1);
+  const correct=read-errs.length,wcpm=Math.round(correct*60/elapsed),acc=read?Math.round(correct/read*100):0,score=Math.round(wcpm/bar*80);
+  const tags={};errs.forEach(w=>{const t=w.tag||"Not tagged";(tags[t]=tags[t]||[]).push(w.t.replace(/[.,!?;:"]/g,""));});
+  lastRun={date:new Date().toISOString(),reader:r.id,pass:p.id,mode:store.mode,focus:store.focus||"",secs:Math.round(elapsed),read,errors:errs.length,wcpm,acc,score,lost,tags};
+  const prevBest=Math.max(0,...store.reads.filter(x=>x.reader===r.id).map(x=>x.wcpm));
+  lastRun.stars=starsFor(lastRun.acc)+(lastRun.wcpm>prevBest&&prevBest>0?1:0);lastRun.pb=lastRun.wcpm>prevBest&&prevBest>0;
+  store.reads.push(lastRun);save();renderReaders();renderRewards();
+  phase="done";$("status").textContent="Saved. Results are below.";$("tagPanel").hidden=true;$("saveBtn").hidden=true;$("goBtn").hidden=false;$("goBtn").textContent="Start 1 minute";
+  showResults(lastRun);renderHistory();renderCmp();
+}
+function showResults(run){
+  const r=reader(),bar=PASS,pass=run.score>=80&&run.acc>=90;
+  $("resTitle").textContent="This read · "+(run.mode==="ruler"?"one page":"test format");
+  $("passPill").innerHTML='<span class="pill '+(pass?"ok":"no")+'">'+(pass?"Would pass":"Not a pass yet")+"</span>";
+  const need=Math.max(0,bar-run.wcpm);
+  $("stats").innerHTML=[
+    ["Words correct / min",run.wcpm,need?need+" to go to "+bar:"At or above "+bar],
+    ["Accuracy",run.acc+"%",run.acc>=90?"Pass mark is 90%":"Needs 90%"],
+    ["Test score",run.score,"80 passes"],
+    ["Lost place",run.lost,run.lost?"times in "+run.secs+" s":"Kept their place"],
+    ["Missed",run.errors,"of "+run.read+" words read"]
+  ].map(s=>'<div class="stat"><span>'+s[0]+"</span><b>"+s[1]+"</b><small>"+s[2]+"</small></div>").join("");
+  renderTrail(run);
+  $("earned").textContent=run.stars?"+"+run.stars+" ★ earned"+(run.pb?" (including 1 for a new best speed!)":"!"):"No stars this time. Stars start at 90% accuracy.";
+  const keys=Object.keys(run.tags).sort((a,b)=>run.tags[b].length-run.tags[a].length);
+  $("workOn").innerHTML=keys.length?'<h2>What to work on</h2><ul class="workon">'+keys.map(k=>"<li><b>"+k+"</b> ("+run.tags[k].length+'): <span class="ws">'+run.tags[k].map(esc).join(", ")+"</span>"+(TIP[k]?' &rarr; try <b>'+TIP[k]+"</b>":"")+"</li>").join("")+"</ul>"+
+    (run.lost>=2?'<p class="note">They lost their place '+run.lost+" times. Try the same passage on One page and compare.</p>":""):
+    '<p class="note">No missed words. If speed is short of the mark, reread this passage two or three more times and watch the number climb.</p>';
+  $("resPanel").hidden=false;$("resPanel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function renderTrail(run){
+  const r=reader(),bar=PASS,max=Math.round(bar*1.3),pos=v=>Math.max(0,Math.min(100,v/max*100));
+  const same=store.reads.filter(x=>x.reader===r.id&&x.pass===run.pass).slice(-4);
+  let h='<div class="track"></div><div class="flag" style="left:'+pos(bar)+'%">Pass '+bar+"</div>";
+  same.forEach((x,i)=>{const now=x===run;h+='<div class="dot'+(now?" now":"")+'" style="left:'+pos(x.wcpm)+'%" title="'+x.wcpm+' WCPM"></div>';
+    if(now)h+='<div class="lab" style="left:'+pos(x.wcpm)+'%">'+x.wcpm+" now</div>";});
+  if(same.length>1)h+='<div class="lab" style="left:'+pos(same[0].wcpm)+'%;top:58px">'+(same[0]===run?"":"first "+same[0].wcpm)+"</div>";
+  $("trail").innerHTML=h;
+}
+function renderCmp(){
+  const r=reader(),mine=store.reads.filter(x=>x.reader===r.id);
+  const box=(m,label)=>{const xs=mine.filter(x=>x.mode===m);if(!xs.length)return'<div class="stat"><span>'+label+"</span><b>–</b><small>No reads yet</small></div>";
+    const av=k=>Math.round(xs.reduce((a,x)=>a+x[k],0)/xs.length);
+    return'<div class="stat"><span>'+label+"</span><b>"+av("wcpm")+" WCPM</b><small>"+av("acc")+"% accuracy · lost place "+(xs.reduce((a,x)=>a+x.lost,0)/xs.length).toFixed(1)+" times · "+xs.length+" read"+(xs.length>1?"s":"")+"</small></div>";};
+  $("cmp").innerHTML=box("ruler","One page")+box("page","Test format (scroll)");
+}
+function renderHistory(){
+  const r=reader(),xs=store.reads.filter(x=>x.reader===r.id).slice().reverse();
+  $("hist").innerHTML=xs.length?xs.map(x=>{const p=PASSAGES.find(q=>q.id===x.pass);const top=Object.keys(x.tags).sort((a,b)=>x.tags[b].length-x.tags[a].length)[0]||"–";
+    return"<tr><td>"+new Date(x.date).toLocaleDateString(undefined,{month:"short",day:"numeric"})+"</td><td>"+esc(p?p.title:x.pass)+"</td><td>"+(x.mode==="quick"?"Quick timer":x.mode==="ruler"?"One page":"Scrolling")+"</td><td>"+x.wcpm+"</td><td>"+(x.noAcc?"–":x.acc+"%")+"</td><td>"+x.score+"</td><td>"+x.lost+"</td><td>"+esc(top)+"</td></tr>";}).join(""):
+    '<tr><td colspan="8">No reads yet for this reader. Press "Start 1 minute" to do the first one.</td></tr>';
+}
+const TIP={"Multisyllable":"Chunk it","Ending":"Check the ending","Vowel":"Read the middle","Guessed":"Read the middle","Heart word":"Sight words","Blend/digraph":"Read the middle"};
+const BADGES=[[0,"Trail Starter"],[5,"Path Finder"],[15,"Hill Climber"],[30,"Summit Reader"],[50,"Trail Legend"]];
+const starsFor=a=>a>=100?3:a>=95?2:a>=90?1:0;
+function rewardOf(id){const xs=store.reads.filter(x=>x.reader===id),ax=xs.filter(x=>!x.noAcc);
+  const stars=xs.reduce((a,x)=>a+(x.stars!=null?x.stars:starsFor(x.acc)),0);
+  let bi=0;BADGES.forEach((b,i)=>{if(stars>=b[0])bi=i;});
+  return{xs,stars,badge:BADGES[bi][1],next:BADGES[bi+1]||null,from:BADGES[bi][0],lastAcc:ax.length?ax[ax.length-1].acc:null,bestAcc:ax.length?Math.max(...ax.map(x=>x.acc)):null,ax};}
+function renderRewards(){
+  const r=reader(),rw=rewardOf(r.id),box=$("rewardPanel");
+  const pct=rw.next?Math.round((rw.stars-rw.from)/(rw.next[0]-rw.from)*100):100;
+  const last=rw.ax.slice(-10);
+  const bars=last.map(x=>'<div class="b'+(x.acc>=90?" ok":"")+'" style="height:'+Math.max(4,Math.round((x.acc-50)*1.2))+'px" title="'+x.acc+'%"></div>').join("");
+  box.innerHTML='<div class="reward"><div class="badge">'+rw.stars+'<small>★ stars</small></div><div>'+
+    '<h3>'+esc(r.name)+' &middot; '+rw.badge+'</h3>'+
+    '<p>'+(rw.lastAcc!=null?"Last read: <b>"+rw.lastAcc+"%</b> accuracy · best "+rw.bestAcc+"%":"No reads yet. Every read at 90% accuracy or better earns stars.")+'</p>'+
+    (rw.next?'<p>'+(rw.next[0]-rw.stars)+' more ★ to <b>'+rw.next[1]+'</b></p><div class="prog"><i style="width:'+pct+'%"></i></div>':'<p><b>Top of the trail!</b></p>')+
+    (last.length?'<div class="accbars" aria-label="Accuracy on recent reads"><div class="goal" style="bottom:48px"></div>'+bars+'</div><p class="hint">Accuracy on the last '+last.length+' reads. The dashed line is 90%.</p>':"")+
+    '<p class="hint">Stars: 90% = ★ · 95% = ★★ · 100% = ★★★ · new best speed = +★</p></div></div>';
+}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function onWord(i){
+  if(phase==="pick"){pickLast(i);return;}
+  if(phase==="tag"||phase==="done")return;
+  words[i].err=(words[i].err+1)%3;paintWords();renderCodes();
+  const li=lines.findIndex(l=>l.includes(i));if(li>=0&&store.mode==="ruler"&&li!==curLine){curLine=li;paintRuler();}
+}
+$("score").addEventListener("click",e=>{const w=e.target.closest(".w");if(w)onWord(+w.dataset.i);});
+$("score").addEventListener("keydown",e=>{const w=e.target.closest(".w");if(w&&(e.key==="Enter"||e.key===" ")){e.preventDefault();onWord(+w.dataset.i);}});
+
+$("goBtn").onclick=start;$("stopBtn").onclick=stop;
+$("lostBtn").onclick=()=>{lost++;$("lostN").textContent=lost;};
+$("saveBtn").onclick=finish;
+$("againBtn").onclick=start;
+$("newPassBtn").onclick=()=>{const ps=PASSAGES,i=ps.findIndex(p=>p.id===store.pass);store.pass=ps[(i+1)%ps.length].id;save();renderPassages();resetView();setStuLink();};
+$("quietChk").checked=store.quiet!==false;$("quietChk").onchange=e=>{store.quiet=e.target.checked;save();$("reader").classList.toggle("quiet-on",store.quiet);};
+const FOCUS={expression:"Focus: read it like talking",punctuation:"Focus: let the marks tell your voice what to do",accuracy:"Focus: every letter, all the way to the end",reread:"Focus: lost or confused? Back to the start of the sentence",sound:"Focus: does it sound right?",sense:"Focus: does it make sense?",chunk:"Focus: big word? Chunk it",ending:"Focus: look all the way to the end",middle:"Focus: check the vowel in the middle",sight:"Focus: tricky part by heart"};
+const setFocus=f=>{store.focus=f;save();$("focusSel").value=f;$("focusChip").hidden=!f;$("focusChip").textContent=FOCUS[f]||"";$("reader").classList.toggle("punct-on",f==="punctuation");};
+$("focusSel").onchange=e=>setFocus(e.target.value);
+const stTab=w=>{["flu","acc","com"].forEach(k=>{const id=k[0].toUpperCase()+k.slice(1);$("st"+id).setAttribute("aria-selected",w===k);$("cards"+id).hidden=w!==k;});};
+$("stFlu").onclick=()=>stTab("flu");$("stAcc").onclick=()=>stTab("acc");$("stCom").onclick=()=>stTab("com");
+const setStuLink=()=>{$("stuLink").textContent="https://moniquelacour-dotcom.github.io/games/fluency-reader.html#"+store.pass;};
+$("copyLink").onclick=()=>{const t=$("stuLink").textContent;const sel=()=>{const r=document.createRange();r.selectNodeContents($("stuLink"));const w=getSelection();w.removeAllRanges();w.addRange(r);};
+  try{navigator.clipboard.writeText(t).then(()=>{$("copyLink").textContent="Copied";setTimeout(()=>$("copyLink").textContent="Copy",1500);},sel);}catch(e){sel();}};
+$("mRuler").onclick=()=>setMode("ruler");$("mPage").onclick=()=>setMode("page");
+$("shareChk").checked=!!store.share;$("shareChk").onchange=e=>{store.share=e.target.checked;save();renderReaders();};
+$("passSel").onchange=e=>{store.pass=e.target.value;save();resetView();};
+$("addReaderBtn").onclick=()=>{$("addForm").hidden=false;$("newName").focus();};
+$("cancelAdd").onclick=()=>{$("addForm").hidden=true;};
+$("addForm").addEventListener("submit",e=>{e.preventDefault();const n=$("newName").value.trim();if(!n)return;const r={id:"r"+Date.now(),name:n,g:2};
+  if(store.readers.length===1&&store.readers[0].id==="r1"&&!store.reads.length)store.readers=[];
+  store.readers.push(r);store.cur=r.id;save();$("newName").value="";$("addForm").hidden=true;renderReaders();resetView();});
+$("delReaderBtn").onclick=()=>{$("delConfirm").hidden=false;};
+$("delNo").onclick=()=>{$("delConfirm").hidden=true;};
+$("delYes").onclick=()=>{const id=store.cur;store.readers=store.readers.filter(r=>r.id!==id);store.reads=store.reads.filter(x=>x.reader!==id);store.cur=store.readers[0].id;save();$("delConfirm").hidden=true;renderReaders();resetView();};
+
+function resetView(){clearInterval(timer);setStuLink();phase="ready";$("goBtn").hidden=false;$("stopBtn").hidden=true;$("lostBtn").hidden=true;$("lostWrap").hidden=true;
+  $("timeFill").style.width="100%";$("status").textContent="Ready when you are.";$("tagPanel").hidden=true;$("resPanel").hidden=true;$("reader").classList.remove("picking");
+  buildPassage();renderHistory();renderCmp();}
+
+let qT=null,qStartAt=0;
+function qPaint(left){const s=Math.ceil(left);$("qClock").textContent=Math.floor(s/60)+":"+String(s%60).padStart(2,"0");$("qFill").style.width=(left/SECS*100)+"%";}
+function qStop(){clearInterval(qT);qT=null;$("qStart").disabled=false;$("qStart").textContent="Start 60 seconds";}
+$("qStart").onclick=()=>{if(qT)return;qStartAt=Date.now();$("qStart").disabled=true;$("qStart").textContent="Reading…";$("qClock").classList.remove("done");$("qMsg").textContent="";
+  qT=setInterval(()=>{const left=Math.max(0,SECS-(Date.now()-qStartAt)/1000);qPaint(left);if(left<=0){qStop();$("qClock").textContent="Time!";$("qClock").classList.add("done");$("qWcpm").focus();}},200);};
+$("qReset").onclick=()=>{qStop();qPaint(SECS);$("qClock").classList.remove("done");$("qMsg").textContent="";};
+$("qSave").onclick=()=>{const w=parseInt($("qWcpm").value,10),m=parseInt($("qMiss").value,10);
+  if(!(w>=0)){$("qMsg").textContent="Type the words correct per minute first.";return;}
+  const miss=m>=0?m:0,acc=m>=0&&w+miss>0?Math.round(w/(w+miss)*100):null,r=reader(),p=passage();
+  const prevBest=Math.max(0,...store.reads.filter(x=>x.reader===r.id).map(x=>x.wcpm));
+  const run={date:new Date().toISOString(),reader:r.id,pass:p.id,mode:"quick",focus:store.focus||"",secs:SECS,read:w+miss,errors:miss,wcpm:w,acc:acc==null?0:acc,noAcc:acc==null,score:Math.round(w/PASS*80),lost:0,tags:{}};
+  run.stars=(acc==null?0:starsFor(acc))+(w>prevBest&&prevBest>0?1:0);
+  store.reads.push(run);save();renderReaders();renderHistory();
+  $("qMsg").textContent="Saved for "+r.name+": "+w+" words a minute"+(acc!=null?", "+acc+"% accuracy":"")+(run.stars?" · +"+run.stars+" ★":"")+".";
+  $("qWcpm").value="";$("qMiss").value="";};
+qPaint(SECS);
+renderReaders();renderPassages();setMode(store.mode);setFocus(store.focus||"");resetView();renderRewards();
+})();
+</script>
+
+</html>
