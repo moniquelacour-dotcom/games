@@ -15,7 +15,7 @@ select,button{font:inherit;font-size:18px;border-radius:10px;border:1px solid va
 button.go{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-family:var(--f-display);font-size:24px;padding:14px 32px}
 .box{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:16px 20px}
 h2{font-size:26px;text-align:center;margin:0 0 8px}
-.text{font-size:clamp(22px,3.4vw,30px);line-height:1.9;height:calc(1.9em * 4.5);overflow-y:auto;scrollbar-gutter:stable;padding-right:6px}
+.text{position:relative;font-size:clamp(22px,3.4vw,30px);line-height:1.9;height:calc(1.9em * 4.5);overflow-y:auto;scrollbar-gutter:stable;padding-right:6px}
 .ln{display:block;padding:1px 12px;border-radius:8px}
 .text{display:flex;flex-direction:column;gap:3px}
 .ln:nth-child(3n+1){background:var(--row1);border-left:8px solid var(--row1e)}.ln:nth-child(3n+2){background:var(--row2);border-left:8px solid var(--row2e)}.ln:nth-child(3n){background:var(--row3);border-left:8px solid var(--row3e)}
@@ -35,10 +35,15 @@ const P=[{"id":"g2-kite","title":"The Lost Kite","text":"Sam had a red kite with
 const $=id=>document.getElementById(id);
 P.forEach((p,i)=>{const o=document.createElement("option");o.value=p.id;o.textContent=(i+1)+". "+p.title;$("pick").appendChild(o);});
 function show(id){const p=P.find(x=>x.id===id)||P[0];$("pick").value=p.id;$("title").textContent=p.title;
- const t=$("text");t.innerHTML="";const w=p.text.split(" ");for(let i=0;i<w.length;i+=8){const d=document.createElement("span");d.className="ln";d.textContent=w.slice(i,i+8).join(" ");t.appendChild(d);}t.scrollTop=0;
+ const t=$("text");t.innerHTML="";const one=document.createElement("span");one.className="ln";p.text.split(" ").forEach((x,k)=>{const w=document.createElement("span");w.className="w";w.textContent=x;one.appendChild(w);one.appendChild(document.createTextNode(" "));});t.appendChild(one);t.scrollTop=0;
  $("story").hidden=true;$("cover").hidden=false;}
 $("pick").onchange=e=>{show(e.target.value);try{history.replaceState(null,"","#"+e.target.value)}catch(_){}};
-$("go").onclick=()=>{$("cover").hidden=true;$("story").hidden=false;$("text").focus();};
+function fit(){const t=$("text");if($("story").hidden)return;const ws=[...t.querySelectorAll(".w")];if(!ws.length)return;
+ const one=document.createElement("span");one.className="ln";ws.forEach(w=>{one.appendChild(w);one.appendChild(document.createTextNode(" "));});t.innerHTML="";t.appendChild(one);
+ const tops=ws.map(w=>w.offsetTop);const rows=[];let g=[];ws.forEach((w,k)=>{if(g.length&&tops[k]>tops[k-1]+5){rows.push(g);g=[];}g.push(w);});if(g.length)rows.push(g);
+ t.innerHTML="";rows.forEach(g=>{const d=document.createElement("span");d.className="ln";g.forEach(w=>{d.appendChild(w);d.appendChild(document.createTextNode(" "));});t.appendChild(d);});}
+let fT;window.addEventListener("resize",()=>{clearTimeout(fT);fT=setTimeout(fit,150);});
+$("go").onclick=()=>{$("cover").hidden=true;$("story").hidden=false;fit();try{document.fonts.ready.then(fit)}catch(e){}$("text").focus();};
 show(location.hash.slice(1));
 window.addEventListener("hashchange",()=>show(location.hash.slice(1)));
 </script></body></html>
