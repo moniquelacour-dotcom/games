@@ -739,7 +739,8 @@ function renderRetell(){
     box.appendChild(b);});
   const lv=retellLevel(retell);
   $("rLevel").textContent=lv;$("rWord").textContent=RWORD[lv];$("rBar").style.width=(lv/4*100)+"%";
-  const next=RCHIPS.find(c=>!retell[c.k]);
+  const ORDER=["who","where","what","but","so","when"];
+  const next=ORDER.map(k=>RCHIPS.find(c=>c.k===k)).find(c=>!retell[c.k]);
   $("rAsk").textContent=next?next.ask:"That is a full retell with the problem. Tell them that is exactly what good readers do.";
 }
 
