@@ -4,8 +4,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@600&display=swap">
 <style>
 :root{--paper:#f6f8f4;--card:#fff;--ink:#1d2a26;--muted:#5e6d68;--line:#c9d4cf;--accent:#1f6f62;--accent-ink:#fff;
- --f-read:"Andika","Atkinson Hyperlegible",Verdana,system-ui,sans-serif;--f-display:"Fredoka","Trebuchet MS",system-ui,sans-serif}
-@media (prefers-color-scheme: dark){:root{--paper:#121a18;--card:#1a2422;--ink:#e8efec;--muted:#9fb0aa;--line:#34443f;--accent:#5cc3ad;--accent-ink:#0d1a17;color-scheme:dark}}
+ --row1:#e4f1fb;--row2:#fdf0d5;--row3:#e6f4e4;--f-read:"Andika","Atkinson Hyperlegible",Verdana,system-ui,sans-serif;--f-display:"Fredoka","Trebuchet MS",system-ui,sans-serif}
+@media (prefers-color-scheme: dark){:root{--paper:#121a18;--card:#1a2422;--ink:#e8efec;--muted:#9fb0aa;--line:#34443f;--accent:#5cc3ad;--accent-ink:#0d1a17;--row1:#1b2d3b;--row2:#352c18;--row3:#1d3121;color-scheme:dark}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-read)}
 .wrap{max-width:820px;margin:0 auto;padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
@@ -16,7 +16,9 @@ button.go{background:var(--accent);color:var(--accent-ink);border-color:var(--ac
 .box{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:16px 20px}
 h2{font-size:26px;text-align:center;margin:0 0 8px}
 .text{font-size:clamp(22px,3.4vw,30px);line-height:1.9;height:calc(1.9em * 4.5);overflow-y:auto;scrollbar-gutter:stable;padding-right:6px}
-.text p{margin:0}
+.ln{display:block;padding:1px 12px;border-radius:8px}
+.text{display:flex;flex-direction:column;gap:3px}
+.ln:nth-child(3n+1){background:var(--row1)}.ln:nth-child(3n+2){background:var(--row2)}.ln:nth-child(3n){background:var(--row3)}
 .cover{display:flex;flex-direction:column;align-items:center;gap:10px;padding:40px 0;text-align:center;font-size:20px}
 .tip{color:var(--muted);text-align:center;font-size:17px}
 </style></head><body><div class="wrap">
@@ -33,7 +35,7 @@ const P=[{"id":"g2-kite","title":"The Lost Kite","text":"Sam had a red kite with
 const $=id=>document.getElementById(id);
 P.forEach((p,i)=>{const o=document.createElement("option");o.value=p.id;o.textContent=(i+1)+". "+p.title;$("pick").appendChild(o);});
 function show(id){const p=P.find(x=>x.id===id)||P[0];$("pick").value=p.id;$("title").textContent=p.title;
- const t=$("text");t.innerHTML="";const para=document.createElement("p");para.textContent=p.text;t.appendChild(para);t.scrollTop=0;
+ const t=$("text");t.innerHTML="";const w=p.text.split(" ");for(let i=0;i<w.length;i+=8){const d=document.createElement("span");d.className="ln";d.textContent=w.slice(i,i+8).join(" ");t.appendChild(d);}t.scrollTop=0;
  $("story").hidden=true;$("cover").hidden=false;}
 $("pick").onchange=e=>{show(e.target.value);try{history.replaceState(null,"","#"+e.target.value)}catch(_){}};
 $("go").onclick=()=>{$("cover").hidden=true;$("story").hidden=false;$("text").focus();};
