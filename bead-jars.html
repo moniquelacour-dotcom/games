@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Bead Jars</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+:root{
+  --bg:#f3fbf6; --ink:#1d2b33; --soft:#5d6f78; --card:#ffffff; --line:#cfe6da;
+  --slime:#2fbf71; --slime-d:#1f8f53; --berry:#d94f8a; --berry-d:#a33465; --grape:#7a5ad8; --grape-d:#5a3fb0; --sky:#3aa6e0;
+  --warn:#fff4d6; --warn-ink:#7a5a00; --good:#e3f7ec; --good-ink:#17683d;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",Verdana,system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--bg);color:var(--ink)}
+body{margin:0;font-family:var(--body);font-size:20px;line-height:1.4}
+.wrap{max-width:980px;margin:0 auto;padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+h1,h3{font-family:var(--display);margin:0;line-height:1.1}
+h1{font-size:clamp(34px,6vw,54px);color:var(--slime-d)}
+p{margin:0}
+a.home{color:var(--soft);font-size:17px}
+button{font-family:var(--display);font-weight:800;font-size:22px;border:0;border-radius:16px;padding:12px 20px;cursor:pointer;background:var(--slime);color:#fff;box-shadow:0 4px 0 var(--slime-d)}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--slime-d)}
+button:focus-visible,input:focus-visible{outline:4px solid var(--sky);outline-offset:3px}
+button.ghost{background:#fff;color:var(--ink);box-shadow:0 4px 0 var(--line);border:2px solid var(--line)}
+button.pink{background:var(--berry);box-shadow:0 4px 0 var(--berry-d)}
+button.grape{background:var(--grape);box-shadow:0 4px 0 var(--grape-d)}
+button[disabled]{opacity:.35;cursor:default}
+input.num{font-family:var(--display);font-size:34px;font-weight:800;width:5.5ch;text-align:center;border:3px solid var(--line);border-radius:14px;padding:4px 8px;color:var(--ink);background:#fff}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tries{font-family:var(--display);font-weight:800;font-size:22px;background:#fff;border:2px solid var(--line);border-radius:999px;padding:6px 16px}
+.card{background:var(--card);border:3px solid var(--line);border-radius:24px;padding:22px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.q{font-size:clamp(22px,3.2vw,28px);font-weight:700;max-width:34ch}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.msg{border-radius:16px;padding:12px 16px;font-size:20px}
+.msg.good{background:var(--good);color:var(--good-ink)}
+.msg.try{background:var(--warn);color:var(--warn-ink)}
+.how{display:flex;gap:16px;flex-wrap:wrap;font-size:18px;color:var(--soft)}
+.how span{display:inline-flex;gap:6px;align-items:center}
+.mat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.col{border:3px solid var(--line);border-radius:18px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:8px;min-height:190px;background:#fbfffd}
+.col.hot{border-color:var(--berry);background:#fff3f8}
+.col h3{font-size:22px}
+.col .big{font-family:var(--display);font-size:40px;font-weight:800;line-height:1}
+.pieces{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;max-width:150px}
+.tub{display:inline-block;width:30px;height:30px;border-radius:8px;background:var(--grape)}
+.cup{display:inline-block;width:12px;height:34px;border-radius:5px;background:var(--sky)}
+.bead{display:inline-block;width:15px;height:15px;border-radius:50%;background:var(--slime)}
+.new{background:var(--berry)!important}
+.vert{font-family:var(--display);font-weight:800;font-size:40px;line-height:1.1;text-align:right;font-variant-numeric:tabular-nums;display:inline-grid;gap:2px;padding:8px 18px;border:3px dashed var(--line);border-radius:16px;background:#fff}
+.vert .carry{font-size:22px;color:var(--berry);min-height:24px;letter-spacing:.9ch}
+.vert .rule{border-top:4px solid var(--ink)}
+.split{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start}
+@media (max-width:640px){.split{grid-template-columns:1fr}.col{min-height:150px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head>
+<body>
+<div class="wrap">
+  <a class="home" href="index.html">← All games</a>
+  <div class="top"><h1>Bead Jars</h1><span class="tries" id="tries">Things you tried: 0</span></div>
+  <div class="how"><span><i class="tub"></i> tub = 100</span><span><i class="cup"></i> cup = 10</span><span><i class="bead"></i> bead = 1</span><span>A jar holds 9. Ten? Make a trade.</span></div>
+  <div class="card" id="card"></div>
+</div>
+<script>
+(function(){
+const card=document.getElementById('card');let tries=0;
+const el=(t,a={},...kids)=>{const e=document.createElement(t);for(const[k,v]of Object.entries(a)){if(v==null)continue;if(k==='class')e.className=v;else if(k.startsWith('on'))e.addEventListener(k.slice(2),v);else e.setAttribute(k,v)}for(const k of kids.flat()){if(k==null)continue;e.append(k.nodeType?k:document.createTextNode(k))}return e};
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function tried(){tries++;document.getElementById('tries').textContent='Things you tried: '+tries}
+function makeAdd(){let a,b;do{a=rnd(105,689);b=rnd(26,289)}while((a%10)+(b%10)<10||a+b>999);return{a,b}}
+function makeSub(){let a,b;do{a=Math.random()<.3?rnd(3,9)*100+rnd(0,9):rnd(312,987);b=rnd(48,a-60)}while((b%10)<=(a%10)||b>=a);return{a,b}}
+function newProblem(kind){
+ const {a,b}=kind==='add'?makeAdd():makeSub();
+ render({kind,a,b,h:Math.floor(a/100),t:Math.floor(a/10)%10,o:a%10,bh:Math.floor(b/100),bt:Math.floor(b/10)%10,bo:b%10,step:'o',carry:{t:'',h:''},done:{o:false,t:false,h:false},say:'',sayType:''});
+}
+function render(S){
+ const add=S.kind==='add';
+ const cols=[['h','Tubs','hundreds','tub'],['t','Cups','tens','cup'],['o','Beads','ones','bead']];
+ const need={h:S.bh,t:S.bt,o:S.bo};
+ const names={o:'beads',t:'cups',h:'tubs'};const one={o:'bead',t:'cup',h:'tub'};
+ const up={o:'t',t:'h'};
+ const ctl=el('div',{class:'row'});
+ const next=k=>{S.step=k==='o'?'t':k==='t'?'h':'answer';S.say='';render(S)};
+ if(S.step==='o'||S.step==='t'||S.step==='h'){
+  const k=S.step;
+  if(add){
+   if(!S.done[k]){
+    ctl.append(el('button',{onclick:()=>{S[k]+=need[k];S.done[k]=true;S.say='';tried();render(S)}},`Pour in ${need[k]} ${names[k]}`));
+   } else if(S[k]>=10&&k!=='h'){
+    if(!S.say){S.say=`That jar has ${S[k]}. A jar can only hold 9. Make a trade.`;S.sayType='try'}
+    ctl.append(el('button',{class:'pink',onclick:()=>{S[k]-=10;S[up[k]]+=1;S.carry[up[k]]='1';S.say=`10 ${names[k]} made 1 ${one[up[k]]}.`;S.sayType='good';tried();render(S)}},`Trade 10 ${names[k]} for 1 ${one[up[k]]}`));
+   } else {
+    ctl.append(el('button',{onclick:()=>next(k)},k==='h'?'Count it up':'Next jar →'));
+   }
+  } else {
+   if(!S.done[k]){
+    if(S[k]<need[k]){
+     const from=up[k];
+     S.say=`You need ${need[k]} ${names[k]} but only have ${S[k]}. Open a ${one[from]}.`;S.sayType='try';
+     ctl.append(el('button',{class:'pink',disabled:S[from]===0?'':null,onclick:()=>{S[from]-=1;S[k]+=10;S.say=`1 ${one[from]} opened into 10 ${names[k]}.`;S.sayType='good';tried();render(S)}},`Open 1 ${one[from]} → 10 ${names[k]}`));
+     if(S[from]===0&&k==='o'&&S.h>0){
+      S.say='No cups left to open. Open a tub first. It turns into 10 cups.';
+      ctl.append(el('button',{class:'grape',onclick:()=>{S.h-=1;S.t+=10;S.say='1 tub opened into 10 cups.';S.sayType='good';tried();render(S)}},'Open 1 tub → 10 cups'));
+     }
+    } else {
+     ctl.append(el('button',{onclick:()=>{S[k]-=need[k];S.done[k]=true;S.say='';tried();render(S)}},`Sell ${need[k]} ${names[k]}`));
+    }
+   } else {
+    ctl.append(el('button',{onclick:()=>next(k)},k==='h'?'Count it up':'Next jar →'));
+   }
+  }
+ } else if(S.step==='answer'){
+  const total=S.h*100+S.t*10+S.o;
+  const inp=el('input',{class:'num',id:'ans',inputmode:'numeric','aria-label':'How many beads now'});
+  ctl.append(el('span',{class:'q'},'How many beads now?'),inp,el('button',{onclick:()=>{
+   tried();const g=parseInt(inp.value,10);
+   if(g===total){S.step='finished';S.say=`Yes! ${S.a} ${add?'+':'−'} ${S.b} = ${total}.`;S.sayType='good'}
+   else{S.say=`Not yet. Read the jars: ${S.h} tubs is ${S.h*100}, ${S.t} cups is ${S.t*10}, and ${S.o} beads.`;S.sayType='try'}
+   render(S)}},'Check'));
+ } else {
+  ctl.append(el('button',{onclick:()=>newProblem('add')},'New delivery (add)'),el('button',{class:'pink',onclick:()=>newProblem('sub')},'New sale (take away)'));
+ }
+ const mat=el('div',{class:'mat'},cols.map(([k,label,place,cls])=>{
+  const p=el('div',{class:'pieces'});
+  for(let i=0;i<S[k];i++)p.append(el('i',{class:cls}));
+  if(add&&!S.done[k])for(let i=0;i<need[k];i++)p.append(el('i',{class:cls+' new'}));
+  return el('div',{class:'col'+(S.step===k?' hot':'')},el('h3',{},label),el('span',{class:'big'},String(S[k])),el('span',{},place),p);
+ }));
+ const story=add?`You have ${S.a} beads. A delivery brings ${S.b} more.`:`You have ${S.a} beads. Someone buys ${S.b}.`;
+ const v=el('div',{class:'vert'},el('div',{class:'carry'},(S.carry.h||' ')+(S.carry.t||' ')+' '),
+  el('div',{},String(S.a)),el('div',{},(add?'+ ':'− ')+S.b),el('div',{class:'rule'}),el('div',{},S.step==='answer'||S.step==='finished'?'?':' '));
+ const parts=[el('p',{class:'q'},story),el('div',{class:'split'},v,mat)];
+ if(S.say)parts.push(el('div',{class:'msg '+S.sayType},S.say));
+ parts.push(ctl);
+ if(S.step!=='finished')parts.push(el('div',{class:'row'},el('button',{class:'ghost',onclick:()=>newProblem('add')},'New add'),el('button',{class:'ghost',onclick:()=>newProblem('sub')},'New take away')));
+ card.replaceChildren(...parts);
+}
+newProblem('add');
+})();
+</script>
+</body>
+</html>
