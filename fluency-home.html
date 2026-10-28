@@ -44,12 +44,18 @@ button[disabled]{opacity:.45;cursor:default}
 .tabs{display:flex;flex-wrap:wrap;gap:6px}
 .qclock{font-family:var(--f-display);font-weight:700;font-size:44px;min-width:110px;font-variant-numeric:tabular-nums}
 .qclock.done{color:var(--accent)}
+.qlive{font-size:17px;border-radius:10px;padding:10px 12px;background:var(--paper);border:1px solid var(--line)}
+.qlive b.ok{color:var(--ok)}.qlive b.no{color:var(--miss)}
 .qnum{width:90px;font:inherit;font-size:20px;padding:6px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
 details.panel>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px}
 details.panel>summary::-webkit-details-marker{display:none}
 details.panel>summary::before{content:"\25B8";font-size:20px;color:var(--accent);transition:transform .15s}
 details.panel[open]>summary::before{transform:rotate(90deg)}
 details.panel>summary .hint{margin-left:auto}
+.formula{font-family:var(--f-read);font-size:19px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:0}
+.acctable{border-collapse:collapse;min-width:280px}.acctable th,.acctable td{padding:6px 14px;border-bottom:1px solid var(--line);text-align:left}
+.acctable td:last-child{font-weight:700;font-variant-numeric:tabular-nums}
+details.panel[open]{gap:12px}
 .focuschip{border-radius:99px;padding:4px 12px;background:var(--ruler);border:1px solid var(--ruler-edge);font-weight:700;font-size:14px}
 .punct-on .p{color:var(--accent);font-weight:700;font-size:1.15em}
 .stabs{display:flex;flex-wrap:wrap;gap:6px}
@@ -207,6 +213,17 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute
   </details>
 
 
+  <details class="panel" aria-label="Scoring accuracy">
+    <summary><h2>Scoring accuracy</h2><span class="hint">How 90% works &middot; tap to open</span></summary>
+    <p>Accuracy is the share of the words the reader tried that they read correctly.</p>
+    <p class="formula"><b>Accuracy = (words read &minus; errors) &divide; words read &times; 100</b></p>
+    <p>At 90%, they can miss at most <b>1 word in 10</b>.</p>
+    <div class="scroll"><table class="acctable"><thead><tr><th>Words read in 1 minute</th><th>Most errors for 90%</th></tr></thead><tbody>
+      <tr><td>60</td><td>6</td></tr><tr><td>70</td><td>7</td></tr><tr><td>80</td><td>8</td></tr><tr><td>90</td><td>9</td></tr><tr><td>104 (the pass speed)</td><td>10</td></tr>
+    </tbody></table></div>
+    <p class="hint">Example: they read 90 words and miss 6. That's 84 correct, and 84 &divide; 90 = 93%. Speed only counts correct words, so to reach 104 correct with 10 misses they would need to read 114 words.</p>
+  </details>
+
   <details class="panel" aria-label="Strategies">
     <summary><h2>Strategies</h2><span class="hint">Teach one, then pick it as the focus for the next read.</span></summary>
     <div class="stabs" role="tablist" aria-label="Strategy type">
@@ -304,7 +321,7 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute
   <section class="panel" aria-label="Rewards" id="rewardPanel"></section>
 
   <section class="panel" aria-label="Quick timer">
-    <div class="row spread"><h2>Quick timer</h2><span class="hint">For a read you score on paper, or one on their own screen. Press start, it stops at 60 seconds, then type in the number.</span></div>
+    <div class="row spread"><h2>Quick timer</h2><span class="hint">For a read you score on paper, or one on their own screen. Press start, it stops at 60 seconds, then type words read and errors.</span></div>
     <div class="row">
       <span class="qclock" id="qClock">1:00</span>
       <button type="button" class="go" id="qStart">Start 60 seconds</button>
@@ -312,11 +329,12 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute
     </div>
     <div class="timebar" aria-hidden="true"><i id="qFill"></i></div>
     <div class="row" id="qEntry">
-      <label class="lbl" for="qWcpm">Words correct per minute</label><input type="number" id="qWcpm" min="0" max="250" inputmode="numeric" class="qnum">
-      <label class="lbl" for="qMiss">Mistakes (optional)</label><input type="number" id="qMiss" min="0" max="100" inputmode="numeric" class="qnum">
+      <label class="lbl" for="qWcpm">Words read</label><input type="number" id="qWcpm" min="0" max="250" inputmode="numeric" class="qnum">
+      <label class="lbl" for="qMiss">Errors</label><input type="number" id="qMiss" min="0" max="100" inputmode="numeric" class="qnum">
       <button type="button" class="go" id="qSave">Save</button>
       <span class="hint" id="qMsg"></span>
     </div>
+    <div class="qlive" id="qLive">Type words read and errors. Accuracy and the 90% limit show here.</div>
   </section>
 
   <section class="panel" aria-label="Reading">
@@ -510,7 +528,7 @@ function showResults(run){
   const need=Math.max(0,bar-run.wcpm);
   $("stats").innerHTML=[
     ["Words correct / min",run.wcpm,need?need+" to go to "+bar:"At or above "+bar],
-    ["Accuracy",run.acc+"%",run.acc>=90?"Pass mark is 90%":"Needs 90%"],
+    ["Accuracy",run.acc+"%",run.errors+" error"+(run.errors===1?"":"s")+" in "+run.read+" words · 90% allows up to "+Math.floor(run.read/10)],
     ["Test score",run.score,"80 passes"],
     ["Lost place",run.lost,run.lost?"times in "+run.secs+" s":"Kept their place"],
     ["Missed",run.errors,"of "+run.read+" words read"]
@@ -611,14 +629,18 @@ function qStop(){clearInterval(qT);qT=null;$("qStart").disabled=false;$("qStart"
 $("qStart").onclick=()=>{if(qT)return;qStartAt=Date.now();$("qStart").disabled=true;$("qStart").textContent="Reading…";$("qClock").classList.remove("done");$("qMsg").textContent="";
   qT=setInterval(()=>{const left=Math.max(0,SECS-(Date.now()-qStartAt)/1000);qPaint(left);if(left<=0){qStop();$("qClock").textContent="Time!";$("qClock").classList.add("done");$("qWcpm").focus();}},200);};
 $("qReset").onclick=()=>{qStop();qPaint(SECS);$("qClock").classList.remove("done");$("qMsg").textContent="";};
-$("qSave").onclick=()=>{const w=parseInt($("qWcpm").value,10),m=parseInt($("qMiss").value,10);
-  if(!(w>=0)){$("qMsg").textContent="Type the words correct per minute first.";return;}
-  const miss=m>=0?m:0,acc=m>=0&&w+miss>0?Math.round(w/(w+miss)*100):null,r=reader(),p=passage();
+function accLine(read,err){const correct=read-err,acc=read?Math.round(correct/read*100):0,max=Math.floor(read/10),ok=acc>=90;
+  return{correct,acc,max,ok,html:"<b>"+correct+"</b> words correct per minute &middot; accuracy <b class=\""+(ok?"ok":"no")+"\">"+acc+"%</b> &middot; "+err+" error"+(err===1?"":"s")+" in "+read+" words; 90% allows up to <b>"+max+"</b>"+(ok?" &#10003;":" (needs 90%)")};}
+const qCalc=()=>{const rd=parseInt($("qWcpm").value,10),er=parseInt($("qMiss").value,10)||0;$("qLive").innerHTML=rd>0&&er<=rd?accLine(rd,er).html:"Type words read and errors. Accuracy and the 90% limit show here.";};
+$("qWcpm").oninput=qCalc;$("qMiss").oninput=qCalc;
+$("qSave").onclick=()=>{const rd=parseInt($("qWcpm").value,10),er=parseInt($("qMiss").value,10)||0;
+  if(!(rd>0)||er>rd){$("qMsg").textContent="Type the words read (and errors) first.";return;}
+  const L=accLine(rd,er),w=L.correct,miss=er,acc=L.acc,r=reader(),p=passage();
   const prevBest=Math.max(0,...store.reads.filter(x=>x.reader===r.id).map(x=>x.wcpm));
   const run={date:new Date().toISOString(),reader:r.id,pass:p.id,mode:"quick",focus:store.focus||"",secs:SECS,read:w+miss,errors:miss,wcpm:w,acc:acc==null?0:acc,noAcc:acc==null,score:Math.round(w/PASS*80),lost:0,tags:{}};
   run.stars=(acc==null?0:starsFor(acc))+(w>prevBest&&prevBest>0?1:0);
   store.reads.push(run);save();renderReaders();renderHistory();
-  $("qMsg").textContent="Saved for "+r.name+": "+w+" words a minute"+(acc!=null?", "+acc+"% accuracy":"")+(run.stars?" · +"+run.stars+" ★":"")+".";
+  $("qMsg").textContent="Saved for "+r.name+": "+w+" words correct per minute, "+acc+"% accuracy"+(run.stars?" · +"+run.stars+" ★":"")+".";
   $("qWcpm").value="";$("qMiss").value="";};
 qPaint(SECS);
 renderReaders();renderPassages();setMode(store.mode);setFocus(store.focus||"");resetView();renderRewards();
