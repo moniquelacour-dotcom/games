@@ -169,6 +169,18 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute
 .cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
 .note{font-size:14px;color:var(--muted);max-width:75ch}
 .confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 10px;border-radius:10px;background:var(--miss-soft)}
+
+/* Quick retell */
+.rchips{display:flex;flex-wrap:wrap;gap:8px}
+.rchips button{border-radius:99px;padding:8px 16px;font-family:var(--f-display);font-weight:600;font-size:17px}
+.rchips button[aria-pressed="true"]{background:var(--ok);color:#fff;border-color:var(--ok)}
+.rchips button.story[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.rlevel{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.rlevel b{font-family:var(--f-display);font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
+.rlevel .rword{font-family:var(--f-display);font-size:18px;font-weight:600}
+.rbar{height:12px;border-radius:99px;background:var(--line);overflow:hidden;flex:1;min-width:140px}
+.rbar i{display:block;height:100%;background:var(--ok);transition:width .2s}
+.rsay{font-family:var(--f-read);font-size:20px;border-left:4px solid var(--ruler-edge);padding-left:12px;margin:0}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 
@@ -279,6 +291,63 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute
     </div>
   </details>
 
+
+  <details class="panel" aria-label="Quick retell, how to run it">
+    <summary><h2>Quick retell</h2><span class="hint">One minute after the read &middot; tap to open</span></summary>
+    <p>A fast read with nothing behind it is just saying words. One minute of retell catches that, and the fluency test will never show it to you.</p>
+    <div class="rules">
+      <div>
+        <h3>Ask once, then wait</h3>
+        <ul>
+          <li>Say: <b>"Tell me what happened in that story, from the start."</b></li>
+          <li>Then say nothing for a slow count of five. Most children start talking in that gap.</li>
+          <li>Only prompt for what is missing, one question at a time. It is not a quiz.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>What you are listening for</h3>
+        <ul>
+          <li><b>Who</b> &middot; <b>Where</b> &middot; <b>When</b> &middot; <b>What happened</b>, roughly in order</li>
+          <li>Then the two that turn a list into a story: <b>&hellip;but</b> (what went wrong) and <b>&hellip;so</b> (what they did about it)</li>
+          <li>Tick each one as it comes back on its own.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Why "but" and "so" matter</h3>
+        <ul>
+          <li>Who, where, when and what are a <b>list</b>. A child can give you all four and still not have followed the story.</li>
+          <li><b>But</b> and <b>so</b> are the problem and what happened about it. That is the part that shows they understood it.</li>
+          <li>This is the short form of <i>Somebody wanted &hellip; but &hellip; so &hellip;</i>, the standard quick retell. Your four prompts, plus the two that carry the meaning.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>What the level means</h3>
+        <ul>
+          <li><b>0</b> &mdash; nothing came back. Read it together, then try again.</li>
+          <li><b>1&ndash;2</b> &mdash; some of it. Reread and ask them to listen for what happens next.</li>
+          <li><b>3</b> &mdash; a full retell. That is where you want them.</li>
+          <li><b>4</b> &mdash; full retell with the problem and how it ended. Above the bar.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>High speed, low retell</h3>
+        <ul>
+          <li>They are reading faster than they can follow. Say so plainly and slow the next read down on purpose.</li>
+          <li>Pick <b>Does it make sense?</b> as the focus for the next read.</li>
+          <li>This pairing is the most useful thing on this page, and no test score will tell you about it.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>When the passage is information, not a story</h3>
+        <ul>
+          <li>Some passages teach you about something instead of telling a story &mdash; there is no problem to solve in them.</li>
+          <li>Swap <b>&hellip;but / &hellip;so</b> for: <b>"Tell me two things you learned."</b></li>
+          <li>Tick <b>What happened</b> if they can give you the main idea in their own words.</li>
+        </ul>
+      </div>
+    </div>
+  </details>
+
   <section class="panel" aria-label="Reader and passage">
     <div class="row spread">
       <div class="row">
@@ -378,6 +447,15 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute
     <div class="row"><button class="go" type="button" id="saveBtn" hidden>See the results</button></div>
   </section>
 
+
+  <section class="panel" id="retellPanel" hidden aria-label="Quick retell">
+    <div class="row spread"><h2>Quick retell</h2><span class="hint">Do this before you look at the numbers.</span></div>
+    <p class="rsay">"Tell me what happened in that story, from the start." <span class="hint">&mdash; then wait five seconds.</span></p>
+    <div class="rchips" id="rChips" role="group" aria-label="What came back in the retell"></div>
+    <div class="rlevel"><b id="rLevel">0</b><span class="rword" id="rWord">Not yet</span><span class="rbar"><i id="rBar" style="width:0%"></i></span></div>
+    <p class="hint" id="rAsk"></p>
+  </section>
+
   <section class="panel" id="resPanel" hidden aria-label="Results">
     <div class="row spread"><h2 id="resTitle">This read</h2><span id="passPill"></span></div>
     <div class="earned" id="earned"></div>
@@ -395,7 +473,7 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute
 
   <section class="panel" aria-label="History">
     <div class="row spread"><h2>Reads so far</h2><span class="hint">Saved in this browser only.</span></div>
-    <div class="scroll"><table><thead><tr><th>Date</th><th>Passage</th><th>View</th><th>WCPM</th><th>Accuracy</th><th>Test score</th><th>Lost place</th><th>Most missed</th></tr></thead><tbody id="hist"></tbody></table></div>
+    <div class="scroll"><table><thead><tr><th>Date</th><th>Passage</th><th>View</th><th>Words / min</th><th>Accuracy</th><th>Lost place</th><th>Retell</th><th>Most missed</th></tr></thead><tbody id="hist"></tbody></table></div>
   </section>
 
   <p class="note">Twenty practice stories, about 110&ndash;130 words each, each one checked at a Grade 2.0&ndash;2.5 reading level (Flesch-Kincaid), for practice at home. Reads are saved in this browser only.</p>
@@ -522,14 +600,13 @@ function finish(){
   showResults(lastRun);renderHistory();renderCmp();
 }
 function showResults(run){
-  const r=reader(),bar=PASS,pass=run.score>=80&&run.acc>=90;
+  const r=reader(),bar=PASS,pass=run.wcpm>=bar&&run.acc>=90;
   $("resTitle").textContent="This read · "+(run.mode==="ruler"?"one page":"test format");
   $("passPill").innerHTML='<span class="pill '+(pass?"ok":"no")+'">'+(pass?"Would pass":"Not a pass yet")+"</span>";
   const need=Math.max(0,bar-run.wcpm);
   $("stats").innerHTML=[
-    ["Words correct / min",run.wcpm,need?need+" to go to "+bar:"At or above "+bar],
+    ["Words correct / min",run.wcpm+" of "+bar,need?need+" more to pass":"At or above the pass mark"],
     ["Accuracy",run.acc+"%",run.errors+" error"+(run.errors===1?"":"s")+" in "+run.read+" words · 90% allows up to "+Math.floor(run.read/10)],
-    ["Test score",run.score,"80 passes"],
     ["Lost place",run.lost,run.lost?"times in "+run.secs+" s":"Kept their place"],
     ["Missed",run.errors,"of "+run.read+" words read"]
   ].map(s=>'<div class="stat"><span>'+s[0]+"</span><b>"+s[1]+"</b><small>"+s[2]+"</small></div>").join("");
@@ -539,7 +616,7 @@ function showResults(run){
   $("workOn").innerHTML=keys.length?'<h2>What to work on</h2><ul class="workon">'+keys.map(k=>"<li><b>"+k+"</b> ("+run.tags[k].length+'): <span class="ws">'+run.tags[k].map(esc).join(", ")+"</span>"+(TIP[k]?' &rarr; try <b>'+TIP[k]+"</b>":"")+"</li>").join("")+"</ul>"+
     (run.lost>=2?'<p class="note">They lost their place '+run.lost+" times. Try the same passage on One page and compare.</p>":""):
     '<p class="note">No missed words. If speed is short of the mark, reread this passage two or three more times and watch the number climb.</p>';
-  $("resPanel").hidden=false;$("resPanel").scrollIntoView({behavior:"smooth",block:"start"});
+  $("resPanel").hidden=false;retell={};renderRetell();$("retellPanel").hidden=false;$("retellPanel").scrollIntoView({behavior:"smooth",block:"start"});
 }
 function renderTrail(run){
   const r=reader(),bar=PASS,max=Math.round(bar*1.3),pos=v=>Math.max(0,Math.min(100,v/max*100));
@@ -560,7 +637,7 @@ function renderCmp(){
 function renderHistory(){
   const r=reader(),xs=store.reads.filter(x=>x.reader===r.id).slice().reverse();
   $("hist").innerHTML=xs.length?xs.map(x=>{const p=PASSAGES.find(q=>q.id===x.pass);const top=Object.keys(x.tags).sort((a,b)=>x.tags[b].length-x.tags[a].length)[0]||"–";
-    return"<tr><td>"+new Date(x.date).toLocaleDateString(undefined,{month:"short",day:"numeric"})+"</td><td>"+esc(p?p.title:x.pass)+"</td><td>"+(x.mode==="quick"?"Quick timer":x.mode==="ruler"?"One page":"Scrolling")+"</td><td>"+x.wcpm+"</td><td>"+(x.noAcc?"–":x.acc+"%")+"</td><td>"+x.score+"</td><td>"+x.lost+"</td><td>"+esc(top)+"</td></tr>";}).join(""):
+    return"<tr><td>"+new Date(x.date).toLocaleDateString(undefined,{month:"short",day:"numeric"})+"</td><td>"+esc(p?p.title:x.pass)+"</td><td>"+(x.mode==="quick"?"Quick timer":x.mode==="ruler"?"One page":"Scrolling")+"</td><td>"+x.wcpm+"</td><td>"+(x.noAcc?"–":x.acc+"%")+"</td><td>"+x.lost+"</td><td>"+(x.retell!=null?x.retell+"/4":"\u2013")+"</td><td>"+esc(top)+"</td></tr>";}).join(""):
     '<tr><td colspan="8">No reads yet for this reader. Press "Start 1 minute" to do the first one.</td></tr>';
 }
 const TIP={"Multisyllable":"Chunk it","Ending":"Check the ending","Vowel":"Read the middle","Guessed":"Read the middle","Heart word":"Sight words","Blend/digraph":"Read the middle"};
@@ -620,7 +697,7 @@ $("delNo").onclick=()=>{$("delConfirm").hidden=true;};
 $("delYes").onclick=()=>{const id=store.cur;store.readers=store.readers.filter(r=>r.id!==id);store.reads=store.reads.filter(x=>x.reader!==id);store.cur=store.readers[0].id;save();$("delConfirm").hidden=true;renderReaders();resetView();};
 
 function resetView(){clearInterval(timer);setStuLink();phase="ready";$("goBtn").hidden=false;$("stopBtn").hidden=true;$("lostBtn").hidden=true;$("lostWrap").hidden=true;
-  $("timeFill").style.width="100%";$("status").textContent="Ready when you are.";$("tagPanel").hidden=true;$("resPanel").hidden=true;$("reader").classList.remove("picking");
+  $("timeFill").style.width="100%";$("status").textContent="Ready when you are.";$("tagPanel").hidden=true;$("resPanel").hidden=true;$("retellPanel").hidden=true;retell={};$("reader").classList.remove("picking");
   buildPassage();renderHistory();renderCmp();}
 
 let qT=null,qStartAt=0;
@@ -642,6 +719,30 @@ $("qSave").onclick=()=>{const rd=parseInt($("qWcpm").value,10),er=parseInt($("qM
   store.reads.push(run);save();renderReaders();renderHistory();
   $("qMsg").textContent="Saved for "+r.name+": "+w+" words correct per minute, "+acc+"% accuracy"+(run.stars?" · +"+run.stars+" ★":"")+".";
   $("qWcpm").value="";$("qMiss").value="";};
+const RCHIPS=[{k:"who",label:"Who",ask:'Try: "Who was it about?"'},
+ {k:"where",label:"Where",ask:'Try: "Where did it happen?"'},
+ {k:"when",label:"When",ask:'Try: "When did it happen?" \u2014 often not in the story, so leave it if not'},
+ {k:"what",label:"What happened",ask:'Try: "What happened first? Then what?"'},
+ {k:"but",label:"\u2026but (the problem)",story:1,ask:'Try: "What went wrong, or what was tricky?"'},
+ {k:"so",label:"\u2026so (how it ended)",story:1,ask:'Try: "So what did they do? How did it end?"'}];
+const RWORD=["Not yet","A detail or two","Most of it","Full retell","Full retell with the problem"];
+let retell={};
+function retellLevel(r){const core=["who","where","what"].filter(k=>r[k]).length,story=["but","so"].filter(k=>r[k]).length;
+  if(core===0)return 0;if(core===1)return 1;if(core===2)return 2;return story===2?4:3;}
+function renderRetell(){
+  const box=$("rChips");if(!box)return;box.innerHTML="";
+  RCHIPS.forEach(c=>{const b=document.createElement("button");b.type="button";b.textContent=c.label;if(c.story)b.className="story";
+    b.setAttribute("aria-pressed",!!retell[c.k]);
+    b.onclick=()=>{retell[c.k]=!retell[c.k];
+      if(lastRun){lastRun.retell=retellLevel(retell);lastRun.retellParts=Object.keys(retell).filter(k=>retell[k]);save();renderHistory();}
+      renderRetell();};
+    box.appendChild(b);});
+  const lv=retellLevel(retell);
+  $("rLevel").textContent=lv;$("rWord").textContent=RWORD[lv];$("rBar").style.width=(lv/4*100)+"%";
+  const next=RCHIPS.find(c=>!retell[c.k]);
+  $("rAsk").textContent=next?next.ask:"That is a full retell with the problem. Tell them that is exactly what good readers do.";
+}
+
 qPaint(SECS);
 renderReaders();renderPassages();setMode(store.mode);setFocus(store.focus||"");resetView();renderRewards();
 })();
