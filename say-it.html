@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Say It Like They Would</title>
+<meta name="description" content="Read a line the way the character would say it.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#127908;</text></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@500;600&display=swap">
+<style>
+:root{
+ --paper:#f4f1fa; --card:#fff; --sunk:#ece7f6;
+ --ink:#241b33; --muted:#5f5474; --line:#cdc3e2;
+ --accent:#5b3fa8; --accent-ink:#fff;
+ --loud:#c2410c; --loud-s:#ffe9dd;
+ --slow:#1d6fa5; --slow-s:#dceffa;
+ --feel:#9a2b6b; --feel-s:#fce1f0;
+ --mark:#b8860b; --mark-s:#fff3cf;
+ --f-read:"Andika","Atkinson Hyperlegible",Verdana,system-ui,sans-serif;
+ --f-display:"Fredoka","Trebuchet MS",system-ui,sans-serif;
+ color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --paper:#15111d; --card:#1f1a2b; --sunk:#2a2338;
+ --ink:#efe9f8; --muted:#aa9fc0; --line:#443858;
+ --accent:#b49cf0; --accent-ink:#1a1326;
+ --loud:#ff9e6b; --loud-s:#3a1f10;
+ --slow:#7cc2ec; --slow-s:#10293a;
+ --feel:#f08cc4; --feel-s:#3a1128;
+ --mark:#e8c05c; --mark-s:#352b0e;
+ color-scheme:dark;}}
+:root[data-theme="dark"]{
+ --paper:#15111d; --card:#1f1a2b; --sunk:#2a2338;
+ --ink:#efe9f8; --muted:#aa9fc0; --line:#443858;
+ --accent:#b49cf0; --accent-ink:#1a1326;
+ --loud:#ff9e6b; --loud-s:#3a1f10;
+ --slow:#7cc2ec; --slow-s:#10293a;
+ --feel:#f08cc4; --feel-s:#3a1128;
+ --mark:#e8c05c; --mark-s:#352b0e;
+ color-scheme:dark;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-read);font-size:18px;line-height:1.5}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:16px;
+ padding-block:20px 56px;
+ padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-family:var(--f-display);font-weight:600;font-size:clamp(26px,5.5vw,36px);line-height:1.1}
+.sub{color:var(--muted);font-size:16px}
+button{font:inherit;cursor:pointer;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);padding:10px 16px}
+button:hover{border-color:var(--accent)}
+button.go{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-family:var(--f-display);font-size:20px;padding:13px 26px}
+button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+:focus-visible{outline:4px solid var(--mark);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.card{background:var(--card);border:3px solid var(--line);border-radius:20px;padding:clamp(16px,3.5vw,26px);display:flex;flex-direction:column;gap:16px}
+.who{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.who .face{font-size:clamp(44px,9vw,60px);line-height:1}
+.who .nm{font-family:var(--f-display);font-weight:600;font-size:clamp(21px,4vw,27px);line-height:1.1}
+.who .vo{color:var(--muted);font-size:16px}
+
+.line{font-size:clamp(26px,5.6vw,40px);line-height:1.6;font-weight:700;text-wrap:balance}
+.line .pm{border-radius:6px;padding:0 3px;background:var(--mark-s);color:var(--mark)}
+.line.flat{font-weight:400;color:var(--muted)}
+.line.flat .pm{background:none;color:inherit}
+
+.cues{display:flex;flex-wrap:wrap;gap:8px}
+.cue{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:8px 15px;font-size:17px;font-weight:700}
+.cue.v{background:var(--loud-s);color:var(--loud)}
+.cue.s{background:var(--slow-s);color:var(--slow)}
+.cue.f{background:var(--feel-s);color:var(--feel)}
+
+.marks{background:var(--sunk);border-radius:12px;padding:12px 16px;font-size:17px;display:flex;gap:9px;align-items:flex-start}
+.marks b{color:var(--mark)}
+
+.steps{display:flex;flex-direction:column;gap:10px}
+.step{display:flex;gap:12px;align-items:flex-start;background:var(--sunk);border-radius:12px;padding:12px 16px}
+.step .n{font-family:var(--f-display);font-weight:600;font-size:22px;color:var(--accent);min-width:24px}
+.step p{font-size:17px}
+
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.row.sp{justify-content:space-between}
+.count{color:var(--muted);font-size:16px;font-variant-numeric:tabular-nums}
+
+details{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px 16px}
+details[open]{padding-bottom:16px}
+summary{cursor:pointer;font-family:var(--f-display);font-weight:600;font-size:19px}
+details ul{margin:10px 0 0 20px;display:flex;flex-direction:column;gap:7px;font-size:17px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.lg{background:var(--mark-s);color:var(--mark);border-radius:8px;padding:5px 11px;font-weight:700;font-size:16px}
+</style></head><body>
+<div class="wrap">
+
+<header>
+  <h1>Say It Like They Would</h1>
+  <p class="sub">A line, and the voice it wants. Read it flat first. Then read it like them, and hear the difference.</p>
+</header>
+
+<section class="card" aria-label="Character card">
+  <div class="who">
+    <span class="face" id="face">&#129496;</span>
+    <span><span class="nm" id="nm"></span><br><span class="vo" id="vo"></span></span>
+  </div>
+
+  <p class="line" id="line"></p>
+
+  <div class="cues" id="cues"></div>
+
+  <div class="marks" id="marks"></div>
+
+  <div class="steps">
+    <div class="step"><span class="n">1</span><p><b>Flat.</b> Read it like a robot. No feeling at all.</p></div>
+    <div class="step"><span class="n">2</span><p><b>Like them.</b> Now use the three chips above. Push on the marks.</p></div>
+    <div class="step"><span class="n">3</span><p><b>Swap.</b> The other person reads it back. Who did it better?</p></div>
+  </div>
+
+  <div class="row sp">
+    <div class="row">
+      <button type="button" id="flat" aria-pressed="false">Show it flat</button>
+      <button type="button" id="other">Try a different feeling</button>
+    </div>
+    <span class="count" id="count"></span>
+  </div>
+
+  <div class="row">
+    <button class="go" type="button" id="next">Next line &rarr;</button>
+    <button type="button" id="back">&larr; Back</button>
+    <button type="button" id="shuffle">Shuffle</button>
+  </div>
+</section>
+
+<details>
+  <summary>What the marks tell your voice</summary>
+  <ul>
+    <li><b>!</b> &mdash; push. Louder, and a bit faster.</li>
+    <li><b>?</b> &mdash; lift your voice up at the end, like going up a step.</li>
+    <li><b>.</b> &mdash; full stop. Drop your voice down and take a breath.</li>
+    <li><b>,</b> &mdash; a tiny breath. Do not stop all the way.</li>
+    <li><b>&hellip;</b> &mdash; wait. Count one in your head before the next word.</li>
+    <li><b>&mdash;</b> &mdash; a sharp turn. Stop, then change direction.</li>
+    <li><b>CAPITALS</b> &mdash; hit that word harder than the rest.</li>
+  </ul>
+  <div class="legend"><span class="lg">!</span><span class="lg">?</span><span class="lg">.</span><span class="lg">,</span><span class="lg">&hellip;</span><span class="lg">&mdash;</span></div>
+</details>
+
+<details>
+  <summary>How to play this together</summary>
+  <ul>
+    <li>Take turns. One of you reads, the other guesses the feeling before looking at the chip.</li>
+    <li>Read it flat first, every single time. The flat one is what makes the good one sound good.</li>
+    <li>Push <b>Try a different feeling</b> and read the very same line again. Same words, new voice.</li>
+    <li>No timer and no score. This one is only about how it sounds.</li>
+    <li>Every character here is made up, and so is every line. Say who they remind you of.</li>
+  </ul>
+</details>
+
+</div>
+<script>
+const C={
+ giant:{face:"🧔",nm:"The Gentle Giant",vo:"Big, warm and slow. A voice from his boots."},
+ know:{face:"📚",nm:"The Know-It-All",vo:"Fast and bright. Every word lands exactly right."},
+ wise:{face:"🦉",nm:"The Wise Old Wizard",vo:"Slow and kind, with long waits in the middle."},
+ head:{face:"👓",nm:"The Strict Head Teacher",vo:"Crisp and short. She never shouts, and she never has to."},
+ cold:{face:"🖤",nm:"The Cold Teacher",vo:"Slow, quiet and icy. Quiet is scarier than loud."},
+ nerv:{face:"🐸",nm:"The Nervous Friend",vo:"Small and wobbly. His sentences trail off."},
+ posh:{face:"😾",nm:"The Sneering Rich Kid",vo:"A slow drawl, with his nose in the air."},
+ coach:{face:"🧤",nm:"The Flying Coach",vo:"Barking and fast. Loud enough for the back of the field."}
+};
+const D=[
+ {c:"giant",t:"Well now, look at the size of him! Isn't he a beauty?",v:"Big",s:"Slow",f:"Delighted",
+  m:"The <b>!</b> is pure joy, so push it. Then the <b>?</b> lifts up, like you really want them to agree.",
+  alt:["Proud","Soft and amazed","Trying to whisper, and failing"]},
+ {c:"giant",t:"Don't you worry. He won't hurt you... much.",v:"Warm",s:"Slow",f:"Joking",
+  m:"The <b>...</b> is the whole joke. Wait a full count before <i>much</i>, then say it small.",
+  alt:["Totally serious","A bit guilty","Cheerful"]},
+ {c:"giant",t:"I shouldn't have said that. I should NOT have said that.",v:"Dropping",s:"Slow",f:"Caught out",
+  m:"Same words twice. The <b>CAPITALS</b> mean the second one gets hit harder. Go quieter and heavier.",
+  alt:["Panicked","Groaning","Whispered"]},
+
+ {c:"know",t:"It's in the book, on page two hundred and ten, I checked twice.",v:"Normal",s:"Fast",f:"Certain",
+  m:"Each <b>,</b> is a tiny breath, not a stop. Keep it rolling right to the end.",
+  alt:["Smug","Impatient","Trying to be helpful"]},
+ {c:"know",t:"No, no, no — you're doing it wrong! Like this.",v:"Rising",s:"Fast",f:"Exasperated",
+  m:"The <b>—</b> is a sharp turn: stop dead, then change direction. The <b>!</b> is the peak.",
+  alt:["Kind about it","Furious","Trying not to laugh"]},
+ {c:"know",t:"Honestly, don't you two read anything?",v:"Normal",s:"Brisk",f:"Eye-rolling",
+  m:"The <b>?</b> lifts at the end. It is not a real question, so lift it high and let it hang.",
+  alt:["Genuinely curious","Hurt","Teasing"]},
+
+ {c:"wise",t:"Ah... now that is a very good question.",v:"Soft",s:"Very slow",f:"Twinkling",
+  m:"The <b>...</b> is the longest wait on this card. Say <i>Ah</i>, then count one, then carry on.",
+  alt:["Sad","Amused","Thinking hard"]},
+ {c:"wise",t:"Sit down. Have a sweet. We have time.",v:"Soft",s:"Slow",f:"Kind",
+  m:"Three <b>.</b> in a row. Drop your voice at every one and take a real breath.",
+  alt:["Serious","Playful","Tired"]},
+ {c:"wise",t:"The small things, I find, are rarely small.",v:"Soft",s:"Slow",f:"Wise",
+  m:"The two <b>,</b> wrap up <i>I find</i> like a parcel. Slow down inside them, then come back out.",
+  alt:["Mysterious","Warm","Almost laughing"]},
+
+ {c:"head",t:"Inside. Now. Both of you.",v:"Normal",s:"Clipped",f:"Stern",
+  m:"Three full stops in six words. Every <b>.</b> is a door shutting. Do not run them together.",
+  alt:["Furious but quiet","Worried for them","Bored of this"]},
+ {c:"head",t:"I expect better. I usually get it.",v:"Normal",s:"Even",f:"Cool",
+  m:"Two flat <b>.</b> endings. Drop your voice both times. No lift anywhere.",
+  alt:["Disappointed","A tiny bit proud","Warning them"]},
+ {c:"head",t:"You will walk, not run. Is that clear?",v:"Normal",s:"Clipped",f:"Firm",
+  m:"The <b>,</b> sets up the swap: walk, <i>not</i> run. Then the <b>?</b> lifts and waits for an answer.",
+  alt:["Gentle","Very cross","Already walking away"]},
+
+ {c:"cold",t:"Well. Well. What have we here?",v:"Quiet",s:"Very slow",f:"Icy",
+  m:"The same word, stopped twice. Make the second <i>Well</i> lower than the first. Then lift the <b>?</b>.",
+  alt:["Delighted in a nasty way","Bored","Dangerous"]},
+ {c:"cold",t:"Ten points. From your house. For breathing loudly.",v:"Quiet",s:"Slow",f:"Cruel",
+  m:"Three <b>.</b> chopping it up. Each piece lands on its own. The last one is the sting.",
+  alt:["Completely flat","Enjoying it","Through gritted teeth"]},
+ {c:"cold",t:"I do not repeat myself.",v:"Very quiet",s:"Slow",f:"Final",
+  m:"One <b>.</b> and no other marks. All the power is in going quieter, not louder.",
+  alt:["Weary","Threatening","Almost bored"]},
+
+ {c:"nerv",t:"I think... I think I left it on the stairs?",v:"Small",s:"Halting",f:"Worried",
+  m:"The <b>...</b> is him losing his nerve. The <b>?</b> at the end means he is not sure at all.",
+  alt:["About to cry","Hopeful","Embarrassed"]},
+ {c:"nerv",t:"Is it meant to be doing that? It's doing that.",v:"Rising",s:"Fast",f:"Alarmed",
+  m:"The <b>?</b> goes up. Then the <b>.</b> comes straight back down, flat and doomed.",
+  alt:["Calm, somehow","Squeaky","Resigned"]},
+ {c:"nerv",t:"I'll go. I will. In a minute. Maybe.",v:"Fading",s:"Slow",f:"Losing nerve",
+  m:"Four <b>.</b> and each sentence is shorter than the last. Get quieter every single time.",
+  alt:["Brave at first","Whispered","Pleading"]},
+
+ {c:"posh",t:"Oh, it's YOU. How nice.",v:"Normal",s:"Slow drawl",f:"Sneering",
+  m:"<b>CAPITALS</b> on <i>YOU</i>, so hit it. Then say <i>How nice</i> as if it is the opposite.",
+  alt:["Falsely sweet","Disgusted","Bored"]},
+ {c:"posh",t:"Do you even know who I am?",v:"Normal",s:"Slow",f:"Superior",
+  m:"The <b>?</b> lifts, but keep it lazy. He already thinks he knows the answer.",
+  alt:["Outraged","Amused","Icy"]},
+ {c:"posh",t:"Some of us were born for this. Some of us... weren't.",v:"Normal",s:"Slow",f:"Smug",
+  m:"The two halves match. The <b>...</b> is him making you wait for the insult. Land <i>weren't</i> softly.",
+  alt:["Nasty","Pretending to be sorry","Laughing"]},
+
+ {c:"coach",t:"On my whistle! Three — two — ONE!",v:"Very loud",s:"Fast",f:"Fired up",
+  m:"Each <b>—</b> is a clean chop between numbers. <b>CAPITALS</b> on <i>ONE</i>: that is the loudest word.",
+  alt:["Deadly serious","Having fun","Impatient"]},
+ {c:"coach",t:"Up! Up! I said UP!",v:"Very loud",s:"Fast",f:"Commanding",
+  m:"Three <b>!</b> and each one is bigger than the last. Build it like a staircase.",
+  alt:["Encouraging","Losing patience","Laughing at them"]},
+ {c:"coach",t:"Nobody move. Nobody breathe. Stay exactly where you are.",v:"Hard and low",s:"Slow",f:"Deadly serious",
+  m:"Loud is not the only way to be scary. Drop your voice and stop hard at each <b>.</b>",
+  alt:["Panicking","Very calm","Angry"]}
+];
+
+const $=id=>document.getElementById(id);
+let order=D.map((_,i)=>i), at=0, flat=false, altAt={};
+
+function marksUp(t){
+  return t.replace(/&/g,"&amp;").replace(/</g,"&lt;")
+   .replace(/\.\.\./g,'<span class="pm">…</span>')
+   .replace(/—/g,'<span class="pm">—</span>')
+   .replace(/([!?,])/g,'<span class="pm">$1</span>')
+   .replace(/\.(?![^<]*>)/g,'<span class="pm">.</span>');
+}
+function feeling(i){
+  const c=D[i]; const k=altAt[i]||0;
+  return k===0?c.f:c.alt[(k-1)%c.alt.length];
+}
+function draw(){
+  const i=order[at], c=D[i], w=C[c.c];
+  $("face").textContent=w.face; $("nm").textContent=w.nm; $("vo").textContent=w.vo;
+  $("line").innerHTML=marksUp(c.t);
+  $("line").classList.toggle("flat",flat);
+  $("cues").innerHTML=
+    '<span class="cue v">🔊 '+c.v+'</span>'+
+    '<span class="cue s">⏱ '+c.s+'</span>'+
+    '<span class="cue f">😀 '+feeling(i)+'</span>';
+  $("marks").innerHTML="<span>✏️</span><span>"+c.m+"</span>";
+  $("count").textContent="Line "+(at+1)+" of "+D.length;
+  $("flat").setAttribute("aria-pressed",String(flat));
+  $("flat").textContent=flat?"Now show it properly":"Show it flat";
+}
+$("next").onclick=()=>{at=(at+1)%order.length;flat=false;draw()};
+$("back").onclick=()=>{at=(at-1+order.length)%order.length;flat=false;draw()};
+$("flat").onclick=()=>{flat=!flat;draw()};
+$("other").onclick=()=>{const i=order[at];altAt[i]=((altAt[i]||0)+1)%(D[i].alt.length+1);draw()};
+$("shuffle").onclick=()=>{
+  for(let k=order.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[order[k],order[j]]=[order[j],order[k]]}
+  at=0;flat=false;draw()};
+draw();
+</script></body></html>
