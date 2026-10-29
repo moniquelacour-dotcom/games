@@ -56,6 +56,12 @@ details.panel>summary .hint{margin-left:auto}
 .acctable{border-collapse:collapse;min-width:280px}.acctable th,.acctable td{padding:6px 14px;border-bottom:1px solid var(--line);text-align:left}
 .acctable td:last-child{font-weight:700;font-variant-numeric:tabular-nums}
 details.panel[open]{gap:12px}
+.sbox{border-top:2px dashed var(--line);padding-top:10px;display:flex;flex-direction:column;gap:8px}
+.sbox h3{font-size:17px}
+.tucover{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:48px;gap:10px;text-align:center;background:var(--card);border-radius:14px;font-family:var(--f-display);font-size:22px}
+.tucover b{font-size:48px;color:var(--accent);line-height:1}
+@keyframes tuflash{0%,100%{background:var(--card);box-shadow:none}50%{background:var(--ruler);box-shadow:inset 0 0 0 8px var(--accent)}}
+.timesup .tucover,.qflash{animation:tuflash .4s ease-in-out 5}
 .focuschip{border-radius:99px;padding:4px 12px;background:var(--ruler);border:1px solid var(--ruler-edge);font-weight:700;font-size:14px}
 .punct-on .p{color:var(--accent);font-weight:700;font-size:1.15em}
 .stabs{display:flex;flex-wrap:wrap;gap:6px}
@@ -169,18 +175,6 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute
 .cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
 .note{font-size:14px;color:var(--muted);max-width:75ch}
 .confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 10px;border-radius:10px;background:var(--miss-soft)}
-
-/* Quick retell */
-.rchips{display:flex;flex-wrap:wrap;gap:8px}
-.rchips button{border-radius:99px;padding:8px 16px;font-family:var(--f-display);font-weight:600;font-size:17px}
-.rchips button[aria-pressed="true"]{background:var(--ok);color:#fff;border-color:var(--ok)}
-.rchips button.story[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.rlevel{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.rlevel b{font-family:var(--f-display);font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
-.rlevel .rword{font-family:var(--f-display);font-size:18px;font-weight:600}
-.rbar{height:12px;border-radius:99px;background:var(--line);overflow:hidden;flex:1;min-width:140px}
-.rbar i{display:block;height:100%;background:var(--ok);transition:width .2s}
-.rsay{font-family:var(--f-read);font-size:20px;border-left:4px solid var(--ruler-edge);padding-left:12px;margin:0}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 
@@ -291,63 +285,6 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute
     </div>
   </details>
 
-
-  <details class="panel" aria-label="Quick retell, how to run it">
-    <summary><h2>Quick retell</h2><span class="hint">One minute after the read &middot; tap to open</span></summary>
-    <p>A fast read with nothing behind it is just saying words. One minute of retell catches that, and the fluency test will never show it to you.</p>
-    <div class="rules">
-      <div>
-        <h3>Ask once, then wait</h3>
-        <ul>
-          <li>Say: <b>"Tell me what happened in that story, from the start."</b></li>
-          <li>Then say nothing for a slow count of five. Most children start talking in that gap.</li>
-          <li>Only prompt for what is missing, one question at a time. It is not a quiz.</li>
-        </ul>
-      </div>
-      <div>
-        <h3>What you are listening for</h3>
-        <ul>
-          <li><b>Who</b> &middot; <b>Where</b> &middot; <b>When</b> &middot; <b>What happened</b>, roughly in order</li>
-          <li>Then the two that turn a list into a story: <b>&hellip;but</b> (what went wrong) and <b>&hellip;so</b> (what they did about it)</li>
-          <li>Tick each one as it comes back on its own.</li>
-        </ul>
-      </div>
-      <div>
-        <h3>Why "but" and "so" matter</h3>
-        <ul>
-          <li>Who, where, when and what are a <b>list</b>. A child can give you all four and still not have followed the story.</li>
-          <li><b>But</b> and <b>so</b> are the problem and what happened about it. That is the part that shows they understood it.</li>
-          <li>This is the short form of <i>Somebody wanted &hellip; but &hellip; so &hellip;</i>, the standard quick retell. Your four prompts, plus the two that carry the meaning.</li>
-        </ul>
-      </div>
-      <div>
-        <h3>What the level means</h3>
-        <ul>
-          <li><b>0</b> &mdash; nothing came back. Read it together, then try again.</li>
-          <li><b>1&ndash;2</b> &mdash; some of it. Reread and ask them to listen for what happens next.</li>
-          <li><b>3</b> &mdash; a full retell. That is where you want them.</li>
-          <li><b>4</b> &mdash; full retell with the problem and how it ended. Above the bar.</li>
-        </ul>
-      </div>
-      <div>
-        <h3>High speed, low retell</h3>
-        <ul>
-          <li>They are reading faster than they can follow. Say so plainly and slow the next read down on purpose.</li>
-          <li>Pick <b>Does it make sense?</b> as the focus for the next read.</li>
-          <li>This pairing is the most useful thing on this page, and no test score will tell you about it.</li>
-        </ul>
-      </div>
-      <div>
-        <h3>When the passage is information, not a story</h3>
-        <ul>
-          <li>Some passages teach you about something instead of telling a story &mdash; there is no problem to solve in them.</li>
-          <li>Swap <b>&hellip;but / &hellip;so</b> for: <b>"Tell me two things you learned."</b></li>
-          <li>Tick <b>What happened</b> if they can give you the main idea in their own words.</li>
-        </ul>
-      </div>
-    </div>
-  </details>
-
   <section class="panel" aria-label="Reader and passage">
     <div class="row spread">
       <div class="row">
@@ -390,20 +327,13 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute
   <section class="panel" aria-label="Rewards" id="rewardPanel"></section>
 
   <section class="panel" aria-label="Quick timer">
-    <div class="row spread"><h2>Quick timer</h2><span class="hint">For a read you score on paper, or one on their own screen. Press start, it stops at 60 seconds, then type words read and errors.</span></div>
+    <div class="row spread"><h2>Quick timer</h2><span class="hint">For a read on paper or on their own screen. Press start. At 60 seconds it beeps, flashes and covers the story. Then mark the last word in the score box under your scoring copy.</span></div>
     <div class="row">
       <span class="qclock" id="qClock">1:00</span>
       <button type="button" class="go" id="qStart">Start 60 seconds</button>
       <button type="button" id="qReset">Reset</button>
     </div>
     <div class="timebar" aria-hidden="true"><i id="qFill"></i></div>
-    <div class="row" id="qEntry">
-      <label class="lbl" for="qWcpm">Words read</label><input type="number" id="qWcpm" min="0" max="250" inputmode="numeric" class="qnum">
-      <label class="lbl" for="qMiss">Errors</label><input type="number" id="qMiss" min="0" max="100" inputmode="numeric" class="qnum">
-      <button type="button" class="go" id="qSave">Save</button>
-      <span class="hint" id="qMsg"></span>
-    </div>
-    <div class="qlive" id="qLive">Type words read and errors. Accuracy and the 90% limit show here.</div>
   </section>
 
   <section class="panel" aria-label="Reading">
@@ -431,13 +361,31 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute
     <div class="reader mode-ruler" id="reader">
       <h3 id="pTitle"></h3>
       <div class="lines" id="lines"></div>
+      <div class="tucover" id="tuCover" hidden><b>Time's up!</b><span>Stop reading.</span><button type="button" id="tuShow">Show the story again</button></div>
       <span class="reader-note">Scroll down to keep reading. Keep a finger on the line you're on.</span><code id="stuLink" hidden></code><button type="button" id="copyLink" hidden></button>
     </div>
         <div class="scorecopy" id="scoreBox">
       <h3>Your scoring copy &middot; tap the word they miss</h3>
       <div id="score"></div>
+      <div class="sbox" id="sBox" aria-label="Score box">
+        <div class="row spread"><h3>Score box</h3><span class="hint" id="sCount"></span></div>
+        <div class="row">
+          <button type="button" id="sMark">Mark last word read</button>
+          <button type="button" id="sAll">Read the whole passage</button>
+          <span class="hint" id="sMarkHint"></span>
+        </div>
+        <div class="row">
+          <label class="lbl" for="qWcpm">Words read</label><input type="number" id="qWcpm" min="0" max="250" inputmode="numeric" class="qnum">
+          <label class="lbl" for="qMiss">Errors</label><input type="number" id="qMiss" min="0" max="100" inputmode="numeric" class="qnum">
+          <label class="lbl" for="sSecs">Seconds</label><input type="number" id="sSecs" min="5" max="60" value="60" inputmode="numeric" class="qnum">
+          <button type="button" class="go" id="qSave">Save score</button>
+        </div>
+        <span class="hint" id="qMsg"></span>
+        <div class="qlive" id="qLive"></div>
+        <p class="hint">Words read fills in when you mark the last word. Errors count the red words, and you can change either number. Seconds stays 60 unless they finish the passage early.</p>
+      </div>
     </div>
-    <p class="hint" id="howTo">Only the grown-up taps, and only on the scoring copy, so your child's copy stays clean. While they read: tap a word once if it's missed (red), twice if they fixed it themselves (dotted, doesn't count), three times to clear. Tap "+ Lost place" each time they lose their spot. Skipped a line? Tap each word in it.</p>
+    <p class="hint" id="howTo">Only the grown-up taps, and only on the scoring copy, so your child's copy stays clean. While they read: tap a word once if it's missed (red), twice if they fixed it themselves (dotted, doesn't count), three times to clear. Tap "+ Lost place" each time they lose their spot. Skipped a line? Tap each word in it. When time is up, tap the last word they read (or press Read the whole passage) and the score box fills in.</p>
   </section>
 
   <section class="panel" id="tagPanel" hidden aria-label="Code the mistakes">
@@ -445,15 +393,6 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute
     <p class="hint">Each word you mark shows up here. Pick the mistake type now or after the minute. These match the UFLI skill tags on your scoring sheet.</p>
     <div class="tags codes" id="tagList"></div>
     <div class="row"><button class="go" type="button" id="saveBtn" hidden>See the results</button></div>
-  </section>
-
-
-  <section class="panel" id="retellPanel" hidden aria-label="Quick retell">
-    <div class="row spread"><h2>Quick retell</h2><span class="hint">Do this before you look at the numbers.</span></div>
-    <p class="rsay">"Tell me what happened in that story, from the start." <span class="hint">&mdash; then wait five seconds.</span></p>
-    <div class="rchips" id="rChips" role="group" aria-label="What came back in the retell"></div>
-    <div class="rlevel"><b id="rLevel">0</b><span class="rword" id="rWord">Not yet</span><span class="rbar"><i id="rBar" style="width:0%"></i></span></div>
-    <p class="hint" id="rAsk"></p>
   </section>
 
   <section class="panel" id="resPanel" hidden aria-label="Results">
@@ -473,7 +412,7 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute
 
   <section class="panel" aria-label="History">
     <div class="row spread"><h2>Reads so far</h2><span class="hint">Saved in this browser only.</span></div>
-    <div class="scroll"><table><thead><tr><th>Date</th><th>Passage</th><th>View</th><th>Words / min</th><th>Accuracy</th><th>Lost place</th><th>Retell</th><th>Most missed</th></tr></thead><tbody id="hist"></tbody></table></div>
+    <div class="scroll"><table><thead><tr><th>Date</th><th>Passage</th><th>View</th><th>WCPM</th><th>Accuracy</th><th>Test score</th><th>Lost place</th><th>Most missed</th></tr></thead><tbody id="hist"></tbody></table></div>
   </section>
 
   <p class="note">Twenty practice stories, about 110&ndash;130 words each, each one checked at a Grade 2.0&ndash;2.5 reading level (Flesch-Kincaid), for practice at home. Reads are saved in this browser only.</p>
@@ -529,7 +468,7 @@ function buildPassage(){
     box.appendChild(d);});
   const sc=$("score");sc.innerHTML="";
   words.forEach((w,wi)=>{const e=document.createElement("span");e.className="w";e.tabIndex=0;e.dataset.i=wi;e.setAttribute("role","button");e.textContent=w.t;sc.appendChild(e);if(wi<words.length-1)sc.appendChild(document.createTextNode(" "));});
-  curLine=0;lost=0;lastIdx=-1;regroup();paintRuler();paintWords();renderCodes();
+  curLine=0;lost=0;lastIdx=-1;regroup();paintRuler();paintWords();renderCodes();$("sCount").textContent="This passage has "+words.length+" words.";
 }
 function regroup(){
   const box=$("lines"),ws=[...box.querySelectorAll(".w")];if(!ws.length)return;
@@ -557,22 +496,25 @@ function setMode(m){store.mode=m;save();$("mRuler").setAttribute("aria-pressed",
   paintRuler();}
 
 function start(){
-  buildPassage();phase="reading";$("reader").classList.add("reading");t0=Date.now();elapsed=0;
+  armSound();clearTimesUp();buildPassage();resetBox();phase="reading";$("reader").classList.add("reading");t0=Date.now();elapsed=0;
   $("goBtn").hidden=true;$("stopBtn").hidden=false;$("lostBtn").hidden=false;$("lostWrap").hidden=false;$("lostN").textContent="0";
   $("status").textContent="Reading…";$("tagPanel").hidden=true;$("resPanel").hidden=true;
   timer=setInterval(tick,250);tick();
 }
-function tick(){elapsed=Math.min(SECS,(Date.now()-t0)/1000);$("timeFill").style.width=(100-elapsed/SECS*100)+"%";if(elapsed>=SECS)stop();}
-function stop(){
+function tick(){elapsed=Math.min(SECS,(Date.now()-t0)/1000);$("timeFill").style.width=(100-elapsed/SECS*100)+"%";if(elapsed>=SECS)stop(true);}
+function stop(up){
   if(phase!=="reading")return;$("reader").classList.remove("reading");clearInterval(timer);elapsed=Math.max(5,Math.min(SECS,(Date.now()-t0)/1000));phase="pick";
   $("stopBtn").hidden=true;$("lostBtn").hidden=true;$("reader").classList.add("picking");
-  $("status").textContent="Time! Tap the last word they read.";
+  $("sSecs").value=Math.round(elapsed);qCalc();if(up)timesUp();
+  $("status").textContent="Time! Tap the last word they read on your scoring copy, or press Read the whole passage.";$("scoreBox").scrollIntoView({behavior:"smooth",block:"start"});
 }
 function pickLast(i){
-  lastIdx=i;paintWords();phase="tag";$("reader").classList.remove("picking");
+  lastIdx=i;marking=false;$("sMarkHint").textContent="";paintWords();fillBox();
+  if(phase!=="pick"){renderCodes();$("qMsg").textContent="Check the numbers, then press Save score.";return;}
+  phase="tag";$("reader").classList.remove("picking");
   const errs=words.map((w,k)=>({w,k})).filter(x=>x.k<=lastIdx&&x.w.err===1);
   $("status").textContent=errs.length?"Now tag the missed words below.":"No missed words. Nice reading!";
-  if(!errs.length){finish();return;}
+  if(!errs.length){$("status").textContent="No missed words. Check the score box and press Save score.";return;}
   renderCodes();$("saveBtn").hidden=false;
   $("tagPanel").hidden=false;$("tagPanel").scrollIntoView({behavior:"smooth",block:"start"});
 }
@@ -589,24 +531,27 @@ function renderCodes(){
 }
 function finish(){
   const p=passage(),r=reader(),bar=PASS;
-  const read=lastIdx+1,errs=words.filter((w,k)=>k<=lastIdx&&w.err===1);
-  const correct=read-errs.length,wcpm=Math.round(correct*60/elapsed),acc=read?Math.round(correct/read*100):0,score=Math.round(wcpm/bar*80);
+  let read=lastIdx+1;const errs=words.filter((w,k)=>k<=lastIdx&&w.err===1);
+  const rdB=parseInt($("qWcpm").value,10),erB=parseInt($("qMiss").value,10),scB=parseInt($("sSecs").value,10);
+  if(rdB>0)read=rdB;const errN=erB>=0&&erB<=read?erB:errs.length,secs=scB>=5?scB:elapsed;
+  const correct=read-errN,wcpm=Math.round(correct*60/secs),acc=read?Math.round(correct/read*100):0,score=Math.round(wcpm/bar*80);
   const tags={};errs.forEach(w=>{const t=w.tag||"Not tagged";(tags[t]=tags[t]||[]).push(w.t.replace(/[.,!?;:"]/g,""));});
-  lastRun={date:new Date().toISOString(),reader:r.id,pass:p.id,mode:store.mode,focus:store.focus||"",secs:Math.round(elapsed),read,errors:errs.length,wcpm,acc,score,lost,tags};
+  lastRun={date:new Date().toISOString(),reader:r.id,pass:p.id,mode:store.mode,focus:store.focus||"",secs:Math.round(secs),read,errors:errN,wcpm,acc,score,lost,tags};
   const prevBest=Math.max(0,...store.reads.filter(x=>x.reader===r.id).map(x=>x.wcpm));
   lastRun.stars=starsFor(lastRun.acc)+(lastRun.wcpm>prevBest&&prevBest>0?1:0);lastRun.pb=lastRun.wcpm>prevBest&&prevBest>0;
   store.reads.push(lastRun);save();renderReaders();renderRewards();
   phase="done";$("status").textContent="Saved. Results are below.";$("tagPanel").hidden=true;$("saveBtn").hidden=true;$("goBtn").hidden=false;$("goBtn").textContent="Start 1 minute";
-  showResults(lastRun);renderHistory();renderCmp();
+  resetBox();showResults(lastRun);renderHistory();renderCmp();
 }
 function showResults(run){
-  const r=reader(),bar=PASS,pass=run.wcpm>=bar&&run.acc>=90;
+  const r=reader(),bar=PASS,pass=run.score>=80&&run.acc>=90;
   $("resTitle").textContent="This read · "+(run.mode==="ruler"?"one page":"test format");
   $("passPill").innerHTML='<span class="pill '+(pass?"ok":"no")+'">'+(pass?"Would pass":"Not a pass yet")+"</span>";
   const need=Math.max(0,bar-run.wcpm);
   $("stats").innerHTML=[
-    ["Words correct / min",run.wcpm+" of "+bar,need?need+" more to pass":"At or above the pass mark"],
+    ["Words correct / min",run.wcpm,need?need+" to go to "+bar:"At or above "+bar],
     ["Accuracy",run.acc+"%",run.errors+" error"+(run.errors===1?"":"s")+" in "+run.read+" words · 90% allows up to "+Math.floor(run.read/10)],
+    ["Test score",run.score,"80 passes"],
     ["Lost place",run.lost,run.lost?"times in "+run.secs+" s":"Kept their place"],
     ["Missed",run.errors,"of "+run.read+" words read"]
   ].map(s=>'<div class="stat"><span>'+s[0]+"</span><b>"+s[1]+"</b><small>"+s[2]+"</small></div>").join("");
@@ -616,7 +561,7 @@ function showResults(run){
   $("workOn").innerHTML=keys.length?'<h2>What to work on</h2><ul class="workon">'+keys.map(k=>"<li><b>"+k+"</b> ("+run.tags[k].length+'): <span class="ws">'+run.tags[k].map(esc).join(", ")+"</span>"+(TIP[k]?' &rarr; try <b>'+TIP[k]+"</b>":"")+"</li>").join("")+"</ul>"+
     (run.lost>=2?'<p class="note">They lost their place '+run.lost+" times. Try the same passage on One page and compare.</p>":""):
     '<p class="note">No missed words. If speed is short of the mark, reread this passage two or three more times and watch the number climb.</p>';
-  $("resPanel").hidden=false;retell={};renderRetell();$("retellPanel").hidden=false;$("retellPanel").scrollIntoView({behavior:"smooth",block:"start"});
+  $("resPanel").hidden=false;$("resPanel").scrollIntoView({behavior:"smooth",block:"start"});
 }
 function renderTrail(run){
   const r=reader(),bar=PASS,max=Math.round(bar*1.3),pos=v=>Math.max(0,Math.min(100,v/max*100));
@@ -637,7 +582,7 @@ function renderCmp(){
 function renderHistory(){
   const r=reader(),xs=store.reads.filter(x=>x.reader===r.id).slice().reverse();
   $("hist").innerHTML=xs.length?xs.map(x=>{const p=PASSAGES.find(q=>q.id===x.pass);const top=Object.keys(x.tags).sort((a,b)=>x.tags[b].length-x.tags[a].length)[0]||"–";
-    return"<tr><td>"+new Date(x.date).toLocaleDateString(undefined,{month:"short",day:"numeric"})+"</td><td>"+esc(p?p.title:x.pass)+"</td><td>"+(x.mode==="quick"?"Quick timer":x.mode==="ruler"?"One page":"Scrolling")+"</td><td>"+x.wcpm+"</td><td>"+(x.noAcc?"–":x.acc+"%")+"</td><td>"+x.lost+"</td><td>"+(x.retell!=null?x.retell+"/4":"\u2013")+"</td><td>"+esc(top)+"</td></tr>";}).join(""):
+    return"<tr><td>"+new Date(x.date).toLocaleDateString(undefined,{month:"short",day:"numeric"})+"</td><td>"+esc(p?p.title:x.pass)+"</td><td>"+(x.mode==="quick"?"Quick timer":x.mode==="ruler"?"One page":"Scrolling")+"</td><td>"+x.wcpm+"</td><td>"+(x.noAcc?"–":x.acc+"%")+"</td><td>"+x.score+"</td><td>"+x.lost+"</td><td>"+esc(top)+"</td></tr>";}).join(""):
     '<tr><td colspan="8">No reads yet for this reader. Press "Start 1 minute" to do the first one.</td></tr>';
 }
 const TIP={"Multisyllable":"Chunk it","Ending":"Check the ending","Vowel":"Read the middle","Guessed":"Read the middle","Heart word":"Sight words","Blend/digraph":"Read the middle"};
@@ -662,15 +607,15 @@ function renderRewards(){
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 function onWord(i){
-  if(phase==="pick"){pickLast(i);return;}
+  if(phase==="pick"||marking){pickLast(i);return;}
   if(phase==="tag"||phase==="done")return;
-  words[i].err=(words[i].err+1)%3;paintWords();renderCodes();
+  words[i].err=(words[i].err+1)%3;paintWords();renderCodes();if(lastIdx>=0||$("qMiss").value!==""||words.some(w=>w.err===1)){$("qMiss").value=errCount();qCalc();}
   const li=lines.findIndex(l=>l.includes(i));if(li>=0&&store.mode==="ruler"&&li!==curLine){curLine=li;paintRuler();}
 }
 $("score").addEventListener("click",e=>{const w=e.target.closest(".w");if(w)onWord(+w.dataset.i);});
 $("score").addEventListener("keydown",e=>{const w=e.target.closest(".w");if(w&&(e.key==="Enter"||e.key===" ")){e.preventDefault();onWord(+w.dataset.i);}});
 
-$("goBtn").onclick=start;$("stopBtn").onclick=stop;
+$("goBtn").onclick=start;$("stopBtn").onclick=()=>stop();
 $("lostBtn").onclick=()=>{lost++;$("lostN").textContent=lost;};
 $("saveBtn").onclick=finish;
 $("againBtn").onclick=start;
@@ -697,53 +642,48 @@ $("delNo").onclick=()=>{$("delConfirm").hidden=true;};
 $("delYes").onclick=()=>{const id=store.cur;store.readers=store.readers.filter(r=>r.id!==id);store.reads=store.reads.filter(x=>x.reader!==id);store.cur=store.readers[0].id;save();$("delConfirm").hidden=true;renderReaders();resetView();};
 
 function resetView(){clearInterval(timer);setStuLink();phase="ready";$("goBtn").hidden=false;$("stopBtn").hidden=true;$("lostBtn").hidden=true;$("lostWrap").hidden=true;
-  $("timeFill").style.width="100%";$("status").textContent="Ready when you are.";$("tagPanel").hidden=true;$("resPanel").hidden=true;$("retellPanel").hidden=true;retell={};$("reader").classList.remove("picking");
+  $("timeFill").style.width="100%";clearTimesUp();resetBox();$("status").textContent="Ready when you are.";$("tagPanel").hidden=true;$("resPanel").hidden=true;$("reader").classList.remove("picking");
   buildPassage();renderHistory();renderCmp();}
 
 let qT=null,qStartAt=0;
 function qPaint(left){const s=Math.ceil(left);$("qClock").textContent=Math.floor(s/60)+":"+String(s%60).padStart(2,"0");$("qFill").style.width=(left/SECS*100)+"%";}
 function qStop(){clearInterval(qT);qT=null;$("qStart").disabled=false;$("qStart").textContent="Start 60 seconds";}
-$("qStart").onclick=()=>{if(qT)return;qStartAt=Date.now();$("qStart").disabled=true;$("qStart").textContent="Reading…";$("qClock").classList.remove("done");$("qMsg").textContent="";
-  qT=setInterval(()=>{const left=Math.max(0,SECS-(Date.now()-qStartAt)/1000);qPaint(left);if(left<=0){qStop();$("qClock").textContent="Time!";$("qClock").classList.add("done");$("qWcpm").focus();}},200);};
-$("qReset").onclick=()=>{qStop();qPaint(SECS);$("qClock").classList.remove("done");$("qMsg").textContent="";};
-function accLine(read,err){const correct=read-err,acc=read?Math.round(correct/read*100):0,max=Math.floor(read/10),ok=acc>=90;
-  return{correct,acc,max,ok,html:"<b>"+correct+"</b> words correct per minute &middot; accuracy <b class=\""+(ok?"ok":"no")+"\">"+acc+"%</b> &middot; "+err+" error"+(err===1?"":"s")+" in "+read+" words; 90% allows up to <b>"+max+"</b>"+(ok?" &#10003;":" (needs 90%)")};}
-const qCalc=()=>{const rd=parseInt($("qWcpm").value,10),er=parseInt($("qMiss").value,10)||0;$("qLive").innerHTML=rd>0&&er<=rd?accLine(rd,er).html:"Type words read and errors. Accuracy and the 90% limit show here.";};
+$("qStart").onclick=()=>{if(qT)return;if(phase==="reading")return;if(phase!=="ready")resetView();armSound();clearTimesUp();qStartAt=Date.now();$("sSecs").value=SECS;$("qStart").disabled=true;$("qStart").textContent="Reading…";$("qClock").classList.remove("done");$("qMsg").textContent="";
+  qT=setInterval(()=>{const left=Math.max(0,SECS-(Date.now()-qStartAt)/1000);qPaint(left);if(left<=0){qStop();$("qClock").textContent="Time!";$("qClock").classList.add("done");timesUp();const qp=$("qClock").parentNode;qp.classList.remove("qflash");void qp.offsetWidth;qp.classList.add("qflash");startMarking("Time! Tap the last word they read on your scoring copy, or press Read the whole passage.");}},200);};
+$("qReset").onclick=()=>{qStop();qPaint(SECS);clearTimesUp();$("qClock").classList.remove("done");$("qMsg").textContent="";};
+function accLine(read,err,secs){secs=secs||SECS;const correct=read-err,wcpm=Math.round(correct*60/secs),acc=read?Math.round(correct/read*100):0,max=Math.floor(read/10),ok=acc>=90;
+  return{correct,wcpm,acc,max,ok,html:"<b>"+wcpm+"</b> words correct per minute"+(secs!==SECS?" ("+correct+" correct in "+secs+" seconds)":"")+" &middot; accuracy <b class=\""+(ok?"ok":"no")+"\">"+acc+"%</b> &middot; "+err+" error"+(err===1?"":"s")+" in "+read+" words; 90% allows up to <b>"+max+"</b>"+(ok?" &#10003;":" (needs 90%)")};}
+const qSecs=()=>{const v=parseInt($("sSecs").value,10);return v>=5&&v<=SECS?v:SECS;};
+const qCalc=()=>{const rd=parseInt($("qWcpm").value,10),er=parseInt($("qMiss").value,10)||0;$("qLive").innerHTML=rd>0&&er<=rd?accLine(rd,er,qSecs()).html:"Mark the last word read (or type words read), then check the errors. Words correct per minute, accuracy and the 90% limit show here.";};
 $("qWcpm").oninput=qCalc;$("qMiss").oninput=qCalc;
-$("qSave").onclick=()=>{const rd=parseInt($("qWcpm").value,10),er=parseInt($("qMiss").value,10)||0;
-  if(!(rd>0)||er>rd){$("qMsg").textContent="Type the words read (and errors) first.";return;}
-  const L=accLine(rd,er),w=L.correct,miss=er,acc=L.acc,r=reader(),p=passage();
+$("qSave").onclick=()=>{if(phase==="reading"){$("qMsg").textContent="Wait for the minute to end first.";return;}
+  if(phase==="pick"||phase==="tag"){if(phase==="pick"&&!(parseInt($("qWcpm").value,10)>0)){$("qMsg").textContent="Mark the last word read first.";return;}if(phase==="pick"){phase="tag";if(lastIdx<0)lastIdx=Math.min(words.length,parseInt($("qWcpm").value,10))-1;}finish();return;}
+  const rd=parseInt($("qWcpm").value,10),er=parseInt($("qMiss").value,10)||0,secs=qSecs();
+  if(!(rd>0)||er>rd){$("qMsg").textContent="Mark the last word read (or type words read) first.";return;}
+  const L=accLine(rd,er,secs),w=L.wcpm,acc=L.acc,r=reader(),p=passage();
+  const tags={};if(lastIdx>=0)words.forEach((x,k)=>{if(k<=lastIdx&&x.err===1){const t=x.tag||"Not tagged";(tags[t]=tags[t]||[]).push(x.t.replace(/[.,!?;:"]/g,""));}});
   const prevBest=Math.max(0,...store.reads.filter(x=>x.reader===r.id).map(x=>x.wcpm));
-  const run={date:new Date().toISOString(),reader:r.id,pass:p.id,mode:"quick",focus:store.focus||"",secs:SECS,read:w+miss,errors:miss,wcpm:w,acc:acc==null?0:acc,noAcc:acc==null,score:Math.round(w/PASS*80),lost:0,tags:{}};
-  run.stars=(acc==null?0:starsFor(acc))+(w>prevBest&&prevBest>0?1:0);
+  const run={date:new Date().toISOString(),reader:r.id,pass:p.id,mode:"quick",focus:store.focus||"",secs,read:rd,errors:er,wcpm:w,acc,score:Math.round(w/PASS*80),lost:0,tags};
+  run.stars=starsFor(acc)+(w>prevBest&&prevBest>0?1:0);
   store.reads.push(run);save();renderReaders();renderHistory();
-  $("qMsg").textContent="Saved for "+r.name+": "+w+" words correct per minute, "+acc+"% accuracy"+(run.stars?" · +"+run.stars+" ★":"")+".";
-  $("qWcpm").value="";$("qMiss").value="";};
-const RCHIPS=[{k:"who",label:"Who",ask:'Try: "Who was it about?"'},
- {k:"where",label:"Where",ask:'Try: "Where did it happen?"'},
- {k:"when",label:"When",ask:'Try: "When did it happen?" \u2014 often not in the story, so leave it if not'},
- {k:"what",label:"What happened",ask:'Try: "What happened first? Then what?"'},
- {k:"but",label:"\u2026but (the problem)",story:1,ask:'Try: "What went wrong, or what was tricky?"'},
- {k:"so",label:"\u2026so (how it ended)",story:1,ask:'Try: "So what did they do? How did it end?"'}];
-const RWORD=["Not yet","A detail or two","Most of it","Full retell","Full retell with the problem"];
-let retell={};
-function retellLevel(r){const core=["who","where","what"].filter(k=>r[k]).length,story=["but","so"].filter(k=>r[k]).length;
-  if(core===0)return 0;if(core===1)return 1;if(core===2)return 2;return story===2?4:3;}
-function renderRetell(){
-  const box=$("rChips");if(!box)return;box.innerHTML="";
-  RCHIPS.forEach(c=>{const b=document.createElement("button");b.type="button";b.textContent=c.label;if(c.story)b.className="story";
-    b.setAttribute("aria-pressed",!!retell[c.k]);
-    b.onclick=()=>{retell[c.k]=!retell[c.k];
-      if(lastRun){lastRun.retell=retellLevel(retell);lastRun.retellParts=Object.keys(retell).filter(k=>retell[k]);save();renderHistory();}
-      renderRetell();};
-    box.appendChild(b);});
-  const lv=retellLevel(retell);
-  $("rLevel").textContent=lv;$("rWord").textContent=RWORD[lv];$("rBar").style.width=(lv/4*100)+"%";
-  const ORDER=["who","where","what","but","so","when"];
-  const next=ORDER.map(k=>RCHIPS.find(c=>c.k===k)).find(c=>!retell[c.k]);
-  $("rAsk").textContent=next?next.ask:"That is a full retell with the problem. Tell them that is exactly what good readers do.";
-}
+  const msg="Saved for "+r.name+": "+w+" words correct per minute, "+acc+"% accuracy"+(run.stars?" · +"+run.stars+" ★":"")+".";
+  buildPassage();resetBox();$("qMsg").textContent=msg;};
 
+let ac=null,marking=false;
+function armSound(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.resume)ac.resume();}catch(e){}}
+function beep(){try{if(!ac)return;const t=ac.currentTime;[0,.35,.7].forEach(d=>{const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=880;g.gain.setValueAtTime(.0001,t+d);g.gain.exponentialRampToValueAtTime(.5,t+d+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d+.28);o.connect(g);g.connect(ac.destination);o.start(t+d);o.stop(t+d+.3);});}catch(e){}}
+function timesUp(){beep();const r=$("reader");r.classList.remove("timesup");void r.offsetWidth;r.classList.add("timesup");$("tuCover").hidden=false;}
+function clearTimesUp(){$("reader").classList.remove("timesup");$("tuCover").hidden=true;$("qClock").parentNode.classList.remove("qflash");}
+$("tuShow").onclick=clearTimesUp;
+const errCount=()=>words.filter((w,k)=>w.err===1&&(lastIdx<0||k<=lastIdx)).length;
+function fillBox(){if(lastIdx>=0)$("qWcpm").value=lastIdx+1;$("qMiss").value=errCount();qCalc();}
+function resetBox(){$("qWcpm").value="";$("qMiss").value="";$("sSecs").value=SECS;$("qMsg").textContent="";$("sMarkHint").textContent="";marking=false;qCalc();}
+function startMarking(msg){marking=true;$("sMarkHint").textContent=msg||"Now tap the last word they read on your scoring copy.";}
+$("sMark").onclick=()=>startMarking();
+$("sAll").onclick=()=>{if(phase==="reading")stop();
+  if(qT){$("sSecs").value=Math.max(5,Math.round((Date.now()-qStartAt)/1000));qStop();$("qClock").textContent="Done";}
+  pickLast(words.length-1);};
+$("sSecs").oninput=()=>qCalc();
 qPaint(SECS);
 renderReaders();renderPassages();setMode(store.mode);setFocus(store.focus||"");resetView();renderRewards();
 })();
