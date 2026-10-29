@@ -1,0 +1,386 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Slime Shop</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: a shop counter. Home = four stations; each station = one big working card. Single bright look for a shared screen. */
+:root{
+  --bg:#f3fbf6; --ink:#1d2b33; --soft:#5d6f78; --card:#ffffff; --line:#cfe6da;
+  --slime:#2fbf71; --slime-d:#1f8f53; --berry:#d94f8a; --grape:#7a5ad8; --lemon:#f2c230; --sky:#3aa6e0;
+  --warn:#fff4d6; --warn-ink:#7a5a00; --good:#e3f7ec; --good-ink:#17683d;
+  --display:"Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", Verdana, system-ui, sans-serif;
+  color-scheme:light;
+}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--body);font-size:20px;line-height:1.4;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.1}
+h1{font-size:clamp(34px,6vw,54px);color:var(--slime-d)}
+h2{font-size:clamp(28px,4.5vw,40px)}
+p{margin:0}
+.soft{color:var(--soft);font-size:17px}
+button{font-family:var(--display);font-weight:800;font-size:22px;border:0;border-radius:16px;padding:12px 20px;cursor:pointer;background:var(--slime);color:#fff;box-shadow:0 4px 0 var(--slime-d)}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--slime-d)}
+button:focus-visible,input:focus-visible{outline:4px solid var(--sky);outline-offset:3px}
+button.ghost{background:#fff;color:var(--ink);box-shadow:0 4px 0 var(--line);border:2px solid var(--line)}
+button.pink{background:var(--berry);box-shadow:0 4px 0 #a33465}
+button.grape{background:var(--grape);box-shadow:0 4px 0 #5a3fb0}
+button[disabled]{opacity:.35;cursor:default}
+input.num{font-family:var(--display);font-size:34px;font-weight:800;width:5.5ch;text-align:center;border:3px solid var(--line);border-radius:14px;padding:4px 8px;color:var(--ink);background:#fff}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tries{font-family:var(--display);font-weight:800;font-size:22px;background:#fff;border:2px solid var(--line);border-radius:999px;padding:6px 16px}
+.stations{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
+.station{background:var(--card);border:3px solid var(--line);border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:10px;text-align:left;color:var(--ink);box-shadow:none;font-family:var(--body);font-weight:400;font-size:18px}
+.station:hover{border-color:var(--slime)}
+.station .blob{width:64px;height:52px;border-radius:50% 46% 52% 44%/58% 50% 46% 42%}
+.station b{font-family:var(--display);font-size:28px;line-height:1}
+.card{background:var(--card);border:3px solid var(--line);border-radius:24px;padding:22px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.q{font-size:clamp(22px,3.2vw,28px);font-weight:700;max-width:34ch}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.msg{border-radius:16px;padding:12px 16px;font-size:20px}
+.msg.good{background:var(--good);color:var(--good-ink)}
+.msg.try{background:var(--warn);color:var(--warn-ink)}
+.back{align-self:flex-start}
+/* Bead jars */
+.mat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.col{border:3px solid var(--line);border-radius:18px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:8px;min-height:190px;background:#fbfffd}
+.col.hot{border-color:var(--berry);background:#fff3f8}
+.col h3{font-size:22px}
+.col .big{font-family:var(--display);font-size:40px;font-weight:800;line-height:1}
+.pieces{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;max-width:150px}
+.tub{width:30px;height:30px;border-radius:8px;background:var(--grape)}
+.cup{width:12px;height:34px;border-radius:5px;background:var(--sky)}
+.bead{width:15px;height:15px;border-radius:50%;background:var(--slime)}
+.bead.new,.cup.new,.tub.new{background:var(--berry)}
+.vert{font-family:var(--display);font-weight:800;font-size:40px;line-height:1.1;text-align:right;font-variant-numeric:tabular-nums;display:inline-grid;gap:2px;padding:8px 18px;border:3px dashed var(--line);border-radius:16px;background:#fff}
+.vert .carry{font-size:22px;color:var(--berry);min-height:24px;letter-spacing:.9ch}
+.vert .rule{border-top:4px solid var(--ink)}
+.vgrid{display:inline-grid;grid-template-columns:repeat(4,minmax(1.2ch,auto));column-gap:10px;justify-items:center;align-items:end;font-family:var(--display);font-weight:800;font-size:40px;line-height:1.1;font-variant-numeric:tabular-nums;padding:8px 18px;border:3px dashed var(--line);border-radius:16px;background:#fff}
+.vmark{min-height:36px;font-size:24px;color:var(--berry);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;line-height:1}
+.vmark .old{text-decoration:line-through;opacity:.55;font-size:20px}
+.vin{width:2.2ch;font-family:var(--display);font-weight:800;font-size:26px;text-align:center;border:3px solid var(--berry);border-radius:8px;padding:2px 0;color:var(--berry);background:#fff3f8}
+.vd.struck{text-decoration:line-through;text-decoration-color:var(--berry);text-decoration-thickness:4px;color:var(--soft)}
+.vrule{grid-column:1/-1;justify-self:stretch;border-top:4px solid var(--ink)}
+.split{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start}
+@media (max-width:640px){.split{grid-template-columns:1fr}.col{min-height:150px}}
+/* Fractions */
+.bars{display:flex;gap:18px;flex-wrap:wrap}
+.barbox{display:flex;flex-direction:column;gap:8px;align-items:center}
+.bar{display:flex;width:min(260px,70vw);height:56px;border:3px solid var(--ink);border-radius:12px;overflow:hidden;background:#fff}
+.bar i{flex:1;border-right:3px solid var(--ink)}
+.bar i:last-child{border-right:0}
+.bar i.on{background:var(--berry)}
+.pick{display:flex;flex-direction:column;gap:8px;align-items:center;background:#fff;border:3px solid var(--line);border-radius:18px;padding:12px;color:var(--ink);box-shadow:none;font-family:var(--display)}
+.pick:hover{border-color:var(--slime)}
+.frac{display:inline-flex;flex-direction:column;align-items:center;font-family:var(--display);font-weight:800;font-size:30px;line-height:1}
+.frac span:first-child{border-bottom:3px solid currentColor;padding:0 6px}
+.jars{display:flex;gap:14px;flex-wrap:wrap}
+.group{display:flex;gap:6px;padding:8px;border-radius:14px;border:3px dashed transparent}
+.group.show{border-color:var(--grape)}
+.jar{width:26px;height:34px;border-radius:6px 6px 10px 10px;background:var(--lemon);border:2px solid #c99a10}
+.line{position:relative;height:90px;width:min(560px,86vw);margin:4px 12px}
+.line .axis{position:absolute;left:0;right:0;top:44px;border-top:4px solid var(--ink)}
+.line .tick{position:absolute;top:34px;width:4px;height:24px;background:var(--ink);transform:translateX(-2px)}
+.line .lab{position:absolute;top:62px;transform:translateX(-50%);font-family:var(--display);font-weight:800;font-size:22px}
+.line .drop{position:absolute;top:6px;width:30px;height:30px;transform:translateX(-50%);background:var(--berry);border-radius:50% 50% 50% 0;rotate:-45deg}
+/* Orders */
+.dots{display:flex;flex-wrap:wrap;gap:12px}
+.dots .g{display:flex;flex-wrap:wrap;gap:5px;padding:7px;border:3px solid var(--sky);border-radius:12px;max-width:110px}
+.dots .g.extra{border-color:var(--berry);border-style:dashed}
+.dots .d{width:14px;height:14px;border-radius:50%;background:var(--slime)}
+.dots .d.kid{background:var(--grape)}
+/* Charts */
+table.chart{border-collapse:collapse;font-size:22px}
+table.chart td,table.chart th{border:3px solid var(--line);padding:8px 14px;text-align:left}
+table.chart th{font-family:var(--display)}
+table.chart td.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--display);font-weight:800;font-size:26px}
+.picto{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.picto .jar{width:24px;height:30px}
+.key{display:flex;gap:8px;align-items:center;background:#fff;border:2px solid var(--line);border-radius:12px;padding:6px 12px;font-weight:700}
+.scroll{overflow-x:auto}
+/* Coach notes */
+.cn{display:none}
+body[data-cn="on"] .cn{display:block}
+.cnbar{background:#c62d2d;color:#fff;font-weight:700;border-radius:12px;padding:8px 14px}
+.cnbox{background:#fff7f7;border:2px dashed #c62d2d;border-radius:16px;padding:14px;font-size:17px;color:var(--ink)}
+.cnbox li{margin-block:4px}
+.cntoggle{font-size:14px;padding:6px 12px;background:transparent;color:var(--soft);box-shadow:none;border:1px solid var(--line);font-family:var(--body);font-weight:400}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap" id="app"></div>
+
+<script>
+(function(){
+const app=document.getElementById('app');
+let tries=0; let cn=false;
+const STATIONS=[
+ {id:'jars',name:'Bead Jars',color:'var(--grape)',line:'Add and sell beads. Trade when a jar gets full.'},
+ {id:'frac',name:'Fraction Cups',color:'var(--berry)',line:'Share slime into equal parts.'},
+ {id:'orders',name:'Order Desk',color:'var(--sky)',line:'Pack the orders into boxes and vans.'},
+ {id:'chart',name:'Sales Board',color:'var(--lemon)',line:'Read the shop charts.'}
+];
+const el=(t,a={},...kids)=>{const e=document.createElement(t);for(const[k,v]of Object.entries(a)){if(v==null)continue;if(k==='class')e.className=v;else if(k==='html')e.innerHTML=v;else if(k.startsWith('on'))e.addEventListener(k.slice(2),v);else e.setAttribute(k,v)}for(const k of kids.flat()){if(k==null)continue;e.append(k.nodeType?k:document.createTextNode(k))}return e};
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const frac=(n,d)=>el('span',{class:'frac'},el('span',{},String(n)),el('span',{},String(d)));
+function tried(){tries++;const t=document.getElementById('tries');if(t)t.textContent='Things you tried: '+tries}
+
+function header(title){
+ return el('div',{class:'top'},
+  el('h1',{},title),
+  el('div',{class:'row'},el('span',{class:'tries',id:'tries'},'Things you tried: '+tries)));
+}
+function cnBlock(items){
+ return el('div',{class:'cn'});
+}
+
+/* ---------- HOME ---------- */
+function home(){
+ app.replaceChildren(
+  header("Slime Shop"),
+  el('p',{class:'q'},'Pick a station. Wrong answers are fine. Slime never works the first time.'),
+  el('div',{class:'stations'},STATIONS.map(s=>el('button',{class:'station',onclick:()=>go(s.id)},
+   el('div',{class:'blob',style:'background:'+s.color}),el('b',{},s.name),el('span',{},s.line)))),
+  cnBlock([])
+ );
+ document.body.dataset.cn=cn?'on':'off';
+}
+function go(id){({jars:jars,frac:fracs,orders:orders,chart:chart})[id]();window.scrollTo(0,0)}
+function shell(title,body,notes){app.replaceChildren(header(title),el('button',{class:'ghost back',onclick:home},'← Back to the shop'),body,cnBlock(notes))}
+
+/* ---------- BEAD JARS (regrouping) ---------- */
+function jars(){
+ const card=el('div',{class:'card'});
+ shell('Bead Jars',card,[]);
+ newProblem(card, Math.random()<.5?'add':'sub');
+}
+function makeAdd(){let a,b;do{a=rnd(105,689);b=rnd(26,289)}while((a%10)+(b%10)<10||a+b>999);return{a,b}}
+function makeSub(){let a,b;do{a=Math.random()<.3?rnd(3,9)*100+rnd(0,9):rnd(312,987);b=rnd(48,a-60)}while((b%10)<=(a%10)||b>=a);return{a,b}}
+function newProblem(card,kind){
+ const {a,b}=kind==='add'?makeAdd():makeSub();
+ const S={kind,a,b,h:Math.floor(a/100),t:Math.floor(a/10)%10,o:a%10,bh:Math.floor(b/100),bt:Math.floor(b/10)%10,bo:b%10,step:'o',carry:{t:'',h:''},done:{o:false,t:false,h:false},say:'',sayType:'',pend:null};
+ S.hist={h:[S.h],t:[S.t],o:[S.o]};
+ renderJars(card,S);
+}
+function digits(n){return{h:n>=100?String(Math.floor(n/100)):'',t:n>=10?String(Math.floor(n/10)%10):'',o:String(n%10)}}
+function vertical(S,add){
+ const C=['h','t','o'];const g=el('div',{class:'vgrid'});
+ g.append(el('span',{}));
+ for(const c of C){
+  const cell=el('span',{class:'vmark'});
+  const p=S.pend&&S.pend.find(x=>x.col===c);
+  if(p)cell.append(el('input',{class:'vin',id:'vin-'+c,inputmode:'numeric',maxlength:'2',autocomplete:'off','aria-label':'Write the new number here'}));
+  else if(add&&S.carry[c])cell.append(el('span',{class:'cur'},S.carry[c]));
+  else if(!add&&S.hist[c].length>1){const later=S.hist[c].slice(1);later.forEach((v,i)=>cell.append(el('span',{class:i<later.length-1?'old':'cur'},String(v))))}
+  g.append(cell);
+ }
+ const ad=digits(S.a),bd=digits(S.b);
+ g.append(el('span',{}));
+ for(const c of C)g.append(el('span',{class:'vd'+(!add&&S.hist[c].length>1?' struck':'')},ad[c]));
+ g.append(el('span',{class:'vd'},add?'+':'−'));
+ for(const c of C)g.append(el('span',{class:'vd'},bd[c]));
+ g.append(el('span',{class:'vrule'}));
+ g.append(el('span',{}));for(const c of C)g.append(el('span',{class:'vd'},(S.step==='answer'||S.step==='finished')&&c==='o'?'?':' '));
+ return g;
+}
+function checkPend(card,S){
+ tried();
+ const wrong=S.pend.filter(p=>{const i=document.getElementById('vin-'+p.col);return !i||parseInt(i.value,10)!==p.want});
+ if(wrong.length){S.say=S.pend[0].kind==='carry'?'Not yet. You traded 10 for 1. What do you write above the next jar?':'Not yet. Look at the jars. How many are in each one now?';S.sayType='try';
+  const keep={};S.pend.forEach(p=>{const i=document.getElementById('vin-'+p.col);keep[p.col]=i?i.value:''});renderJars(card,S);
+  S.pend.forEach(p=>{const i=document.getElementById('vin-'+p.col);if(i)i.value=keep[p.col]});return}
+ for(const p of S.pend){if(p.kind==='carry')S.carry[p.col]='1';else S.hist[p.col].push(p.want)}
+ S.pend=null;S.say='Yes! That is where it goes.';S.sayType='good';renderJars(card,S);
+}
+function renderJars(card,S){
+ const add=S.kind==='add';
+ const cols=[['h','Tubs','hundreds','tub'],['t','Cups','tens','cup'],['o','Beads','ones','bead']];
+ const need={h:S.bh,t:S.bt,o:S.bo};
+ const hot=S.step;
+ const mat=el('div',{class:'mat'},cols.map(([k,label,place,cls])=>{
+  const n=S[k];const p=el('div',{class:'pieces'});
+  for(let i=0;i<n;i++)p.append(el('i',{class:cls}));
+  if(add&&!S.done[k])for(let i=0;i<need[k];i++)p.append(el('i',{class:cls+' new'}));
+  return el('div',{class:'col'+(hot===k?' hot':'')},el('h3',{},label),el('span',{class:'big'},String(n)),el('span',{},place),p);
+ }));
+ const story=add?`You have ${S.a} beads. A delivery brings ${S.b} more.`:`You have ${S.a} beads. Someone buys ${S.b}.`;
+ const v=vertical(S,add);
+ const ctl=el('div',{class:'row'});
+ const names={o:'beads',t:'cups',h:'tubs'};
+ const up={o:'t',t:'h'};
+ if(S.pend){
+  ctl.append(el('span',{class:'q'},S.pend[0].kind==='carry'?'Write the 1 you carried in the pink box.':'Write the new numbers in the pink boxes.'),el('button',{onclick:()=>checkPend(card,S)},'Check'));
+ } else if(S.step==='o'||S.step==='t'||S.step==='h'){
+  const k=S.step;
+  if(add){
+   if(!S.done[k]){
+    ctl.append(el('button',{onclick:()=>{S[k]+=need[k];S.done[k]=true;S.say='';tried();renderJars(card,S)}},`Pour in ${need[k]} ${names[k]}`));
+   } else if(S[k]>=10&&k!=='h'){
+    ctl.append(el('button',{class:'pink',onclick:()=>{S[k]-=10;S[up[k]]+=1;S.pend=[{col:up[k],want:1,kind:'carry'}];S.say=`10 ${names[k]} made 1 ${names[up[k]].slice(0,-1)}.`;S.sayType='good';tried();renderJars(card,S)}},`Trade 10 ${names[k]} for 1 ${names[up[k]].slice(0,-1)}`));
+    S.say=S.say||`That jar has ${S[k]}. A jar can only hold 9. Make a trade.`;S.sayType='try';
+   } else {
+    ctl.append(el('button',{onclick:()=>{S.step=k==='o'?'t':k==='t'?'h':'answer';S.say='';renderJars(card,S)}},k==='h'?'Count it up':'Next jar →'));
+   }
+  } else {
+   if(!S.done[k]){
+    if(S[k]<need[k]){
+     const from=up[k];
+     S.say=`You need ${need[k]} ${names[k]} but only have ${S[k]}. Open a ${names[from].slice(0,-1)}.`;S.sayType='try';
+     ctl.append(el('button',{class:'pink',disabled:S[from]===0?'':null,onclick:()=>{S[from]-=1;S[k]+=10;S.pend=[{col:from,want:S[from]},{col:k,want:S[k]}];S.say=`1 ${names[from].slice(0,-1)} opened into 10 ${names[k]}.`;S.sayType='good';tried();renderJars(card,S)}},`Open 1 ${names[from].slice(0,-1)} → 10 ${names[k]}`));
+     if(S[from]===0&&k==='o'&&S.h>0){
+      S.say=`No cups left to open. Open a tub first. It turns into 10 cups.`;
+      ctl.append(el('button',{class:'grape',onclick:()=>{S.h-=1;S.t+=10;S.pend=[{col:'h',want:S.h},{col:'t',want:S.t}];S.say='1 tub opened into 10 cups.';S.sayType='good';tried();renderJars(card,S)}},'Open 1 tub → 10 cups'));
+     }
+    } else {
+     ctl.append(el('button',{onclick:()=>{S[k]-=need[k];S.done[k]=true;S.say='';tried();renderJars(card,S)}},`Sell ${need[k]} ${names[k]}`));
+    }
+   } else {
+    ctl.append(el('button',{onclick:()=>{S.step=k==='o'?'t':k==='t'?'h':'answer';S.say='';renderJars(card,S)}},k==='h'?'Count it up':'Next jar →'));
+   }
+  }
+ } else if(S.step==='answer'){
+  const inp=el('input',{class:'num',id:'jars-ans',inputmode:'numeric','aria-label':'How many beads now'});
+  const total=S.h*100+S.t*10+S.o;
+  ctl.append(el('span',{class:'q'},'How many beads now?'),inp,el('button',{onclick:()=>{
+   tried();const g=parseInt(inp.value,10);
+   if(g===total){S.step='finished';S.say=`Yes! ${S.a} ${add?'+':'−'} ${S.b} = ${total}.`;S.sayType='good'}
+   else{S.say=`Not yet. Read the jars: ${S.h} tubs is ${S.h*100}, ${S.t} cups is ${S.t*10}, and ${S.o} beads.`;S.sayType='try'}
+   renderJars(card,S)}},'Check'));
+ } else {
+  ctl.append(el('button',{onclick:()=>newProblem(card,'add')},'New delivery (add)'),el('button',{class:'pink',onclick:()=>newProblem(card,'sub')},'New sale (take away)'));
+ }
+ const parts=[el('p',{class:'q'},story),el('div',{class:'split'},v,mat)];
+ if(S.say)parts.push(el('div',{class:'msg '+S.sayType},S.say));
+ parts.push(ctl);
+ if(S.step!=='finished')parts.push(el('div',{class:'row'},el('button',{class:'ghost',onclick:()=>newProblem(card,'add')},'Skip: new add'),el('button',{class:'ghost',onclick:()=>newProblem(card,'sub')},'Skip: new take away')));
+ card.replaceChildren(...parts);
+ if(S.pend)setTimeout(()=>{const ins=[...card.querySelectorAll('.vin')];ins.forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter')checkPend(card,S)}));if(ins[0])ins[0].focus()},0);
+}
+
+/* ---------- FRACTION CUPS ---------- */
+const FRAC_ITEMS=[
+ {t:'compare',a:[1,3],b:[1,4],q:'Two cups, same size. Which one has more slime?',why:'Thirds are bigger pieces than fourths. Fewer pieces means bigger pieces.'},
+ {t:'compare',a:[3,8],b:[3,4],q:'Same size cups. Which one has more slime?',why:'Both have 3 pieces. Fourths are bigger than eighths, so 3 fourths is more.'},
+ {t:'compare',a:[2,6],b:[1,3],q:'Which one has more slime? Look closely.',why:'They are the same amount. 2 sixths covers the same space as 1 third.'},
+ {t:'match',target:[1,2],opts:[[2,4],[1,4],[2,3]],q:'This cup is half full. Which cup has the same amount?',why:'2 fourths fills the same space as 1 half.'},
+ {t:'match',target:[2,3],opts:[[3,4],[4,6],[2,6]],q:'Which cup has the same amount as this one?',why:'Cut each third in two and you get 4 sixths. Same amount.'},
+ {t:'set',jars:12,people:4,q:'4 friends share 12 jars of slime equally. What fraction of the jars does each friend get?',opts:[[1,4],[1,3],[4,12]],ans:0,why:'4 equal groups, so each friend gets 1 of the 4 groups: one fourth. That is 3 jars each.'},
+ {t:'set',jars:10,people:2,q:'2 friends share 10 jars equally. What fraction does each friend get?',opts:[[1,5],[1,2],[2,10]],ans:1,why:'2 equal groups, so each gets 1 half. That is 5 jars each.'},
+ {t:'line',d:4,m:3,q:'A slime drop landed on the line. Where is it?',opts:[[3,4],[1,4],[3,3]],ans:0,why:'The space from 0 to 1 is cut into 4 equal jumps. The drop is 3 jumps in.'},
+ {t:'line',d:6,m:2,q:'Where did this drop land?',opts:[[2,6],[1,2],[6,2]],ans:0,why:'From 0 to 1 is cut into 6 jumps. The drop is 2 jumps in: 2 sixths.'},
+ {t:'line',d:3,m:2,q:'Where did this drop land?',opts:[[1,3],[2,3],[3,2]],ans:1,why:'3 jumps from 0 to 1. The drop is 2 jumps in.'}
+];
+function bar(n,d){const b=el('div',{class:'bar'});for(let i=0;i<d;i++)b.append(el('i',{class:i<n?'on':''}));return b}
+function fracs(){
+ const card=el('div',{class:'card'});
+ shell('Fraction Cups',card,[]);
+ let i=0;
+ function show(){
+  const it=FRAC_ITEMS[i];let say=null;
+  const parts=[el('p',{class:'soft'},`Cup ${i+1} of ${FRAC_ITEMS.length}`),el('p',{class:'q'},it.q)];
+  const msg=el('div');
+  const right=()=>{msg.replaceChildren(el('div',{class:'msg good'},'Yes! '+it.why),el('div',{class:'row',style:'margin-top:12px'},el('button',{onclick:()=>{i=(i+1)%FRAC_ITEMS.length;show()}},i+1<FRAC_ITEMS.length?'Next cup →':'Start again')))};
+  const wrong=(hint)=>{msg.replaceChildren(el('div',{class:'msg try'},hint))};
+  if(it.t==='compare'){
+   const mk=(f,lbl)=>el('button',{class:'pick',onclick:()=>{tried();const va=it.a[0]/it.a[1],vb=it.b[0]/it.b[1];const pickA=lbl==='A';if(Math.abs(va-vb)<1e-9)wrong('Look again. Put your finger on where each one stops.');else if((pickA&&va>vb)||(!pickA&&vb>va))right();else wrong('Not that one. Count the pieces in each cup. Which cup has bigger pieces?')}},bar(f[0],f[1]),frac(f[0],f[1]));
+   parts.push(el('div',{class:'bars'},mk(it.a,'A'),mk(it.b,'B')));
+   parts.push(el('div',{class:'row'},el('button',{class:'ghost',onclick:()=>{tried();if(Math.abs(it.a[0]/it.a[1]-it.b[0]/it.b[1])<1e-9)right();else wrong('They are not the same. One cup has more. Look where each one stops.')}},'They are the same')));
+  } else if(it.t==='match'){
+   parts.push(el('div',{class:'barbox'},bar(it.target[0],it.target[1]),frac(it.target[0],it.target[1])));
+   parts.push(el('div',{class:'bars'},shuffle(it.opts).map(o=>el('button',{class:'pick',onclick:()=>{tried();if(o[0]*it.target[1]===it.target[0]*o[1])right();else wrong('Not quite. Line it up under the first cup. Does the pink stop in the same place?')}},bar(o[0],o[1]),frac(o[0],o[1])))));
+  } else if(it.t==='set'){
+   const per=it.jars/it.people;const box=el('div',{class:'jars'});
+   for(let g=0;g<it.people;g++){const grp=el('div',{class:'group'});for(let j=0;j<per;j++)grp.append(el('i',{class:'jar'}));box.append(grp)}
+   parts.push(box);
+   parts.push(el('div',{class:'row'},el('button',{class:'ghost',onclick:()=>box.querySelectorAll('.group').forEach(g=>g.classList.add('show'))},'Show the groups')));
+   parts.push(el('div',{class:'bars'},it.opts.map((o,k)=>el('button',{class:'pick',onclick:()=>{tried();if(k===it.ans)right();else wrong('Try "Show the groups". How many equal groups are there? Each friend gets 1 of them.')}},frac(o[0],o[1])))));
+  } else {
+   const L=el('div',{class:'line'},el('div',{class:'axis'}));
+   for(let k=0;k<=it.d;k++){const x=(k/it.d)*100;L.append(el('div',{class:'tick',style:`left:${x}%`}));if(k===0||k===it.d)L.append(el('div',{class:'lab',style:`left:${x}%`},String(k===0?0:1)))}
+   L.append(el('div',{class:'drop',style:`left:${(it.m/it.d)*100}%`}));
+   parts.push(el('div',{class:'scroll'},L));
+   parts.push(el('div',{class:'bars'},it.opts.map((o,k)=>el('button',{class:'pick',onclick:()=>{tried();if(k===it.ans)right();else wrong('Count the jumps from 0 to 1. That is the bottom number. Then count jumps to the drop.')}},frac(o[0],o[1])))));
+  }
+  parts.push(msg);
+  card.replaceChildren(...parts);
+ }
+ show();
+}
+
+/* ---------- ORDER DESK ---------- */
+const ORDERS=[
+ {q:'You made 24 slimes. Each box holds 4. How many boxes do you fill?',ans:6,model:{total:24,size:4},why:'24 in groups of 4 makes 6 boxes. 6 × 4 = 24.'},
+ {q:'27 kids are going to the slime show. Each van holds 5 kids. How many vans do you need?',ans:6,model:{total:27,size:5,kids:true},why:'5 vans hold 25 kids. 2 kids are left, and they need a van too. So 6 vans.',trap:5,trapSay:'5 vans hold 25 kids. Who drives the last 2 kids?'},
+ {q:'On Monday you sold 7 slimes. On Saturday you sold 3 times as many. How many on Saturday?',ans:21,model:{total:21,size:7},why:'3 times as many means 3 groups of 7. 7 + 7 + 7 = 21.',trap:10,trapSay:'"3 times as many" is not "3 more". Make 3 groups of 7.'},
+ {q:'A tray has 4 rows. Each row has 6 slimes. How many slimes?',ans:24,model:{total:24,size:6},why:'4 rows of 6 is 4 × 6 = 24. You could also say 24 ÷ 4 = 6.'},
+ {q:'You have 30 jars. You put 6 on each shelf. How many shelves?',ans:5,model:{total:30,size:6},why:'30 in groups of 6 makes 5 shelves. 5 × 6 = 30.'},
+ {q:'34 kids come to slime class. 6 kids fit at each table. How many tables do you need?',ans:6,model:{total:34,size:6,kids:true},why:'5 tables hold 30 kids. 4 kids are left. They need a table too. So 6.',trap:5,trapSay:'5 tables hold 30. Where do the last 4 kids sit?'},
+ {q:'On Tuesday you made 8 slimes. On Friday you made 2 times as many. How many on Friday?',ans:16,model:{total:16,size:8},why:'2 times as many means 2 groups of 8. 8 + 8 = 16.',trap:10,trapSay:'"2 times as many" is not "2 more". Make 2 groups of 8.'},
+ {q:'40 beads are shared by 8 friends. Each friend gets the same. How many beads each?',ans:5,model:{total:40,size:5},why:'40 shared into 8 equal groups gives 5 each. 8 × 5 = 40.'}
+];
+function orders(){
+ const card=el('div',{class:'card'});
+ shell('Order Desk',card,[]);
+ let i=0;
+ function show(){
+  const o=ORDERS[i];const pic=el('div',{class:'dots'});pic.hidden=true;
+  let left=o.model.total;while(left>0){const n=Math.min(o.model.size,left);const g=el('div',{class:'g'+(n<o.model.size?' extra':'')});for(let k=0;k<n;k++)g.append(el('i',{class:'d'+(o.model.kids?' kid':'')}));pic.append(g);left-=n}
+  const inp=el('input',{class:'num',id:'order-ans',inputmode:'numeric','aria-label':'Your answer'});
+  const msg=el('div');
+  card.replaceChildren(
+   el('p',{class:'soft'},`Order ${i+1} of ${ORDERS.length}`),
+   el('p',{class:'q'},o.q),
+   el('div',{class:'row'},el('button',{class:'ghost',onclick:()=>{pic.hidden=false}},'Draw it')),
+   pic,
+   el('div',{class:'row'},inp,el('button',{onclick:()=>{
+    tried();const g=parseInt(inp.value,10);
+    if(g===o.ans)msg.replaceChildren(el('div',{class:'msg good'},'Yes! '+o.why),el('div',{class:'row',style:'margin-top:12px'},el('button',{onclick:()=>{i=(i+1)%ORDERS.length;show()}},i+1<ORDERS.length?'Next order →':'Start again')));
+    else if(o.trap!=null&&g===o.trap)msg.replaceChildren(el('div',{class:'msg try'},o.trapSay));
+    else msg.replaceChildren(el('div',{class:'msg try'},'Not yet. Press "Draw it" and count the groups.'));
+   }},'Check')),
+   msg);
+ }
+ show();
+}
+
+/* ---------- SALES BOARD ---------- */
+const PICTO=[['Glitter',4],['Fluffy',3],['Butter',5],['Cloud',2]];
+const TABLE=[['Mint',36],['Berry',28],['Lemon',19],['Grape',45]];
+const CHART_QS=[
+ {kind:'p',q:'How many Glitter slimes were sold?',ans:8,hint:'Count the jars, then look at the key. Each jar is 2 slimes.'},
+ {kind:'p',q:'How many more Butter than Cloud?',ans:6,hint:'Butter is 5 jars, Cloud is 2 jars. Turn each into slimes first. Each jar is 2.'},
+ {kind:'p',q:'How many Fluffy and Cloud together?',ans:10,hint:'Fluffy is 3 jars and Cloud is 2 jars. That is 5 jars. Each jar is 2 slimes.'},
+ {kind:'t',q:'How many Mint and Grape were sold altogether?',ans:81,hint:'36 + 45. Add the ones first: 6 + 5 = 11. Trade 10 ones for a ten.'},
+ {kind:'t',q:'How many more Grape than Lemon?',ans:26,hint:'45 − 19. You need 9 ones but only have 5. Open a ten.'},
+ {kind:'t',q:'How many Berry, Lemon and Mint altogether?',ans:83,hint:'28 + 19 + 36. Add the ones: 8 + 9 + 6 = 23. That is 2 tens and 3 ones.'}
+];
+function chart(){
+ const card=el('div',{class:'card'});
+ shell('Sales Board',card,[]);
+ let i=0;
+ function show(){
+  const c=CHART_QS[i];let vis;
+  if(c.kind==='p'){
+   vis=el('div',{class:'card',style:'border-width:2px;padding:14px'},el('h3',{},'Slimes sold this week'),
+    el('div',{class:'scroll'},el('table',{class:'chart'},PICTO.map(([n,k])=>{const p=el('div',{class:'picto'});for(let j=0;j<k;j++)p.append(el('i',{class:'jar'}));return el('tr',{},el('th',{},n),el('td',{},p))}))),
+    el('div',{class:'key'},el('i',{class:'jar'}),'= 2 slimes'));
+  } else {
+   vis=el('div',{class:'scroll'},el('table',{class:'chart'},el('tr',{},el('th',{},'Slime'),el('th',{},'Sold')),TABLE.map(([n,k])=>el('tr',{},el('td',{},n),el('td',{class:'n'},String(k))))));
+  }
+  const inp=el('input',{class:'num',id:'chart-ans',inputmode:'numeric','aria-label':'Your answer'});const msg=el('div');
+  card.replaceChildren(el('p',{class:'soft'},`Question ${i+1} of ${CHART_QS.length}`),vis,el('p',{class:'q'},c.q),
+   el('div',{class:'row'},inp,el('button',{onclick:()=>{tried();const g=parseInt(inp.value,10);
+    if(g===c.ans)msg.replaceChildren(el('div',{class:'msg good'},`Yes! ${c.ans}.`),el('div',{class:'row',style:'margin-top:12px'},el('button',{onclick:()=>{i=(i+1)%CHART_QS.length;show()}},i+1<CHART_QS.length?'Next question →':'Start again')));
+    else msg.replaceChildren(el('div',{class:'msg try'},'Not yet. '+c.hint))}},'Check')),msg);
+ }
+ show();
+}
+
+home();
+})();
+</script>
+
+</body></html>
