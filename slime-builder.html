@@ -32,7 +32,7 @@ input.num{font-family:var(--display);font-size:34px;font-weight:800;width:5.5ch;
 input.name{font-family:var(--display);font-size:28px;font-weight:800;border:3px solid var(--line);border-radius:14px;padding:6px 12px;width:min(320px,80vw);color:var(--ink);background:#fff}
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .layout{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start}
-@media (max-width:760px){.layout{grid-template-columns:1fr}}
+@media (max-width:760px){.layout{grid-template-columns:1fr}.bench{position:static}.bench svg{max-width:180px}}
 .card{background:var(--card);border:3px solid var(--line);border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
 .bench{align-items:center;text-align:center;position:sticky;top:12px}
 .bench svg{width:100%;max-width:260px;height:auto}
@@ -52,10 +52,19 @@ input.name{font-family:var(--display);font-size:28px;font-weight:800;border:3px 
 .col h3{font-size:21px}
 .col .big{font-family:var(--display);font-size:38px;font-weight:800;line-height:1}
 .pieces{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;max-width:140px}
-.tub{display:inline-block;width:28px;height:28px;border-radius:8px;background:var(--grape)}
-.cup{display:inline-block;width:12px;height:32px;border-radius:5px;background:var(--sky)}
-.bead{display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--slime)}
-.new{background:var(--berry)!important}
+/* A cup is 10 beads stacked; a tub is 10 cups side by side, so the 10s are visible. */
+.bead{--c:var(--slime);display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--c);flex:none}
+.cup{--c:var(--sky);display:inline-block;width:12px;height:41px;border-radius:4px;flex:none;border:1px solid var(--c);background:repeating-linear-gradient(to bottom,var(--c) 0 3px,#fff 3px 4px)}
+.tub{--c:var(--grape);display:inline-block;width:42px;height:42px;border-radius:6px;flex:none;border:1px solid var(--c);background:repeating-linear-gradient(to right,var(--c) 0 3px,#fff 3px 4px)}
+.new{--c:var(--berry)}
+details.key{background:var(--card);border:3px solid var(--line);border-radius:24px;padding:14px 20px}
+details.key summary{font-family:var(--display);font-weight:800;font-size:24px;cursor:pointer}
+.keygrid{display:grid;gap:14px;margin-top:12px}
+.keyrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:20px}
+.keyrow .lot{display:flex;gap:4px;flex-wrap:wrap;align-items:center;max-width:260px}
+.keyrow .arrow{font-family:var(--display);font-weight:800;font-size:28px;color:var(--berry)}
+.keyrow b{font-family:var(--display);font-size:24px}
+.keyrow .eg{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 12px;border:3px dashed var(--line);border-radius:16px;background:#fbfffd}
 .vert{font-family:var(--display);font-weight:800;font-size:38px;line-height:1.1;text-align:right;font-variant-numeric:tabular-nums;display:inline-grid;gap:2px;padding:8px 18px;border:3px dashed var(--line);border-radius:16px;background:#fff}
 .vert .carry{font-size:22px;color:var(--berry);min-height:24px;letter-spacing:.9ch}
 .vert .rule{border-top:4px solid var(--ink)}
@@ -80,6 +89,16 @@ input.name{font-family:var(--display);font-size:28px;font-weight:800;border:3px 
 <div class="wrap">
   <a class="home" href="index.html">← All games</a>
   <div class="top"><h1>Slime Builder</h1></div>
+  <details class="key" id="key" open>
+    <summary>How the jars work</summary>
+    <div class="keygrid">
+      <div class="keyrow"><span class="lot"><i class="bead"></i></span><span>1 bead</span><b>= 1</b></div>
+      <div class="keyrow"><span class="lot" id="ten-beads"></span><span class="arrow">→</span><i class="cup"></i><span>10 beads fill 1 cup</span><b>= 10</b></div>
+      <div class="keyrow"><span class="lot" id="ten-cups"></span><span class="arrow">→</span><i class="tub"></i><span>10 cups fill 1 tub</span><b>= 100</b></div>
+      <div class="keyrow"><span>So 243 beads is</span><span class="eg"><i class="tub"></i><i class="tub"></i><i class="cup"></i><i class="cup"></i><i class="cup"></i><i class="cup"></i><i class="bead"></i><i class="bead"></i><i class="bead"></i></span><span>2 tubs, 4 cups, 3 beads</span></div>
+      <div class="keyrow"><span>A jar holds up to 9. Got 10? <b>Trade up.</b> Need more? <b>Open one.</b></span></div>
+    </div>
+  </details>
   <div class="layout">
     <div class="card bench" id="bench"></div>
     <div class="card" id="card"></div>
@@ -268,6 +287,7 @@ function shelf(){
  c.replaceChildren(el('h2',{},`My slime shelf (${sh.length})`),el('div',{class:'shelf'},sh.map(s=>el('div',{class:'jarcard'},drawSlime(s,{full:true}),s.name))),
   el('p',{class:'small'},'Your shelf stays on this computer.'));
 }
+for(let i=0;i<10;i++){document.getElementById('ten-beads').append(el('i',{class:'bead'}));document.getElementById('ten-cups').append(el('i',{class:'cup'}))}
 shelf();start();
 })();
 </script>
