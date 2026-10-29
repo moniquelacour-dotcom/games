@@ -68,6 +68,12 @@ details.key summary{font-family:var(--display);font-weight:800;font-size:24px;cu
 .vert{font-family:var(--display);font-weight:800;font-size:38px;line-height:1.1;text-align:right;font-variant-numeric:tabular-nums;display:inline-grid;gap:2px;padding:8px 18px;border:3px dashed var(--line);border-radius:16px;background:#fff}
 .vert .carry{font-size:22px;color:var(--berry);min-height:24px;letter-spacing:.9ch}
 .vert .rule{border-top:4px solid var(--ink)}
+.vgrid{display:inline-grid;grid-template-columns:repeat(4,minmax(1.2ch,auto));column-gap:10px;justify-items:center;align-items:end;font-family:var(--display);font-weight:800;font-size:40px;line-height:1.1;font-variant-numeric:tabular-nums;padding:8px 18px;border:3px dashed var(--line);border-radius:16px;background:#fff}
+.vmark{min-height:36px;font-size:24px;color:var(--berry);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;line-height:1}
+.vmark .old{text-decoration:line-through;opacity:.55;font-size:20px}
+.vin{width:2.2ch;font-family:var(--display);font-weight:800;font-size:26px;text-align:center;border:3px solid var(--berry);border-radius:8px;padding:2px 0;color:var(--berry);background:#fff3f8}
+.vd.struck{text-decoration:line-through;text-decoration-color:var(--berry);text-decoration-thickness:4px;color:var(--soft)}
+.vrule{grid-column:1/-1;justify-self:stretch;border-top:4px solid var(--ink)}
 .split{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start}
 @media (max-width:640px){.split{grid-template-columns:1fr}.col{min-height:140px}}
 .choices{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
@@ -202,8 +208,40 @@ function makeAdd(){let a,b;do{a=rnd(105,689);b=rnd(26,289)}while((a%10)+(b%10)<1
 function makeSub(){let a,b;do{a=Math.random()<.3?rnd(3,9)*100+rnd(0,9):rnd(312,987);b=rnd(48,a-60)}while((b%10)<=(a%10)||b>=a);return{a,b}}
 function newProblem(kind){
  const {a,b}=kind==='add'?makeAdd():makeSub();
- S={kind,a,b,h:Math.floor(a/100),t:Math.floor(a/10)%10,o:a%10,bh:Math.floor(b/100),bt:Math.floor(b/10)%10,bo:b%10,step:'o',carry:{t:'',h:''},done:{o:false,t:false,h:false}};
+ S={kind,a,b,h:Math.floor(a/100),t:Math.floor(a/10)%10,o:a%10,bh:Math.floor(b/100),bt:Math.floor(b/10)%10,bo:b%10,step:'o',carry:{t:'',h:''},done:{o:false,t:false,h:false},pend:null};
+ S.hist={h:[S.h],t:[S.t],o:[S.o]};
  say='';render();
+}
+/* The written problem. Regroup marks sit above the top number: a carried 1 when adding,
+   the new crossed-out numbers when taking away. Pink boxes appear where she must write them. */
+function digits(n){return{h:n>=100?String(Math.floor(n/100)):'',t:n>=10?String(Math.floor(n/10)%10):'',o:String(n%10)}}
+function vertical(S,add){
+ const C=['h','t','o'];const g=el('div',{class:'vgrid'});
+ g.append(el('span',{}));
+ for(const c of C){
+  const cell=el('span',{class:'vmark'});
+  const p=S.pend&&S.pend.find(x=>x.col===c);
+  if(p)cell.append(el('input',{class:'vin',id:'vin-'+c,inputmode:'numeric',maxlength:'2',autocomplete:'off','aria-label':'Write the new number here'}));
+  else if(add&&S.carry[c])cell.append(el('span',{class:'cur'},S.carry[c]));
+  else if(!add&&S.hist[c].length>1){const later=S.hist[c].slice(1);later.forEach((v,i)=>cell.append(el('span',{class:i<later.length-1?'old':'cur'},String(v))))}
+  g.append(cell);
+ }
+ const ad=digits(S.a),bd=digits(S.b);
+ g.append(el('span',{}));
+ for(const c of C)g.append(el('span',{class:'vd'+(!add&&S.hist[c].length>1?' struck':'')},ad[c]));
+ g.append(el('span',{class:'vd'},add?'+':'−'));
+ for(const c of C)g.append(el('span',{class:'vd'},bd[c]));
+ g.append(el('span',{class:'vrule'}));
+ g.append(el('span',{}));for(const c of C)g.append(el('span',{class:'vd'},S.step==='answer'&&c==='o'?'?':' '));
+ return g;
+}
+function checkPend(){
+ const wrong=S.pend.filter(p=>{const i=document.getElementById('vin-'+p.col);return !i||parseInt(i.value,10)!==p.want});
+ if(wrong.length){say=S.pend[0].kind==='carry'?'Not yet. You traded 10 for 1. What do you write above the next jar?':'Not yet. Look at the jars. How many are in each one now?';sayType='try';
+  const keep={};S.pend.forEach(p=>{const i=document.getElementById('vin-'+p.col);keep[p.col]=i?i.value:''});render();
+  S.pend.forEach(p=>{const i=document.getElementById('vin-'+p.col);if(i)i.value=keep[p.col]});return}
+ for(const p of S.pend){if(p.kind==='carry')S.carry[p.col]='1';else S.hist[p.col].push(p.want)}
+ S.pend=null;say='Yes! That is where it goes.';sayType='good';render();
 }
 function render(){
  const card=document.getElementById('card');
@@ -214,24 +252,26 @@ function render(){
  const up={o:'t',t:'h'};
  const ctl=el('div',{class:'row'});
  const next=k=>{S.step=k==='o'?'t':k==='t'?'h':'answer';say='';render()};
- if(S.step==='o'||S.step==='t'||S.step==='h'){
+ if(S.pend){
+  ctl.append(el('span',{class:'q'},S.pend[0].kind==='carry'?'Write the 1 you carried in the pink box.':'Write the new numbers in the pink boxes.'),el('button',{onclick:checkPend},'Check'));
+ } else if(S.step==='o'||S.step==='t'||S.step==='h'){
   const k=S.step;
   if(add){
    if(!S.done[k]){
     ctl.append(el('button',{onclick:()=>{S[k]+=need[k];S.done[k]=true;say='';render()}},`Pour in ${need[k]} ${names[k]}`));
    } else if(S[k]>=10&&k!=='h'){
     if(!say){say=`That jar has ${S[k]}. A jar can only hold 9. Make a trade.`;sayType='try'}
-    ctl.append(el('button',{class:'pink',onclick:()=>{S[k]-=10;S[up[k]]+=1;S.carry[up[k]]='1';say=`10 ${names[k]} made 1 ${one[up[k]]}.`;sayType='good';render()}},`Trade 10 ${names[k]} for 1 ${one[up[k]]}`));
+    ctl.append(el('button',{class:'pink',onclick:()=>{S[k]-=10;S[up[k]]+=1;S.pend=[{col:up[k],want:1,kind:'carry'}];say=`10 ${names[k]} made 1 ${one[up[k]]}.`;sayType='good';render()}},`Trade 10 ${names[k]} for 1 ${one[up[k]]}`));
    } else ctl.append(el('button',{onclick:()=>next(k)},k==='h'?'Count it up':'Next jar →'));
   } else {
    if(!S.done[k]){
     if(S[k]<need[k]){
      const from=up[k];
      say=`You need ${need[k]} ${names[k]} but only have ${S[k]}. Open a ${one[from]}.`;sayType='try';
-     ctl.append(el('button',{class:'pink',disabled:S[from]===0?'':null,onclick:()=>{S[from]-=1;S[k]+=10;say=`1 ${one[from]} opened into 10 ${names[k]}.`;sayType='good';render()}},`Open 1 ${one[from]} → 10 ${names[k]}`));
+     ctl.append(el('button',{class:'pink',disabled:S[from]===0?'':null,onclick:()=>{S[from]-=1;S[k]+=10;S.pend=[{col:from,want:S[from]},{col:k,want:S[k]}];say=`1 ${one[from]} opened into 10 ${names[k]}.`;sayType='good';render()}},`Open 1 ${one[from]} → 10 ${names[k]}`));
      if(S[from]===0&&k==='o'&&S.h>0){
       say='No cups left to open. Open a tub first. It turns into 10 cups.';
-      ctl.append(el('button',{class:'grape',onclick:()=>{S.h-=1;S.t+=10;say='1 tub opened into 10 cups.';sayType='good';render()}},'Open 1 tub → 10 cups'));
+      ctl.append(el('button',{class:'grape',onclick:()=>{S.h-=1;S.t+=10;S.pend=[{col:'h',want:S.h},{col:'t',want:S.t}];say='1 tub opened into 10 cups.';sayType='good';render()}},'Open 1 tub → 10 cups'));
      }
     } else ctl.append(el('button',{onclick:()=>{S[k]-=need[k];S.done[k]=true;say='';render()}},`Use ${need[k]} ${names[k]}`));
    } else ctl.append(el('button',{onclick:()=>next(k)},k==='h'?'Count it up':'Next jar →'));
@@ -260,15 +300,15 @@ function render(){
   return el('div',{class:'col'+(S.step===k?' hot':'')},el('h3',{},label),el('span',{class:'big'},String(S[k])),el('span',{},place),p);
  }));
  const story=add?`You have ${S.a} beads. A delivery brings ${S.b} more.`:`You have ${S.a} beads. You use ${S.b} in your slime.`;
- const v=el('div',{class:'vert'},el('div',{class:'carry'},(S.carry.h||' ')+(S.carry.t||' ')+' '),
-  el('div',{},String(S.a)),el('div',{},(add?'+ ':'− ')+S.b),el('div',{class:'rule'}),el('div',{},S.step==='answer'?'?':' '));
+ const v=vertical(S,add);
  const parts=[el('p',{class:'small'},`Batch ${slime.mixins.length+1} of ${BATCHES}`),el('p',{class:'q'},story),
   el('div',{class:'how'},el('span',{},el('i',{class:'tub'}),' tub = 100'),el('span',{},el('i',{class:'cup'}),' cup = 10'),el('span',{},el('i',{class:'bead'}),' bead = 1'),el('span',{},'A jar holds 9.')),
   el('div',{class:'split'},v,mat)];
  if(say)parts.push(el('div',{class:'msg '+sayType},say));
  parts.push(ctl);
  card.replaceChildren(...parts);
- if(S.step==='answer')setTimeout(()=>{const i=document.getElementById('ans');if(i)i.focus()},0);
+ if(S.pend){setTimeout(()=>{const ins=[...card.querySelectorAll('.vin')];ins.forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter')checkPend()}));if(ins[0])ins[0].focus()},0)}
+ else if(S.step==='answer')setTimeout(()=>{const i=document.getElementById('ans');if(i)i.focus()},0);
 }
 
 /* ---------- finish ---------- */
