@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Stage Show Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Limelight&family=Nunito:wght@500;700;800&display=swap">
+<style>
+/* Layout: the stage on top, the act panel under it. One committed dark-theater look. */
+:root{
+  --house:#15101c;      /* theater dark */
+  --panel:#211a2b;
+  --panel-2:#2c2339;
+  --ink:#f7f0e4;
+  --muted:#bfb2cf;
+  --brass:#f2c14e;      /* marquee gold */
+  --ok:#47c58a;
+  --oops:#ee7393;
+  --display:"Limelight","Georgia",serif;
+  --body:"Nunito","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--house);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45;
+  padding-block:18px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:860px;margin:0 auto;display:grid;gap:18px}
+h1,h2{font-family:var(--display);font-weight:400;letter-spacing:.02em;text-wrap:balance;margin:0}
+h1{font-size:clamp(26px,5vw,38px);color:var(--brass);text-align:center}
+h2{font-size:clamp(22px,4vw,28px);color:var(--brass)}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--brass);outline-offset:2px}
+
+/* ---------- stage ---------- */
+.stage{position:relative;width:100%;max-width:100%;aspect-ratio:16/10;border-radius:14px;overflow:hidden;
+  border:3px solid #3a2e48;box-shadow:0 12px 40px #0008}
+.backdrop{position:absolute;inset:0;transition:background .5s}
+.scenery{position:absolute;left:14%;right:14%;top:16%;display:flex;justify-content:space-around;font-size:clamp(20px,5vw,44px);opacity:.85}
+.spot{position:absolute;inset:0;pointer-events:none;transition:background .5s}
+.floor{position:absolute;left:0;right:0;bottom:0;height:24%;background:repeating-linear-gradient(90deg,#4a2f1f 0 38px,#56382a 38px 76px);border-top:4px solid #2a1a10}
+.curtain{position:absolute;top:0;bottom:0;width:15%;transition:background .5s;box-shadow:inset -6px 0 14px #0006}
+.curtain.l{left:0;border-radius:0 0 40% 0}
+.curtain.r{right:0;border-radius:0 0 0 40%;box-shadow:inset 6px 0 14px #0006}
+.valance{position:absolute;left:0;right:0;top:0;height:9%;transition:background .5s;
+  -webkit-mask:radial-gradient(circle at 50% 0,#000 70%,transparent 71%) 0 0/8% 200%;mask:radial-gradient(circle at 50% 0,#000 70%,transparent 71%) 0 0/8% 200%}
+.marquee{position:absolute;top:10%;left:50%;transform:translateX(-50%);max-width:66%;padding:3px 14px;border-radius:8px;
+  background:#1a1209dd;border:2px solid var(--brass);font-family:var(--display);color:var(--brass);
+  font-size:clamp(12px,2.6vw,20px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.star{position:absolute;left:50%;bottom:17%;transform:translateX(-50%);text-align:center;line-height:1}
+.star .who{font-size:clamp(54px,13vw,110px);display:block;filter:drop-shadow(0 6px 6px #0007)}
+.star .hat{font-size:clamp(26px,6vw,50px);display:block;margin-bottom:-.35em}
+.prop{position:absolute;bottom:18%;left:63%;font-size:clamp(30px,7vw,62px)}
+.prop.side{left:auto;right:63%;font-size:clamp(24px,5.5vw,48px)}
+.crowd{position:absolute;left:0;right:0;bottom:2%;display:flex;flex-wrap:wrap-reverse;justify-content:center;gap:2px 4px;
+  padding:0 10%;font-size:clamp(14px,3.2vw,26px)}
+.crowd span{animation:pop .35s ease-out}
+.style-tag{position:absolute;right:16%;top:22%;font-size:clamp(11px,2vw,15px);background:#000a;padding:2px 8px;border-radius:999px;color:var(--ink)}
+.empty-hint{position:absolute;left:50%;bottom:30%;transform:translateX(-50%);color:var(--muted);font-size:clamp(13px,2.4vw,17px);text-align:center;width:60%}
+@keyframes pop{from{transform:scale(.2);opacity:0}to{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- panel ---------- */
+.panel{background:var(--panel);border-radius:14px;padding:20px;display:grid;gap:16px}
+.sub{color:var(--muted)}
+.acts{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.act{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center;text-align:left;background:var(--panel-2);
+  border:2px solid transparent;border-radius:12px;padding:12px}
+.act:hover{border-color:var(--brass)}
+.act .ic{font-size:30px;grid-row:span 2}
+.act b{font-size:17px}
+.act small{color:var(--muted);font-size:13px}
+.act.done{border-color:#47c58a66}
+.stars{color:var(--brass);letter-spacing:2px;font-size:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{background:var(--brass);color:#2a1a05;border:0;border-radius:999px;padding:11px 22px;font-weight:800}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.ghost{background:transparent;border:2px solid #4a3d5c;border-radius:999px;padding:9px 18px;color:var(--muted);font-weight:700}
+.lesson{display:grid;gap:10px;background:var(--panel-2);border-radius:12px;padding:16px;max-width:65ch}
+.lesson li{margin-bottom:4px}
+.lesson ul{margin:0;padding-left:20px}
+.ex{border-left:4px solid var(--brass);padding:6px 12px;background:#0003;border-radius:0 8px 8px 0}
+.q{font-size:19px;font-weight:700;max-width:65ch}
+.q .quote{display:block;font-weight:500;background:#0003;padding:10px 14px;border-radius:8px;margin:8px 0}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;background:var(--panel-2);border:2px solid #3e3250;border-radius:12px;padding:12px 16px;font-size:17px}
+.opt:hover:not(:disabled){border-color:var(--brass)}
+.opt.right{border-color:var(--ok);background:#47c58a22}
+.opt.wrong{border-color:var(--oops);background:#ee739318;opacity:.7}
+.opt:disabled{cursor:default}
+.note{border-radius:10px;padding:10px 14px;font-weight:700}
+.note.good{background:#47c58a22;color:#9ff0c6}
+.note.hint{background:#ee739318;color:#ffc2d1}
+.progress{color:var(--muted);font-size:14px;letter-spacing:.06em;text-transform:uppercase}
+.picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
+.pick{background:var(--panel-2);border:2px solid #3e3250;border-radius:12px;padding:12px 8px;display:grid;gap:6px;justify-items:center}
+.pick:hover,.pick.on{border-color:var(--brass)}
+.pick .big{font-size:38px;line-height:1}
+.pick .sw{width:44px;height:44px;border-radius:50%;border:2px solid #fff3}
+label{font-weight:700;display:grid;gap:6px}
+input,textarea{font:inherit;background:var(--panel-2);color:var(--ink);border:2px solid #4a3d5c;border-radius:10px;padding:10px 12px;width:100%}
+textarea{min-height:84px;resize:vertical}
+.playbill{background:#f4e8cf;color:#2b1d10;border-radius:10px;padding:20px;display:grid;gap:8px;text-align:center;
+  border:6px double #8a6420}
+.playbill h2{color:#7a1f2b;font-size:clamp(24px,5vw,34px)}
+.playbill .open{font-style:italic;font-size:18px}
+.playbill small{color:#6b5536;text-transform:uppercase;letter-spacing:.12em;font-size:12px}
+</style>
+
+</head><body>
+<div class="wrap">
+  <h1>Stage Show Builder</h1>
+  <div class="stage" id="stage" aria-label="Your stage"></div>
+  <section class="panel" id="panel" aria-live="polite"></section>
+</div>
+
+<script>
+const PERFORMERS=[["fox","🦊","Fox"],["cat","🐱","Cat"],["penguin","🐧","Penguin"],["unicorn","🦄","Unicorn"],["dog","🐶","Dog"],["parrot","🦜","Parrot"],["panda","🐼","Panda"],["frog","🐸","Frog"]];
+
+const ACTS=[
+ {id:"titles",icon:"🎟️",name:"Titles",earns:"Curtains",
+  lesson:["<b>Short works</b> go in quotation marks: songs, poems, articles, chapters, short stories.","<b>Big works</b> go in italics (or get underlined): books, movies, magazines, albums."],
+  ex:'I read the article "Owls at Night" in <em>Ranger Rick</em>.',
+  qs:[
+   {q:"Which sentence is written correctly?",o:['My favorite song is "Happy Feet Dance."',"My favorite song is Happy Feet Dance.","My favorite song is 'happy feet dance.'"],a:0,h:"A song is a short work. Short works get quotation marks, and the title keeps its capital letters."},
+   {q:'Maya read an article called <u>Cats Who Sing</u> in a magazine. How should the article title be written?',o:["Cats Who Sing",'"Cats Who Sing"','"Cats" Who Sing',"'cats who sing'"],a:1,h:"An article is a short work. The whole title goes inside the quotation marks."},
+   {q:"Which one goes in quotation marks?",o:["a whole book","a movie","a poem","a magazine"],a:2,h:"Three of these are big works. Which one is short?"}
+  ],
+  pick:{key:"curtain",title:"Pick your curtains",kind:"swatch",opts:[["red","Ruby red","#a8182a"],["purple","Royal purple","#5b2a86"],["blue","Deep blue","#1f4e9c"],["gold","Gold","#c8961e"],["green","Emerald","#1f7a4c"],["pink","Rose pink","#c2457a"]]}},
+ {id:"idioms",icon:"🎩",name:"Idioms",earns:"Backdrop",
+  lesson:["An idiom says one thing but <b>means</b> another.","Try the picture test. If the words make a silly picture, look for the hidden meaning."],
+  ex:'"It\'s raining cats and dogs" means it is raining hard. No pets are falling!',
+  qs:[
+   {q:'"The test was <b>a piece of cake</b>." This means the test was',o:["easy","made of cake","very hard","sweet"],a:0,h:"Picture it: a test made of cake is silly. Is cake easy or hard to eat?"},
+   {q:'Before the show, Dad said, "<b>Break a leg!</b>" He meant',o:["be careful on the stairs","good luck","dance really hard","fall down"],a:1,h:"Dad doesn't want anyone hurt. What do people wish someone right before a show?"},
+   {q:'At the theater, Grandpa sells tickets, fixes the lights, and plays piano. He <b>wears many hats</b>. This means Grandpa',o:["owns a lot of hats","has many different jobs","loves costumes","is always cold"],a:1,h:"Look at the sentence before the idiom. It lists the things Grandpa does."}
+  ],
+  pick:{key:"backdrop",title:"Pick your backdrop",kind:"emoji",opts:[["forest","Forest","🌲"],["ocean","Ocean","🌊"],["city","City night","🌃"],["space","Outer space","🚀"],["castle","Castle","🏰"],["garden","Garden","🌸"]]}},
+ {id:"combine",icon:"🔗",name:"Combining sentences",earns:"Stage lights",
+  lesson:["<b>Step 1: How do the two sentences go together?</b>","➕ <b>Same</b> (they add on) → <b>and</b>","↔️ <b>Different</b> (a surprise or opposite) → <b>but</b>","🔀 <b>One option</b> (pick one) → <b>or</b>","➡️ <b>Cause and effect</b> (one makes the other happen) → <b>so</b> or <b>because</b>","<b>Step 2:</b> join with a comma + that word. A comma alone is a run-on. ❌","<b>Because</b> goes right before the <b>cause</b> (the reason), and it needs no comma: The show moved inside <b>because</b> it rained."],
+  ex:"It rained. The show moved inside. → Cause and effect → It rained, <b>so</b> the show moved inside.",
+  qs:[
+   {q:'How do these two sentences go together? <span class="quote">The parrot practiced every day. She sang perfectly at the show.</span>',o:["➕ Same: and","↔️ Different: but","🔀 One option: or","➡️ Cause and effect: so / because"],a:3,h:"Did one thing make the other happen? Why did she sing perfectly?"},
+   {q:'Combine: <span class="quote">Mia loves to sing. Her brother loves to dance.</span>',o:["Mia loves to sing, her brother loves to dance.","Mia loves to sing, and her brother loves to dance.","Mia loves to sing, so her brother loves to dance.","Mia loves to sing, or her brother loves to dance."],a:1,h:"These two just add on to each other. Nothing caused anything. And remember: a comma alone is a run-on."},
+   {q:'How do these two sentences go together? <span class="quote">Leo was nervous. He went on stage anyway.</span>',o:["➕ Same: and","↔️ Different: but","🔀 One option: or","➡️ Cause and effect: so / because"],a:1,h:'"Anyway" is a clue. Being nervous would make you want to stay off stage. Did he do what you expected?'},
+   {q:'Combine: <span class="quote">We can sing a song. We can do a dance.</span>',o:["We can sing a song, but we can do a dance.","We can sing a song, so we can do a dance.","We can sing a song, or we can do a dance.","We can sing a song we can do a dance."],a:2,h:'"We can" means these are choices. Which word shows you pick one?'},
+   {q:'Combine: <span class="quote">It started to rain. The outdoor show moved inside.</span>',o:["It started to rain, but the outdoor show moved inside.","It started to rain, so the outdoor show moved inside.","It started to rain, or the outdoor show moved inside.","It started to rain, the outdoor show moved inside."],a:1,h:"Why did the show move inside? Find the word that shows one thing caused the other."},
+   {q:'Combine: <span class="quote">The crowd laughed. The penguin slipped on a banana peel.</span>',o:["The crowd laughed because the penguin slipped on a banana peel.","The crowd laughed, so the penguin slipped on a banana peel.","The crowd laughed, or the penguin slipped on a banana peel.","The crowd laughed, the penguin slipped on a banana peel."],a:0,h:"Which happened first: the slip or the laugh? The cause is the reason, and \"because\" goes right before it."},
+   {q:'How do these two sentences go together? <span class="quote">The lights went out. The band kept playing.</span>',o:["➕ Same: and","↔️ Different: but","🔀 One option: or","➡️ Cause and effect: so / because"],a:1,h:"When the lights go out, you might expect the music to stop. Did it?"},
+   {q:'Combine: <span class="quote">The show was long. The show was funny.</span>',o:["The show was long, the show was funny.","The show was long and funny.","Long, the show was funny."],a:1,h:"Both sentences are about the same show. Can they share the words \"The show was\"?"}
+  ],
+  pick:{key:"light",title:"Pick your stage lights",kind:"swatch",opts:[["warm","Warm white","#ffe9b0"],["pink","Pink","#ff9ad5"],["blue","Ice blue","#8fd3ff"],["purple","Purple","#c59bff"],["gold","Gold","#ffd34d"],["green","Green","#8ff0b0"]]}},
+ {id:"tense",icon:"⏰",name:"Verb tense",earns:"Costume",
+  lesson:["<b>Hunt for a time clue first:</b> yesterday, last night (past) · every day, now (present) · tomorrow, next week (future).","Then check the verb. If it already matches the clue, choose <b>Leave as is</b>."],
+  ex:"Last night we <b>sang</b>. Every day we <b>sing</b>. Tomorrow we <b>will sing</b>.",
+  qs:[
+   {q:'<span class="quote">Yesterday the cat <u>jumps</u> onto the stage.</span> How should the underlined word be written?',o:["jumped","jumping","will jump","Leave as is."],a:0,h:'Find the time clue. "Yesterday" means it already happened.'},
+   {q:'<span class="quote">Every morning our band <u>practices</u> in the garage.</span> How should the underlined word be written?',o:["practiced","practicing","will practice","Leave as is."],a:3,h:'"Every morning" means it happens again and again, now. Does the verb already match?'},
+   {q:'<span class="quote">Tomorrow we <u>sang</u> at the big show.</span> How should the underlined word be written?',o:["sing","will sing","singing","Leave as is."],a:1,h:'"Tomorrow" hasn\'t happened yet. Which choice talks about the future?'}
+  ],
+  pick:{key:"costume",title:"Pick a costume piece",kind:"emoji",opts:[["tophat","Top hat","🎩"],["crown","Crown","👑"],["bow","Bow","🎀"],["shades","Sunglasses","🕶️"],["cap","Graduation cap","🎓"],["star","Star","⭐"]]}},
+ {id:"sound",icon:"👯",name:"Their, there, they're",earns:"Sidekick",
+  lesson:["<b>they're</b> = they are. Test it: say \"they are\" in the sentence. If it works, use they're.","<b>their</b> = belongs to them: their wings, their song.","<b>there</b> = a place. It has <b>here</b> inside it: over there, there is."],
+  ex:"<b>They're</b> taking <b>their</b> bows over <b>there</b>.",
+  qs:[
+   {q:'Which word fits? <span class="quote">Sea lions are funny. ___ the best jugglers at the zoo.</span>',o:["Their","There","They're"],a:2,h:'Try "They are the best jugglers." Does it make sense?'},
+   {q:'Which word fits? <span class="quote">The penguins flapped ___ wings.</span>',o:["their","there","they're"],a:0,h:"Whose wings? The wings belong to the penguins."},
+   {q:'Which word fits? <span class="quote">Put the drum over ___.</span>',o:["their","there","they're"],a:1,h:"Is it a place? Look for the word with here inside it."},
+   {q:'<span class="quote"><u>Their</u> going to sing at the circus tonight.</span> How should the underlined word be written?',o:["There","They're","Leave as is."],a:1,h:'Try "They are going to sing." Does that work?'},
+   {q:'<span class="quote"><u>There</u> is a big crowd tonight.</span> How should the underlined word be written?',o:["Their","They're","Leave as is."],a:2,h:'Try "They are is a big crowd." Does that work? Is anything owned here?'},
+   {q:'<span class="quote">The parrots practiced <u>they\'re</u> song all week.</span> How should the underlined word be written?',o:["their","there","Leave as is."],a:0,h:'Try "practiced they are song." Does that work? Whose song is it?'}
+  ],
+  pick:{key:"sidekick",title:"Pick a sidekick for your star",kind:"emoji",opts:[["mouse","Mouse","🐭"],["chick","Chick","🐤"],["turtle","Turtle","🐢"],["butterfly","Butterfly","🦋"],["octopus","Octopus","🐙"],["hedgehog","Hedgehog","🦔"]]}},
+ {id:"conclude",icon:"🎬",name:"Conclusions",earns:"Prop",
+  lesson:["A conclusion <b>wraps up the whole piece</b>.","It says the big idea again in new words and leaves a final thought.","It does <b>not</b> add a brand-new fact."],
+  ex:"Report on owls → \"Owls are skilled night hunters, and they deserve our protection.\"",
+  qs:[
+   {q:"A report is all about penguins. Which is the best concluding sentence?",o:["Penguins eat fish.","Penguins are amazing birds that are built for life in the cold.","Some penguins live in zoos.","Emperor penguins are the tallest penguins."],a:1,h:"Three of these are single facts. Which one sums up the whole report?"},
+   {q:"A story is about a dog named Biscuit in his first talent show. Which is the best ending?",o:["The dog's name was Biscuit.","As the crowd cheered, Biscuit knew all his practice had been worth it.","The show started at 6:00.","There were ten acts in the show."],a:1,h:"An ending wraps up the story and leaves a final feeling. Which one does that?"},
+   {q:"Which one does NOT belong in a conclusion?",o:["the big idea again","a brand-new fact","a final thought","a wrap-up sentence"],a:1,h:"A conclusion wraps up what you already said. What would be out of place?"}
+  ],
+  pick:{key:"prop",title:"Pick a prop",kind:"emoji",opts:[["piano","Piano","🎹"],["guitar","Guitar","🎸"],["mic","Microphone","🎤"],["drum","Drum","🥁"],["violin","Violin","🎻"],["flowers","Flowers","💐"]]}},
+ {id:"words",icon:"📖",name:"Word meanings",earns:"Audience",
+  lesson:["Put your meaning back into the sentence. Does it still make sense?","Word parts help: <b>-er, -or, -ist, -ant, -ent</b> can mean \"a person who.\""],
+  ex:"A singer is a person who sings. A resident is a person who lives somewhere.",
+  qs:[
+   {q:'<span class="quote">The <u>audience</u> clapped loudly.</span> Which word means the same as <u>audience</u>?',o:["crowd","singer","stage","ticket"],a:0,h:"Put each word in the sentence. Who clapped?"},
+   {q:'Dictionary entry: <span class="quote"><b>bright</b> (adjective) 1. full of light 2. smart 3. cheerful in color</span><span class="quote">Ana is a <u>bright</u> student who learns fast.</span> Which meaning fits?',o:["1","2","3"],a:1,h:'Read the rest of the sentence: "who learns fast." Which meaning goes with learning?'},
+   {q:"A <b>pianist</b> is",o:["a kind of piano","a person who plays piano","a piano song","a piano store"],a:1,h:"Look at the ending: -ist. What does -ist mean?"}
+  ],
+  pick:{key:"audience",title:"Who is in your audience?",kind:"emoji",opts:[["animals","Animals","🐰"],["people","People","🧒"],["aliens","Aliens","👽"],["robots","Robots","🤖"],["birds","Birds","🦉"],["monsters","Monsters","👾"]]}},
+ {id:"mood",icon:"🎭",name:"Show style",earns:"Show name",
+  lesson:["<b>Suspense</b> 😬 is the \"what will happen?!\" feeling.","<b>Humor</b> 😂 is something funny.","<b>Mystery</b> 🔍 is a puzzle to solve.","<b>Adventure</b> 🗺️ is an exciting journey."],
+  ex:"Suspense: \"The door creaked open… slowly… and then the lights went out.\"",
+  qs:[
+   {q:'<span class="quote">The lights went out. Then something tapped on the window.</span> This sentence builds',o:["suspense","humor","adventure"],a:0,h:"How does it make you feel? Calm, giggly, or wondering what happens next?"},
+   {q:'<span class="quote">The dog put on Dad\'s sunglasses and danced on the kitchen table.</span> This sentence is',o:["suspense","humor","mystery"],a:1,h:"Picture it. Would the audience gasp or laugh?"},
+   {q:"Which sentence builds the most suspense?",o:["The band played a happy song.","Slowly, the curtain began to move, but no one was behind it.","The audience ate popcorn.","The show ended at nine."],a:1,h:"Which one makes you ask, \"Wait, what happens next?\""}
+  ],
+  pick:{key:"style",title:"What kind of show is yours?",kind:"emoji",opts:[["suspense","Suspense","😬"],["humor","Comedy","😂"],["mystery","Mystery","🔍"],["adventure","Adventure","🗺️"]]}}
+];
+
+const BACKDROPS={forest:["#0f3d2e","#2e7d4f","🌲🌳🌲🌳🌲"],ocean:["#0b3a6b","#1f8fbf","🌊🐠🐚🐠🌊"],city:["#14143a","#3b2d6b","🏙️🌙🏙️⭐🏙️"],space:["#05051a","#2b1055","🪐⭐🌙⭐🪐"],castle:["#3a2a4a","#8a6fb0","🏰🌟🏰"],garden:["#3b6b2e","#e9a6bf","🌷🌻🌸🌻🌷"]};
+const CROWDS={animals:["🐶","🐱","🐰","🐻","🐼","🦊","🐨"],people:["🧒","👧","🧑","👦","👩","🧓","👨"],aliens:["👽"],robots:["🤖"],birds:["🐦","🦉","🦜","🐧","🐤"],monsters:["👾","👹","👻"]};
+const KEY="stage-show-builder-v1";
+const blank=()=>({performer:null,pieces:{},acts:{},showName:"",opening:""});
+let S=blank();
+try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(blank(),JSON.parse(raw));}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+
+let view="menu",run=null,resetArmed=false;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const optOf=(act,id)=>act.pick.opts.find(o=>o[0]===id);
+const actBy=id=>ACTS.find(a=>a.id===id);
+const allDone=()=>ACTS.every(a=>S.acts[a.id]&&S.acts[a.id].done);
+
+function seats(){
+  let n=ACTS.filter(a=>S.acts[a.id]&&S.acts[a.id].done).reduce((t,a)=>t+a.qs.length,0);
+  if(run&&!(S.acts[run.act.id]&&S.acts[run.act.id].done))n+=run.correct;
+  return Math.min(n,ACTS.reduce((t,a)=>t+a.qs.length,0));
+}
+
+function renderStage(){
+  const p=S.pieces;
+  const bd=BACKDROPS[p.backdrop]||["#1d1726","#2c2336",""];
+  const cur=p.curtain?optOf(actBy("titles"),p.curtain)[2]:"#4a3e57";
+  const curFold=`repeating-linear-gradient(90deg,${cur} 0 14px,color-mix(in srgb,${cur} 70%,#000) 14px 22px)`;
+  const lt=p.light?optOf(actBy("combine"),p.light)[2]:null;
+  const spot=lt?`radial-gradient(ellipse 30% 70% at 50% 62%,color-mix(in srgb,${lt} 55%,transparent),transparent 70%)`:`radial-gradient(ellipse 30% 70% at 50% 62%,#ffffff14,transparent 70%)`;
+  const perf=PERFORMERS.find(x=>x[0]===S.performer);
+  const crowdSet=CROWDS[p.audience]||["👤"];
+  let crowd="";for(let i=0;i<seats();i++)crowd+=`<span>${crowdSet[i%crowdSet.length]}</span>`;
+  const style=p.style?optOf(actBy("mood"),p.style):null;
+  $("stage").innerHTML=`
+    <div class="backdrop" style="background:linear-gradient(180deg,${bd[0]},${bd[1]})"></div>
+    <div class="scenery">${[...bd[2]].length?bd[2]:""}</div>
+    <div class="spot" style="background:${spot}"></div>
+    <div class="floor"></div>
+    ${perf?`<div class="star">${p.costume?`<span class="hat">${optOf(actBy("tense"),p.costume)[2]}</span>`:""}<span class="who">${perf[1]}</span></div>`:`<div class="empty-hint">Your star goes here</div>`}
+    ${p.prop?`<div class="prop">${optOf(actBy("conclude"),p.prop)[2]}</div>`:""}
+    ${p.sidekick?`<div class="prop side">${optOf(actBy("sound"),p.sidekick)[2]}</div>`:""}
+    ${style?`<div class="style-tag">${style[2]} ${style[1]}</div>`:""}
+    <div class="crowd">${crowd}</div>
+    <div class="curtain l" style="background:${curFold}"></div>
+    <div class="curtain r" style="background:${curFold}"></div>
+    <div class="valance" style="background:${cur}"></div>
+    <div class="marquee">${S.showName?esc(S.showName):"Your Stage Show"}</div>`;
+}
+
+function stars(n,total){return "★".repeat(n)+"☆".repeat(Math.max(0,total-n));}
+
+function renderPanel(){
+  const P=$("panel");
+  if(!S.performer||view==="performer"){
+    P.innerHTML=`<h2>Choose your star</h2><p class="sub">Who is the star of your show? You can change it later.</p>
+      <div class="picks">${PERFORMERS.map(x=>`<button class="pick ${S.performer===x[0]?"on":""}" data-perf="${x[0]}"><span class="big">${x[1]}</span>${x[2]}</button>`).join("")}</div>`;
+    P.querySelectorAll("[data-perf]").forEach(b=>b.onclick=()=>{S.performer=b.dataset.perf;save();go("menu");});
+    return;
+  }
+  if(view==="menu"){
+    const n=ACTS.filter(a=>S.acts[a.id]&&S.acts[a.id].done).length;
+    P.innerHTML=`<div><h2>Build your show</h2><p class="sub">Each act teaches one skill. Finish an act to add something to your stage. Every right answer brings in one more audience member.</p></div>
+      <div class="acts">${ACTS.map(a=>{const st=S.acts[a.id];return `<button class="act ${st&&st.done?"done":""}" data-act="${a.id}">
+        <span class="ic">${a.icon}</span><b>${a.name}</b><small>${st&&st.done?`<span class="stars" title="right on the first try">${stars(st.stars,a.qs.length)}</span>`:`Earns: ${a.earns}`}</small></button>`}).join("")}</div>
+      <div class="row"><button class="btn" id="bow" ${allDone()?"":"disabled"}>🎭 Curtain up</button>
+      <span class="sub">${n} of ${ACTS.length} acts done</span></div>
+      <div class="row"><button class="ghost" id="chg">Change my star</button><button class="ghost" id="reset">${resetArmed?"Tap again to start over":"Start over"}</button></div>`;
+    P.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>{run={act:actBy(b.dataset.act),i:0,correct:0,stars:0,missed:false,solved:false};go("lesson");});
+    $("bow").onclick=()=>go("curtain");
+    $("chg").onclick=()=>go("performer");
+    $("reset").onclick=()=>{if(resetArmed){S=blank();save();resetArmed=false;go("performer");}else{resetArmed=true;renderPanel();}};
+    return;
+  }
+  resetArmed=false;
+  const a=run&&run.act;
+  if(view==="lesson"){
+    P.innerHTML=`<div class="progress">Act: ${a.name} · earns ${a.earns}</div><h2>${a.icon} ${a.name}</h2>
+      <div class="lesson"><ul>${a.lesson.map(l=>`<li>${l}</li>`).join("")}</ul><div class="ex">${a.ex}</div></div>
+      <div class="row"><button class="btn" id="go">Start the act</button><button class="ghost" id="back">Back</button></div>`;
+    $("go").onclick=()=>go("q");$("back").onclick=()=>{run=null;go("menu");};
+    return;
+  }
+  if(view==="q"){
+    const q=a.qs[run.i];
+    P.innerHTML=`<div class="progress">${a.name} · question ${run.i+1} of ${a.qs.length}</div>
+      <div class="q">${q.q}</div>
+      <div class="opts">${q.o.map((o,k)=>`<button class="opt" data-k="${k}">${esc(o)}</button>`).join("")}</div>
+      <div id="fb"></div>`;
+    P.querySelectorAll(".opt").forEach(b=>b.onclick=()=>answer(+b.dataset.k,b));
+    return;
+  }
+  if(view==="pick"){
+    const pk=a.pick;
+    P.innerHTML=`<div class="progress">Act complete · ${stars(run.stars,a.qs.length)} right on the first try</div><h2>${pk.title}</h2>
+      <div class="picks">${pk.opts.map(o=>`<button class="pick ${S.pieces[pk.key]===o[0]?"on":""}" data-p="${o[0]}">${pk.kind==="swatch"?`<span class="sw" style="background:${o[2]}"></span>`:`<span class="big">${o[2]}</span>`}${o[1]}</button>`).join("")}</div>`;
+    P.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{
+      S.pieces[pk.key]=b.dataset.p;
+      const prev=S.acts[a.id];S.acts[a.id]={done:true,stars:Math.max(prev?prev.stars:0,run.stars)};
+      save();const wasMood=a.id==="mood";run=null;go(wasMood?"name":"menu");
+    });
+    return;
+  }
+  if(view==="name"){
+    P.innerHTML=`<h2>Name your show</h2>
+      <form id="nf" class="opts">
+        <label for="sn">Show name<input id="sn" maxlength="40" value="${esc(S.showName)}" placeholder="The Midnight Fox Spectacular"></label>
+        <label for="ol">Your opening line<span class="sub" style="font-weight:500">Write one suspense sentence. Make the audience wonder what happens next.</span>
+          <textarea id="ol" maxlength="180" placeholder="The stage went dark, and then…">${esc(S.opening)}</textarea></label>
+        <div class="row"><button class="btn" type="submit">Save my show</button><button class="ghost" type="button" id="skip">Back to acts</button></div>
+      </form>`;
+    $("nf").onsubmit=e=>{e.preventDefault();S.showName=$("sn").value.trim();S.opening=$("ol").value.trim();save();go(allDone()?"curtain":"menu");};
+    $("skip").onclick=()=>go("menu");
+    return;
+  }
+  if(view==="curtain"){
+    const perf=PERFORMERS.find(x=>x[0]===S.performer);
+    const st=S.pieces.style?optOf(actBy("mood"),S.pieces.style):null;
+    P.innerHTML=`<div class="playbill"><small>Now playing</small><h2>${esc(S.showName||"Your Stage Show")}</h2>
+      <p>Starring ${perf[1]} the ${perf[2]}${st?` · a ${st[1].toLowerCase()} show`:""}</p>
+      ${S.opening?`<p class="open">“${esc(S.opening)}”</p>`:`<p class="sub" style="color:#6b5536">Add an opening line to finish your playbill.</p>`}
+      <small>${seats()} in the audience tonight</small></div>
+      <div class="row"><button class="btn" id="edit">Edit name and opening line</button><button class="ghost" id="back">Back to acts</button></div>`;
+    $("edit").onclick=()=>go("name");$("back").onclick=()=>go("menu");
+  }
+}
+
+function answer(k,btn){
+  const a=run.act,q=a.qs[run.i],fb=$("fb");
+  if(k===q.a){
+    if(!run.missed)run.stars++;
+    run.correct++;
+    document.querySelectorAll(".opt").forEach(b=>b.disabled=true);
+    btn.classList.add("right");
+    const last=run.i===a.qs.length-1;
+    fb.innerHTML=`<div class="note good">Yes! One more fan takes a seat.</div><div class="row" style="margin-top:12px"><button class="btn" id="nx">${last?"Choose your prize":"Next question"}</button></div>`;
+    renderStage();
+    $("nx").onclick=()=>{run.missed=false;if(last)go("pick");else{run.i++;go("q");}};
+    $("nx").focus();
+  }else{
+    run.missed=true;btn.disabled=true;btn.classList.add("wrong");
+    fb.innerHTML=`<div class="note hint">Not quite. ${q.h}</div>`;
+  }
+}
+
+function go(v){view=v;renderPanel();renderStage();window.scrollTo({top:0,behavior:"smooth"});}
+renderStage();renderPanel();
+</script>
+
+</body></html>
