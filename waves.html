@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Wave Grid Practice</title>
+<meta name="description" content="Read a wave on a grid: amplitude up and down, wavelength side to side.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#127754;</text></svg>">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fredoka:wght@500;600&display=swap">
+<style>
+:root{--bg:#f3f7fb;--card:#ffffff;--fg:#1d2a38;--muted:#5b6b7c;--line:#d5dee8;--grid:#dbe5ef;--axis:#5b6b7c;--wave:#1f6fd1;--amp:#e0531f;--wl:#14915f;--accent:#1f6fd1;--good:#14915f;--bad:#c23a2b;--soft:#e8f0fb;--ampSoft:#fdebe3;--wlSoft:#e2f5ec;--hl:#fff1a8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111821;--card:#18222e;--fg:#e8eef5;--muted:#9fb0c2;--line:#2c3a4a;--grid:#263445;--axis:#9fb0c2;--wave:#6aa8ff;--amp:#ff8a5c;--wl:#4fd39a;--accent:#6aa8ff;--good:#4fd39a;--bad:#ff7a6b;--soft:#1e2c3d;--ampSoft:#3a2419;--wlSoft:#16332a;--hl:#4a4318;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111821;--card:#18222e;--fg:#e8eef5;--muted:#9fb0c2;--line:#2c3a4a;--grid:#263445;--axis:#9fb0c2;--wave:#6aa8ff;--amp:#ff8a5c;--wl:#4fd39a;--accent:#6aa8ff;--good:#4fd39a;--bad:#ff7a6b;--soft:#1e2c3d;--ampSoft:#3a2419;--wlSoft:#16332a;--hl:#4a4318;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:17px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif;margin:0}
+.wrap{max-width:820px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
+h1,h2{font-family:Fredoka,system-ui,sans-serif;font-weight:600;margin:0;text-wrap:balance}
+h1{font-size:1.9rem}h2{font-size:1.3rem}
+.sub{color:var(--muted);margin:0}
+.tabs{display:flex;flex-wrap:wrap;gap:8px}
+.tab{font:600 1rem Fredoka,system-ui,sans-serif;border:2px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:8px 16px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--card)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.svgbox{overflow-x:auto}
+svg{display:block;max-width:100%;height:auto}
+.steps{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.steps li{display:flex;gap:12px;align-items:flex-start}
+.num{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:600 1rem Fredoka,sans-serif;background:var(--soft)}
+.amp{color:var(--amp);font-weight:700}.wl{color:var(--wl);font-weight:700}
+.tag-amp{background:var(--ampSoft)}.tag-wl{background:var(--wlSoft)}
+.q{font-size:1.1rem;font-weight:700;margin:0}
+.choices{display:flex;flex-wrap:wrap;gap:10px}
+.choice{font:700 1.1rem "Atkinson Hyperlegible",sans-serif;min-width:64px;padding:10px 14px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer}
+.choice:hover{border-color:var(--accent)}
+.choice.right{border-color:var(--good);background:var(--wlSoft)}
+.choice.wrong{border-color:var(--bad);opacity:.6}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:520px){.tiles{grid-template-columns:1fr}}
+.tile{border:2px solid var(--line);border-radius:12px;background:var(--card);padding:6px;cursor:grab;color:var(--fg);font:inherit;text-align:left}
+.tile:hover{border-color:var(--accent)}
+.tile.wrong{border-color:var(--bad);opacity:.55}
+.tile.used{opacity:.3}
+.tile .lbl{font:600 .9rem Fredoka,sans-serif;color:var(--muted);padding:2px 4px}
+.fb{min-height:1.5em;font-weight:700;margin:0}
+.fb.good{color:var(--good)}.fb.bad{color:var(--bad)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{font:600 1rem Fredoka,sans-serif;border:none;border-radius:12px;padding:10px 18px;background:var(--accent);color:var(--card);cursor:pointer}
+.btn.ghost{background:var(--soft);color:var(--fg)}
+.stars{font:600 1rem Fredoka,sans-serif;color:var(--muted)}
+.rule{border-radius:12px;padding:10px 14px;background:var(--soft);font-weight:700}
+.stepper{display:flex;align-items:center;gap:8px;border:2px solid var(--line);border-radius:12px;padding:6px 10px}
+.stepper button{font:700 1.2rem sans-serif;width:36px;height:36px;border-radius:10px;border:none;background:var(--soft);color:var(--fg);cursor:pointer}
+.stepper output{font:700 1.15rem "Atkinson Hyperlegible",sans-serif;min-width:56px;text-align:center;font-variant-numeric:tabular-nums}
+.tip{font-size:.95rem;color:var(--muted);margin:0}
+.qtext{border:2px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;font-size:1.08rem;line-height:1.9}
+.qtext p{margin:0}
+.w{cursor:pointer;border-radius:6px;padding:1px 2px}
+.w:hover{background:var(--soft)}
+.w.hit{background:var(--hl);font-weight:700}
+.w.miss{text-decoration:underline wavy var(--bad)}
+.step{font:600 .85rem Fredoka,sans-serif;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.panelBox{border:3px dashed var(--line);border-radius:12px;min-height:150px;display:grid;place-items:center;color:var(--muted);font-weight:700;padding:6px}
+.panelBox.over{border-color:var(--accent);background:var(--soft)}
+.panelBox.ok{border-style:solid;border-color:var(--good)}
+.figlbl{font-weight:700;margin:0}
+</style>
+</head><body>
+
+<div class="wrap">
+  <header>
+    <h1>Wave Grid Practice</h1>
+    <p class="sub">Read a wave on a grid. Up and down is <span class="amp">amplitude</span>. Side to side is <span class="wl">wavelength</span>. 1 square = 1 cm.</p>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-p="learn" aria-selected="true">1 &middot; Learn the axes</button>
+    <button class="tab" role="tab" data-p="read" aria-selected="false">2 &middot; Read it</button>
+    <button class="tab" role="tab" data-p="match" aria-selected="false">3 &middot; Test-style question</button>
+    <button class="tab" role="tab" data-p="build" aria-selected="false">4 &middot; Build it</button>
+  </div>
+
+  <section id="learn" class="card">
+    <h2>How to read a wave grid</h2>
+    <div class="svgbox" id="learnWave"></div>
+    <ol class="steps">
+      <li><span class="num">1</span><div><b>Find the rest line.</b> It is the flat middle line, marked 0. The wave goes up from it and down from it.</div></li>
+      <li><span class="num tag-amp">2</span><div><b>The vertical axis goes up and down.</b> It shows the <span class="amp">amplitude</span>, how tall the wave is. Count the squares from the rest line <i>up</i> to the top of one crest. Don't count all the way to the bottom.</div></li>
+      <li><span class="num tag-wl">3</span><div><b>The horizontal axis goes side to side.</b> It shows the <span class="wl">wavelength</span>, how long one wave is. Count the squares from the top of one crest to the top of the <i>next</i> crest.</div></li>
+      <li><span class="num">4</span><div><b>Read the rule words.</b> <i>The same as</i> means the number stays. <i>One-half</i> means a smaller number (8 &rarr; 4). <i>Twice</i> means a bigger number (2 &rarr; 4).</div></li>
+      <li><span class="num">5</span><div><b>One-half the wavelength = waves squeeze closer.</b> More waves fit across the panel. Twice the wavelength = waves stretch out, fewer fit.</div></li>
+    </ol>
+    <div class="row">
+      <button class="btn ghost" id="showAmp">Show amplitude</button>
+      <button class="btn ghost" id="showWl">Show wavelength</button>
+    </div>
+  </section>
+
+  <section id="read" class="card" hidden>
+    <div class="row" style="justify-content:space-between"><h2>Read it</h2><span class="stars" id="readStars"></span></div>
+    <div class="svgbox" id="readWave"></div>
+    <p class="q" id="readQ"></p>
+    <div class="choices" id="readChoices"></div>
+    <p class="fb" id="readFb"></p>
+    <div class="row"><button class="btn" id="readNext" hidden>Next wave</button></div>
+  </section>
+
+  <section id="match" class="card" hidden>
+    <div class="row" style="justify-content:space-between"><h2>Test-style question</h2><span class="stars" id="matchStars"></span></div>
+    <p class="tip">Same kind of question as the test. First decode the question, word by word. Then build the model.</p>
+    <div class="qtext" id="tq"></div>
+    <div id="decode" style="display:flex;flex-direction:column;gap:10px">
+      <span class="step" id="stepNo"></span>
+      <div class="rule" id="decodeAsk"></div>
+      <div class="choices" id="decodeChoices"></div>
+      <p class="fb" id="decodeFb"></p>
+    </div>
+    <div id="buildArea" hidden style="display:flex;flex-direction:column;gap:10px">
+      <p class="figlbl">Figure 1. The top panel shows Wave 1. The empty bottom panel is for Wave 2.</p>
+      <div class="svgbox" id="matchWave"></div>
+      <div class="panelBox" id="dropPanel">Wave 2 panel: drag a wave tile here (or tap a tile)</div>
+      <div class="tiles" id="matchTiles"></div>
+      <p class="fb" id="matchFb"></p>
+    </div>
+    <div class="row"><button class="btn" id="matchNext" hidden>Next question</button></div>
+  </section>
+
+  <section id="build" class="card" hidden>
+    <div class="row" style="justify-content:space-between"><h2>Build it</h2><span class="stars" id="buildStars"></span></div>
+    <div class="rule" id="buildRule"></div>
+    <div class="svgbox" id="buildWave"></div>
+    <div class="row">
+      <div class="stepper"><span class="amp">Amplitude</span><button id="aMinus" aria-label="smaller amplitude">&minus;</button><output id="aOut"></output><button id="aPlus" aria-label="bigger amplitude">+</button></div>
+      <div class="stepper"><span class="wl">Wavelength</span><button id="lMinus" aria-label="shorter wavelength">&minus;</button><output id="lOut"></output><button id="lPlus" aria-label="longer wavelength">+</button></div>
+    </div>
+    <div class="row"><button class="btn" id="buildCheck">Check</button><button class="btn" id="buildNext" hidden>Next one</button></div>
+    <p class="fb" id="buildFb"></p>
+  </section>
+</div>
+
+<script>
+const GW=16, GH=4; // grid: 16 cm wide, 4 cm above and below the rest line
+const LENS=[2,4,6,8,12,16];
+const css=v=>`var(--${v})`;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const $=id=>document.getElementById(id);
+
+function waveSVG({A,L,cell=32,labels=true,showAmp=false,showWl=false,ghost=null}){
+  const ml=labels?34:6, mb=labels?26:6, mt=6, mr=8;
+  const W=ml+GW*cell+mr, H=mt+2*GH*cell+mb;
+  const X=x=>ml+x*cell, Y=y=>mt+(GH-y)*cell;
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="${W}" role="img" aria-label="wave on a grid">`;
+  for(let i=0;i<=GW;i++) s+=`<line x1="${X(i)}" y1="${Y(GH)}" x2="${X(i)}" y2="${Y(-GH)}" stroke="${css('grid')}" stroke-width="1"/>`;
+  for(let j=-GH;j<=GH;j++) s+=`<line x1="${X(0)}" y1="${Y(j)}" x2="${X(GW)}" y2="${Y(j)}" stroke="${css('grid')}" stroke-width="1"/>`;
+  s+=`<line x1="${X(0)}" y1="${Y(0)}" x2="${X(GW)}" y2="${Y(0)}" stroke="${css('axis')}" stroke-width="2" stroke-dasharray="6 4"/>`;
+  s+=`<line x1="${X(0)}" y1="${Y(GH)}" x2="${X(0)}" y2="${Y(-GH)}" stroke="${css('axis')}" stroke-width="2"/>`;
+  s+=`<line x1="${X(0)}" y1="${Y(-GH)}" x2="${X(GW)}" y2="${Y(-GH)}" stroke="${css('axis')}" stroke-width="2"/>`;
+  if(labels){
+    const fs=Math.max(11,cell*.4);
+    for(let j=-GH;j<=GH;j++) s+=`<text x="${ml-8}" y="${Y(j)+4}" font-size="${fs}" text-anchor="end" fill="${css('muted')}">${Math.abs(j)}</text>`;
+    for(let i=0;i<=GW;i+=2) s+=`<text x="${X(i)}" y="${Y(-GH)+18}" font-size="${fs}" text-anchor="middle" fill="${css('muted')}">${i}</text>`;
+  }
+  const path=(a,l)=>{let d='';for(let x=0;x<=GW+1e-9;x+=0.05){const y=a*Math.sin(2*Math.PI*x/l);d+=(d?'L':'M')+X(x).toFixed(1)+' '+Y(y).toFixed(1)}return d};
+  if(ghost) s+=`<path d="${path(ghost.A,ghost.L)}" fill="none" stroke="${css('muted')}" stroke-width="2" stroke-dasharray="4 5" opacity=".6"/>`;
+  s+=`<path d="${path(A,L)}" fill="none" stroke="${css('wave')}" stroke-width="${cell>20?4:3}" stroke-linecap="round"/>`;
+  const c1=L/4, c2=L/4+L;
+  if(showAmp){
+    s+=`<line x1="${X(c1)}" y1="${Y(0)}" x2="${X(c1)}" y2="${Y(A)+6}" stroke="${css('amp')}" stroke-width="4" marker-end="url(#ha)"/>`;
+    s+=`<defs><marker id="ha" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="${css('amp')}"/></marker></defs>`;
+    s+=`<text x="${X(c1)+8}" y="${Y(A/2)+5}" font-size="16" font-weight="700" fill="${css('amp')}">${A} cm</text>`;
+  }
+  if(showWl && c2<=GW){
+    const yb=Y(A)-14<mt+4?Y(A)+18:Y(A)-14;
+    s+=`<line x1="${X(c1)}" y1="${yb}" x2="${X(c2)}" y2="${yb}" stroke="${css('wl')}" stroke-width="4"/>`;
+    s+=`<line x1="${X(c1)}" y1="${yb-7}" x2="${X(c1)}" y2="${yb+7}" stroke="${css('wl')}" stroke-width="4"/><line x1="${X(c2)}" y1="${yb-7}" x2="${X(c2)}" y2="${yb+7}" stroke="${css('wl')}" stroke-width="4"/>`;
+    s+=`<text x="${(X(c1)+X(c2))/2}" y="${yb-8}" font-size="16" font-weight="700" text-anchor="middle" fill="${css('wl')}">${L} cm</text>`;
+  }
+  return s+'</svg>';
+}
+
+/* tabs */
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b===t));
+  ['learn','read','match','build'].forEach(id=>$(id).hidden=id!==t.dataset.p);
+});
+
+/* learn */
+const learn={A:3,L:8,amp:false,wl:false};
+const drawLearn=()=>$('learnWave').innerHTML=waveSVG({A:learn.A,L:learn.L,showAmp:learn.amp,showWl:learn.wl});
+$('showAmp').onclick=()=>{learn.amp=!learn.amp;drawLearn()};
+$('showWl').onclick=()=>{learn.wl=!learn.wl;drawLearn()};
+drawLearn();
+
+/* read */
+const R={score:0};
+function newRead(){
+  R.A=pick([1,2,3,4]);R.L=pick([4,6,8,12]);R.kind=pick(['amp','wl']);R.done=false;
+  $('readWave').innerHTML=waveSVG({A:R.A,L:R.L});
+  $('readQ').innerHTML=R.kind==='amp'
+    ?'What is the <span class="amp">amplitude</span>? Count up from the rest line to the top of a crest.'
+    :'What is the <span class="wl">wavelength</span>? Count across from one crest top to the next crest top.';
+  const opts=R.kind==='amp'?[1,2,3,4,8]:shuffle([...new Set([R.L,R.L/2,R.L*2>16?R.L+2:R.L*2,pick(LENS)])]).sort((a,b)=>a-b);
+  const box=$('readChoices');box.innerHTML='';
+  opts.forEach(v=>{const b=document.createElement('button');b.className='choice';b.textContent=v+' cm';b.onclick=()=>answerRead(b,v);box.appendChild(b)});
+  $('readFb').textContent='';$('readFb').className='fb';$('readNext').hidden=true;
+}
+function answerRead(b,v){
+  if(R.done)return;
+  const right=R.kind==='amp'?R.A:R.L;const fb=$('readFb');
+  if(v===right){
+    b.classList.add('right');R.done=true;R.score++;fb.className='fb good';
+    fb.textContent=R.kind==='amp'?`Yes! ${right} squares up from the rest line.`:`Yes! ${right} squares from crest to crest.`;
+    $('readNext').hidden=false;
+  }else{
+    b.classList.add('wrong');fb.className='fb bad';
+    fb.textContent=R.kind==='amp'
+      ?(v===2*R.A?'That counts from the bottom to the top. Start at the rest line instead.':'Try again: start on the rest line and count squares up.')
+      :(v===R.L/2?'That is only half a wave. Go from one crest top all the way to the next crest top.':'Try again: put your finger on a crest top, count squares to the next crest top.');
+  }
+  $('readWave').innerHTML=waveSVG({A:R.A,L:R.L,showAmp:R.done&&R.kind==='amp',showWl:R.done&&R.kind==='wl'});
+  $('readStars').textContent=`★ ${R.score}`;
+}
+$('readNext').onclick=newRead;
+newRead();
+
+/* test-style question */
+const AR={same:a=>a,half:a=>a/2,double:a=>a*2};
+const NAMES=['Priya','Marcus','Jada','Sam','Theo','Rosa'];
+const AMP_RULE={same:'the same amplitude as Wave 1',half:'one-half the amplitude of Wave 1',double:'twice the amplitude of Wave 1'};
+const WL_RULE={same:'the same wavelength as Wave 1',half:'one-half the wavelength of Wave 1',double:'twice the wavelength of Wave 1'};
+const M={score:0};
+
+function tokens(segs){ // segs: [[text,key|null]] -> clickable words; key phrases are one unit
+  return segs.map(([t,k])=>k
+    ?`<span class="w" data-k="${k}">${t}</span>`
+    :t.split(/(\s+)/).map(w=>/\S/.test(w)?`<span class="w">${w}</span>`:w).join('')).join('');
+}
+function newMatch(){
+  let A,L,ra,rl,A2,L2,n=0;
+  do{
+    A=pick([1,2,3,4]);L=pick([4,6,8,12]);ra=pick(['same','same','half','double']);rl=pick(['same','half','half','double']);
+    A2=AR[ra](A);L2=AR[rl](L);n++;
+  }while((!(Number.isInteger(A2)&&A2>=1&&A2<=4&&LENS.includes(L2))||(ra==='same'&&rl==='same')||(A===2&&L===8&&ra==='same'&&rl==='half'))&&n<500);
+  Object.assign(M,{A,L,A2,L2,ra,rl,step:0,done:false});
+  $('tq').innerHTML=
+    '<p>'+tokens([[`${pick(NAMES)} is drawing wave models. Figure 1 shows Wave 1 on a grid. The panel for Wave 2 below it is empty. Wave 2 must have `,null],[AMP_RULE[ra],'amp'],[' and ',null],[WL_RULE[rl],'wl'],['.',null]])+'</p>'+
+    '<p>'+tokens([[`Wave 1 has an amplitude of ${A} cm and a wavelength of ${L} cm.`,null]])+'</p>'+
+    '<p>'+tokens([['Drag','do'],[' one ',null],['wave tile','what'],[' into the empty ',null],['Wave 2 panel','where'],[' to complete the model. Three tiles will not be used.',null]])+'</p>';
+  $('tq').querySelectorAll('.w').forEach(w=>w.onclick=()=>tapWord(w));
+  $('decode').hidden=false;$('buildArea').hidden=true;$('matchNext').hidden=true;
+  $('dropPanel').className='panelBox';$('dropPanel').innerHTML='Wave 2 panel: drag a wave tile here (or tap a tile)';
+  $('matchFb').textContent='';
+  showStep();
+}
+
+const STEPS=[
+  {ask:'Read the whole question three times. Then tap the word that tells you what to <b>DO</b>.',key:'do',hint:'Look for the action word, the thing you do with your mouse.'},
+  {ask:'Tap <b>WHAT</b> you move.',key:'what',hint:'What do you drag? Look right after "one".'},
+  {ask:'Tap <b>WHERE</b> it goes.',key:'where',hint:'Where does the tile go? Look after "into the empty".'},
+  {ask:'Tap the rule for <span class="amp">amplitude</span> (how tall).',key:'amp',hint:'Find the words that say what Wave 2\'s amplitude must be.'},
+  {ask:'Tap the rule for <span class="wl">wavelength</span> (how long).',key:'wl',hint:'Find the words that say what Wave 2\'s wavelength must be.'},
+  {ask:'How many tiles will you use?',choices:()=>[1,2,3,4],ans:()=>1,why:'There are 4 tiles and three will not be used. 4 − 3 = 1.'},
+  {ask:()=>`Wave 1's <span class="amp">amplitude</span> is ${M.A} cm. Wave 2 must have ${AMP_RULE[M.ra]}. So Wave 2's amplitude is…`,choices:()=>[...new Set([M.A,M.A2,M.A*2,Math.max(1,M.A-1),M.A+1])].sort((a,b)=>a-b).map(v=>v+' cm'),ans:()=>M.A2+' cm',why:()=>M.ra==='same'?'Same means the number stays.':M.ra==='half'?'One-half means cut it in two.':'Twice means two times as much.'},
+  {ask:()=>`Wave 1's <span class="wl">wavelength</span> is ${M.L} cm. Wave 2 must have ${WL_RULE[M.rl]}. So Wave 2's wavelength is…`,choices:()=>[...new Set([M.L,M.L2,M.L*2,M.L/2])].sort((a,b)=>a-b).map(v=>v+' cm'),ans:()=>M.L2+' cm',why:()=>M.rl==='same'?'Same means the number stays.':M.rl==='half'?'One-half means cut it in two, so the waves squeeze closer.':'Twice means two times as long, so the waves stretch out.'}
+];
+const val=v=>typeof v==='function'?v():v;
+function showStep(){
+  const s=STEPS[M.step];
+  $('stepNo').textContent=`Decode · step ${M.step+1} of ${STEPS.length}`;
+  $('decodeAsk').innerHTML=val(s.ask);$('decodeFb').textContent='';$('decodeFb').className='fb';
+  const box=$('decodeChoices');box.innerHTML='';
+  if(s.choices){
+    s.choices().forEach(c=>{const b=document.createElement('button');b.className='choice';b.textContent=c;
+      b.onclick=()=>{
+        if(String(c)===String(s.ans())){b.classList.add('right');$('decodeFb').className='fb good';$('decodeFb').textContent='Yes! '+val(s.why);setTimeout(nextStep,1100)}
+        else{b.classList.add('wrong');$('decodeFb').className='fb bad';$('decodeFb').textContent='Not quite. Reread the question and try again.'}
+      };box.appendChild(b)});
+  }
+}
+function tapWord(w){
+  const s=STEPS[M.step];if(!s||!s.key)return;
+  if(w.dataset.k===s.key){
+    w.classList.add('hit');$('decodeFb').className='fb good';$('decodeFb').textContent='Yes! Highlight it.';setTimeout(nextStep,800);
+  }else{
+    w.classList.add('miss');setTimeout(()=>w.classList.remove('miss'),900);
+    $('decodeFb').className='fb bad';$('decodeFb').textContent=s.hint;
+  }
+}
+function nextStep(){
+  M.step++;
+  if(M.step<STEPS.length){showStep();return}
+  $('decode').hidden=true;$('buildArea').hidden=false;
+  $('matchWave').innerHTML=waveSVG({A:M.A,L:M.L});
+  // tiles: no numbers, like the test; count the squares
+  const cand=[{A:M.A2,L:M.L2,ok:true}];
+  const altsA=[M.A2*2,M.A2/2,M.A2+1,M.A2-1,M.A].filter(a=>Number.isInteger(a)&&a>=1&&a<=4&&a!==M.A2);
+  const altsL=[M.L2*2,M.L2/2,M.L].filter(l=>LENS.includes(l)&&l!==M.L2);
+  if(altsA.length)cand.push({A:pick(altsA),L:M.L2});
+  if(altsL.length)cand.push({A:M.A2,L:pick(altsL)});
+  while(cand.length<4){const c={A:pick([1,2,3,4]),L:pick([4,6,8,12,16])};if(!cand.some(d=>d.A===c.A&&d.L===c.L))cand.push(c)}
+  const box=$('matchTiles');box.innerHTML='';
+  shuffle(cand).forEach((c,i)=>{
+    const b=document.createElement('button');b.className='tile';b.draggable=true;
+    b.innerHTML=`<div class="lbl">Tile ${'ABCD'[i]}</div>`+waveSVG({...c,cell:14,labels:false});
+    b.onclick=()=>place(b,c);
+    b.ondragstart=e=>{M.drag={b,c};e.dataTransfer.setData('text/plain','tile')};
+    box.appendChild(b);
+  });
+}
+const dp=$('dropPanel');
+dp.ondragover=e=>{e.preventDefault();dp.classList.add('over')};
+dp.ondragleave=()=>dp.classList.remove('over');
+dp.ondrop=e=>{e.preventDefault();dp.classList.remove('over');if(M.drag)place(M.drag.b,M.drag.c)};
+function place(b,c){
+  if(M.done)return;const fb=$('matchFb');
+  dp.innerHTML=waveSVG({...c,cell:22,labels:false});
+  if(c.ok){
+    M.done=true;M.score++;b.classList.add('used');dp.className='panelBox ok';
+    dp.innerHTML=waveSVG({...c,cell:22,labels:false,showAmp:true,showWl:true});
+    fb.className='fb good';fb.textContent=`Model complete! Amplitude ${M.A2} cm (${M.A2} squares up), wavelength ${M.L2} cm (${M.L2} squares crest to crest).`;
+    $('matchNext').hidden=false;
+  }else{
+    b.classList.add('wrong');fb.className='fb bad';
+    const m=[];
+    if(c.A!==M.A2)m.push(`count up from the rest line: this tile is ${c.A} squares tall, and you need ${M.A2}`);
+    if(c.L!==M.L2)m.push(`count crest to crest: this tile is ${c.L} squares long, and you need ${M.L2}`);
+    fb.textContent='Not this tile. Check it: '+m.join('; ')+'.';
+  }
+  $('matchStars').textContent=`★ ${M.score}`;
+}
+$('matchNext').onclick=newMatch;
+newMatch();
+
+/* build */
+const B={score:0,a:1,li:2};
+function newBuild(){
+  let A,L,ra,rl,A2,L2,n=0;
+  do{A=pick([1,2,3,4]);L=pick([4,6,8,12]);ra=pick(['same','half','double']);rl=pick(['same','half','double']);A2=AR[ra](A);L2=AR[rl](L);n++}
+  while((!(Number.isInteger(A2)&&A2>=1&&A2<=4&&LENS.includes(L2))||(ra==='same'&&rl==='same'))&&n<500);
+  Object.assign(B,{A,L,A2,L2,a:2,li:3,done:false});
+  $('buildRule').innerHTML=`Wave 1 (dashed) has an amplitude of ${A} cm and a wavelength of ${L} cm. Build Wave 2 with ${AMP_RULE[ra].replace('amplitude','<span class="amp">amplitude</span>')} and ${WL_RULE[rl].replace('wavelength','<span class="wl">wavelength</span>')}.`;
+  $('buildFb').textContent='';$('buildFb').className='fb';
+  $('buildNext').hidden=true;$('buildCheck').hidden=false;
+  drawBuild();
+}
+function drawBuild(show=false){
+  $('aOut').textContent=B.a+' cm';$('lOut').textContent=LENS[B.li]+' cm';
+  $('buildWave').innerHTML=waveSVG({A:B.a,L:LENS[B.li],ghost:{A:B.A,L:B.L},showAmp:show,showWl:show});
+}
+$('aMinus').onclick=()=>{if(B.a>1){B.a--;drawBuild()}};
+$('aPlus').onclick=()=>{if(B.a<4){B.a++;drawBuild()}};
+$('lMinus').onclick=()=>{if(B.li>0){B.li--;drawBuild()}};
+$('lPlus').onclick=()=>{if(B.li<LENS.length-1){B.li++;drawBuild()}};
+$('buildCheck').onclick=()=>{
+  const fb=$('buildFb');const L=LENS[B.li];
+  if(B.a===B.A2&&L===B.L2){
+    B.score++;fb.className='fb good';fb.textContent=`You built it! Amplitude ${B.a} cm, wavelength ${L} cm.`;
+    drawBuild(true);$('buildNext').hidden=false;$('buildCheck').hidden=true;
+  }else{
+    const m=[];
+    if(B.a!==B.A2)m.push(`<span class="amp">amplitude</span> is ${B.a<B.A2?'too short':'too tall'}`);
+    if(L!==B.L2)m.push(`<span class="wl">wavelength</span> is ${L<B.L2?'too squeezed':'too stretched'}`);
+    fb.className='fb bad';fb.innerHTML='Almost. Your '+m.join(' and your ')+'.';
+  }
+  $('buildStars').textContent=`★ ${B.score}`;
+};
+$('buildNext').onclick=newBuild;
+newBuild();
+</script>
+
+</body></html>
