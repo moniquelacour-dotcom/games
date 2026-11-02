@@ -392,10 +392,10 @@ function reveal(){
   var w=document.getElementById("w-word").value.trim(), box=document.getElementById("reveal");
   if(!w){setStatus("add-status","Type the word first."); return;}
   if(!document.getElementById("w-guess").value.trim()){
-    box.hidden=false; box.innerHTML='<strong>🎭 Guess first!</strong> Write what you think it means. Any guess is a good guess — then reveal it.';
+    box.hidden=false; box.innerHTML='<strong>🤔 Guess first!</strong> Write what you think it means. Any guess is a good guess — then reveal it.';
     document.getElementById("w-guess").focus(); return;
   }
-  box.hidden=false; box.innerHTML="Opening the curtain…";
+  box.hidden=false; box.innerHTML="Looking it up…";
   fetch("https://api.dictionaryapi.dev/api/v2/entries/en/"+encodeURIComponent(w.toLowerCase()))
    .then(function(r){ if(!r.ok) throw new Error(r.status===404?"notfound":"net"); return r.json(); })
    .then(function(data){
