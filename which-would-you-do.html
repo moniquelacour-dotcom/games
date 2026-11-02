@@ -1,0 +1,1400 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="A wizarding school, a choice on every page, and a house at the end.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#129668;</text></svg>">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]:not([hidden=until-found i]){display:none!important}
+</style>
+<title>Which Would You Do</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@400;600;700;800&display=swap">
+<style>
+:root{
+  color-scheme: dark;
+  --bg:#070a14;
+  --bg2:#141d3a;
+  --panel:rgba(10,14,28,.72);
+  --panel2:rgba(255,255,255,.055);
+  --line:rgba(255,255,255,.15);
+  --ink:#f6f1e7;
+  --dim:#b2aec4;
+  --gold:#e8bd5c;
+  --moon:#9fb7ff;
+  --r:16px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; min-height:100vh; color:var(--ink);
+  font-family:Nunito, ui-sans-serif, system-ui, sans-serif; font-size:18px; line-height:1.55;
+  background:var(--bg);
+}
+#sky{position:fixed; inset:0; z-index:-2;
+  background:radial-gradient(1100px 650px at 50% -12%, var(--bg2) 0%, rgba(0,0,0,0) 64%), var(--bg)}
+#stars{position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.75}
+.wrap{
+  max-width:820px; margin:0 auto;
+  padding-left:max(16px, env(safe-area-inset-left,0px));
+  padding-right:max(16px, env(safe-area-inset-right,0px));
+  padding-block:20px 60px;
+}
+h1,h2{font-family:Fraunces, Georgia, serif; margin:0; text-wrap:balance; line-height:1.14}
+h1{font-size:clamp(30px,6vw,50px); font-weight:700; letter-spacing:.3px}
+h2{font-size:clamp(21px,3.4vw,28px); font-weight:600}
+.sub{color:var(--dim); font-size:15px}
+
+header{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:18px}
+.tools{display:flex; gap:8px; flex-wrap:wrap}
+.tool{background:var(--panel2); color:var(--dim); border:1px solid var(--line); border-radius:999px;
+  padding:7px 14px; font:600 14px Nunito,sans-serif; cursor:pointer}
+.tool:hover{color:var(--ink); border-color:var(--gold)}
+
+.card{background:var(--panel); border:1px solid var(--line); border-radius:var(--r);
+  padding:26px; backdrop-filter:blur(6px); overflow:hidden}
+.lantern{font-size:44px; line-height:1}
+.count{font:700 12px Nunito,sans-serif; letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:10px}
+.scene{font-size:clamp(19px,3vw,23px); line-height:1.5; margin-top:12px}
+
+/* ---------- art ---------- */
+.art{display:block; width:100%; height:auto; aspect-ratio:40/21; border-radius:12px;
+  border:1px solid var(--line); background:#070a14}
+.band{margin:-8px 0 16px; aspect-ratio:40/11}
+.big{margin-top:4px; aspect-ratio:40/21}
+.ic{flex:0 0 auto; width:42px; height:42px; display:block}
+
+/* ---------- choosing ---------- */
+.choices{display:flex; flex-direction:column; gap:12px; margin-top:22px}
+.choice{
+  display:flex; gap:14px; align-items:center; text-align:left; width:100%;
+  background:var(--panel2); border:2px solid var(--line); color:var(--ink);
+  border-radius:14px; padding:14px 16px; font:600 18px Nunito,sans-serif; cursor:pointer; line-height:1.4;
+}
+.choice:hover{border-color:var(--moon)}
+.choice[aria-pressed="true"]{border-color:var(--gold); background:rgba(232,189,92,.14)}
+.choice .mk{font-family:Fraunces,serif; font-weight:700; color:var(--gold); font-size:20px; flex:0 0 auto}
+.choice .tx{min-width:0}
+
+.because{margin-top:22px; background:var(--panel2); border:1px dashed var(--gold); border-radius:14px; padding:18px}
+.because .lead{font-family:Fraunces,serif; font-size:23px; color:var(--gold)}
+.because .opt{color:var(--dim); font-size:14px; margin-top:3px}
+textarea{
+  width:100%; margin-top:11px; min-height:80px; resize:vertical;
+  background:rgba(0,0,0,.4); color:var(--ink); border:1px solid var(--line);
+  border-radius:12px; padding:13px 15px; font:400 18px Nunito,sans-serif; line-height:1.5;
+}
+textarea:focus{outline:2px solid var(--gold); outline-offset:1px}
+
+.btn{background:var(--gold); color:#1a1205; border:0; border-radius:14px;
+  padding:14px 26px; font:800 18px Nunito,sans-serif; cursor:pointer; margin-top:16px}
+.btn:hover{filter:brightness(1.08)}
+.btn[disabled]{opacity:.35; cursor:not-allowed; filter:none}
+.btn.ghost{background:transparent; color:var(--ink); border:2px solid var(--line)}
+.btn.ghost:hover{border-color:var(--gold)}
+.row{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
+
+/* ---------- the reaction page ---------- */
+.reheadline{display:flex; gap:14px; align-items:center; margin-top:14px}
+.reheadline .what{font-family:Fraunces,Georgia,serif; font-size:clamp(20px,3.3vw,27px); line-height:1.25; min-width:0}
+.youchose{font:800 12px Nunito,sans-serif; letter-spacing:2px; text-transform:uppercase; color:var(--moon)}
+.retx{margin-top:16px; font-size:19px; line-height:1.55}
+.reled{margin-top:18px; padding-top:16px; border-top:1px solid var(--line); color:var(--gold);
+  font-family:Fraunces,Georgia,serif; font-size:19px; line-height:1.4}
+
+/* ---------- picking an adventure ---------- */
+.menu{display:flex; flex-direction:column; gap:14px; margin-top:20px}
+.mcard{display:block; width:100%; text-align:left; cursor:pointer; padding:0; overflow:hidden;
+  background:var(--panel2); border:2px solid var(--line); border-radius:16px; color:var(--ink)}
+.mcard:hover{border-color:var(--gold)}
+.mcard .art{border:0; border-radius:0; aspect-ratio:40/9}
+.mbody{padding:16px 18px}
+.mttl{font-family:Fraunces,Georgia,serif; font-size:23px; line-height:1.2}
+.mlen{font:700 12px Nunito,sans-serif; letter-spacing:1.6px; text-transform:uppercase; color:var(--gold); margin-top:7px}
+.myr{display:inline-block; margin-top:9px; background:rgba(159,183,255,.14); border:1px solid rgba(159,183,255,.4); color:var(--moon); border-radius:999px; padding:4px 12px; font:800 11px Nunito,sans-serif; letter-spacing:1.5px; text-transform:uppercase}
+.mtx{color:var(--dim); font-size:16px; margin-top:7px; line-height:1.45}
+
+/* ---------- chapter rail ---------- */
+.rail{display:flex; gap:7px; flex-wrap:wrap; margin-top:14px}
+.pip{width:26px; height:26px; border-radius:999px; display:grid; place-items:center;
+  background:rgba(255,255,255,.07); border:1px solid var(--line);
+  font:800 12px Nunito,sans-serif; color:var(--dim)}
+.pip.done{background:rgba(232,189,92,.22); border-color:var(--gold); color:var(--gold)}
+.pip.now{background:var(--gold); border-color:var(--gold); color:#1a1205}
+
+/* ---------- look back ---------- */
+.lb{margin-top:16px; display:flex; flex-direction:column; gap:14px}
+.lbrow{background:var(--panel2); border:1px solid var(--line); border-radius:14px; padding:17px 19px}
+.lbq{color:var(--dim); font-size:15px}
+.lbpick{font:800 19px Nunito,sans-serif; margin-top:5px}
+.lbwhy{margin-top:9px; font-family:Fraunces,serif; font-size:19px; color:var(--gold); line-height:1.4}
+.lbwhy::before{content:"Because "; color:var(--dim); font-family:Nunito,sans-serif; font-size:16px; font-weight:700}
+
+/* ---------- the sorting ---------- */
+.crest{font-size:60px; line-height:1; margin-bottom:4px}
+.hname{font-family:Fraunces,Georgia,serif; font-size:clamp(30px,6.4vw,52px); font-weight:700; letter-spacing:.4px; color:var(--gold)}
+.hline{font-family:Fraunces,Georgia,serif; font-size:clamp(19px,3vw,24px); color:var(--ink); margin-top:4px}
+.htx{margin-top:14px; font-size:18px; line-height:1.55}
+.tally{margin-top:22px; display:flex; flex-direction:column; gap:10px}
+.tr{display:grid; grid-template-columns:minmax(0,118px) 1fr minmax(0,34px); gap:11px; align-items:center}
+.tn{font:700 15px Nunito,sans-serif; color:var(--dim); min-width:0}
+.tb{height:11px; border-radius:999px; background:rgba(255,255,255,.08); overflow:hidden; min-width:0}
+.tb>i{display:block; height:100%; background:var(--moon); border-radius:999px}
+.tr.win .tn{color:var(--gold)}
+.tr.win .tb>i{background:var(--gold)}
+.tc{font:800 15px Nunito,sans-serif; color:var(--dim); text-align:right; font-variant-numeric:tabular-nums}
+.ev{margin-top:22px; background:var(--panel2); border:1px solid var(--line); border-radius:14px; padding:17px 19px}
+.ev .hd{font:800 12px Nunito,sans-serif; letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:9px}
+.ev p{margin:0 0 9px; font-family:Fraunces,Georgia,serif; font-size:18px; line-height:1.45}
+.ev p:last-child{margin-bottom:0}
+.ev p::before{content:"Because "; font-family:Nunito,sans-serif; font-size:15px; font-weight:700; color:var(--dim)}
+.ev p.noev::before{content:""}
+
+.hide{display:none}
+@media (max-width:520px){
+  .card{padding:19px}
+  .choice{font-size:17px; padding:12px 13px; gap:11px}
+  .ic{width:36px; height:36px}
+  .mttl{font-size:21px}
+}
+</style>
+</head><body>
+<div id="sky"></div>
+<svg id="stars" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+
+<div class="wrap">
+  <header>
+    <div class="sub" id="hdr">Which Would You Do</div>
+    <div class="tools">
+      <button class="tool" id="tBig">Bigger text</button>
+      <button class="tool" id="tFull">Full screen</button>
+      <button class="tool" id="tReset">Start over</button>
+    </div>
+  </header>
+
+  <!-- pick tonight's story -->
+  <section class="card" id="vTitle">
+    <div class="lantern">🕯️</div>
+    <h1>Which Would You Do</h1>
+    <p class="sub" style="margin-top:10px">Pick tonight's story. There is no right answer to anything in it — you choose, you say why, and then you see exactly what your choice did. At the end, your own reasons decide your house.</p>
+    <div class="menu" id="menu"></div>
+  </section>
+
+  <!-- a chapter: the situation and the choices -->
+  <section class="card hide" id="vScene">
+    <div class="count" id="sCount"></div>
+    <h2 id="sTitle"></h2>
+    <div id="sArt"></div>
+    <div class="scene" id="sText"></div>
+    <div class="rail" id="sRail"></div>
+    <div class="choices" id="sChoices"></div>
+
+    <div class="because hide" id="sBecause">
+      <div class="lead">Because…</div>
+      <div class="opt" id="sOpt"></div>
+      <textarea id="whyBox" placeholder="Say it out loud first. Then put it here in your own words."></textarea>
+      <button class="btn" id="sayWhy" disabled>That's my reason</button>
+    </div>
+  </section>
+
+  <!-- what your choice did -->
+  <section class="card hide" id="vWhat">
+    <div class="count" id="wCount"></div>
+    <div id="wArt"></div>
+    <div class="reheadline">
+      <div id="wIcon"></div>
+      <div>
+        <div class="youchose">You chose</div>
+        <div class="what" id="wPick"></div>
+      </div>
+    </div>
+    <div class="retx" id="wTx"></div>
+    <div class="reled" id="wLed"></div>
+    <button class="btn" id="next">Next</button>
+  </section>
+
+  <!-- the sorting -->
+  <section class="card hide" id="vHouse">
+    <div class="crest" id="hCrest"></div>
+    <div class="hname" id="hName"></div>
+    <div class="hline" id="hLine"></div>
+    <div class="htx" id="hTx"></div>
+    <div class="tally" id="hTally"></div>
+    <div class="ev" id="hEv"></div>
+    <div class="row">
+      <button class="btn" id="toBack">Look back at all of them</button>
+    </div>
+  </section>
+
+  <!-- look back -->
+  <section class="card hide" id="vBack">
+    <div class="lantern">🪄</div>
+    <h1>Look Back</h1>
+    <p class="sub" style="margin-top:10px">Everything you chose, and the reason you gave for it.</p>
+    <div class="lb" id="lbList"></div>
+    <div class="row">
+      <button class="btn ghost" id="backHouse">Back to the sorting</button>
+      <button class="btn ghost" id="again">Pick another story</button>
+    </div>
+  </section>
+</div>
+
+<script>
+"use strict";
+/* ===================================================================
+   ART. Every picture is drawn here — nothing is loaded from anywhere.
+   Scenes are 800x420 night views; icons are 32x32 glyphs for options.
+   =================================================================== */
+
+var SKY = '<defs>'
+ + '<linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">'
+ +   '<stop offset="0" stop-color="#1e2a58"/><stop offset=".55" stop-color="#121a38"/><stop offset="1" stop-color="#070a14"/>'
+ + '</linearGradient>'
+ + '<radialGradient id="mg"><stop offset="0" stop-color="#e8bd5c" stop-opacity=".5"/><stop offset="1" stop-color="#e8bd5c" stop-opacity="0"/></radialGradient>'
+ + '<radialGradient id="wg"><stop offset="0" stop-color="#f7d774" stop-opacity=".75"/><stop offset="1" stop-color="#f7d774" stop-opacity="0"/></radialGradient>'
+ + '<radialGradient id="cg"><stop offset="0" stop-color="#9fb7ff" stop-opacity=".45"/><stop offset="1" stop-color="#9fb7ff" stop-opacity="0"/></radialGradient>'
+ + '</defs><rect width="800" height="420" fill="url(#sg)"/>';
+
+function moon(x,y,r){
+  return '<circle cx="'+x+'" cy="'+y+'" r="'+(r*5)+'" fill="url(#mg)"/>'
+       + '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="#f6ecd2"/>';
+}
+function glow(x,y,r,g){ return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="url(#'+(g||'wg')+')"/>'; }
+function arch(w,y0,fill,cx){
+  var h=w/2; cx=cx||392;
+  return '<path fill-rule="evenodd" fill="'+fill+'" d="M0 0H800V420H0Z M'+(cx-h)+' 420V'+y0
+       + 'a'+h+' '+h+' 0 0 1 '+w+' 0V420Z"/>';
+}
+function stars(n,seed,y){
+  var h="",i,r=function(k){var x=Math.sin(k*seed)*10000;return x-Math.floor(x);};
+  for(i=0;i<n;i++){
+    h+='<circle cx="'+(r(i+1)*800).toFixed(0)+'" cy="'+(r(i+2.3)*(y||200)).toFixed(0)
+     + '" r="'+(0.7+r(i+4.1)*1.5).toFixed(2)+'" fill="#e8bd5c" opacity="'+(0.25+r(i+6.7)*0.55).toFixed(2)+'"/>';
+  }
+  return h;
+}
+
+function flight(x1,y1,x2,y2,n,fill,th){
+  var dx=(x2-x1)/n, dy=(y2-y1)/n, d="M"+x1+" "+y1, i;
+  for(i=0;i<n;i++) d+=" h"+dx.toFixed(1)+" v"+dy.toFixed(1);
+  d+=" v"+(th||32);
+  for(i=0;i<n;i++) d+=" h"+(-dx).toFixed(1)+" v"+(-dy).toFixed(1);
+  return '<path d="'+d+' Z" fill="'+fill+'"/>';
+}
+function cottage(x,y,w,lit){
+  var h=w*0.68;
+  return '<path fill="#070b1c" d="M'+x+' '+(y+h)+'V'+(y+h*0.4)+'l'+(w/2)+' -'+(h*0.4)+' '+(w/2)+' '+(h*0.4)+'V'+(y+h)+'Z"/>'
+   + '<rect x="'+(x+w*0.16)+'" y="'+(y+h*0.56)+'" width="'+(w*0.2)+'" height="'+(h*0.3)+'" fill="#f7d774" opacity="'+(lit?0.85:0.22)+'"/>'
+   + '<rect x="'+(x+w*0.62)+'" y="'+(y+h*0.56)+'" width="'+(w*0.2)+'" height="'+(h*0.3)+'" fill="#f7d774" opacity="'+(lit?0.55:0.18)+'"/>'
+   + '<rect x="'+(x+w*0.72)+'" y="'+(y+h*0.1)+'" width="'+(w*0.12)+'" height="'+(h*0.3)+'" fill="#070b1c"/>';
+}
+
+var ART = {
+corridor: function(){ return stars(26,1.7,160)
+ + glow(392,250,120)
+ + '<rect x="346" y="196" width="92" height="224" fill="#2a1d08"/>'
+ + '<path d="M346 196a46 46 0 0 1 92 0z" fill="#2a1d08"/>'
+ + '<rect x="362" y="222" width="60" height="198" fill="#f7d774" opacity=".5"/>'
+ + arch(150,196,'#0f1836') + arch(210,178,'#0c1430') + arch(286,156,'#091029') + arch(380,128,'#060a1c')
+ + '<rect y="368" width="800" height="52" fill="#04060f"/>'
+ + '<g stroke="#121a38" stroke-width="2"><path d="M0 390h800M0 408h800"/></g>'; },
+
+door: function(){ return glow(400,250,230)
+ + '<rect x="128" y="40" width="544" height="380" fill="#0a1026"/>'
+ + '<rect x="176" y="72" width="448" height="348" rx="10" fill="#1a1105"/>'
+ + '<rect x="176" y="72" width="214" height="348" rx="10" fill="#241708"/>'
+ + '<rect x="392" y="72" width="54" height="348" fill="#f7d774" opacity=".72"/>'
+ + '<rect x="400" y="72" width="30" height="348" fill="#fff6dc" opacity=".55"/>'
+ + '<g fill="#3a2810"><rect x="196" y="110" width="172" height="12" rx="6"/><rect x="196" y="374" width="172" height="12" rx="6"/></g>'
+ + '<circle cx="344" cy="252" r="13" fill="#e8bd5c"/>'
+ + '<g fill="#0a1026"><rect x="446" y="72" width="178" height="348"/></g>'
+ + '<g fill="#e8bd5c" opacity=".9"><circle cx="470" cy="236" r="5"/><circle cx="492" cy="252" r="5"/><circle cx="470" cy="268" r="5"/></g>'; },
+
+stairs: function(){ return stars(44,2.9,330)
+ + moon(690,70,26) + glow(690,70,190)
+ + flight(40,296,336,168,9,"#223061",34)
+ + flight(770,238,436,322,10,"#1a2550",34)
+ + flight(110,420,536,244,11,"#0d1538",34)
+ + '<g stroke="#3b4c86" stroke-width="3" fill="none">'
+ +  '<path d="M60 286v-40M140 250v-40M220 214v-40M300 178v-40"/>'
+ +  '<path d="M520 268v-40M600 248v-40M680 228v-40"/>'
+ + '</g>'
+ + '<g fill="#040710"><path d="M0 420V140h40v280zM760 420V110h40v310z"/></g>'
+ + '<g fill="#05070f"><ellipse cx="300" cy="160" rx="13" ry="18"/><circle cx="300" cy="134" r="9"/></g>'
+ + glow(324,158,52) + '<circle cx="324" cy="158" r="6" fill="#f7d774"/>'; },
+
+library: function(){ return glow(560,150,170)
+ + '<rect y="330" width="800" height="90" fill="#070b1a"/>'
+ + '<g fill="#0e1534">'
+ +  '<rect x="20" y="40" width="150" height="292"/><rect x="190" y="18" width="150" height="314"/>'
+ +  '<rect x="460" y="30" width="150" height="302"/><rect x="630" y="52" width="150" height="280"/>'
+ + '</g>'
+ + '<g fill="#1a2450">'
+ +  '<rect x="30" y="74" width="130" height="9"/><rect x="30" y="134" width="130" height="9"/><rect x="30" y="194" width="130" height="9"/><rect x="30" y="254" width="130" height="9"/>'
+ +  '<rect x="200" y="60" width="130" height="9"/><rect x="200" y="120" width="130" height="9"/><rect x="200" y="180" width="130" height="9"/><rect x="200" y="240" width="130" height="9"/>'
+ +  '<rect x="470" y="70" width="130" height="9"/><rect x="470" y="130" width="130" height="9"/><rect x="470" y="190" width="130" height="9"/><rect x="470" y="250" width="130" height="9"/>'
+ +  '<rect x="640" y="94" width="130" height="9"/><rect x="640" y="154" width="130" height="9"/><rect x="640" y="214" width="130" height="9"/><rect x="640" y="274" width="130" height="9"/>'
+ + '</g>'
+ + '<rect x="350" y="276" width="100" height="56" fill="#15102c"/>'
+ + '<rect x="334" y="268" width="132" height="12" rx="4" fill="#2a1d08"/>'
+ + glow(400,250,86)
+ + '<path d="M382 268l18-34 18 34z" fill="#e8bd5c"/><rect x="396" y="214" width="8" height="22" fill="#f7d774"/>'
+ + '<g fill="#1a2450"><path d="M300 268h58l-6-18h-46z"/></g>'; },
+
+trapdoor: function(){ return glow(400,300,250)
+ + '<rect y="250" width="800" height="170" fill="#0a0e22"/>'
+ + '<g stroke="#131a3c" stroke-width="3"><path d="M0 300h800M0 352h800M140 250v170M400 250v170M660 250v170"/></g>'
+ + '<ellipse cx="400" cy="344" rx="112" ry="38" fill="#1b1206"/>'
+ + '<ellipse cx="400" cy="338" rx="112" ry="38" fill="#2c1d0a"/>'
+ + '<circle cx="400" cy="334" r="15" fill="none" stroke="#e8bd5c" stroke-width="6"/>'
+ + '<g fill="#060a18">'
+ +  '<ellipse cx="206" cy="372" rx="78" ry="34"/><ellipse cx="610" cy="372" rx="78" ry="34"/>'
+ +  '<path d="M60 250h680v-62c0-60-56-96-130-96H190c-74 0-130 36-130 96z"/>'
+ + '</g>'
+ + '<g fill="#e8bd5c">'
+ +  '<circle cx="246" cy="150" r="10"/><circle cx="290" cy="150" r="10"/>'
+ +  '<circle cx="378" cy="128" r="10"/><circle cx="422" cy="128" r="10"/>'
+ +  '<circle cx="510" cy="150" r="10"/><circle cx="554" cy="150" r="10"/>'
+ + '</g>'
+ + '<g fill="#0a0f24"><path d="M150 372c0-18 26-30 56-30s56 12 56 30zM554 372c0-18 26-30 56-30s56 12 56 30z"/></g>'; },
+
+keys: function(){ return glow(400,210,260,'cg')
+ + arch(220,180,'#0a1028')
+ + '<rect x="330" y="296" width="124" height="124" fill="#1b1206"/>'
+ + '<rect x="346" y="316" width="92" height="104" fill="#2a1d08"/>'
+ + '<circle cx="416" cy="372" r="8" fill="#e8bd5c"/>'
+ + (function(){
+     var h="",i,p=[[120,90],[240,140],[330,70],[470,120],[560,70],[660,160],[180,230],[620,250],[300,200],[520,210]];
+     for(i=0;i<p.length;i++){
+       var x=p[i][0],y=p[i][1],c=(i%3===0)?'#f7d774':'#9fb7ff';
+       h+='<g fill="'+c+'" opacity="'+(i%3===0?'1':'.7')+'">'
+        + '<circle cx="'+x+'" cy="'+y+'" r="6"/>'
+        + '<rect x="'+(x+5)+'" y="'+(y-2)+'" width="22" height="4" rx="2"/>'
+        + '<rect x="'+(x+20)+'" y="'+(y+2)+'" width="4" height="7"/>'
+        + '<path d="M'+(x-6)+' '+(y-4)+'l-20-13 4 17zM'+(x-6)+' '+(y+4)+'l-20 13 4-17z" opacity=".55"/>'
+        + '</g>';
+     }
+     return h;
+   })(); },
+
+passage: function(){ return '<rect width="800" height="420" fill="#05070f"/>'
+ + glow(400,250,210)
+ + arch(104,196,'#090d1e') + arch(160,172,'#0b1026') + arch(226,146,'#0d1330') + arch(306,118,'#070a16')
+ + '<g fill="#101633" opacity=".8">'
+ +  '<circle cx="330" cy="330" r="8"/><circle cx="470" cy="346" r="6"/><circle cx="360" cy="382" r="10"/><circle cx="452" cy="300" r="5"/>'
+ + '</g>'
+ + '<rect y="394" width="800" height="26" fill="#03050c"/>'
+ + glow(300,330,60) + '<circle cx="300" cy="330" r="9" fill="#f7d774"/>'; },
+
+village: function(){ return stars(46,3.7,230)
+ + moon(112,70,22) + glow(112,70,170)
+ + '<path d="M0 334l170-30 150 22 180-32 300 40v86H0z" fill="#0a1028"/>'
+ + cottage(10,268,150,true) + cottage(150,288,122,false) + cottage(606,262,160,true) + cottage(730,292,110,false)
+ + '<rect y="396" width="800" height="24" fill="#05070f"/>'
+ + '<g fill="#070b1c">'
+ +  '<rect x="340" y="352" width="120" height="44" rx="4"/>'
+ +  '<rect x="356" y="326" width="88" height="30"/>'
+ +  '<path d="M374 326V234c0-18 11-30 26-30s26 12 26 30v92z"/>'
+ +  '<circle cx="400" cy="198" r="21"/>'
+ +  '<path d="M424 240l42-42 12 12-42 46z"/>'
+ + '</g>'
+ + glow(474,196,64) + '<circle cx="472" cy="194" r="8" fill="#f7d774"/>'
+ + '<g fill="#0a0f24"><rect x="236" y="286" width="7" height="110"/><rect x="226" y="276" width="27" height="16" rx="5"/></g>'
+ + glow(239,284,58) + '<rect x="233" y="278" width="13" height="12" fill="#f7d774"/>'; },
+
+hall: function(){ return glow(400,80,260)
+ + '<g fill="#0a0f26"><rect y="0" width="800" height="420"/></g>'
+ + '<g fill="#111a3e">'
+ +  '<path d="M96 300V120a54 54 0 0 1 108 0v180zM346 300V100a54 54 0 0 1 108 0v200zM596 300V120a54 54 0 0 1 108 0v180z"/>'
+ + '</g>'
+ + '<g fill="#1d2a5e">'
+ +  '<path d="M114 300V124a36 36 0 0 1 72 0v176zM364 300V104a36 36 0 0 1 72 0v196zM614 300V124a36 36 0 0 1 72 0v176z"/>'
+ + '</g>'
+ + (function(){
+     var h="",p=[[150,64],[250,110],[400,48],[520,96],[650,70],[310,150],[490,154],[200,180],[600,186]];
+     for(var i=0;i<p.length;i++){
+       h+=glow(p[i][0],p[i][1],34)
+        + '<rect x="'+(p[i][0]-4)+'" y="'+(p[i][1])+'" width="8" height="26" rx="3" fill="#f3e4c0"/>'
+        + '<circle cx="'+p[i][0]+'" cy="'+(p[i][1]-4)+'" r="5" fill="#f7d774"/>';
+     }
+     return h;
+   })()
+ + '<g fill="#080c1e"><rect x="60" y="330" width="300" height="20" rx="6"/><rect x="440" y="330" width="300" height="20" rx="6"/>'
+ + '<rect x="60" y="384" width="300" height="20" rx="6"/><rect x="440" y="384" width="300" height="20" rx="6"/></g>'; },
+
+grounds: function(){ return stars(50,1.3,230)
+ + moon(628,80,32)
+ + '<g fill="#0a1028"><path d="M0 300l120-40 90 30 120-60 110 36 150-56 210 70v140H0z"/></g>'
+ + '<g fill="#070b1c">'
+ +  '<path d="M150 300V176h40V120l26-40 26 40v56h40v124z"/>'
+ +  '<path d="M262 300V200h34v-54l24-36 24 36v54h34v100z"/>'
+ +  '<path d="M74 300V214h30v-46l22-32 22 32v46h30v86z"/>'
+ + '</g>'
+ + '<g fill="#f7d774" opacity=".85">'
+ +  '<rect x="206" y="200" width="16" height="22"/><rect x="300" y="226" width="14" height="20"/><rect x="112" y="238" width="14" height="18"/>'
+ + '</g>'
+ + '<rect y="300" width="800" height="120" fill="#060a18"/>'
+ + '<g opacity=".4" fill="#9fb7ff"><rect y="300" width="800" height="120"/></g>'
+ + '<g stroke="#b9cbff" stroke-width="2" opacity=".5" fill="none"><path d="M560 330h160M520 356h240M600 382h130"/></g>'; },
+
+tower: function(){ return '<rect width="800" height="420" fill="#0a0f24"/>'
+ + '<path d="M452 334V196a112 112 0 0 1 224 0v138z" fill="#16214a"/>'
+ + glow(564,174,150,"cg")
+ + '<circle cx="612" cy="146" r="21" fill="#f6ecd2"/>'
+ + '<g fill="#e8bd5c" opacity=".85"><circle cx="498" cy="152" r="2.6"/><circle cx="534" cy="214" r="2.2"/><circle cx="634" cy="238" r="2.4"/><circle cx="486" cy="256" r="2"/><circle cx="590" cy="118" r="2.2"/></g>'
+ + '<g fill="#0a0f24" opacity=".92">'
+ +  '<path d="M486 212c10-8 22-8 32 0-10 4-22 4-32 0zM520 206c9-7 20-7 29 0-9 4-20 4-29 0z"/>'
+ + '</g>'
+ + '<path fill-rule="evenodd" fill="#070b1c" d="M424 160H704V352H424Z M452 334V196a112 112 0 0 1 224 0v138z"/>'
+ + '<rect x="418" y="330" width="292" height="24" rx="5" fill="#131a3c"/>'
+ + '<g fill="#1e2a57">'
+ +  '<ellipse cx="248" cy="264" rx="54" ry="62"/>'
+ +  '<path d="M200 222l-8-38 33 20zM296 222l8-38-33 20z"/>'
+ +  '<path d="M206 330h84l-11-20h-62z"/>'
+ + '</g>'
+ + '<g fill="#f6ecd2"><circle cx="230" cy="246" r="18"/><circle cx="267" cy="246" r="18"/></g>'
+ + '<g fill="#0a0f24"><circle cx="230" cy="246" r="8"/><circle cx="267" cy="246" r="8"/></g>'
+ + '<path d="M248 256l-10 14h20z" fill="#e8bd5c"/>'
+ + '<rect x="180" y="328" width="300" height="20" rx="5" fill="#131a3c"/>'; },
+
+study: function(){ return '<rect width="800" height="420" fill="#090d1e"/>'
+ + glow(166,300,190)
+ + '<g fill="#0e1430"><rect x="60" y="150" width="212" height="270" rx="8"/></g>'
+ + '<path d="M86 420v-150c0-44 36-72 80-72s80 28 80 72v150z" fill="#1d1206"/>'
+ + '<path d="M106 420v-140c0-34 28-56 60-56s60 22 60 56v140z" fill="#f7d774" opacity=".62"/>'
+ + '<path d="M140 420c0-54 10-86 26-110 16 24 26 56 26 110z" fill="#fff0cc" opacity=".8"/>'
+ + '<g fill="#0a0f24"><rect x="420" y="274" width="320" height="18" rx="5"/><rect x="440" y="292" width="20" height="128"/><rect x="700" y="292" width="20" height="128"/></g>'
+ + '<g fill="#15102c"><rect x="468" y="238" width="54" height="36" rx="4"/><rect x="540" y="246" width="48" height="28" rx="4"/></g>'
+ + '<path d="M636 274l-4-62 16 8z" fill="#e8bd5c"/>'
+ + '<g fill="#0c1230"><rect x="330" y="60" width="140" height="214" rx="6"/></g>'
+ + '<g fill="#1a2450"><rect x="340" y="96" width="120" height="8"/><rect x="340" y="146" width="120" height="8"/><rect x="340" y="196" width="120" height="8"/></g>'; },
+
+dorm: function(){ return '<rect width="800" height="420" fill="#080c1c"/>'
+ + arch(190,130,'#070a16',650)
+ + '<g>' + stars(22,5.9,230) + moon(650,100,18) + '</g>'
+ + glow(650,140,140,'cg')
+ + '<g fill="#0c1230">'
+ +  '<rect x="60" y="130" width="14" height="290"/><rect x="290" y="130" width="14" height="290"/><rect x="54" y="124" width="256" height="14" rx="5"/>'
+ +  '<rect x="340" y="150" width="12" height="270"/><rect x="520" y="150" width="12" height="270"/><rect x="334" y="144" width="204" height="12" rx="5"/>'
+ + '</g>'
+ + '<g fill="#2b1c42"><path d="M74 138h70v220H74z"/><path d="M352 156h56v190h-56z"/></g>'
+ + '<g fill="#101840"><rect x="60" y="300" width="250" height="70" rx="8"/><rect x="340" y="312" width="194" height="60" rx="8"/></g>'
+ + '<g fill="#1a2450"><rect x="76" y="306" width="70" height="30" rx="8"/><rect x="354" y="318" width="56" height="24" rx="7"/></g>'; },
+
+forest: function(){ return '<rect width="800" height="420" fill="#060911"/>'
+ + glow(400,250,230,'cg')
+ + '<g fill="#0a0f22">'
+ +  '<path d="M100 420V130l-34-40 34 10V40l30 56 30-40-30 64v300z"/>'
+ +  '<path d="M680 420V110l36-44-36 12V26l-28 58-32-44 32 70v310z"/>'
+ + '</g>'
+ + '<g fill="#080c1c">'
+ +  '<rect x="214" y="120" width="26" height="300"/><rect x="330" y="80" width="20" height="340"/>'
+ +  '<rect x="470" y="104" width="24" height="316"/><rect x="566" y="140" width="18" height="280"/>'
+ + '</g>'
+ + '<g fill="#05070f" opacity=".9">'
+ +  '<path d="M190 120c20-40 48-60 62-96 14 36 42 56 62 96z"/>'
+ +  '<path d="M300 86c22-44 54-66 70-106 16 40 48 62 70 106z"/>'
+ +  '<path d="M440 110c20-42 50-62 66-100 16 38 46 58 66 100z"/>'
+ + '</g>'
+ + '<rect y="380" width="800" height="40" fill="#040610"/>'
+ + '<g opacity=".55" fill="#9fb7ff"><rect y="330" width="800" height="54"/></g>'
+ + '<g fill="#e8bd5c"><circle cx="368" cy="288" r="7"/><circle cx="398" cy="288" r="7"/></g>'
+ + glow(383,288,40); },
+
+court: function(){
+ var h = stars(32,2.2,116) + moon(400,58,18) + glow(400,58,170);
+ h += '<rect y="300" width="800" height="120" fill="#0a0f24"/>';
+ h += '<rect y="128" width="800" height="178" fill="#070b1c"/>';
+ for(var i=0;i<7;i++){
+   var x = 20 + i*112;
+   h += '<path fill="#141d3a" d="M'+x+' 306V208a40 40 0 0 1 80 0v98Z"/>';
+   h += '<path fill="#0c1230" d="M'+(x+11)+' 306V210a29 29 0 0 1 58 0v96Z"/>';
+ }
+ h += '<rect y="114" width="800" height="18" fill="#05070f"/>';
+ h += '<ellipse cx="400" cy="386" rx="88" ry="26" fill="#05070f"/>'
+    + '<path d="M320 386V352h160v34Z" fill="#111a3c"/>'
+    + '<ellipse cx="400" cy="352" rx="80" ry="24" fill="#18234e"/>'
+    + '<ellipse cx="400" cy="352" rx="57" ry="17" fill="#04060e"/>'
+    + '<g stroke="#2a3768" stroke-width="6" fill="none"><path d="M338 352V296h124v56M338 296h124"/></g>'
+    + '<path d="M400 296v20" stroke="#8a7355" stroke-width="3"/>'
+    + '<rect x="385" y="314" width="30" height="20" rx="3" fill="#8a7355"/>';
+ h += glow(400,336,120,"cg");
+ return h; },
+
+mirror: function(){ return '<rect width="800" height="420" fill="#080c1c"/>'
+ + glow(400,230,230,'cg')
+ + '<g fill="#0a0f24"><rect y="360" width="800" height="60"/></g>'
+ + '<path d="M300 360V160a100 100 0 0 1 200 0v200z" fill="#2a1d08"/>'
+ + '<path d="M318 360V162a82 82 0 0 1 164 0v198z" fill="#101a44"/>'
+ + '<path d="M336 360V164a64 64 0 0 1 128 0v196z" fill="#1a2a66" opacity=".85"/>'
+ + '<g opacity=".5" fill="#cfe0ff"><path d="M352 360V170a48 48 0 0 1 40-46v236z"/></g>'
+ + '<g fill="#e8bd5c"><circle cx="300" cy="364" r="10"/><circle cx="500" cy="364" r="10"/></g>'
+ + '<g fill="#f7d774" opacity=".9"><circle cx="400" cy="250" r="7"/></g>'; },
+
+arena: function(){
+ var h = stars(30,7.3,150) + moon(694,62,20) + glow(694,62,170);
+ h += '<g fill="#0a1028"><path d="M0 420V196l172-54v278z"/><path d="M800 420V196l-172-54v278z"/></g>';
+ for(var i=0;i<6;i++){
+   var y = 188 + i*34;
+   h += '<rect x="0" y="'+y+'" width="'+(168-i*6)+'" height="12" fill="#1a2450"/>';
+   h += '<rect x="'+(632+i*6)+'" y="'+y+'" width="'+(168-i*6)+'" height="12" fill="#1a2450"/>';
+ }
+ h += '<g fill="#101840"><rect x="168" y="150" width="464" height="118"/></g>';
+ var cols = ["#b8381f","#246b4c","#3b5fa8"];
+ for(var b=0;b<3;b++){
+   var bx = 212 + b*160;
+   h += '<path fill="'+cols[b]+'" opacity=".85" d="M'+bx+' 150h74v92l-37-18-37 18z"/>';
+ }
+ h += '<ellipse cx="400" cy="378" rx="316" ry="76" fill="#0a0f24"/>';
+ h += '<ellipse cx="400" cy="374" rx="250" ry="56" fill="#121a3c"/>';
+ h += '<rect y="396" width="800" height="24" fill="#05070f"/>';
+ var tx = [96,236,400,564,704];
+ for(var t=0;t<tx.length;t++){
+   h += '<rect x="'+(tx[t]-4)+'" y="282" width="8" height="84" fill="#2a1d08"/>';
+   h += glow(tx[t],278,54) + '<path d="M'+tx[t]+' 258c9 10 7 20 0 26-7-6-9-16 0-26z" fill="#f7d774"/>';
+ }
+ return h; },
+
+chamber: function(){
+ var h = '<rect width="800" height="420" fill="#060a16"/>' + glow(400,186,250,"cg");
+ h += '<rect y="118" width="800" height="182" fill="#0a0f26"/>';
+ for(var p=0;p<4;p++){
+   var px = 70 + p*220;
+   h += '<circle cx="'+px+'" cy="200" r="42" fill="#050811"/>';
+   h += '<circle cx="'+px+'" cy="200" r="42" fill="none" stroke="#1d2a5e" stroke-width="7"/>';
+ }
+ h += '<g fill="#070b1c">'
+    + '<rect x="168" y="96" width="46" height="212"/><rect x="586" y="96" width="46" height="212"/>'
+    + '<rect x="156" y="84" width="70" height="16" rx="4"/><rect x="574" y="84" width="70" height="16" rx="4"/>'
+    + '</g>';
+ h += '<rect y="300" width="800" height="120" fill="#101a44"/>';
+ h += '<g opacity=".5" fill="#9fb7ff"><rect y="300" width="800" height="120"/></g>';
+ h += '<g stroke="#cfe0ff" stroke-width="2" opacity=".45" fill="none"><path d="M120 336h200M420 352h260M180 382h180M520 318h160"/></g>';
+ h += '<g fill="#e8bd5c"><circle cx="384" cy="196" r="6"/><circle cx="416" cy="196" r="6"/></g>';
+ h += glow(400,196,46);
+ return h; },
+
+classroom: function(){
+ var h = '<rect width="800" height="420" fill="#090d20"/>';
+ h += '<path d="M612 300V168a74 74 0 0 1 148 0v132z" fill="#16214a"/>';
+ h += glow(686,196,130,"cg") + '<circle cx="716" cy="166" r="16" fill="#f6ecd2"/>';
+ h += '<rect y="300" width="800" height="120" fill="#0b1026"/>';
+ h += '<rect x="40" y="120" width="300" height="140" rx="5" fill="#0a1a16"/>';
+ h += '<g stroke="#4c6a60" stroke-width="3" fill="none"><path d="M70 160h150M70 190h210M70 220h120"/></g>';
+ h += '<g fill="#1a1105"><rect x="384" y="96" width="156" height="226" rx="6"/></g>';
+ h += '<g fill="#2a1d08"><rect x="392" y="104" width="68" height="210" rx="4"/></g>';
+ h += '<rect x="462" y="104" width="34" height="210" fill="#060a16"/>';
+ h += glow(480,210,86) + '<rect x="470" y="128" width="18" height="164" fill="#f7d774" opacity=".4"/>';
+ h += '<g fill="#e8bd5c"><circle cx="454" cy="208" r="5"/></g>';
+ for(var r=0;r<3;r++){
+   var y = 318 + r*34, w = 150 + r*56, x1 = 30 - r*14;
+   h += '<g fill="#111a3c">'
+      + '<rect x="'+x1+'" y="'+y+'" width="'+w+'" height="12" rx="3"/>'
+      + '<rect x="'+(x1+600-r*40)+'" y="'+y+'" width="'+(w*0.7)+'" height="12" rx="3"/>'
+      + '</g>';
+ }
+ return h; },
+
+train: function(){ return stars(30,6.1,200)
+ + moon(120,70,20)
+ + '<g fill="#0a1028"><path d="M0 330l140-24 180 16 180-26 300 30v94H0z"/></g>'
+ + '<rect y="352" width="800" height="14" fill="#131a3c"/>'
+ + '<g fill="#3a0d10"><rect x="120" y="236" width="560" height="116" rx="12"/></g>'
+ + '<g fill="#5a1418"><rect x="120" y="236" width="560" height="26" rx="10"/></g>'
+ + '<g fill="#f7d774" opacity=".75">'
+ +  '<rect x="156" y="272" width="54" height="44" rx="5"/><rect x="238" y="272" width="54" height="44" rx="5"/>'
+ +  '<rect x="320" y="272" width="54" height="44" rx="5"/><rect x="402" y="272" width="54" height="44" rx="5"/>'
+ +  '<rect x="484" y="272" width="54" height="44" rx="5"/><rect x="566" y="272" width="54" height="44" rx="5"/>'
+ + '</g>'
+ + '<g fill="#0a0f24"><circle cx="208" cy="360" r="20"/><circle cx="360" cy="360" r="20"/><circle cx="512" cy="360" r="20"/><circle cx="640" cy="360" r="20"/></g>'
+ + '<g opacity=".4" fill="#b9cbff"><ellipse cx="300" cy="150" rx="150" ry="46"/><ellipse cx="480" cy="120" rx="110" ry="38"/></g>'; }
+};
+
+function art(id, cls){
+  var f = ART[id] || ART.corridor;
+  return '<svg class="art '+(cls||'')+'" viewBox="0 0 800 420" preserveAspectRatio="xMidYMid slice" '
+       + 'role="img" aria-hidden="true">' + SKY + f() + '</svg>';
+}
+
+/* ---------- option icons ---------- */
+var ICONS = {
+ door:'<rect x="7" y="3" width="18" height="26" rx="2" fill="#2a1d08" stroke="#e8bd5c" stroke-width="1.6"/><rect x="10" y="6" width="12" height="20" fill="#f7d774" opacity=".3"/><circle cx="20" cy="17" r="1.8" fill="#e8bd5c"/>',
+ wand:'<path d="M6 27L24 7" stroke="#d8c4a0" stroke-width="3.2" stroke-linecap="round"/><path d="M20 11l5-5" stroke="#8a7355" stroke-width="3.2" stroke-linecap="round"/><g fill="#f7d774"><circle cx="27" cy="5" r="2.4"/><circle cx="22" cy="4" r="1.2"/><circle cx="28" cy="10" r="1.2"/></g>',
+ owl:'<ellipse cx="16" cy="19" rx="8" ry="10" fill="#8d7a5e"/><path d="M8 11l1-5 4 3zM24 11l-1-5-4 3z" fill="#8d7a5e"/><circle cx="12.6" cy="14" r="3.2" fill="#f6ecd2"/><circle cx="19.4" cy="14" r="3.2" fill="#f6ecd2"/><circle cx="12.6" cy="14" r="1.5" fill="#1a1205"/><circle cx="19.4" cy="14" r="1.5" fill="#1a1205"/><path d="M16 17l-2 2.5h4z" fill="#e8bd5c"/>',
+ book:'<path d="M5 6h9a3 3 0 0 1 2 1 3 3 0 0 1 2-1h9v20h-9a3 3 0 0 0-2 1 3 3 0 0 0-2-1H5z" fill="#2b2450" stroke="#9fb7ff" stroke-width="1.5"/><path d="M16 7v20" stroke="#9fb7ff" stroke-width="1.5"/>',
+ key:'<circle cx="10" cy="11" r="5.5" fill="none" stroke="#e8bd5c" stroke-width="2.6"/><path d="M13 15l11 11" stroke="#e8bd5c" stroke-width="2.6" stroke-linecap="round"/><path d="M20 22l3 3M23 19l3 3" stroke="#e8bd5c" stroke-width="2.6" stroke-linecap="round"/>',
+ lantern:'<rect x="9" y="9" width="14" height="15" rx="2" fill="#f7d774" opacity=".65" stroke="#e8bd5c" stroke-width="1.6"/><rect x="7" y="6" width="18" height="4" rx="1.6" fill="#8a7355"/><rect x="7" y="24" width="18" height="4" rx="1.6" fill="#8a7355"/><path d="M16 6V2" stroke="#8a7355" stroke-width="2"/>',
+ stairs:'<g fill="#9fb7ff"><rect x="4" y="22" width="8" height="6"/><rect x="12" y="17" width="8" height="11"/><rect x="20" y="12" width="8" height="16"/></g><path d="M4 22l8-5 8-5 8-5" stroke="#e8bd5c" stroke-width="1.8" fill="none"/>',
+ map:'<path d="M4 8l8-3 8 3 8-3v19l-8 3-8-3-8 3z" fill="#2a2140" stroke="#e8bd5c" stroke-width="1.5"/><path d="M12 5v19M20 8v19" stroke="#e8bd5c" stroke-width="1.3"/><path d="M8 17l5-4 4 5 5-6" stroke="#f7d774" stroke-width="1.6" fill="none" stroke-dasharray="2 2"/>',
+ bottle:'<path d="M13 3h6v5l3 5v14a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2V13l3-5z" fill="#3d2a66" stroke="#9fb7ff" stroke-width="1.5"/><path d="M10 19h12v9a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2z" fill="#6f4fb0"/>',
+ broom:'<path d="M4 28L19 13" stroke="#8a7355" stroke-width="3" stroke-linecap="round"/><path d="M18 12l10-8c2 6 0 12-6 14z" fill="#c79b4e"/>',
+ cloak:'<path d="M16 3l7 4 5 21H4L9 7z" fill="#17204a" stroke="#9fb7ff" stroke-width="1.5"/><path d="M16 3v25" stroke="#9fb7ff" stroke-width="1.3"/>',
+ cauldron:'<path d="M5 13h22v7a11 11 0 0 1-22 0z" fill="#1d2444" stroke="#9fb7ff" stroke-width="1.5"/><rect x="3" y="11" width="26" height="3" rx="1.5" fill="#9fb7ff"/><g fill="#7ee0c0" opacity=".8"><circle cx="12" cy="7" r="2.4"/><circle cx="18" cy="4.4" r="1.8"/></g>',
+ letter:'<rect x="4" y="8" width="24" height="17" rx="2" fill="#efe3c6" stroke="#c7b48b" stroke-width="1.4"/><path d="M4 9l12 9 12-9" fill="none" stroke="#c7b48b" stroke-width="1.6"/><circle cx="24" cy="22" r="3.4" fill="#b8381f"/>',
+ quill:'<path d="M6 27c6-2 14-8 18-16 2-4 2-7 2-7s-4 1-8 4C11 13 7 21 6 27z" fill="#efe3c6" stroke="#c7b48b" stroke-width="1.2"/><path d="M6 27l9-9" stroke="#8a7355" stroke-width="1.6"/>',
+ paw:'<g fill="#8d7a5e"><ellipse cx="16" cy="22" rx="7.5" ry="6"/><circle cx="8" cy="14" r="3.2"/><circle cx="13" cy="9" r="3.2"/><circle cx="19" cy="9" r="3.2"/><circle cx="24" cy="14" r="3.2"/></g>',
+ hush:'<circle cx="16" cy="16" r="12" fill="none" stroke="#9fb7ff" stroke-width="1.8"/><path d="M16 7v12" stroke="#9fb7ff" stroke-width="2.6" stroke-linecap="round"/><path d="M11 13c0-3 2-5 5-5s5 2 5 5" fill="none" stroke="#e8bd5c" stroke-width="1.8"/>',
+ eye:'<path d="M2 16s5-8 14-8 14 8 14 8-5 8-14 8S2 16 2 16z" fill="none" stroke="#e8bd5c" stroke-width="1.8"/><circle cx="16" cy="16" r="4.6" fill="#9fb7ff"/><circle cx="16" cy="16" r="2" fill="#070a14"/>',
+ run:'<circle cx="19" cy="6" r="3.2" fill="#e0b98a"/><path d="M19 10l-6 5 3 5-2 7" stroke="#e8bd5c" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M13 15l-6 2M16 20l6 3" stroke="#e8bd5c" stroke-width="2.6" fill="none" stroke-linecap="round"/>',
+ hand:'<path d="M9 26V13a2 2 0 0 1 4 0V7a2 2 0 0 1 4 0v5a2 2 0 0 1 4 0v2a2 2 0 0 1 4 0v8a6 6 0 0 1-6 6h-4a6 6 0 0 1-6-6z" fill="#e0b98a" stroke="#b08a5c" stroke-width="1.2"/>',
+ candle:'<rect x="12" y="12" width="8" height="17" rx="2" fill="#f0e6cd"/><path d="M16 11c3-3 2-6 0-8-2 2-3 5 0 8z" fill="#f7d774"/><rect x="9" y="28" width="14" height="3" rx="1.5" fill="#8a7355"/>',
+ coin:'<circle cx="16" cy="16" r="10" fill="#c79b4e" stroke="#f7d774" stroke-width="1.8"/><path d="M16 10v12M13 13h5a2.5 2.5 0 0 1 0 5h-5" fill="none" stroke="#f7d774" stroke-width="1.8"/>',
+ mirror:'<path d="M9 28V13a7 7 0 0 1 14 0v15z" fill="#1a2a66" stroke="#e8bd5c" stroke-width="1.8"/><path d="M13 27V14a3 3 0 0 1 3-3" stroke="#cfe0ff" stroke-width="1.6" fill="none"/>',
+ clock:'<circle cx="16" cy="16" r="11" fill="none" stroke="#e8bd5c" stroke-width="1.8"/><path d="M16 9v7l5 3" stroke="#9fb7ff" stroke-width="2" fill="none" stroke-linecap="round"/>',
+ rope:'<path d="M8 4c6 3 6 7 0 10s-6 7 0 10 6 4 0 4" fill="none" stroke="#c79b4e" stroke-width="3" stroke-linecap="round"/><path d="M22 4c-6 3-6 7 0 10s6 7 0 10-6 4 0 4" fill="none" stroke="#8a7355" stroke-width="3" stroke-linecap="round"/>'
+};
+
+function icon(id, size){
+  var g = ICONS[id] || ICONS.wand;
+  return '<svg class="ic" style="width:'+(size||42)+'px;height:'+(size||42)+'px" viewBox="0 0 32 32" aria-hidden="true">'+g+'</svg>';
+}
+
+/* ===================================================================
+   THE STORIES. Everything here is original — nothing is quoted from any
+   book and nobody in it is named. The people are roles.
+
+   A story is a list of chapters. A chapter is a situation and three
+   choices. Every choice has its own picture and its own reaction, and
+   the gold line at the bottom of the reaction is what carries you into
+   the next chapter.  h: which house that choice leans toward.
+   gate: true means she has to write a reason before she can go on.
+   =================================================================== */
+
+var STORIES = [
+
+/* ================= 1. THE DOOR ON THE THIRD FLOOR ================= */
+{id:"door", t:"The Door on the Third Floor", art:"corridor", len:"Six chapters", yr:"Year one",
+ tx:"A door that is always locked is open tonight, and something on the other side of it is breathing.",
+ ch:[
+
+ {t:"The door that is always locked", art:"door", gate:true,
+  s:"You are the last one back from supper. A door that is always locked is open about a hand's width, and something behind it is breathing.",
+  c:[
+   {a:"Push it open and look.", ic:"eye", h:"ember", art:"trapdoor",
+    w:"The gap is wider than you thought. Whatever is in there moves away from you, not toward you — and in the dark you hear it do something you did not expect. It sniffs. Then a second nose sniffs, and then a third.",
+    led:"You are back in bed inside a minute, and you are the only person in this castle who knows there are three of them."},
+   {a:"Fetch the strict head teacher.", ic:"run", h:"oak", art:"study",
+    w:"She walks fast and says nothing the whole way. By the time you get back the door is shut and locked. She looks at you for a long moment and tells you that next time you should come quicker.",
+    led:"She does not say what is behind it. She says the word “yet”, and you think about that one word for a fortnight."},
+   {a:"Close it and tell nobody.", ic:"hush", h:"thorn", art:"corridor",
+    w:"The door clicks shut under your hand. For three days nothing happens at all. On the fourth, a notice goes up saying the third-floor corridor is out of bounds to everybody.",
+    led:"You are the only person in the school who already knew. That turns out to be heavier to carry than you expected."}
+  ]},
+
+ {t:"The notice on the board", art:"hall",
+  s:"The whole school is talking about the third floor now, and almost everything being said about it is wrong. At breakfast a boy two years above you says loudly that there is nothing up there at all.",
+  c:[
+   {a:"Say what you know.", ic:"hand", h:"ember", art:"hall",
+    w:"Half the table believes you. The other half decide you are showing off. By Friday the story has grown a tail and a second head, and not one word of what you actually said is still in it.",
+    led:"One person does not join in, though. She waits until everybody else has gone, and then she asks you one quiet question."},
+   {a:"Say nothing, and listen.", ic:"hush", h:"quill", art:"hall",
+    w:"You eat your toast and let them be wrong, and you learn three things doing it: who is guessing, who is only repeating, and who has actually been up there.",
+    led:"The last one is a girl at the end of the table who has not said a word all breakfast, and who gets up and leaves before you do."},
+   {a:"Go back up and check.", ic:"stairs", h:"thorn", art:"corridor",
+    w:"The corridor is properly locked now, and there is a new smell in it that was not there before — something between wet dog and burnt rope. You are no closer to knowing, and you are the only person still looking.",
+    led:"On the way down you nearly walk into somebody coming up, and she is not a teacher."}
+  ]},
+
+ {t:"The girl who was already looking", art:"library", gate:true,
+  s:"She finds you in the library. She has a notebook with the third floor drawn in it and dates down the side, and she says, with no introduction at all, that there were two people on that corridor last week and she would like to know which one you were.",
+  c:[
+   {a:"Tell her everything.", ic:"book", h:"oak", art:"library",
+    w:"She writes all of it down, including the sniffing, and when you get to the third nose she stops writing and looks up. She has been counting the meat going up to that corridor, and she had already worked out it was more than one animal.",
+    led:"She turns the notebook round. Underneath the corridor she has drawn something you never saw: a square set into the floor."},
+   {a:"Ask what she knows first.", ic:"quill", h:"quill", art:"library",
+    w:"She is not offended in the least. She is impressed. She shows you three weeks of the kitchen order book and the amount of food going somewhere that is very clearly not the Great Hall.",
+    led:"Then she asks you again — and this time you can tell she already knows the answer and is only checking whether you will say it out loud."},
+   {a:"Tell her she has the wrong person.", ic:"hush", h:"thorn", art:"library",
+    w:"She accepts it at once, closes the notebook, and is perfectly friendly for the rest of the afternoon. Two days later you see her on the third-floor staircase at a time when nobody should be anywhere near it.",
+    led:"She is going up alone, with a bag, and she has not told anybody either."}
+  ]},
+
+ {t:"The square in the floor", art:"trapdoor",
+  s:"You are on the corridor at night and the thing in the room is asleep. It is enormous. It has three heads, all of them breathing, and it is lying right across a trapdoor set into the flagstones.",
+  c:[
+   {a:"Go now, while it sleeps.", ic:"paw", h:"ember", art:"trapdoor",
+    w:"You get the ring up and the trapdoor open, and one of the heads opens an eye before you are through it. You do not remember deciding to drop. You remember landing.",
+    led:"It is a long way down, and whatever you land on is soft, and it is moving."},
+   {a:"Work out what is keeping it asleep.", ic:"quill", h:"quill", art:"study",
+    w:"There is a harp in the corner with nobody holding it, playing on its own, badly, and running down. You understand the whole thing in about four seconds: the music is doing this, and the music is about to stop.",
+    led:"Which means you now have two problems, and only one of them is the dog."},
+   {a:"Go back and get help.", ic:"run", h:"oak", art:"corridor",
+    w:"You are halfway to the staircase before you realise you cannot say where you have been without saying what you were doing there. You turn round. The dog is still asleep and you have lost eleven minutes.",
+    led:"Eleven minutes turns out to matter a great deal, later on."}
+  ]},
+
+ {t:"Underneath", art:"keys",
+  s:"The room below is high and cold and full of keys — hundreds of them, flying. There is one door at the far end, locked, and one broom leaning against the wall.",
+  c:[
+   {a:"Fly up and catch it.", ic:"broom", h:"ember", art:"keys",
+    w:"They move like a shoal of fish. Twice you have your hand on the right one and twice it tears away. The third time you do not grab — you pin it flat against the ceiling with your palm, and it goes still, bent-winged and furious.",
+    led:"The door opens. Behind it the floor is a chessboard, and the pieces are the size of you."},
+   {a:"Watch them first.", ic:"eye", h:"quill", art:"keys",
+    w:"You stand completely still for a full minute, which feels like an hour. One key is flying wrong — slower, dipping, with a bent wing, because somebody has already caught it once. That is the one.",
+    led:"It takes you a single try. The girl with the notebook would have been proud of you, and you notice that you wish she were there to see it."},
+   {a:"Try the door first.", ic:"door", h:"thorn", art:"keys",
+    w:"It is locked, obviously. But while you are looking at it you find something better than the key: the lock is screwed on from your side, and the screws are loose.",
+    led:"You get it off with the edge of a coin. The door swings open. There was never any need to fly at all."}
+  ]},
+
+ {t:"The last room", art:"mirror", gate:true,
+  s:"The last room is empty except for a tall mirror. You can see yourself in it — and you can see that you are holding something you are definitely not holding.",
+  c:[
+   {a:"Reach for it.", ic:"hand", h:"ember", art:"mirror",
+    w:"Your hand closes on nothing in the glass and on something heavy in your pocket. Whatever this mirror is for, it has decided that you wanted to find the thing and not to use it — and that, it turns out, was the entire test.",
+    led:"You walk out with it. You have no idea yet what it does, and you are going to have to decide who to tell."},
+   {a:"Read it before you touch anything.", ic:"mirror", h:"quill", art:"mirror",
+    w:"You stand there long enough to notice that the writing round the frame is back to front, and when you read it the right way round it is not a warning at all. It is an instruction, and it is a kind one.",
+    led:"You do what it says. It works. You will be thinking about those words for years."},
+   {a:"Turn round and leave it.", ic:"door", h:"oak", art:"passage",
+    w:"You walk back out past the chessboard and the keys and the sleeping dog, and up into a corridor that smells of ordinary cold stone. Nothing in this castle knows you were ever down there.",
+    led:"In the morning the notice is still on the board. You read it on the way to breakfast and, for the first time all term, you are not interested in it."}
+  ]}
+]},
+
+/* ========================= 2. THE MAP ========================= */
+{id:"map", t:"The Map", art:"library", len:"Six chapters", yr:"Year three",
+ tx:"Folded inside a library book is a hand-drawn map with a passage on it that leads out past the walls.",
+ ch:[
+
+ {t:"The map in the book", art:"library", gate:true,
+  s:"Folded inside a library book you borrowed is a hand-drawn map of the castle. One passage on it leads out past the walls, and it is not a passage that anybody has ever mentioned.",
+  c:[
+   {a:"Follow it tonight, alone.", ic:"lantern", h:"ember", art:"passage",
+    w:"It is a good deal narrower than the drawing suggests and it smells of wet stone. It comes out behind a statue in the village, exactly where the map says it will. Getting back in takes you until nearly morning.",
+    led:"You go to sleep with mud on your shoes and the map still in your pocket, which is a mistake you are going to hear about at breakfast."},
+   {a:"Show your know-it-all friend first.", ic:"book", h:"quill", art:"library",
+    w:"She holds it up to the lamp and finds something you walked straight past — a second line in different ink, added later, with a small word written beside it.",
+    led:"She cannot read the word. She can tell you it is a name, and that it was written by somebody whose hand was shaking."},
+   {a:"Put it back in the book.", ic:"hush", h:"oak", art:"library",
+    w:"You hand the book in. Two weeks later you take the very same book out again and the map is gone. Somebody else has it now, and you have no idea who.",
+    led:"On Thursday you see a boy you do not know come out from behind the statue in the village, brushing wet stone off his sleeve."}
+  ]},
+
+ {t:"Somebody noticed", art:"hall",
+  s:"Whatever you did with it, you are not the only person who knows the map exists any more. At breakfast your friend asks you straight out, in front of two other people, where you were last night.",
+  c:[
+   {a:"Tell her all of it.", ic:"hand", h:"oak", art:"hall",
+    w:"She is not cross that you went. She is cross that you went without her, which turns out to be a completely different argument and a much shorter one.",
+    led:"She wants to go back on Saturday. She also wants to bring a candle, a length of rope and a plan, which is exactly why you are glad you told her."},
+   {a:"Tell her half of it.", ic:"hush", h:"thorn", art:"hall",
+    w:"The half you tell is true, and she knows it is half, and she lets it go anyway. Something small sits down between the two of you and stays there for about a week.",
+    led:"You are the only one of you who can feel it, which somehow makes it worse rather than better."},
+   {a:"Show her the map instead of answering.", ic:"map", h:"quill", art:"library",
+    w:"She stops asking the second she sees it. Inside ten minutes she has found the second line of ink, the name beside it, and three books to go with them.",
+    led:"She says the name out loud. At the next table, a seventh-year who has never spoken to either of you looks up."}
+  ]},
+
+ {t:"The name in the second ink", art:"study", gate:true,
+  s:"The name belongs to somebody who still teaches here. You find him alone in his office marking, and he does not look at all surprised to see you, which is the first thing about this that frightens you.",
+  c:[
+   {a:"Ask him straight out.", ic:"hand", h:"ember", art:"study",
+    w:"He goes very still. He asks where you found it, and you tell him, and he asks you to leave it with him. You do. He gives it back three days later with the second passage neatly inked out and no explanation at all.",
+    led:"He also gives you something that was not in the book before: one word, written in the margin, and it is an address."},
+   {a:"Put it on his desk and say nothing.", ic:"map", h:"quill", art:"study",
+    w:"He looks at it for a long time. Then he says, almost to himself, that he drew it when he was fourteen, and that he has not seen it since the night he stopped using it.",
+    led:"He does not say what happened that night. He does say that the second passage was bricked up for a reason, and that the reason has not gone anywhere."},
+   {a:"Say nothing to him at all.", ic:"hush", h:"thorn", art:"court",
+    w:"You watch him instead. For four days he does nothing unusual at all. On the fifth he is out in the courtyard at six in the morning, and he is not alone, and the person with him is not a teacher.",
+    led:"You now know one thing that he does not know you know, and you have to decide what that is worth."}
+  ]},
+
+ {t:"The second passage", art:"passage",
+  s:"It is bricked up forty feet in, and the bricks are new. Somebody closed this off recently, and did not want anybody to be able to say when.",
+  c:[
+   {a:"Take the bricks out.", ic:"rope", h:"ember", art:"passage",
+    w:"The mortar is barely set and comes away in handfuls. Behind it the passage carries straight on, and the air that comes out of it is warm — which is wrong, forty feet underground, in November.",
+    led:"Warm air means fire, and fire means somebody down there is living in it."},
+   {a:"Work out when they were laid.", ic:"clock", h:"quill", art:"passage",
+    w:"The mortar is still soft, and there is a boot print in the dust far too big to belong to a student. You match it against the dates on the map's second line and they agree to within a week.",
+    led:"Somebody bricked this up the same week the map vanished out of your library book. Which means the map and the bricks are one story, not two."},
+   {a:"Leave it and go out the other end.", ic:"door", h:"oak", art:"village",
+    w:"You come out behind the statue into a village that is perfectly ordinary and perfectly asleep, and you stand there for a minute feeling like somebody who has made the sensible choice and is not enjoying it.",
+    led:"Across the square one window is lit, and somebody is sitting in it, looking at the statue you have just come out of."}
+  ]},
+
+ {t:"The person at the other end", art:"village",
+  s:"There is somebody waiting. Not a teacher and not a student, and not surprised to see you either — which by now you are getting used to, and still do not like.",
+  c:[
+   {a:"Ask who they are.", ic:"hand", h:"ember", art:"village",
+    w:"They answer honestly, which you were not ready for. They were the other name on the map. They were fourteen too, and they went down the second passage, and they did not come back up quite the same person.",
+    led:"Then they ask you not to tell him they are here. It is the first time in this whole business that anybody has asked you for something instead of warning you off."},
+   {a:"Say nothing and look at everything.", ic:"eye", h:"quill", art:"village",
+    w:"The wall behind them has the same handwriting on it as the second line of ink. There is a map on the table, newer than yours, with your school drawn on it and three passages marked that are not on yours at all.",
+    led:"They catch you looking — and instead of covering it up, they turn it round so you can see it better."},
+   {a:"Go back the way you came.", ic:"run", h:"oak", art:"passage",
+    w:"You are out of the square and into the passage before they are properly out of the chair. Nobody follows you. You get back to the castle at four in the morning with nothing at all except your own heartbeat.",
+    led:"And one thing you cannot un-see: as you turned, they waved."}
+  ]},
+
+ {t:"What you do with it", art:"hall", gate:true,
+  s:"You have a map somebody drew when they were fourteen, a passage somebody bricked up on purpose, and a person at the far end of it who has asked you to keep them quiet. Every single person in this story has asked you for a different thing.",
+  c:[
+   {a:"Give it back to him, and tell him all of it.", ic:"letter", h:"oak", art:"study",
+    w:"He listens to the whole thing without interrupting once. At the end he says thank you, and then he says sorry, and you do not find out for another two years what he was apologising for.",
+    led:"The second passage is properly sealed by Christmas. The person in the village is gone by spring, and they leave you the newer map."},
+   {a:"Keep it, and tell nobody.", ic:"hush", h:"thorn", art:"dorm",
+    w:"You slide it under the lining of your trunk. It is still there at the end of the year. Twice you very nearly go and get it out, and both times you decide not to.",
+    led:"You are still not sure which of those two was the braver decision, and you think about it a great deal more often than you expected to."},
+   {a:"Take it to the person it was drawn about.", ic:"map", h:"quill", art:"village",
+    w:"They look at it for a long time and then they laugh once, without very much in it. They tell you the one thing neither of the grown-ups would: what is actually at the bottom of the second passage.",
+    led:"It is not a monster. It is far more ordinary than that, and far harder to know."}
+  ]}
+]},
+
+/* ======================== 3. THE FAVOUR ======================== */
+{id:"favour", t:"The Favour", art:"court", len:"Six chapters",
+ tx:"Your friend asks you to say she was with you all evening. She was not.",
+ ch:[
+
+ {t:"What she asks you to say", art:"court", gate:true,
+  s:"Your friend was out of bed after hours and very nearly got caught. She asks you to tell the strict head teacher that she was with you in the library all evening.",
+  c:[
+   {a:"Say it. She's your friend.", ic:"hand", h:"oak", art:"study",
+    w:"The head teacher listens, writes something down, and thanks you. Your friend is not punished at all. For about a week afterwards you find that you do not much enjoy being thanked for things.",
+    led:"And your friend is a little easier around you than she was, in a way you cannot decide whether you like."},
+   {a:"Refuse, and tell her why.", ic:"hush", h:"ember", art:"court",
+    w:"She is furious, and does not speak to you for four days. On the fifth she sits down next to you at breakfast and says, without looking up, that she would not have asked if she had thought about it properly.",
+    led:"She still does not say what she was doing out of bed. You notice that she does not, and you decide not to ask yet."},
+   {a:"Tell her to go and say it herself.", ic:"door", h:"thorn", art:"court",
+    w:"She does. She gets a week of detention with her own name on it, and she takes it without arguing, which is not like her at all.",
+    led:"She is quieter than usual for a fortnight, and something between the two of you has changed, though you could not say exactly what."}
+  ]},
+
+ {t:"Where she actually was", art:"tower",
+  s:"You find out by accident. She was up in the owlery at eleven at night, and she was not sending a letter. She was waiting for one, and it had already come four nights running.",
+  c:[
+   {a:"Ask her about it.", ic:"hand", h:"oak", art:"tower",
+    w:"She tells you. It is about her brother, and it is not the sort of thing anybody your age can do anything about, and she says that out loud before you can offer — which saves you both something.",
+    led:"Then she says the part she has not said to anybody: the letters have stopped."},
+   {a:"Wait for her to tell you.", ic:"clock", h:"quill", art:"tower",
+    w:"You wait eleven days. She tells you on the twelfth, in the middle of something else entirely, in about four sentences, the way people do when they have practised it.",
+    led:"You are fairly sure she only told you because you did not ask. You are also fairly sure she will never say so."},
+   {a:"Go up to the owlery and look.", ic:"eye", h:"thorn", art:"tower",
+    w:"There is a letter in the slot with her name on it, in handwriting you do not recognise. You do not open it. You do look at it for a great deal longer than you can explain afterwards.",
+    led:"When you put it back you realise somebody has been watching you from the stairs the entire time."}
+  ]},
+
+ {t:"She asks again", art:"court", gate:true,
+  s:"A week later she asks you for the same thing. Same evening, same words — and this time you can tell she has already worked out that you will say yes.",
+  c:[
+   {a:"Say yes again.", ic:"hand", h:"oak", art:"court",
+    w:"It is a great deal easier the second time, which is the part that bothers you. By the third time you do not even stop to think about it.",
+    led:"That is roughly when you notice you have stopped being asked and started being used — and that she has not noticed at all."},
+   {a:"Say no, and say what the first time cost you.", ic:"hush", h:"ember", art:"court",
+    w:"She had genuinely not thought about your side of it, and she says so, and she is not pretending. She is careful with you for a while afterwards in a way that is better than the easy version was.",
+    led:"She also, finally, asks you to come with her instead of covering for her."},
+   {a:"Say yes — then tell the truth afterwards.", ic:"letter", h:"thorn", art:"study",
+    w:"You are believed. She is punished. She never works out which of the two of you it came from, and you do not tell her.",
+    led:"You carry that one entirely on your own, and it is a good deal heavier than you thought you were picking up."}
+  ]},
+
+ {t:"The teacher asks you", art:"study",
+  s:"A teacher stops you in the corridor — you, not her — and asks what she was doing out of bed. He is not angry. He is worried, which is much harder to lie to.",
+  c:[
+   {a:"Tell him the truth.", ic:"hand", h:"oak", art:"study",
+    w:"You do, and it is the truth, and she hears about it by lunchtime anyway. She does not argue with you. She says that she would rather it came from you than from anybody else.",
+    led:"You cannot tell whether that was forgiveness, and you are still not sure a year later."},
+   {a:"Say you don't know.", ic:"hush", h:"thorn", art:"study",
+    w:"He looks at you for slightly too long, and then lets you go. Nothing at all happens to you. You spend the rest of the week deciding whether you got away with something or lost something.",
+    led:"On Friday he stops her instead, and she tells him the lot in about two minutes, and you were never needed."},
+   {a:"Say it is hers to tell, not yours.", ic:"door", h:"ember", art:"court",
+    w:"He does not like it, and goes and asks her directly. She tells him herself, badly and all in one go, and afterwards she says that was the only answer that left her anything to do.",
+    led:"It is also the first time a teacher has looked at you as a person with a position rather than a student with an excuse."}
+  ]},
+
+ {t:"Somebody who is not your friend", art:"hall",
+  s:"She took her punishment with her own name on it. Now somebody else in your year wants exactly the same favour from you — and they are not your friend, and they know you have done it before.",
+  c:[
+   {a:"Give them the same answer you gave her.", ic:"hush", h:"ember", art:"hall",
+    w:"They are a great deal angrier than your friend was, and they do not come back on the fifth day to apologise. Holding the line with somebody you do not like costs more, which is probably the whole point of it.",
+    led:"Two people at that table watched you do it. One of them is the girl who was on the owlery stairs."},
+   {a:"Do it. It is easier than the argument.", ic:"coin", h:"oak", art:"hall",
+    w:"It works. They are pleased with you for about four days. Then they ask you for something bigger, and it is not the same kind of thing at all.",
+    led:"Which is roughly when you understand what you actually agreed to the very first time."},
+   {a:"Ask what they will owe you.", ic:"coin", h:"thorn", art:"hall",
+    w:"They agree instantly, which tells you they have done this before with somebody else. You now have something you can call in whenever you choose to.",
+    led:"And a small cold feeling that you have started playing a game you never meant to be in."}
+  ]},
+
+ {t:"What she was protecting", art:"tower", gate:true,
+  s:"It comes out in the end, the way these things do, and not through you. Her brother is in real trouble — the kind with adults and letters in it — and the whole school knows by Tuesday.",
+  c:[
+   {a:"Stand next to her, out loud.", ic:"hand", h:"oak", art:"hall",
+    w:"You sit with her at breakfast where everybody can see it, and you do it again on Wednesday, and again on Thursday. It costs you two people you thought were friends, and it gains you one you were not expecting.",
+    led:"She never thanks you for it. Years later she tells somebody else about it, gets it slightly wrong, and makes you sound braver than you were."},
+   {a:"Say nothing, and stay close.", ic:"candle", h:"quill", art:"dorm",
+    w:"You do not make a speech. You walk to lessons with her, you sit where she can see you, and you do not once make her explain herself to you.",
+    led:"On the Friday she says that out of everybody, you were the only one who did not ask her a single question, and that it was the only thing all week that helped."},
+   {a:"Go and find out what is actually true.", ic:"eye", h:"ember", art:"study",
+    w:"You go to the worried teacher and ask him what really happened, and he tells you more than he probably should. Half of what the school is saying is simply wrong.",
+    led:"You spend the next fortnight correcting it one person at a time, which is slow and unglamorous and is the reason it eventually stops."}
+  ]}
+]},
+
+/* ===================== 4. FOUR QUICK ONES ===================== */
+{id:"quick", t:"Four Quick Ones", art:"stairs", len:"Four short situations", yr:"Any year",
+ tx:"Four things that happen in one week. None of them carry on — each one is over when you decide.",
+ ch:[
+
+ {t:"The crying first-year", art:"stairs", gate:true,
+  s:"A small boy is sitting on the staircase with his trunk, crying, and he will not say why. Your lesson with the cold teacher started two minutes ago, and he takes marks off for lateness.",
+  c:[
+   {a:"Sit down with him.", ic:"hand", h:"oak", art:"stairs",
+    w:"It takes him a while. His owl got out of its cage on the train and he has not seen it since. You lose eight marks for it.",
+    led:"He finds you at breakfast the next day to tell you the owl came back."},
+   {a:"Walk him to a teacher, then run.", ic:"run", h:"quill", art:"corridor",
+    w:"You hand him over at the staffroom door and sprint. You are four minutes late instead of two.",
+    led:"The cold teacher says your name in the way that means he has noticed, and nothing else happens at all."},
+   {a:"Tell him you'll come back after.", ic:"clock", h:"thorn", art:"stairs",
+    w:"He nods and wipes his face. When you come back an hour later the staircase is empty and you never find out what happened to him.",
+    led:"It stays with you quite a lot longer than the lesson did."}
+  ]},
+
+ {t:"Your name in the cup", art:"hall", gate:true,
+  s:"A contest is announced for older students only. Your name comes out of the cup anyway. You did not put it in, and three hundred people are now looking at you.",
+  c:[
+   {a:"Stand up and go forward.", ic:"run", h:"ember", art:"hall",
+    w:"The walk to the front is the longest of your life and nobody claps. The head teacher asks you quietly whether you entered, and you say no.",
+    led:"You can tell that she believes you, and that it does not help."},
+   {a:"Say out loud that you didn't enter.", ic:"hand", h:"oak", art:"hall",
+    w:"Your voice comes out smaller than you meant it to, and some people laugh. The gentle giant at the back of the hall does not laugh.",
+    led:"Later he tells you he would have said exactly the same thing."},
+   {a:"Stay in your seat and say nothing.", ic:"hush", h:"thorn", art:"hall",
+    w:"The silence stretches until somebody else says your name again. Not answering turns out to be its own kind of answer.",
+    led:"By morning the story going round the school is one you did not choose."}
+  ]},
+
+ {t:"The smoking cauldron", art:"study", gate:true,
+  s:"You add one ingredient in the wrong order and your cauldron starts giving off thick grey smoke that smells of burnt hair. The cold teacher has his back to the room.",
+  c:[
+   {a:"Put the fire out and start again.", ic:"cauldron", h:"quill", art:"study",
+    w:"You lose the whole hour and finish with an empty cauldron, and he marks it as nothing at all.",
+    led:"You are also the only person in that room who now knows exactly what that ingredient does out of order."},
+   {a:"Keep stirring and hope.", ic:"bottle", h:"thorn", art:"study",
+    w:"The smoke gets worse before it gets better and then — strangely — it clears, and what is left is the wrong colour and the right thickness.",
+    led:"He walks past, looks in, and says nothing whatsoever."},
+   {a:"Put your hand up and tell him.", ic:"hand", h:"ember", art:"study",
+    w:"He comes over without hurrying, looks at it for two seconds, and tells you which ingredient and which order, in front of everybody. It is not kind.",
+    led:"You do not make that particular mistake again."}
+  ]},
+
+ {t:"The letter that wasn't yours", art:"tower", gate:true,
+  s:"An owl drops a letter in front of you with somebody else's name on it. You can see through the paper that your own name is written inside it.",
+  c:[
+   {a:"Open it.", ic:"letter", h:"thorn", art:"tower",
+    w:"It is about you, and it is not unkind, but it was written by somebody who believed you would never read it.",
+    led:"You cannot unread it, and you cannot mention it either."},
+   {a:"Give it to the person it belongs to.", ic:"hand", h:"oak", art:"hall",
+    w:"She takes it, reads it, and goes slightly pink. She does not tell you what it says.",
+    led:"She is a bit careful around you for about a fortnight, and then she is not."},
+   {a:"Hold on to it and think.", ic:"clock", h:"quill", art:"dorm",
+    w:"You keep it in your pocket for two days. By the time you have decided what to do, the person it was meant for has already heard whatever was in it from somebody else.",
+    led:"Deciding slowly turns out to have been a decision of its own."}
+  ]}
+]},
+
+/* ====================== 5. THE TOURNAMENT ======================
+   Year four, and only as far as the four champions being chosen.
+   Nothing here goes past that point — no spoilers for anyone still
+   reading this book. */
+{id:"tourney", t:"The Tournament", art:"arena", len:"Six chapters", yr:"Year four",
+ tx:"Three schools, one champion each, and an age line you are under. Then a fourth name comes out.",
+ ch:[
+
+ {t:"The announcement", art:"hall", gate:true,
+  s:"A tournament is announced — three schools, one champion each, and a prize nobody will stop talking about. There is an age line, and you are under it. Your friend announces at supper that they are going to find a way round it.",
+  c:[
+   {a:"Help them try.", ic:"wand", h:"ember", art:"court",
+    w:"You spend four evenings on it and get further than you expected, which is the frightening part. On the fifth evening you are both standing at the line at eleven at night with a plan that would probably work.",
+    led:"And you are both aware, without saying it, that neither of you has asked what happens to somebody who gets in and then cannot do it."},
+   {a:"Talk them out of it.", ic:"hand", h:"oak", art:"court",
+    w:"It takes a week and it is not one conversation, it is about nine. In the end they stop, and they are not grateful, and they tell you so.",
+    led:"A fortnight later they say, without looking at you, that they are glad. You have learned something about how long gratitude takes."},
+   {a:"Tell a teacher.", ic:"run", h:"thorn", art:"study",
+    w:"The line is strengthened the next morning, and nobody is told why, and your friend works out in about a day and a half that it was you.",
+    led:"They are safe. They are also not speaking to you, and you have to decide which of those two you were actually buying."}
+  ]},
+
+ {t:"The visitors arrive", art:"grounds",
+  s:"The other two schools arrive on the same evening and the whole castle turns out to watch. By supper everybody has somebody to sit with, except one visiting student at the end of a bench who nobody has spoken to all night.",
+  c:[
+   {a:"Go and sit with them.", ic:"hand", h:"ember", art:"hall",
+    w:"It is awkward for about four minutes and then it is not. They are not shy at all — they simply did not know how to start, and neither did anybody else, and so nobody did.",
+    led:"Three nights later they tell you something about the tournament that nobody at your school knows yet."},
+   {a:"Watch who else is left out.", ic:"eye", h:"quill", art:"hall",
+    w:"There are four of them, not one, and they are all from the same school, and they are all sitting apart from each other on purpose. That is not shyness. That is somebody’s instruction.",
+    led:"You now have a question that nobody else in the hall has even thought to ask."},
+   {a:"Stay with your own friends.", ic:"hush", h:"oak", art:"hall",
+    w:"It is a good evening. Your table is loud and happy and you are part of it, and at the end of it you look down the hall and that student is still on their own.",
+    led:"You do not forget the look of it, which turns out to matter more than the evening did."}
+  ]},
+
+ {t:"The age line", art:"court", gate:true,
+  s:"Somebody two years above you is quietly selling a way past the age line. They say it has worked twice already. They want nothing for it except that you do not say where you got it.",
+  c:[
+   {a:"Say no.", ic:"hush", h:"oak", art:"court",
+    w:"They shrug and move on down the bench, and you watch them ask three other people in the next ten minutes, and you watch two of those people say yes.",
+    led:"Saying no took four seconds. Watching what happened after it took the rest of the week."},
+   {a:"Ask how it works first.", ic:"quill", h:"quill", art:"library",
+    w:"They explain it, because explaining it is half the fun for them. It does not work — you can tell from the way they describe the second attempt, which they clearly did not see.",
+    led:"You now know it is a lie, which makes what you do next a completely different question."},
+   {a:"Let them try it on somebody else, and watch.", ic:"eye", h:"thorn", art:"court",
+    w:"The next one who tries gets thrown back about ten feet and spends the night in the hospital wing with a beard they did not ask for. Nobody is seriously hurt.",
+    led:"You learned it for free and somebody else paid. You are still deciding how you feel about having chosen that."}
+  ]},
+
+ {t:"Four names", art:"hall", gate:true,
+  s:"Three champions are chosen and the hall is on its feet for each one. Then the fire goes a different colour and a fourth name comes out, and it belongs to somebody in your year who is far too young and who has gone completely white.",
+  c:[
+   {a:"Stand up for them in front of everybody.", ic:"hand", h:"ember", art:"hall",
+    w:"You get about six words out before the noise swallows them. Almost nobody hears you. The person whose name it was hears you, and that turns out to be the entire point of having said it.",
+    led:"They find you afterwards on the stairs and cannot get a sentence out, and does not need to."},
+   {a:"Say nothing until you know more.", ic:"quill", h:"quill", art:"hall",
+    w:"You watch the teachers instead of the fire. Two of them are angry. One of them is frightened, and it is not the one you would have guessed, and they are looking at the door rather than at the cup.",
+    led:"Everybody in this hall is asking who did it. You are the only one asking who already knew it was coming."},
+   {a:"Go and ask them privately.", ic:"door", h:"oak", art:"corridor",
+    w:"You catch them in the corridor outside. They say they did not put it in. They say it four times, and the fourth time is the one you believe, because by then they have stopped trying to convince you and are only saying it to themselves.",
+    led:"You are, as far as you can tell, the first person who has asked instead of told."}
+  ]},
+
+ {t:"The one everybody turned on", art:"corridor",
+  s:"By Thursday the school has decided. They cheated, they wanted it, they have always been like this. Two of the loudest people saying it are your own friends, and one of them says it to your face expecting you to agree.",
+  c:[
+   {a:"Sit with them where everyone can see.", ic:"hand", h:"oak", art:"hall",
+    w:"The table goes quiet when you sit down and then gets loud again in a different way. You lose one friend over it properly and another one for about three weeks.",
+    led:"Nobody else sits down. But two people stop saying it, which is not nothing and is not enough."},
+   {a:"Find out who put the name in.", ic:"eye", h:"quill", art:"library",
+    w:"You start with who was in the hall before the choosing and you end up with a list of four, and then three, and then one that does not make any sense at all.",
+    led:"The name you end up with is somebody with no reason on earth to want this, which means you have the wrong end of it, or the right end of something much worse."},
+   {a:"Say nothing and keep both sides.", ic:"hush", h:"thorn", art:"corridor",
+    w:"It works. You keep your friends and you are still perfectly pleasant to the champion in the corridors when nobody is watching, and you manage this for nine days.",
+    led:"On the tenth, they look at you across the hall, and you understand from their face that pleasant in private is not the same thing, and never was."}
+  ]},
+
+ {t:"Before the first task", art:"arena", gate:true,
+  s:"You find out what the first task is — by accident, two days early, from a conversation you were not supposed to be near. The three older champions already know. The fourth one does not, and telling them is against every rule of the tournament.",
+  c:[
+   {a:"Tell them straight out.", ic:"hand", h:"ember", art:"arena",
+    w:"You tell them in the courtyard in about eleven words and then walk off before either of you can make it into a conversation. They do not thank you, then or later.",
+    led:"They walk out in front of the stands two days later knowing what is waiting, and whatever happens next, it is a fair fight. You decide you can live with having broken that rule."},
+   {a:"Find a way to make them work it out.", ic:"quill", h:"quill", art:"library",
+    w:"You leave the right book open on the right page on the table where they always sit, and you say something in passing about the grounds that means nothing unless you already half know.",
+    led:"They work it out that night. You never told them anything, which is true, and is also the kind of true you will be thinking about for a while."},
+   {a:"Keep it to yourself.", ic:"hush", h:"thorn", art:"arena",
+    w:"The rule is the rule, and the rule was not made for your convenience, and you did not break it. You sit in the stands on the day with the whole school around you.",
+    led:"You watch them walk out not knowing, and you find that keeping a rule and doing the right thing turned out not to be the same thing on this one occasion."}
+  ]}
+]},
+
+/* ==================== 6. ONE FROM EACH YEAR ====================
+   Four short ones, one from the world of each of the first four
+   books. Nothing goes past the opening of the fourth. */
+{id:"years", t:"One From Each Year", art:"train", len:"Four short situations", yr:"Years one to four",
+ tx:"One thing from each of your first four years. Each one is over the moment you decide.",
+ ch:[
+
+ {t:"The compartment", art:"train", gate:true,
+  s:"First journey of your first year. The train is full and loud and every compartment you pass has a group in it already. One has a single person in it, and three people ahead of you have looked in and kept walking.",
+  c:[
+   {a:"Slide the door open and sit down.", ic:"hand", h:"oak", art:"train",
+    w:"They move their bag before you ask. Neither of you says much for about twenty minutes and then one of you says something stupid about the sandwiches.",
+    led:"Seven years later you will still not be able to say which of you it was."},
+   {a:"Find your own year first.", ic:"run", h:"thorn", art:"train",
+    w:"You find a compartment with four people in it who are all talking at once, and you have a loud good journey, and it is genuinely fun.",
+    led:"You pass the quiet compartment again near the end. Still one person. You notice that you noticed."},
+   {a:"Ask who they are before you decide.", ic:"eye", h:"quill", art:"train",
+    w:"You get one sentence out of them and it tells you three things: where they are from, that they are terrified, and that they have been practising that sentence.",
+    led:"Knowing all that makes walking away much harder, which may have been the point of asking."}
+  ]},
+
+ {t:"The voice in the wall", art:"chamber", gate:true,
+  s:"Second year. There is something moving behind the stone — you can hear it in the corridor outside the bathrooms, low down, going along the wall. Four other people are standing right there and not one of them has looked up.",
+  c:[
+   {a:"Say it out loud.", ic:"hand", h:"ember", art:"chamber",
+    w:"Two of them laugh. One of them goes quiet and looks at the wall for slightly too long. The fourth one says, carefully, that they have heard it too and have not told anybody.",
+    led:"That makes two of you, and two is a very different number from one."},
+   {a:"Follow the sound.", ic:"lantern", h:"thorn", art:"chamber",
+    w:"You follow it the length of the corridor and down a stair and it stops under a sink in a bathroom nobody uses. The pipe under that sink has a mark on it that is not rust.",
+    led:"You are now standing somewhere you cannot explain being, holding a thing you cannot explain knowing."},
+   {a:"Write down where and when you hear it.", ic:"quill", h:"quill", art:"library",
+    w:"Four sightings in eleven days, all between the same two corridors, all after dark, all on the nights the castle is emptiest. Written down, it stops being a feeling and starts being a map.",
+    led:"A map is something you can show a grown-up. A feeling is not. That is the whole difference."}
+  ]},
+
+ {t:"The cupboard that rattles", art:"classroom", gate:true,
+  s:"Third year. The wardrobe at the front of the room has something in it that becomes whatever the person in front of it is most afraid of, and the whole class is going to watch. The teacher asks for a volunteer.",
+  c:[
+   {a:"Go first.", ic:"wand", h:"ember", art:"classroom",
+    w:"You get up before you have decided to, which is the only way it was ever going to happen. What comes out is not the thing you told everybody you were scared of, and the whole room sees that.",
+    led:"Afterwards four people tell you theirs, unprompted, because you went first and made it ordinary."},
+   {a:"Go last, and watch everybody else.", ic:"eye", h:"quill", art:"classroom",
+    w:"By the time it is your turn you have watched eleven people and you know exactly what the trick is and exactly how long you have to think of the funny version.",
+    led:"You do it perfectly. You also spent the whole lesson being frightened eleven times instead of once, and nobody warned you about that part."},
+   {a:"Ask the teacher if you can do it without the class.", ic:"hush", h:"thorn", art:"study",
+    w:"He says yes immediately and without making anything of it, and you do it at four o’clock with the door shut and nobody there.",
+    led:"It is easier. It is also entirely yours, and nobody else learns anything from it, including you about them."}
+  ]},
+
+ {t:"The story everybody is repeating", art:"hall", gate:true,
+  s:"Fourth year. Somebody has written about a person at your school and most of it is not true and all of it is funny. By breakfast it is being read out loud at three tables, and the person it is about is sitting at one of them.",
+  c:[
+   {a:"Say out loud that it isn’t true.", ic:"hand", h:"ember", art:"hall",
+    w:"It does not stop. Saying it at a table of fourteen people who are enjoying themselves is like putting a hand out in a river. But it gets quieter at your end.",
+    led:"The person it was about did not look up once. They heard you, though. You find that out weeks later from somebody else."},
+   {a:"Go and sit with them.", ic:"candle", h:"oak", art:"hall",
+    w:"You do not mention it, because they do not, and the two of you talk about something completely ordinary for twenty minutes with the noise going on around you.",
+    led:"That is all it was. It is also the only thing anybody did that morning that actually helped."},
+   {a:"Find out who told the writer.", ic:"quill", h:"quill", art:"court",
+    w:"It takes two days. It was not an enemy and it was not a stranger. It was somebody who thought they were being funny to one person and did not think about where it would go next.",
+    led:"Which is somehow worse than a villain, and much harder to know what to do with."}
+  ]}
+]}
+];
+
+/* The four houses of this school. Which one you are in is worked out
+   from your own choices, not from a quiz question. */
+var HOUSES = {
+  ember:{nm:"Emberhall", mk:"🔥", line:"Emberhall walks toward it.",
+    tx:"Emberhall is the house that goes and looks. Not because it is not frightened — because standing still feels worse than finding out. It is first through the door, and it is the one that puts its hand up."},
+  quill:{nm:"Quillmoor", mk:"📖", line:"Quillmoor finds out first.",
+    tx:"Quillmoor wants the whole picture before it moves. It is not slower than anybody else. It is just very rarely surprised, and it is the one holding the book while everybody else is guessing."},
+  thorn:{nm:"Thornwick", mk:"🗝️", line:"Thornwick plays its own hand.",
+    tx:"Thornwick keeps something back. It works out what it actually wants, works out what that will cost, and pays it without telling the room. It is almost never the loudest and almost never the one caught out."},
+  oak:{nm:"Oakenfold", mk:"🌳", line:"Oakenfold stays.",
+    tx:"Oakenfold is the house that sits down on the staircase. It will take the lost marks and the hard conversation and the long way round, because the person in front of it matters more than the clock. It is the one people come back to."}
+};
+var HORDER = ["ember","quill","thorn","oak"];
+
+/* ===================================================================
+   THE GAME
+   =================================================================== */
+var KEY = "wwyd.v3";
+var S = {story:null, i:0, pick:null, why:"", log:[], houses:{}, stage:"title", big:false};
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+(function load(){
+  try{ var r = localStorage.getItem(KEY); if(r){ var o = JSON.parse(r); for(var k in o){ if(k in S) S[k] = o[k]; } } }catch(e){}
+})();
+
+/* night sky behind everything */
+(function(){
+  var h = "", i;
+  function rnd(n){ var x = Math.sin(n)*10000; return x - Math.floor(x); }
+  for(i=0;i<110;i++){
+    h += '<circle cx="'+(rnd(i*1.7)*1200).toFixed(0)+'" cy="'+(rnd(i*3.1)*800).toFixed(0)
+       + '" r="'+(0.6+rnd(i*5.3)*1.5).toFixed(2)+'" fill="#e8bd5c" opacity="'+(0.2+rnd(i*7.7)*0.6).toFixed(2)+'"/>';
+  }
+  $("stars").innerHTML = h;
+})();
+
+function story(){ for(var i=0;i<STORIES.length;i++){ if(STORIES[i].id===S.story) return STORIES[i]; } return null; }
+function chapter(){ var st=story(); return st ? st.ch[S.i] : null; }
+
+function show(which){
+  ["vTitle","vScene","vWhat","vHouse","vBack"].forEach(function(v){ $(v).classList.toggle("hide", v !== which); });
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* ---------- the menu ---------- */
+function drawMenu(){
+  var h = "", order = ["door","map","tourney","years","favour","quick"];
+  var list = STORIES.slice().sort(function(x,y){
+    var a = order.indexOf(x.id), b = order.indexOf(y.id);
+    return (a<0?99:a) - (b<0?99:b);
+  });
+  list.forEach(function(st){
+    h += '<button class="mcard" data-s="'+st.id+'">'
+       + art(st.art)
+       + '<div class="mbody"><div class="mttl">'+esc(st.t)+'</div>'
+       + (st.yr ? '<div class="myr">'+esc(st.yr)+'</div>' : '')
+       + '<div class="mlen">'+esc(st.len)+'</div>'
+       + '<div class="mtx">'+esc(st.tx)+'</div></div></button>';
+  });
+  $("menu").innerHTML = h;
+  Array.prototype.forEach.call($("menu").children, function(b){
+    b.onclick = function(){
+      S.story = b.dataset.s; S.i = 0; S.pick = null; S.why = "";
+      S.log = []; S.houses = {}; S.stage = "scene"; save(); drawScene();
+    };
+  });
+  $("hdr").textContent = "Which Would You Do";
+  show("vTitle");
+}
+
+/* ---------- a chapter ---------- */
+function drawScene(){
+  var st = story(), ch = chapter();
+  if(!st || !ch){ drawMenu(); return; }
+
+  $("hdr").textContent = st.t + " · " + (S.i+1) + " of " + st.ch.length;
+  $("sCount").textContent = (st.ch.length > 4 ? "Chapter " : "Number ") + (S.i+1);
+  $("sTitle").textContent = ch.t;
+  $("sArt").innerHTML = art(ch.art, "band");
+  $("sText").textContent = ch.s;
+
+  var r = "";
+  for(var n=0;n<st.ch.length;n++){
+    r += '<div class="pip'+(n<S.i?" done":(n===S.i?" now":""))+'">'+(n+1)+'</div>';
+  }
+  $("sRail").innerHTML = r;
+
+  var h = "", marks = ["A","B","C"];
+  ch.c.forEach(function(c,n){
+    h += '<button class="choice" data-n="'+n+'" aria-pressed="'+(S.pick===n)+'">'
+       + icon(c.ic)
+       + '<span class="mk">'+marks[n]+'</span><span class="tx">'+esc(c.a)+'</span></button>';
+  });
+  $("sChoices").innerHTML = h;
+  Array.prototype.forEach.call($("sChoices").children, function(b){
+    b.onclick = function(){
+      S.pick = +b.dataset.n; save();
+      drawScene();
+      $("whyBox").focus();
+    };
+  });
+
+  $("sBecause").classList.toggle("hide", S.pick === null);
+  $("sOpt").textContent = ch.gate
+    ? "Say it out loud first, then put it here. You need a reason before this one moves."
+    : "Say it out loud. On this one you only have to type it if it is a good one.";
+  $("whyBox").value = S.why || "";
+  $("sayWhy").textContent = ch.gate ? "That's my reason" : "That's my reason →";
+  $("sayWhy").disabled = ch.gate ? !(S.why || "").trim() : false;
+  show("vScene");
+}
+
+$("whyBox").oninput = function(){
+  var ch = chapter();
+  S.why = this.value; save();
+  $("sayWhy").disabled = (ch && ch.gate) ? !this.value.trim() : false;
+};
+
+/* ---------- what your choice did ---------- */
+$("sayWhy").onclick = function(){
+  var ch = chapter();
+  if(S.pick === null || !ch) return;
+  if(ch.gate && !(S.why||"").trim()) return;
+  S.stage = "what"; save(); drawWhat();
+};
+
+function drawWhat(){
+  var st = story(), ch = chapter();
+  if(!st || !ch || S.pick === null){ drawScene(); return; }
+  var c = ch.c[S.pick], last = (S.i >= st.ch.length-1);
+
+  $("wCount").textContent = (st.ch.length > 4 ? "Chapter " : "Number ") + (S.i+1) + " · what happened";
+  $("wArt").innerHTML = art(c.art, "big");
+  $("wIcon").innerHTML = icon(c.ic, 52);
+  $("wPick").textContent = c.a;
+  $("wTx").textContent = c.w;
+  $("wLed").textContent = c.led;
+  $("next").textContent = last ? "Find out your house"
+    : (st.ch.length > 4 ? "Chapter " + (S.i+2) + " →" : "Next →");
+  $("hdr").textContent = st.t + " · " + (S.i+1) + " of " + st.ch.length;
+  show("vWhat");
+}
+
+$("next").onclick = function(){
+  var st = story(), ch = chapter(), c = ch.c[S.pick];
+  S.log.push({t:ch.t, pick:c.a, why:S.why, h:c.h, ic:c.ic});
+  if(!S.houses) S.houses = {};
+  if(c.h) S.houses[c.h] = (S.houses[c.h]||0) + 1;
+  S.pick = null; S.why = "";
+  if(S.i >= st.ch.length-1){ S.stage = "house"; save(); drawHouse(); }
+  else { S.i++; S.stage = "scene"; save(); drawScene(); }
+};
+
+/* ---------- the sorting ---------- */
+function drawHouse(){
+  var counts = S.houses || {}, top = HORDER[0];
+  HORDER.forEach(function(k){ if((counts[k]||0) > (counts[top]||0)) top = k; });
+  var H = HOUSES[top], second = null;
+  HORDER.forEach(function(k){ if(k !== top && (second === null || (counts[k]||0) > (counts[second]||0))) second = k; });
+
+  $("hCrest").textContent = H.mk;
+  $("hName").textContent = H.nm;
+  $("hLine").textContent = H.line;
+  var close = second && (counts[second]||0) > 0 && ((counts[top]||0) - (counts[second]||0)) <= 1;
+  $("hTx").textContent = H.tx + (close
+    ? " You were one choice away from " + HOUSES[second].nm + ", which is worth knowing about yourself."
+    : "");
+
+  var max = Math.max(1, counts[top]||0), h = "";
+  HORDER.forEach(function(k){
+    var n = counts[k]||0;
+    h += '<div class="tr'+(k===top?" win":"")+'"><div class="tn">'+HOUSES[k].nm+'</div>'
+       + '<div class="tb"><i style="width:'+Math.round(n/max*100)+'%"></i></div>'
+       + '<div class="tc">'+n+'</div></div>';
+  });
+  $("hTally").innerHTML = h;
+
+  var ev = S.log.filter(function(r){ return r.h === top && (r.why||"").trim(); });
+  if(!ev.length) ev = S.log.filter(function(r){ return (r.why||"").trim(); });
+  var e = '<div class="hd">Your own reasons — which is how we know</div>';
+  if(ev.length) ev.slice(0,5).forEach(function(r){ e += "<p>" + esc(r.why) + "</p>"; });
+  else e += '<p class="noev">You did not write any reasons down this time, so this is only a guess. Next time, say why.</p>';
+  $("hEv").innerHTML = e;
+
+  var st = story();
+  $("hdr").textContent = (st ? st.t + " · " : "") + "The Sorting";
+  show("vHouse");
+}
+
+/* ---------- look back ---------- */
+function drawBack(){
+  var h = "";
+  S.log.forEach(function(r){
+    h += '<div class="lbrow"><div class="lbq">'+esc(r.t)+'</div>'
+       + '<div class="lbpick">'+esc(r.pick)+'</div>'
+       + ((r.why||"").trim() ? '<div class="lbwhy">'+esc(r.why)+'</div>' : '')
+       + '</div>';
+  });
+  $("lbList").innerHTML = h || '<div class="sub">Nothing chosen yet.</div>';
+  var st = story();
+  $("hdr").textContent = (st ? st.t + " · " : "") + "Look Back";
+  show("vBack");
+}
+
+$("toBack").onclick = function(){ S.stage = "back"; save(); drawBack(); };
+$("backHouse").onclick = function(){ S.stage = "house"; save(); drawHouse(); };
+$("again").onclick = function(){ reset(); };
+
+function reset(){
+  S.story = null; S.i = 0; S.pick = null; S.why = ""; S.log = []; S.houses = {}; S.stage = "title";
+  save(); drawMenu();
+}
+
+/* ---------- tools ---------- */
+$("tBig").onclick = function(){
+  S.big = !S.big; save();
+  document.body.style.fontSize = S.big ? "21px" : "18px";
+  this.textContent = S.big ? "Normal text" : "Bigger text";
+};
+$("tFull").onclick = function(){
+  try{ if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); }catch(e){}
+};
+var armed = false;
+$("tReset").onclick = function(){
+  var b = this;
+  if(!armed){ armed = true; b.textContent = "Tap again"; setTimeout(function(){ armed=false; b.textContent="Start over"; }, 3000); return; }
+  armed = false; b.textContent = "Start over"; reset();
+};
+
+/* ---------- boot ---------- */
+document.body.style.fontSize = S.big ? "21px" : "18px";
+$("tBig").textContent = S.big ? "Normal text" : "Bigger text";
+drawMenu();
+if(S.story && story()){
+  if(S.stage === "scene") drawScene();
+  else if(S.stage === "what") drawWhat();
+  else if(S.stage === "house") drawHouse();
+  else if(S.stage === "back") drawBack();
+}
+</script>
+</body></html>
