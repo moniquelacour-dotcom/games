@@ -13,24 +13,24 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Fredoka:wght@400;500;600;700&display=swap">
 <style>
 :root{
-  color-scheme: dark;
-  --stage:#1B1231;        /* night stage */
-  --floor:#261a45;        /* card surface */
-  --floor-2:#31225a;
-  --curtain:#E0336F;      /* raspberry curtain */
-  --spot:#FFD166;         /* spotlight gold */
-  --mint:#20D6A4;
-  --coral:#FF8A5B;
-  --sky:#6EC8FF;
-  --ink:#FFF6E8;
-  --ink-soft:#CFC3E6;
-  --line:#4a3a78;
+  color-scheme: light;
+  --stage:#f4f8f7;        /* input wells */
+  --floor:#ffffff;        /* panels */
+  --floor-2:#e6efec;
+  --curtain:#d94f8c;      /* pink filament */
+  --spot:#ff8a3d;         /* orange filament */
+  --mint:#1f9d7a;
+  --coral:#ff8a5b;
+  --sky:#2f7fc1;
+  --ink:#1f2a29;
+  --ink-soft:#5a6a68;
+  --line:#cfdcd8;
   --display:"Bungee","Arial Black",Impact,sans-serif;
   --body:"Fredoka","Trebuchet MS","Segoe UI",system-ui,sans-serif;
 }
 *{box-sizing:border-box}
 body{background:var(--stage);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;padding-inline:16px;padding-block:0 48px;
-  background-image:radial-gradient(ellipse 60% 40% at 20% -5%, rgba(255,209,102,.18), transparent 70%),radial-gradient(ellipse 50% 35% at 85% -5%, rgba(224,51,111,.22), transparent 70%);}
+  background-color:#eaf2ef;background-image:linear-gradient(rgba(31,42,41,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(31,42,41,.045) 1px,transparent 1px);background-size:24px 24px;}
 .wrap{max-width:1180px;margin:0 auto}
 button,input,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
@@ -44,7 +44,7 @@ header.marquee{padding-block:22px 12px;display:flex;flex-direction:column;align-
 @keyframes bop{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-8px) rotate(4deg)}}
 @media (prefers-reduced-motion: reduce){.dancers span{animation:none}}
 h1{font-family:var(--display);font-weight:400;font-size:clamp(34px,7vw,60px);line-height:1;margin:0;letter-spacing:.02em;
-  color:var(--spot);text-shadow:0 0 18px rgba(255,209,102,.45),3px 3px 0 var(--curtain)}
+  color:var(--ink);text-shadow:3px 3px 0 var(--spot)}
 .tag{margin:0;color:var(--ink-soft);font-size:16px}
 .bulbs{height:10px;width:min(560px,90%);background:radial-gradient(circle,var(--spot) 2.5px,transparent 3.5px) 0 50%/18px 10px repeat-x;opacity:.85}
 
@@ -76,9 +76,22 @@ textarea{min-height:64px;resize:vertical}
 .chunk:hover{background:rgba(110,200,255,.12)}
 .areas{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 18px}
 .areas .tab{border-radius:999px;padding:8px 16px;font-weight:600;background:var(--floor);border:2px solid var(--line);color:var(--ink)}
-.areas .tab[aria-selected="true"]{background:var(--spot);border-color:var(--spot);color:var(--stage)}
+.areas .tab[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
 .areas .addarea{display:flex;gap:6px;align-items:center}
 .areas input{border-radius:999px;padding:7px 12px;border:2px solid var(--line);background:var(--floor);color:var(--ink);font:inherit;width:180px}
+.shelf{background:var(--floor);border:2px solid var(--line);border-radius:22px;padding:14px 18px;margin:0 0 16px;display:flex;flex-direction:column;gap:8px}
+.shelf h2{font-size:18px}
+.shelfrow{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-end;border-bottom:6px solid #c9a27a;padding-bottom:4px;min-height:52px}
+.shelfrow .an{font-size:36px;line-height:1}
+.shelfrow .next{font-size:28px;width:44px;height:44px;border:2px dashed var(--line);border-radius:12px;display:grid;place-items:center;color:var(--ink-soft)}
+@media (prefers-reduced-motion:no-preference){.shelfrow .an.new{animation:pop .6s ease-out}@keyframes pop{0%{transform:scale(.2) translateY(10px)}70%{transform:scale(1.25)}100%{transform:scale(1)}}}
+.todo{background:var(--floor-2);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.todo .chips{display:flex;flex-wrap:wrap;gap:6px}
+.todo .chips button{border:2px solid var(--line);background:var(--floor);border-radius:999px;padding:5px 12px;font-weight:600}
+.todo .chips button:hover{border-color:var(--spot)}
+.card button.word{background:none;border:0;padding:0;text-align:left}
+.card button.word:hover{color:var(--sky)}
+.fillbtn{border:2px solid var(--spot);background:#fff4ec;border-radius:999px;padding:5px 12px;font-weight:600;align-self:flex-start}
 .linkbtn{background:none;border:0;padding:0;margin-top:8px;color:var(--ink-soft);text-decoration:underline;font-size:14px;align-self:flex-start}
 
 /* reveal */
@@ -142,17 +155,17 @@ textarea{min-height:64px;resize:vertical}
 
 <div class="wrap">
 <header class="marquee">
-  <div class="dancers" aria-hidden="true"><span>📚</span><span>🏛️</span><span>🔬</span><span>🌎</span><span>📚</span></div>
   <h1>Academic Vocabulary</h1>
-  <div class="bulbs" aria-hidden="true"></div>
-  <p class="tag">My dictionary for the big words in each subject. Each one gets its turn in the spotlight.</p>
+  <p class="tag">My dictionary for the fancy words in each subject. Every word I fill in prints a new animal.</p>
 </header>
 
 <nav class="areas" id="areas" aria-label="Subjects"></nav>
+<section class="shelf" aria-labelledby="shelf-h"><h2 id="shelf-h">My print shelf</h2><div class="shelfrow" id="shelfrow"></div><p class="hint" id="shelf-note"></p></section>
 <div class="layout">
   <!-- ADD A WORD -->
   <section class="panel" aria-labelledby="add-h">
-    <h2 id="add-h">Add a word <small>Found a word you don't know? Put it on stage.</small></h2>
+    <h2 id="add-h">Add a word <small>Found a word you don't know? Add it here.</small></h2>
+    <div class="todo" id="todo" hidden><strong>Words waiting for your meaning</strong><span class="hint">Tap one to bring it up here and fill it in.</span><div class="chips" id="todo-chips"></div></div>
 
     <div class="field">
       <label for="w-word">The word</label>
@@ -205,12 +218,12 @@ textarea{min-height:64px;resize:vertical}
       <div class="comfort" role="group" aria-labelledby="comfort-l" id="comfort-pick">
         <button type="button" class="cbtn" data-c="1" aria-pressed="true"><span class="e">🌱</span>New to me</button>
         <button type="button" class="cbtn" data-c="2" aria-pressed="false"><span class="e">🙂</span>Getting there</button>
-        <button type="button" class="cbtn" data-c="3" aria-pressed="false"><span class="e">💃</span>I've got it</button>
+        <button type="button" class="cbtn" data-c="3" aria-pressed="false"><span class="e">⭐</span>I've got it</button>
       </div>
     </div>
 
     <div class="row">
-      <button class="btn pink" type="button" id="save-btn">💃 Put it on stage</button>
+      <button class="btn pink" type="button" id="save-btn">➕ Add to my dictionary</button>
       <button class="btn" type="button" id="clear-btn">Clear</button>
     </div>
     <div class="status" id="add-status" role="status"></div>
@@ -232,7 +245,7 @@ textarea{min-height:64px;resize:vertical}
         <button type="button" data-f="0" aria-pressed="true">All</button>
         <button type="button" data-f="1" aria-pressed="false" title="New to me">🌱</button>
         <button type="button" data-f="2" aria-pressed="false" title="Getting there">🙂</button>
-        <button type="button" data-f="3" aria-pressed="false" title="I've got it">💃</button>
+        <button type="button" data-f="3" aria-pressed="false" title="I've got it">⭐</button>
       </div>
     </div>
 
@@ -267,7 +280,8 @@ var areas=[{id:"government",name:"Government"}], area="government";
 function wordKey(){ return "academicvocab.words."+area; }
 var PREFIXES=["inter","trans","under","over","super","anti","mis","dis","pre","pro","sub","non","un","re","in","im","ex","de"];
 var SUFFIXES=["ation","tion","sion","ment","ness","able","ible","ful","less","ous","ive","ing","est","ly","er","ed"];
-var EMO={1:"🌱",2:"🙂",3:"💃"};
+var EMO={1:"🌱",2:"🙂",3:"⭐"};
+var ANIMALS=["🦊","🐢","🦉","🐙","🦔","🐸","🐧","🦒","🐨","🦦","🐼","🦄","🐳","🦜","🐞","🦩","🐿️","🦥","🐰","🦁","🐯","🐮","🐷","🐵","🦋","🐠","🦭","🦘","🐊","🦕","🦖","🐝","🦚","🐻","🐹","🦓","🐘","🦈","🐌","🦀"];
 var LABEL={1:"New to me",2:"Getting there",3:"I've got it"};
 var STARTER=[
  {w:"opposition party",ch:["op","po","si","tion","par","ty"],m:"",es:"",cog:false,where:"Language test, 2 Nov",c:1,t:1793638800000},
@@ -408,9 +422,11 @@ function clearForm(){
   ["w-word","w-chunks","w-guess","w-meaning","w-es","w-where"].forEach(function(id){document.getElementById(id).value="";});
   document.getElementById("w-cog").checked=false; document.getElementById("reveal").hidden=true; setComfort(1); editingIdx=-1;
   document.getElementById("w-chunks").dataset.touched="";
-  document.getElementById("save-btn").textContent="💃 Put it on stage"; drawChunks();
+  document.getElementById("save-btn").textContent="➕ Add to my dictionary"; drawChunks();
 }
+function earned(){ return words.filter(function(e){return e.m && e.m.trim();}).length; }
 function saveWord(){
+  var before=earned();
   var w=document.getElementById("w-word").value.trim();
   if(!w){setStatus("add-status","Type the word first."); document.getElementById("w-word").focus(); return;}
   var entry={w:w,ch:readChunks(),m:document.getElementById("w-meaning").value.trim(),es:document.getElementById("w-es").value.trim(),
@@ -419,17 +435,18 @@ function saveWord(){
   if(editingIdx>=0){ entry.t=words[editingIdx].t; words[editingIdx]=entry; setStatus("add-status","Updated “"+w+"”."); }
   else{
     var dup=words.findIndex(function(x){return x.w.toLowerCase()===w.toLowerCase();});
-    if(dup>=0){ words[dup]=Object.assign(words[dup],entry); setStatus("add-status","“"+w+"” was already on stage, so I updated it."); }
-    else{ words.push(entry); setStatus("add-status","“"+w+"” is on stage! "+EMO[comfort]); }
+    if(dup>=0){ words[dup]=Object.assign(words[dup],entry); setStatus("add-status","“"+w+"” was already in your dictionary, so I updated it."); }
+    else{ words.push(entry); setStatus("add-status","“"+w+"” is in your dictionary! "+EMO[comfort]); }
   }
   save(); clearForm(); letter=null; render();
+  var after=earned(); if(after>before){ var a=ANIMALS[(after-1)%ANIMALS.length]; setStatus("add-status","“"+w+"” is in your dictionary, and you printed a new animal: "+a+"!"); var els=document.querySelectorAll("#shelfrow .an"); if(els.length) els[els.length-1].classList.add("new"); }
 }
 function editWord(i){
   var e=words[i]; editingIdx=i;
   document.getElementById("w-word").value=e.w; document.getElementById("w-chunks").value=(e.ch||[]).join("."); document.getElementById("w-guess").value="";
   document.getElementById("w-meaning").value=e.m||""; document.getElementById("w-es").value=e.es||""; document.getElementById("w-cog").checked=!!e.cog;
   document.getElementById("w-where").value=e.where||""; setComfort(e.c||1); drawChunks();
-  document.getElementById("save-btn").textContent="💾 Save changes"; document.getElementById("w-word").scrollIntoView({behavior:"smooth",block:"center"});
+  document.getElementById("save-btn").textContent="💾 Save to my dictionary"; document.getElementById("add-h").scrollIntoView({behavior:"smooth",block:"start"}); document.getElementById("w-meaning").focus({preventScroll:true});
 }
 function cycleComfort(i){ words[i].c = words[i].c>=3?1:words[i].c+1; save(); render(); }
 
@@ -439,10 +456,10 @@ function cardHTML(x){
   var e=x.e, i=x.i;
   var chunks=(e.ch||[]).map(function(c){return '<button type="button" class="chunk" data-say="'+esc(c)+'" style="font-size:16px;padding:2px 10px">'+esc(c)+'</button>';}).join("");
   return '<article class="card'+(e.c===3?' c3':'')+'">'+
-   '<div class="top"><div class="word">'+esc(e.w)+'</div>'+
+   '<div class="top"><button type="button" class="word" data-edit="'+i+'" title="Bring it up to fill in or change">'+esc(e.w)+'</button>'+
    '<button type="button" class="mood" data-cycle="'+i+'" title="'+LABEL[e.c]+' — tap to change" aria-label="'+LABEL[e.c]+'. Tap to change.">'+EMO[e.c]+'</button></div>'+
    (chunks?'<div class="chunks">'+chunks+'</div>':'')+
-   (e.m?'<div>'+esc(e.m)+'</div>':'<div class="meta">No meaning yet — tap Edit to add one.</div>')+
+   (e.m?'<div>'+esc(e.m)+'</div>':'<button type="button" class="fillbtn" data-edit="'+i+'">✏️ Fill in the meaning</button>')+
    (e.es?'<div class="es">🇪🇸 '+esc(e.es)+(e.cog?' ⭐':'')+'</div>':'')+
    (e.where?'<div class="meta">Found in: '+esc(e.where)+'</div>':'')+
    '<div class="acts"><button type="button" class="iconbtn" data-say="'+esc(e.w)+'">🔊</button><button type="button" class="iconbtn" data-slow="'+esc(e.w)+'">🐢</button><button type="button" class="iconbtn" data-edit="'+i+'">Edit</button><button type="button" class="iconbtn" data-del="'+i+'">Remove</button></div>'+
@@ -456,7 +473,7 @@ function renderAZ(){
     b.onclick=function(){letter=(letter===L?null:L); render();}; az.appendChild(b);
   });
   var list=visible().filter(function(x){return !letter || x.e.w[0].toUpperCase()===letter;}).sort(function(a,b){return a.e.w.localeCompare(b.e.w);});
-  if(!list.length) return '<div class="empty">'+(words.length?"No words here yet. Try another letter or “All”.":"Your stage is empty. Add your first word!")+'</div>';
+  if(!list.length) return '<div class="empty">'+(words.length?"No words here yet. Try another letter or “All”.":"Your dictionary is empty. Add your first word!")+'</div>';
   var html="", cur="", group="";
   list.forEach(function(x){var L=x.e.w[0].toUpperCase(); if(L!==cur){ if(group) html+=group+'</div>'; html+='<div class="letter">'+L+'</div>'; group='<div class="cards">'; cur=L;} group+=cardHTML(x);});
   return html+group+'</div>';
@@ -476,7 +493,7 @@ var pq=[], pi=0, pshow=false;
 function startPractice(){ pq=words.map(function(e,i){return i;}).filter(function(i){return filt? words[i].c===filt : words[i].c<3;}); pi=0; pshow=false; }
 function renderPractice(){
   document.getElementById("az").hidden=true;
-  if(!pq.length) return '<div class="practice"><div class="big">🌟</div><p>'+(filt?"No words with that feeling yet.":"All your words are 💃! Add some new ones, or tap 💃 above to practice those.")+'</p></div>';
+  if(!pq.length) return '<div class="practice"><div class="big">🌟</div><p>'+(filt?"No words with that feeling yet.":"All your words are ⭐! Add some new ones, or tap ⭐ above to practice those.")+'</p></div>';
   if(pi>=pq.length) return '<div class="practice"><div class="big">🎉 Bravo!</div><p>You practiced '+(pq.length===1?"your word":"all "+pq.length+" words")+'.</p><button type="button" class="btn gold" id="p-again">Practice again</button></div>';
   var e=words[pq[pi]];
   return '<div class="practice"><div class="meta">Word '+(pi+1)+' of '+pq.length+'</div><div class="big">'+esc(e.w)+'</div>'+
@@ -517,8 +534,9 @@ function renderWeek(){
     '<pre class="weekbox" id="week-text">'+esc(weekText())+'</pre>';
 }
 function render(){
+  try{ drawShelf(); }catch(e){}
   var sub=document.getElementById("dict-sub"), n=words.length, got=words.filter(function(e){return e.c===3;}).length;
-  sub.textContent = n? (n+(n===1?" word":" words")+" on stage"+(got?" · "+got+" 💃":"")) : "All your words, A to Z.";
+  sub.textContent = n? (n+(n===1?" word":" words")+(got?" · "+got+" ⭐":"")) : "All your words, A to Z.";
   var html = view==="fam"?renderFam(): view==="practice"?renderPractice(): view==="index"?renderIndex(): view==="week"?renderWeek(): renderAZ();
   document.getElementById("dict").innerHTML='<div style="display:flex;flex-direction:column;gap:12px">'+html+'</div>';
 }
@@ -549,7 +567,7 @@ function restore(){
   try{ var got=JSON.parse(decodeURIComponent(escape(atob(m[1])))); if(!Array.isArray(got)) throw 0;
     var added=0; got.forEach(function(e){ if(e&&e.w&&!words.some(function(x){return x.w.toLowerCase()===e.w.toLowerCase();})){words.push(e); added++;} });
     save(); render(); document.getElementById("restore-box").hidden=true; document.getElementById("restore-in").value="";
-    setStatus("share-status", added? "Welcome back! "+added+" word"+(added===1?"":"s")+" returned to the stage." : "Those words are already on stage.");
+    setStatus("share-status", added? "Welcome back! "+added+" word"+(added===1?"":"s")+" came back." : "Those words are already in your dictionary.");
   }catch(e){ setStatus("share-status","That backup didn't work. Try copying it again."); }
 }
 
@@ -578,7 +596,7 @@ document.getElementById("dict").addEventListener("click",function(ev){
   if(t.dataset.cycle!=null){cycleComfort(+t.dataset.cycle);return;}
   if(t.dataset.edit!=null){editWord(+t.dataset.edit);return;}
   if(t.dataset.del!=null){ var i=+t.dataset.del, box=document.querySelector('[data-confirm="'+i+'"]');
-    box.innerHTML='<div class="confirm">Take “'+esc(words[i].w)+'” off the stage? <button type="button" class="btn pink small" data-yes="'+i+'">Yes, remove</button><button type="button" class="btn small" data-no="1">Keep it</button></div>'; return; }
+    box.innerHTML='<div class="confirm">Take “'+esc(words[i].w)+'” out of your dictionary? <button type="button" class="btn pink small" data-yes="'+i+'">Yes, remove</button><button type="button" class="btn small" data-no="1">Keep it</button></div>'; return; }
   if(t.dataset.yes!=null){ words.splice(+t.dataset.yes,1); save(); render(); return; }
   if(t.dataset.no!=null){ t.closest("[data-confirm]").innerHTML=""; return; }
   if(t.id==="week-copy"){ var txt=weekText(), out=document.getElementById("share-out"); out.value=txt;
@@ -601,7 +619,18 @@ function drawAreas(){
     '<span class="addarea"><button type="button" class="btn small" id="area-new">＋ New subject</button><span id="area-form" hidden><input type="text" id="area-name" placeholder="e.g. Science" aria-label="New subject name"> <button type="button" class="btn small" id="area-ok">Add</button></span></span>';
   var h=document.getElementById("add-h"); if(h) h.firstChild.nodeValue="Add a "+areaName()+" word ";
 }
+function drawShelf(){
+  var n=earned(), row=document.getElementById("shelfrow"), html="";
+  for(var k=0;k<n;k++) html+='<span class="an" title="Printed">'+ANIMALS[k%ANIMALS.length]+'</span>';
+  html+='<span class="next" aria-hidden="true">?</span>';
+  row.innerHTML=html;
+  document.getElementById("shelf-note").textContent = n ? (n+(n===1?" animal":" animals")+" printed in "+areaName()+". Fill in another meaning to print the next one.") : "Fill in a meaning in your own words to print your first animal.";
+  var todo=words.map(function(e,i){return {e:e,i:i};}).filter(function(x){return !(x.e.m&&x.e.m.trim());});
+  var box=document.getElementById("todo"); box.hidden=!todo.length;
+  document.getElementById("todo-chips").innerHTML=todo.map(function(x){return '<button type="button" data-todo="'+x.i+'">'+esc(x.e.w)+'</button>';}).join("");
+}
 function switchArea(id){ save(); area=id; saveAreas(); words=load(); clearForm(); drawAreas(); if(view==="practice") startPractice(); render(); }
+document.getElementById("todo-chips").addEventListener("click",function(ev){ var t=ev.target.closest("button"); if(t && t.dataset.todo!=null) editWord(+t.dataset.todo); });
 document.getElementById("areas").addEventListener("click",function(ev){
   var t=ev.target.closest("button"); if(!t) return;
   if(t.dataset.area){ if(t.dataset.area!==area) switchArea(t.dataset.area); return; }
