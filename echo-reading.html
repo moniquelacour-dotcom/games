@@ -109,6 +109,31 @@ var STORIES = [
    ]}
 ];
 
+var THEATER = { id:"theater", title:"Readers Theater", level:"Group script",
+  tip:"Pick your part. Read your lines with the feeling in the (brackets). Wait for your turn, then come in right on time!",
+  parts:["Narrator","Captain Marlow","Biscuit","Sailor"],
+  lines:[
+   ["Narrator","","Every night, when the fog rolled in, Captain Marlow climbed the hundred steps of the lighthouse."],
+   ["Biscuit","happy","And I went too!"],
+   ["Narrator","","His gray cat, Biscuit, climbed right behind him."],
+   ["Captain Marlow","grumbling","You don't have to come, you know."],
+   ["Biscuit","proud","I like it up here. I can see the sea!"],
+   ["Narrator","slow and spooky","Then, one stormy evening, the great lamp flickered... and went dark."],
+   ["Captain Marlow","shouting","Not now! Not tonight!"],
+   ["Sailor","worried, on the radio","Hello? Lighthouse? We can't see the rocks!"],
+   ["Captain Marlow","scared","There's a ship out there!"],
+   ["Biscuit","brave","I can help. Follow me!"],
+   ["Narrator","","In the darkness, Biscuit's green eyes shone like two tiny lanterns. She pawed at a door the captain had forgotten."],
+   ["Biscuit","excited","Look! Look in here!"],
+   ["Captain Marlow","surprised","The spare lamp!"],
+   ["Narrator","","The captain lit the spare lamp. Its light swept across the dark water."],
+   ["Sailor","happy","We see you, Lighthouse! Thank you!"],
+   ["Captain Marlow","whispering","Biscuit, you clever, clever cat."],
+   ["Biscuit","sleepy","Meow."],
+   ["All","loud","The end!"]
+  ]};
+var myPart = null;
+
 /* Recordings available on the site. Index 0 = the whole story; 1..n = each phrase.
    Filled in after the coach's recordings are added: e.g. AUDIO.pip = {ext:"webm", have:[0,1,2,...]} */
 var AUDIO = {};
@@ -138,15 +163,51 @@ function play(story, n, onEnd){
 /* ---------- student view ---------- */
 function renderTabs(){
   var t = $("tabs"); t.innerHTML = "";
-  STORIES.forEach(function(s,i){
+  STORIES.concat([THEATER]).forEach(function(s,i){
     var b = document.createElement("button"); b.type="button"; b.className="tab"; b.textContent = s.title;
     b.setAttribute("aria-pressed", String(i===cur));
     b.addEventListener("click", function(){ cur=i; step=0; echoed={}; render(); });
     t.appendChild(b);
   });
 }
+var COLORS = {"Narrator":"var(--sea)","Captain Marlow":"var(--sun)","Biscuit":"var(--ok)","Sailor":"var(--muted)","All":"var(--ink)"};
+function renderTheater(){
+  var s = THEATER, c = $("story");
+  var html = '<h2>The Lighthouse Cat: Readers Theater</h2><p class="tip">'+s.tip+'</p>'+
+    '<div class="row"><span class="small">I am reading:</span>'+s.parts.map(function(p){
+      return '<button type="button" class="tab" data-part="'+esc(p)+'" aria-pressed="'+String(myPart===p)+'">'+esc(p)+'</button>'; }).join("")+'</div>'+
+    '<div style="display:flex;flex-direction:column;gap:10px">'+s.lines.map(function(l){
+      var mine = myPart && (l[0]===myPart || l[0]==="All");
+      return '<div style="border-left:6px solid '+COLORS[l[0]]+';padding:6px 12px;border-radius:8px;'+(mine?'background:var(--sun-soft);':'')+'font-size:'+(mine?'1.35rem':'1.1rem')+'">'+
+        '<b style="color:'+COLORS[l[0]]+'">'+esc(l[0].toUpperCase())+'</b>'+(l[1]?' <i class="small">('+esc(l[1])+')</i>':'')+'<br>'+esc(l[2])+'</div>';
+    }).join("")+'</div>'+recorderHtml()+'<p class="status" id="status" role="status"></p>';
+  c.innerHTML = html;
+  Array.prototype.forEach.call(c.querySelectorAll("[data-part]"), function(b){ b.addEventListener("click", function(){ myPart = b.dataset.part; renderTheater(); }); });
+  wireRecorder();
+}
+/* listen back: the recording stays in this browser tab only */
+var selfRec=null, selfChunks=[], selfBlob=null, selfStream=null;
+function recorderHtml(){
+  return '<div class="card" style="background:var(--bg)"><b>🎙 Listen to yourself</b><p class="small">Record yourself reading, then listen back. Does it sound like talking? Your recording stays on this computer and disappears when you close the page.</p>'+
+    '<div class="row"><button class="btn sun" type="button" id="b-rec">🎙 Record myself</button><button class="btn ghost" type="button" id="b-hear"'+(selfBlob?'':' disabled')+'>▶ Listen to me</button></div></div>';
+}
+function wireRecorder(){
+  var r=$("b-rec"), h=$("b-hear"); if(!r) return;
+  r.addEventListener("click", function(){
+    if(selfRec && selfRec.state==="recording"){ selfRec.stop(); return; }
+    if(!navigator.mediaDevices || !window.MediaRecorder){ $("status").textContent="This computer can't record here. Read out loud and listen to yourself!"; return; }
+    navigator.mediaDevices.getUserMedia({audio:true}).then(function(st){
+      selfStream=st; selfChunks=[]; selfRec=new MediaRecorder(st);
+      selfRec.ondataavailable=function(e){ if(e.data.size) selfChunks.push(e.data); };
+      selfRec.onstop=function(){ selfBlob=new Blob(selfChunks,{type:selfRec.mimeType||"audio/webm"}); selfStream.getTracks().forEach(function(t){t.stop();}); r.textContent="🎙 Record again"; var hh=$("b-hear"); if(hh) hh.disabled=false; $("status").textContent="Done! Tap ▶ to listen to yourself."; };
+      selfRec.start(); r.textContent="■ Stop"; $("status").textContent="Recording… read out loud, then tap Stop.";
+    }).catch(function(){ $("status").textContent="The microphone is off. Ask a grown-up to allow the microphone for this page."; });
+  });
+  if(h) h.addEventListener("click", function(){ if(selfBlob){ new Audio(URL.createObjectURL(selfBlob)).play(); } });
+}
 function render(){
   renderTabs();
+  if(cur===STORIES.length){ renderTheater(); return; }
   var s = STORIES[cur], c = $("story");
   var steps = STEPS.map(function(x,i){ return '<span class="step'+(i===step?' on':'')+'">'+x+'</span>'; }).join("");
   var html = '<div class="steps">'+steps+'</div><h2>'+esc(s.title)+'</h2><p class="tip">'+s.tip+'</p>';
@@ -159,7 +220,7 @@ function render(){
       '<p class="small">'+n+' of '+s.phrases.length+' parts done</p>'+
       '<div class="row"><button class="btn ghost" id="b-back" type="button">← Back</button><button class="btn" id="b-next" type="button"'+(n<s.phrases.length?' disabled':'')+'>Next step →</button></div>';
   } else if(step===2){
-    html += '<p>Now read the whole story out loud, all by yourself. Use the pauses and the voices you practiced.</p>'+phraseHtml(s,false)+
+    html += '<p>Now read the whole story out loud, all by yourself. Use the pauses and the voices you practiced.</p>'+phraseHtml(s,false)+recorderHtml()+
       '<div class="row"><button class="btn ghost" id="b-back" type="button">← Back</button><button class="btn" id="b-next" type="button">I read it all →</button></div>';
   } else {
     html += '<p>How did it go? Check each one you did.</p><div class="check">'+
@@ -181,6 +242,7 @@ function phraseHtml(s, tappable){
   }).join("")+'</div>';
 }
 function wire(s){
+  wireRecorder();
   var nx=$("b-next"), bk=$("b-back"), ls=$("b-listen"), dn=$("b-done");
   if(nx) nx.addEventListener("click", function(){ step++; render(); });
   if(bk) bk.addEventListener("click", function(){ step--; render(); });
