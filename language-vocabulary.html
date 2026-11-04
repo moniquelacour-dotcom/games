@@ -163,9 +163,59 @@ textarea{min-height:64px;resize:vertical}
   <h2 id="pl-h">Pronoun list</h2>
   <div style="display:flex;flex-wrap:wrap;gap:18px;font-size:17px">
     <div style="min-width:0"><strong>Subject pronouns</strong> <span class="hint">(doing the action)</span><br>I · you · he · she · it · we · they<br><span class="hint">Example: <b>She</b> threw the ball.</span></div>
-    <div style="min-width:0"><strong>Object pronouns</strong> <span class="hint">(getting the action)</span><br>me · you · him · her · it · us · them<br><span class="hint">Example: The ball hit <b>her</b>.</span></div>
+    <div style="min-width:0"><strong>Object pronouns</strong> <span class="hint">(getting the action)</span><br>me · you · him · her · it · us · them<br><span class="hint">Example: The ball hit <b>her</b>.</span><br><span class="hint">Also after little words like <i>with</i>, <i>to</i> and <i>for</i>: Come <b>with me</b>. Give it <b>to them</b>. This is <b>for us</b>.</span></div>
   </div>
 </section>
+<section class="panel" aria-labelledby="pp-h" style="margin-bottom:14px">
+  <h2 id="pp-h">Pronoun practice <small>Pick the pronoun that fits.</small></h2>
+  <p id="pp-count" class="hint" style="margin:0"></p>
+  <p id="pp-sentence" style="font-size:22px;margin:0;font-weight:600"></p>
+  <div id="pp-choices" style="display:flex;gap:10px;flex-wrap:wrap"></div>
+  <p id="pp-feedback" role="status" style="margin:0;min-height:48px"></p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <button type="button" class="btn" id="pp-hint">Need a hint?</button>
+    <button type="button" class="btn" id="pp-next" hidden>Next sentence</button>
+  </div>
+</section>
+<script>
+(function(){
+var Q=[
+ {s:"___ went to the art show.",o:["She","Her"],a:0,why:"She is doing the action (went), so use the subject pronoun."},
+ {s:"The puppy licked ___.",o:["I","me"],a:1,why:"The puppy is doing the licking. Me is getting the action."},
+ {s:"Jess and ___ sang in the play.",o:["I","me"],a:0,why:"Cover up \"Jess and.\" You would say \"I sang,\" not \"me sang.\"",hint:"Cover up \"Jess and.\" Which sounds right: \"I sang\" or \"me sang\"?"},
+ {s:"Grandma made cookies for ___.",o:["we","us"],a:1,why:"It comes after for, so use the object pronoun: for us."},
+ {s:"___ are painting a mural.",o:["They","Them"],a:0,why:"They are doing the painting, so use the subject pronoun."},
+ {s:"The teacher smiled at ___.",o:["he","him"],a:1,why:"The teacher is doing the smiling. Him is getting the smile."},
+ {s:"Can you come with ___?",o:["I","me"],a:1,why:"It comes after with, so use the object pronoun: with me."},
+ {s:"___ and his brother feed the fish.",o:["He","Him"],a:0,why:"Cover up \"and his brother.\" You would say \"He feeds the fish.\"",hint:"Cover up \"and his brother.\" Which sounds right: \"He feeds\" or \"Him feeds\"?"},
+ {s:"I gave the drawing to ___.",o:["she","her"],a:1,why:"It comes after to, so use the object pronoun: to her."},
+ {s:"The bunny hopped toward ___.",o:["we","us"],a:1,why:"It comes after toward, so use the object pronoun: toward us."},
+ {s:"Mia and ___ won the dance contest.",o:["she","her"],a:0,why:"Cover up \"Mia and.\" You would say \"She won,\" not \"her won.\"",hint:"Cover up \"Mia and.\" Which sounds right: \"She won\" or \"Her won\"?"},
+ {s:"Please sing the song to ___.",o:["they","them"],a:1,why:"It comes after to, so use the object pronoun: to them."}
+];
+var i=0, right=0, tries=0, done=false;
+var $=function(id){return document.getElementById(id);};
+function show(){
+  done=false; tries=0;
+  if(i>=Q.length){ $("pp-count").textContent=""; $("pp-sentence").textContent="All done! You got "+right+" of "+Q.length+" on the first try. 🎉"; $("pp-choices").innerHTML=""; $("pp-feedback").textContent=""; $("pp-hint").hidden=true; $("pp-next").hidden=false; $("pp-next").textContent="Start again"; return; }
+  var q=Q[i];
+  $("pp-count").textContent="Sentence "+(i+1)+" of "+Q.length;
+  $("pp-sentence").textContent=q.s;
+  $("pp-feedback").textContent="";
+  $("pp-next").hidden=true; $("pp-next").textContent="Next sentence"; $("pp-hint").hidden=false;
+  var box=$("pp-choices"); box.innerHTML="";
+  q.o.forEach(function(w,k){ var b=document.createElement("button"); b.type="button"; b.className="btn"; b.style.fontSize="20px"; b.textContent=w; b.addEventListener("click",function(){ pick(k,b); }); box.appendChild(b); });
+}
+function pick(k,b){
+  if(done) return; var q=Q[i]; tries++;
+  if(k===q.a){ done=true; if(tries===1) right++; b.style.borderColor="var(--mint)"; $("pp-sentence").textContent=q.s.replace("___",q.o[q.a]); $("pp-feedback").textContent="Yes! "+q.why; $("pp-next").hidden=false; $("pp-hint").hidden=true; }
+  else { b.disabled=true; b.style.opacity=".5"; $("pp-feedback").textContent="Not quite. Try the other one."+(q.hint?" Hint: "+q.hint:""); }
+}
+$("pp-hint").addEventListener("click",function(){ var q=Q[i]; if(!q) return; $("pp-feedback").textContent=q.hint||"Is the pronoun doing the action, or getting it? Or does it come after a little word like with, to or for?"; });
+$("pp-next").addEventListener("click",function(){ if(i>=Q.length){ i=0; right=0; } else { i++; } show(); });
+show();
+})();
+</script>
 <nav class="areas" id="areas" aria-label="Subjects"></nav>
 <section class="shelf" aria-labelledby="shelf-h"><h2 id="shelf-h">My animal shelf</h2><div class="shelfrow" id="shelfrow"></div><p class="hint" id="shelf-note"></p></section>
 <div class="layout">
