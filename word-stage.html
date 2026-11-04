@@ -594,6 +594,13 @@ words=load();
 var brought=importFromLink();
 save(); drawChunks(); render();
 if(brought){ setStatus("share-status", brought+" word"+(brought===1?"":"s")+" arrived with your link. They're saved on this computer now."); }
+
+/* If the page is already open, a new link only changes the fragment and the
+   browser does not reload. Catch that too, so the words still arrive. */
+window.addEventListener("hashchange", function(){
+  var n=importFromLink();
+  if(n){ save(); render(); setStatus("share-status", n+" word"+(n===1?"":"s")+" arrived with your link. They're saved on this computer now."); }
+});
 })();
 </script>
 
