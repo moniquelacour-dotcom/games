@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Echo Reading</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Baloo+2:wght@600;800&display=swap">
+<style>
+/* Echo Reading: listen to the coach read a phrase, then read it back the same way. Big type, one phrase per tap, silent unless tapped. */
+:root{
+  --bg:#f3f7fb; --card:#ffffff; --ink:#1c2633; --muted:#5b6878; --line:#d9e2ec;
+  --sea:#1f6f9f; --sea-soft:#e2f0f9; --sun:#e8892c; --sun-soft:#fdeedd; --ok:#2e7d4f; --ok-soft:#e2f3e8;
+  --display:"Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#121a22; --card:#1a2530; --ink:#e7eef5; --muted:#a3b3c2; --line:#2c3a47;
+  --sea:#7cc2ea; --sea-soft:#1b3242; --sun:#f3ad66; --sun-soft:#3a2a1a; --ok:#86d1a2; --ok-soft:#1c3326; color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:19px/1.5 var(--body);
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:20px 56px}
+main{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1,h2{font-family:var(--display);margin:0;line-height:1.15}
+h1{font-size:2.2rem;color:var(--sea)} h2{font-size:1.35rem}
+p{margin:0}
+.small{font-size:.9rem;color:var(--muted)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{font:inherit;font-weight:700;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 16px;cursor:pointer}
+.tab[aria-pressed="true"]{border-color:var(--sea);background:var(--sea-soft);color:var(--sea)}
+.card{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.steps{display:flex;gap:8px;flex-wrap:wrap}
+.step{font-weight:700;font-size:.85rem;padding:3px 12px;border-radius:999px;background:var(--line);color:var(--muted)}
+.step.on{background:var(--sun-soft);color:var(--sun)}
+.tip{background:var(--sun-soft);border-radius:14px;padding:10px 14px;font-size:1rem}
+.phrases{display:flex;flex-wrap:wrap;gap:10px;font-size:1.5rem;line-height:1.4}
+.phrase{font:inherit;text-align:left;border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:14px;padding:6px 12px;cursor:pointer}
+.phrase:hover{border-color:var(--sea)}
+.phrase.now{border-color:var(--sun);background:var(--sun-soft)}
+.phrase.done{border-color:var(--ok);background:var(--ok-soft)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{font:inherit;font-weight:700;border-radius:999px;padding:10px 18px;cursor:pointer;border:2px solid var(--sea);background:var(--sea);color:var(--card)}
+.btn.ghost{background:none;color:var(--sea)}
+.btn.sun{border-color:var(--sun);background:var(--sun);color:var(--card)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.phrase:focus-visible,.tab:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.status{min-height:1.5em;font-weight:700;color:var(--sea)}
+.check{display:flex;flex-direction:column;gap:8px}
+.check label{display:flex;gap:10px;align-items:center;font-size:1.05rem}
+.check input{width:24px;height:24px;accent-color:var(--ok)}
+.log{display:flex;gap:6px;flex-wrap:wrap}
+.log span{font-size:1.6rem}
+.coach{border:2px dashed var(--sun);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.coach table{border-collapse:collapse;width:100%;font-size:.95rem}
+.coach td{border-top:1px solid var(--line);padding:6px 4px;vertical-align:middle}
+.coach .mini{font:inherit;font-size:.85rem;font-weight:700;border-radius:8px;padding:4px 10px;border:2px solid var(--sea);background:var(--card);color:var(--sea);cursor:pointer;margin:2px}
+.coach .mini.rec{border-color:#c0392b;color:#c0392b}
+.coach .mini:disabled{opacity:.4}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--line);margin-right:6px}
+.dot.has{background:var(--ok)}
+</style>
+</head>
+<body>
+<main>
+  <header style="display:flex;flex-direction:column;gap:6px">
+    <h1>Echo Reading</h1>
+    <p>Listen to how I read it. Then read it back the same way, with the same pauses, the same voice and the same feeling.</p>
+  </header>
+
+  <div class="tabs" id="tabs" role="group" aria-label="Choose a story"></div>
+
+  <section class="card" id="story" aria-live="polite"></section>
+
+  <section class="card">
+    <h2>My practice days</h2>
+    <p class="small">Each time you finish all the steps, you get a star. Try a few times before our next group!</p>
+    <div class="log" id="log"></div>
+  </section>
+
+  <section class="coach" id="coach" hidden></section>
+</main>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- passages (original, written for this page) ---------- */
+var STORIES = [
+ { id:"pip", title:"Pip and the Big Wave", level:"Shorter story",
+   tip:"Make your voice go <b>up</b> at the question mark. Say <b>\"Oh no!\"</b> like you are surprised.",
+   phrases:[
+    "Pip was a little puffin.","He lived by the sea.","One day,","a big wave came!",
+    "\"Oh no!\" said Pip.","\"Where is my fish?\"","His mom flew down.","\"Look up, Pip,\" she said.",
+    "\"Your fish is on the rock!\"","Pip smiled.","\"Thank you, Mom!\""
+   ]},
+ { id:"biscuit", title:"The Lighthouse Cat", level:"Longer story",
+   tip:"<b>Grumble</b> like the captain, <b>shout</b> when the light goes out, and <b>whisper</b> at the end. Pause at every comma.",
+   phrases:[
+    "Every night,","when the fog rolled in,","Captain Marlow climbed","the hundred steps","of the lighthouse.",
+    "And every night,","his gray cat, Biscuit,","climbed right behind him.",
+    "\"You don't have to come, you know,\"","the captain grumbled.","Biscuit only blinked.",
+    "Then, one stormy evening,","the great lamp flickered","and went dark.",
+    "\"Not now!\" the captain cried.","\"There's a ship out there!\"",
+    "In the darkness,","Biscuit's green eyes","shone like two tiny lanterns.",
+    "She pawed at a door","the captain had forgotten,","the door to the spare lamp.",
+    "\"Biscuit,\" he whispered,","\"you clever, clever cat.\""
+   ]}
+];
+
+/* Recordings available on the site. Index 0 = the whole story; 1..n = each phrase.
+   Filled in after the coach's recordings are added: e.g. AUDIO.pip = {ext:"webm", have:[0,1,2,...]} */
+var AUDIO = {};
+
+var STEPS = ["1. Listen","2. Echo each part","3. Read it all","4. Check"];
+var cur = 0, step = 0, echoed = {};
+var isCoach = /[?&]coach\b/.test(location.search);
+var player = null;
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];}); }
+function store(k,v){ try{ if(v===undefined) return JSON.parse(localStorage.getItem(k)||"null"); localStorage.setItem(k,JSON.stringify(v)); }catch(e){ return null; } }
+
+function audioUrl(story, n){
+  var a = AUDIO[story.id]; if(!a || a.have.indexOf(n)<0) return null;
+  return "echo-audio/"+story.id+"-"+(n<10?"0":"")+n+"."+a.ext;
+}
+function play(story, n, onEnd){
+  var url = audioUrl(story, n);
+  if(!url){ $("status").textContent = "My recording for this part is coming soon. Read it in your best story voice!"; if(onEnd) onEnd(); return; }
+  if(player){ player.pause(); }
+  player = new Audio(url);
+  player.onended = function(){ if(onEnd) onEnd(); };
+  player.play().catch(function(){ $("status").textContent="Tap again to listen."; });
+}
+
+/* ---------- student view ---------- */
+function renderTabs(){
+  var t = $("tabs"); t.innerHTML = "";
+  STORIES.forEach(function(s,i){
+    var b = document.createElement("button"); b.type="button"; b.className="tab"; b.textContent = s.title;
+    b.setAttribute("aria-pressed", String(i===cur));
+    b.addEventListener("click", function(){ cur=i; step=0; echoed={}; render(); });
+    t.appendChild(b);
+  });
+}
+function render(){
+  renderTabs();
+  var s = STORIES[cur], c = $("story");
+  var steps = STEPS.map(function(x,i){ return '<span class="step'+(i===step?' on':'')+'">'+x+'</span>'; }).join("");
+  var html = '<div class="steps">'+steps+'</div><h2>'+esc(s.title)+'</h2><p class="tip">'+s.tip+'</p>';
+  if(step===0){
+    html += '<p>Listen to the whole story first. Follow along with your eyes.</p>'+phraseHtml(s,false)+
+      '<div class="row"><button class="btn" id="b-listen" type="button">🔊 Listen to the whole story</button><button class="btn ghost" id="b-next" type="button">Next step →</button></div>';
+  } else if(step===1){
+    var n = Object.keys(echoed).length;
+    html += '<p>Tap a part to hear me read it. Then read it out loud the same way. Do every part!</p>'+phraseHtml(s,true)+
+      '<p class="small">'+n+' of '+s.phrases.length+' parts done</p>'+
+      '<div class="row"><button class="btn ghost" id="b-back" type="button">← Back</button><button class="btn" id="b-next" type="button"'+(n<s.phrases.length?' disabled':'')+'>Next step →</button></div>';
+  } else if(step===2){
+    html += '<p>Now read the whole story out loud, all by yourself. Use the pauses and the voices you practiced.</p>'+phraseHtml(s,false)+
+      '<div class="row"><button class="btn ghost" id="b-back" type="button">← Back</button><button class="btn" id="b-next" type="button">I read it all →</button></div>';
+  } else {
+    html += '<p>How did it go? Check each one you did.</p><div class="check">'+
+      '<label><input type="checkbox" id="c1"> I paused at the periods and commas.</label>'+
+      '<label><input type="checkbox" id="c2"> My voice changed for questions and big moments.</label>'+
+      '<label><input type="checkbox" id="c3"> I sounded like the characters.</label>'+
+      '<label><input type="checkbox" id="c4"> It sounded like talking, not like a list of words.</label></div>'+
+      '<div class="row"><button class="btn ghost" id="b-back" type="button">← Back</button><button class="btn sun" id="b-done" type="button">⭐ I finished!</button></div>';
+  }
+  html += '<p class="status" id="status" role="status"></p>';
+  c.innerHTML = html;
+  wire(s);
+}
+function phraseHtml(s, tappable){
+  return '<div class="phrases">'+s.phrases.map(function(p,i){
+    return tappable
+      ? '<button type="button" class="phrase'+(echoed[i]?' done':'')+'" data-i="'+i+'">'+esc(p)+'</button>'
+      : '<span class="phrase" style="cursor:default">'+esc(p)+'</span>';
+  }).join("")+'</div>';
+}
+function wire(s){
+  var nx=$("b-next"), bk=$("b-back"), ls=$("b-listen"), dn=$("b-done");
+  if(nx) nx.addEventListener("click", function(){ step++; render(); });
+  if(bk) bk.addEventListener("click", function(){ step--; render(); });
+  if(ls) ls.addEventListener("click", function(){ play(s,0); });
+  if(dn) dn.addEventListener("click", function(){
+    var log = store("echo.log")||[]; log.push({d:new Date().toISOString().slice(0,10), s:s.id}); store("echo.log",log);
+    renderLog(); $("status").textContent = "⭐ Great practice! Show me in our next group if you want to.";
+  });
+  Array.prototype.forEach.call(document.querySelectorAll(".phrase[data-i]"), function(b){
+    b.addEventListener("click", function(){
+      var i = +b.dataset.i;
+      Array.prototype.forEach.call(document.querySelectorAll(".phrase.now"), function(x){ x.classList.remove("now"); });
+      b.classList.add("now");
+      play(s, i+1, function(){ $("status").textContent = "Your turn! Read it out loud the same way."; });
+      echoed[i]=true; b.classList.add("done");
+      setTimeout(function(){ var n=Object.keys(echoed).length; var nxt=$("b-next"); if(nxt && n>=s.phrases.length) nxt.disabled=false; var sm=document.querySelector("#story .small"); if(sm) sm.textContent=n+" of "+s.phrases.length+" parts done"; },0);
+    });
+  });
+}
+function renderLog(){
+  var log = store("echo.log")||[], el=$("log");
+  el.innerHTML = log.length ? log.slice(-20).map(function(x){ return '<span title="'+esc(x.d)+'">⭐</span>'; }).join("") : '<p class="small">No stars yet. Finish all four steps to get your first one!</p>';
+}
+
+/* ---------- coach view (?coach) ---------- */
+var recs = {};
+function renderCoach(){
+  var box=$("coach"); box.hidden=false;
+  var html='<h2>Coach: record your voice</h2><p class="small">Only you see this part. Record the whole story first, then each phrase. Tap <b>Save</b> on each recording; the files go to your Downloads folder. Then tell Claude, and the recordings get added to the page.</p>';
+  STORIES.forEach(function(s){
+    html+='<h2 style="font-size:1.1rem;margin-top:8px">'+esc(s.title)+'</h2><table>';
+    var items=[{n:0,t:"The whole story"}].concat(s.phrases.map(function(p,i){return {n:i+1,t:p};}));
+    items.forEach(function(it){
+      var key=s.id+"-"+(it.n<10?"0":"")+it.n;
+      html+='<tr><td><span class="dot'+(recs[key]?' has':'')+'" id="dot-'+key+'"></span>'+esc(it.t)+'</td><td style="white-space:nowrap">'+
+        '<button class="mini rec" type="button" data-rec="'+key+'">● Record</button>'+
+        '<button class="mini" type="button" data-play="'+key+'"'+(recs[key]?'':' disabled')+'>▶ Play</button>'+
+        '<button class="mini" type="button" data-save="'+key+'"'+(recs[key]?'':' disabled')+'>⬇ Save</button></td></tr>';
+    });
+    html+='</table>';
+  });
+  html+='<p class="status" id="cstatus"></p>';
+  box.innerHTML=html;
+  box.addEventListener("click", coachClick);
+}
+var mediaRec=null, chunks=[], recKey=null, stream=null;
+function coachClick(ev){
+  var b=ev.target.closest("button"); if(!b) return;
+  if(b.dataset.rec){
+    var key=b.dataset.rec;
+    if(mediaRec && mediaRec.state==="recording"){ mediaRec.stop(); return; }
+    navigator.mediaDevices.getUserMedia({audio:true}).then(function(st){
+      stream=st; chunks=[]; recKey=key;
+      mediaRec=new MediaRecorder(st);
+      mediaRec.ondataavailable=function(e){ if(e.data.size) chunks.push(e.data); };
+      mediaRec.onstop=function(){
+        var blob=new Blob(chunks,{type:mediaRec.mimeType||"audio/webm"});
+        recs[recKey]=blob; stream.getTracks().forEach(function(t){t.stop();});
+        $("cstatus").textContent="Recorded. Tap ▶ to check it, then ⬇ Save.";
+        renderCoach();
+      };
+      mediaRec.start(); b.textContent="■ Stop"; $("cstatus").textContent="Recording… tap Stop when you finish.";
+    }).catch(function(){ $("cstatus").textContent="The microphone isn't available. Check your browser's microphone permission for this page."; });
+  } else if(b.dataset.play){
+    var r=recs[b.dataset.play]; if(r){ new Audio(URL.createObjectURL(r)).play(); }
+  } else if(b.dataset.save){
+    var k=b.dataset.save, blob=recs[k]; if(!blob) return;
+    var ext=/mp4/.test(blob.type)?"m4a":(/ogg/.test(blob.type)?"ogg":"webm");
+    var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=k+"."+ext; document.body.appendChild(a); a.click(); a.remove();
+    $("cstatus").textContent="Saved "+k+"."+ext+" to Downloads.";
+  }
+}
+
+render(); renderLog();
+if(isCoach) renderCoach();
+})();
+</script>
+</body>
+</html>
