@@ -570,7 +570,30 @@ document.getElementById("dict").addEventListener("click",function(ev){
   if(t.dataset.pc!=null){ words[pq[pi]].c=+t.dataset.pc; save(); pi++; pshow=false; render(); return; }
 });
 
-words=load(); save(); drawChunks(); render();
+/* ---------- words carried in the link ---------- */
+/* A coach can hand a child their whole dictionary as one link:
+   word-stage.html#WS1:<the backup code>  — nothing to paste. */
+function importFromLink(){
+  var h = location.hash || "";
+  var m = h.match(/WS1:([A-Za-z0-9+\/=_-]+)/);
+  if(!m) return 0;
+  var added = 0;
+  try{
+    var b = m[1].replace(/-/g,"+").replace(/_/g,"/");
+    var got = JSON.parse(decodeURIComponent(escape(atob(b))));
+    if(!Array.isArray(got)) return 0;
+    got.forEach(function(e){
+      if(e && e.w && !words.some(function(x){ return x.w.toLowerCase()===e.w.toLowerCase(); })){ words.push(e); added++; }
+    });
+  }catch(e){ return 0; }
+  try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){}
+  return added;
+}
+
+words=load();
+var brought=importFromLink();
+save(); drawChunks(); render();
+if(brought){ setStatus("share-status", brought+" word"+(brought===1?"":"s")+" arrived with your link. They're saved on this computer now."); }
 })();
 </script>
 
