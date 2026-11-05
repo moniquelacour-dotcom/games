@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Read the Signs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&family=Baloo+2:wght@700;800&display=swap">
+<style>
+/* Read the Signs: honoring punctuation. Grade 2 texts (Flesch-Kincaid 2.1-2.5). Silent unless tapped. No names. */
+:root{--bg:#f5f6fb;--card:#fff;--ink:#1f2333;--muted:#5d6275;--line:#dfe2ee;
+  --stop:#d33b3b;--stop-soft:#fde4e4;--up:#2f6fd6;--up-soft:#e2ecfc;--zap:#e07b00;--zap-soft:#fdeed9;--hi:#fff3b0;--ok:#2e8a5c;--ok-soft:#e0f3e8;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;--body:"Lexend","Segoe UI",Arial,sans-serif}
+@media (prefers-color-scheme: dark){:root{--bg:#14161f;--card:#1e2130;--ink:#eceef6;--muted:#a6abc0;--line:#323648;
+  --stop:#ff7a7a;--stop-soft:#3b2226;--up:#7fb0ff;--up-soft:#1f2b44;--zap:#ffb453;--zap-soft:#3a2b17;--hi:#4a4220;--ok:#7fd6a8;--ok-soft:#1c3329;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:20px/1.55 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 56px}
+[hidden]{display:none!important}
+main{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-size:2.4rem;margin:0;line-height:1.1}
+h2{font-family:var(--display);font-size:1.5rem;margin:0}
+p{margin:0}.small{font-size:.9rem;color:var(--muted)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{font:inherit;font-weight:700;font-size:1rem;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 16px;cursor:pointer}
+.tab[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--card)}
+.signs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.sign{border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:8px;border:3px solid}
+.sign.stop{background:var(--stop-soft);border-color:var(--stop)}
+.sign.up{background:var(--up-soft);border-color:var(--up)}
+.sign.zap{background:var(--zap-soft);border-color:var(--zap)}
+.sign .big{font-family:var(--display);font-size:3rem;line-height:1}
+.sign b{font-size:1.2rem}
+.card{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.btn{font:inherit;font-weight:700;border-radius:999px;padding:10px 18px;cursor:pointer;border:2px solid var(--ink);background:var(--ink);color:var(--card)}
+.btn.ghost{background:none;color:var(--ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pickline{font-size:1.7rem;line-height:1.4;font-weight:600}
+.slot{display:inline-block;min-width:1.6em;text-align:center;border-bottom:4px dashed var(--muted);margin-left:2px}
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.choice{font:inherit;font-weight:800;font-size:1.3rem;border-radius:18px;padding:14px 8px;cursor:pointer;border:3px solid;display:flex;flex-direction:column;align-items:center;gap:2px}
+.choice span{font-size:2rem;line-height:1}
+.choice.stop{background:var(--stop-soft);border-color:var(--stop);color:var(--stop)}
+.choice.up{background:var(--up-soft);border-color:var(--up);color:var(--up)}
+.choice.zap{background:var(--zap-soft);border-color:var(--zap);color:var(--zap)}
+.choice:disabled{opacity:.45;cursor:default}
+.fb{font-weight:700;min-height:1.6em}
+.fb.good{color:var(--ok)}
+.m{display:inline-flex;align-items:center;gap:2px;border-radius:8px;padding:0 6px;margin-left:2px;font-weight:800}
+.m.stop{background:var(--stop-soft);color:var(--stop)}
+.m.up{background:var(--up-soft);color:var(--up)}
+.m.zap{background:var(--zap-soft);color:var(--zap)}
+.m.plain{background:none;padding:0;margin:0;color:inherit;font-weight:inherit}
+.stories{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.st{font:inherit;font-weight:700;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:18px;padding:14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+.st span{font-size:2.2rem}
+.st[aria-pressed="true"]{border-color:var(--ink)}
+.story{font-size:1.45rem;line-height:1.9}
+.s{border-radius:8px;padding:2px 2px;transition:background .2s}
+.s.now{background:var(--hi);box-shadow:0 0 0 3px var(--hi)}
+.s.done{opacity:.55}
+.star{font:inherit;font-weight:700;border-radius:999px;padding:10px 16px;cursor:pointer;border:2px solid var(--ok);background:var(--ok-soft);color:var(--ok)}
+.score{font-family:var(--display);font-size:1.4rem}
+.view{display:flex;gap:6px;flex-wrap:wrap}
+.view .tab{font-size:.85rem;padding:4px 12px}
+button:focus-visible{outline:3px solid var(--zap);outline-offset:2px}
+@media (max-width:480px){.choices{grid-template-columns:1fr}.pickline{font-size:1.4rem}.story{font-size:1.25rem}}
+</style>
+</head>
+<body>
+<main>
+  <header style="display:flex;flex-direction:column;gap:6px">
+    <h1>🚦 Read the Signs</h1>
+    <p>Punctuation marks are signs. They tell your voice what to do.</p>
+  </header>
+  <div class="tabs" id="tabs" role="group" aria-label="Choose a game"></div>
+  <section id="pane" aria-live="polite"></section>
+</main>
+<script>
+(function(){
+"use strict";
+var DATA = {"STORIES":[{"id":"puppy","title":"Max and the Ball","icon":"🐶","text":"Max the puppy raced out into the back yard after breakfast. He saw a shiny blue ball next to the wooden fence. He wanted to play with it more than anything! Then the ball started rolling away from him. Where was it going? It rolled under the old fence and was gone. Max dug and dug in the soft, muddy dirt. Could a little puppy fit under there? Max wiggled forward and pushed with his nose. He finally got the ball back!"},{"id":"owl","title":"The Little Owl","icon":"🦉","text":"A little owl was sitting high up in a tall oak tree. It was very dark, and the moon was shining over the field. The owl was wide awake and listening. What was that sound down below? It was a tiny gray mouse running through the long grass. The owl slowly opened its huge yellow eyes. Would it fly down to take a closer look? Whoosh! The little owl glided across the field. Owls can see very well in the dark!"},{"id":"seeds","title":"Seeds in a Cup","icon":"🌱","text":"Nora planted three bean seeds in a cup of dirt. She gave them a little water every morning before school. She set the cup next to a sunny window in the kitchen. How long would it take for the seeds to grow? Nora looked at the cup every day. On the fifth morning, she saw a tiny green sprout! Plants need water, dirt, and sun to grow. Do you think the sprout will grow taller? Nora is going to measure it every week. She can hardly wait!"},{"id":"bee","title":"The Busy Bee","icon":"🐝","text":"A busy bee buzzed from flower to flower in the garden. It was looking for sweet nectar to drink. The bee had yellow dust stuck all over its fuzzy legs. Do you know what that yellow dust is called? It is called pollen, and it is very important. The bee carries pollen from one flower to the next. That helps the plants make new seeds! Bees work hard from morning until night. What would our gardens do without bees? We should thank them!"},{"id":"ice","title":"The Melting Ice","icon":"🧊","text":"Sam took a cold ice cube out of the freezer after lunch. He put it on a plate outside in the hot afternoon sun. What do you think happened next? The ice cube slowly started getting smaller and smaller. Soon there was a little puddle of water on the plate. The ice had melted! Heat from the sun makes ice change into water. Can the water ever change back into ice? Yes, it can, if you put it back in the freezer. Science is so cool!"},{"id":"turtle","title":"The Turtle Race","icon":"🐢","text":"Two turtles wanted to have a race to the edge of the pond. Ready, set, go! The first turtle walked very slowly, but he never stopped. The second turtle ran ahead and then took a long nap under a tree. Which turtle do you think is going to win? The slow turtle kept going, one step at a time. He reached the pond first! The fast turtle woke up and could not believe his eyes. Is slow and steady always the best way to go?"}],"PICKS":[{"t":"The orange cat is sleeping on the warm, fuzzy rug","a":"."},{"t":"Where did you put my red hat","a":"?"},{"t":"Watch out, the puppy is running right at us","a":"!"},{"t":"We had pancakes for breakfast today","a":"."},{"t":"Could you please help me carry this heavy box","a":"?"},{"t":"Wow, that is the biggest fish I have ever seen","a":"!"},{"t":"Frogs can jump very far","a":"."},{"t":"What time does the yellow school bus come","a":"?"},{"t":"Hooray, our team finally won the big game","a":"!"},{"t":"The sun goes down behind the hills at night","a":"."},{"t":"Is it going to rain again this afternoon","a":"?"},{"t":"Ouch, I stubbed my toe on the bottom step","a":"!"},{"t":"My sister likes to draw horses","a":"."},{"t":"How many legs does a garden spider have","a":"?"},{"t":"Yay, it is finally snowing outside","a":"!"},{"t":"Bees make honey in their hives","a":"."},{"t":"Did you feed the fish today","a":"?"},{"t":"Oh no, the milk spilled all over the table","a":"!"}]};
+var SIGN = {
+  ".": {k:"stop", icon:"🛑", name:"Period", say:"Stop. Let your voice go down.", ex:"The cat is asleep on the rug."},
+  "?": {k:"up",   icon:"⬆️", name:"Question mark", say:"Let your voice go up at the end.", ex:"Where is my red hat?"},
+  "!": {k:"zap",  icon:"⚡", name:"Exclamation mark", say:"Say it with lots of feeling!", ex:"Wow, it is snowing!"}
+};
+var mode="meet", pickOrder=[], pi=0, pickStars=0, picked=null, story=null, si=0, stars=0, view="signs";
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
+function say(t){ try{ speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(t); u.rate=.85; speechSynthesis.speak(u);}catch(e){} }
+function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)); var x=a[i];a[i]=a[j];a[j]=x;} return a; }
+function mark(ch){ var S=SIGN[ch]; if(!S) return esc(ch);
+  if(view==="plain") return '<span class="m plain">'+esc(ch)+'</span>';
+  return '<span class="m '+S.k+'">'+(view==="signs"?S.icon+" ":"")+esc(ch)+'</span>'; }
+function splitSentences(t){ return t.match(/[^.?!]+[.?!]+/g).map(function(s){return s.trim();}); }
+
+function tabs(){
+  var T=[["meet","1 · Meet the signs"],["pick","2 · Pick the sign"],["story","3 · Read a story"]];
+  $("tabs").innerHTML=T.map(function(x){return '<button type="button" class="tab" data-m="'+x[0]+'" aria-pressed="'+(mode===x[0])+'">'+x[1]+'</button>';}).join("");
+  Array.prototype.forEach.call($("tabs").children,function(b){ b.addEventListener("click",function(){ mode=b.getAttribute("data-m"); if(mode==="pick"&&!pickOrder.length) newPick(); render(); }); });
+}
+function render(){ tabs(); if(mode==="meet") meet(); else if(mode==="pick") pick(); else storyPane(); }
+
+function meet(){
+  var h='<div class="signs">'+[".","?","!"].map(function(ch){ var S=SIGN[ch];
+    return '<div class="sign '+S.k+'"><div class="big">'+S.icon+' '+ch+'</div><b>'+S.name+'</b><p>'+S.say+'</p><p><i>'+esc(S.ex)+'</i></p><div class="row"><button type="button" class="btn ghost" data-ex="'+esc(S.ex)+'">🔊 Hear it</button></div></div>'; }).join("")+'</div>';
+  h+='<p class="small">Read each example out loud. Then try game 2.</p>';
+  $("pane").innerHTML=h;
+  Array.prototype.forEach.call(document.querySelectorAll("[data-ex]"),function(b){ b.addEventListener("click",function(){ say(b.getAttribute("data-ex")); }); });
+}
+
+function newPick(){ pickOrder=shuffle(DATA.PICKS); pi=0; pickStars=0; picked=null; }
+function pick(){
+  if(pi>=pickOrder.length){
+    $("pane").innerHTML='<div class="card"><h2>🎉 All done!</h2><p class="score">You picked the right sign '+pickStars+' of '+pickOrder.length+' times.</p><div class="row"><button type="button" class="btn" id="again">Play again</button></div></div>';
+    $("again").addEventListener("click",function(){ newPick(); render(); }); return; }
+  var P=pickOrder[pi], right=picked===P.a;
+  var end = picked ? mark(P.a) : '<span class="slot">&nbsp;</span>';
+  var h='<div class="card"><p class="small">Sentence '+(pi+1)+' of '+pickOrder.length+' · ⭐ '+pickStars+'</p>';
+  h+='<p class="pickline">'+esc(P.t)+end+'</p>';
+  h+='<p>Which sign goes at the end?</p><div class="choices">'+[".","?","!"].map(function(ch){ var S=SIGN[ch];
+      return '<button type="button" class="choice '+S.k+'" data-c="'+ch+'"'+(right?" disabled":"")+'><span>'+S.icon+'</span>'+ch+' '+S.name.split(" ")[0]+'</button>'; }).join("")+'</div>';
+  h+='<p class="fb'+(right?" good":"")+'" id="fb">'+(right?"✅ Yes! Now read it out loud. "+SIGN[P.a].say:(picked?"Hmm, try another sign.":""))+'</p>';
+  if(right) h+='<div class="row"><button type="button" class="btn" id="next">Next sentence ▶</button></div>';
+  h+='</div>';
+  $("pane").innerHTML=h;
+  Array.prototype.forEach.call(document.querySelectorAll("[data-c]"),function(b){ b.addEventListener("click",function(){
+    var c=b.getAttribute("data-c"); if(c===P.a && picked!==P.a && picked===null) pickStars++; picked=c; pick(); }); });
+  var n=$("next"); if(n) n.addEventListener("click",function(){ pi++; picked=null; pick(); });
+}
+
+function storyPane(){
+  var h='<div class="stories">'+DATA.STORIES.map(function(s){ return '<button type="button" class="st" data-s="'+s.id+'" aria-pressed="'+(story&&story.id===s.id)+'"><span>'+s.icon+'</span>'+esc(s.title)+'</button>'; }).join("")+'</div>';
+  if(!story){ $("pane").innerHTML=h+'<p class="small">Pick a story.</p>'; wireStories(); return; }
+  var sents=splitSentences(story.text);
+  h+='<div class="card"><div class="row" style="justify-content:space-between"><h2>'+story.icon+' '+esc(story.title)+'</h2><div class="view" role="group" aria-label="How the signs look">'+
+     [["signs","Big signs"],["marks","Colored marks"],["plain","Plain, like a test"]].map(function(v){return '<button type="button" class="tab" data-v="'+v[0]+'" aria-pressed="'+(view===v[0])+'">'+v[1]+'</button>';}).join("")+'</div></div>';
+  h+='<p class="story">'+sents.map(function(s,i){ var body=s.slice(0,-1), ch=s.slice(-1);
+      return '<span class="s'+(i===si?" now":(i<si?" done":""))+'">'+esc(body)+mark(ch)+'</span>'; }).join(" ")+'</p>';
+  if(si<sents.length){
+    var ch=sents[si].slice(-1);
+    h+='<p class="small">Read the yellow sentence. The sign at the end says: <b>'+SIGN[ch].say+'</b></p>';
+    h+='<div class="row"><button type="button" class="star" id="star">⭐ Read the sign right</button><button type="button" class="btn ghost" id="skip">Next ▶</button><span class="score">⭐ '+stars+'</span></div>';
+  } else {
+    h+='<p class="score">🎉 You read '+stars+' of '+sents.length+' signs right!</p><div class="row"><button type="button" class="btn" id="re">Read it again</button></div>';
+  }
+  h+='</div>';
+  $("pane").innerHTML=h; wireStories();
+  Array.prototype.forEach.call(document.querySelectorAll("[data-v]"),function(b){ b.addEventListener("click",function(){ view=b.getAttribute("data-v"); storyPane(); }); });
+  var st=$("star"); if(st) st.addEventListener("click",function(){ stars++; si++; storyPane(); });
+  var sk=$("skip"); if(sk) sk.addEventListener("click",function(){ si++; storyPane(); });
+  var re=$("re"); if(re) re.addEventListener("click",function(){ si=0; stars=0; storyPane(); });
+}
+function wireStories(){ Array.prototype.forEach.call(document.querySelectorAll("[data-s]"),function(b){ b.addEventListener("click",function(){
+  var id=b.getAttribute("data-s"); story=DATA.STORIES.filter(function(s){return s.id===id;})[0]; si=0; stars=0; storyPane(); }); }); }
+
+render();
+})();
+</script>
+</body>
+</html>
