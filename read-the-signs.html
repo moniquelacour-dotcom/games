@@ -154,7 +154,7 @@ function storyPane(){
   var re=$("re"); if(re) re.addEventListener("click",function(){ si=0; stars=0; storyPane(); });
 }
 function wireStories(){ Array.prototype.forEach.call(document.querySelectorAll("[data-s]"),function(b){ b.addEventListener("click",function(){
-  var id=b.getAttribute("data-s"); story=DATA.STORIES.filter(function(s){return s.id===id;})[0]; si=0; stars=0; storyPane(); }); }); }
+  var id=b.getAttribute("data-s"); story=DATA.STORIES.filter(function(s){return s.id===id;})[0]; si=0; stars=0; storyPane(); var c=document.querySelector(".card"); if(c) c.scrollIntoView({behavior:"smooth",block:"start"}); }); }); }
 
 render();
 })();
