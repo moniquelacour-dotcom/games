@@ -161,7 +161,7 @@
     <div class="tally" aria-live="polite"><svg class="shoe"><use href="#hs"/></svg><span id="tally">0</span></div>
   </header>
   <main id="app"></main>
-  <p class="footer-note">Coach tip: let her pick and explain first. Press Reveal only after she has said her thinking out loud.</p>
+  <p class="footer-note">Tip: explain your thinking to yourself before you check. That is how it sticks.</p>
 </div>
 
 <script>
@@ -177,7 +177,7 @@
         ["Object", "Pickles the barn cat left a ‘present’ on the doormat for Pewter and <b>me</b>."]
       ],
       tip: "Trick: cover up the other person. “Pickles and me hid” becomes “me hid.” Sounds wrong, so it’s I.",
-      write: "Write a diary sentence about you and a horse doing something together. Use “and I” or “and me” correctly, then tell your coach which one you used and why.",
+      write: "Write a diary sentence about you and a horse doing something together. Use “and I” or “and me” correctly, then write which one you used and why.",
       items: [
         { type: "Pick the correct sentence", stem: "Which sentence is written correctly?",
           choices: ["Pickles and me hid in the hayloft during the thunderstorm.", "Pickles and I hid in the hayloft during the thunderstorm.", "Me and Pickles hid in the hayloft during the thunderstorm.", "Pickles and myself hid in the hayloft during the thunderstorm."],
@@ -259,7 +259,7 @@
         ["Mystery it", "Vague: “On the feed bag, it says to give two scoops.” Clear: “<b>The feed bag</b> says to give two scoops.”"]
       ],
       tip: "Ask: could this pronoun mean two different characters? If yes, it’s vague.",
-      write: "Write a sentence with two animals in it where it is crystal clear who does what. Then try writing a vague version on purpose and see if your coach can spot the problem.",
+      write: "Write a sentence with two animals in it where it is crystal clear who does what. Then try writing a vague version on purpose and see if you can spot the problem.",
       items: [
         { type: "Find the error", stem: "Which sentence has a vague pronoun?",
           choices: ["When Duchess met the new mare, she tossed her mane.", "Duchess tossed her mane proudly when the new mare arrived.", "The new mare arrived, and Pewter ignored her completely.", "Pickles knocked a brush off the shelf, then acted as if she had never seen a brush before."],
@@ -286,7 +286,7 @@
         ["Dashes", "Duchess entered the big race <b>—</b> a race for toddlers on ponies <b>—</b> and called it her comeback."]
       ],
       tip: "Read the sentence without the extra part. If it still makes sense, the extra part needs a pair of marks.",
-      write: "Write a sentence about one of the stable characters with an extra detail tucked inside. Choose commas, dashes, or parentheses, and tell your coach why that mark fits the mood.",
+      write: "Write a sentence about one of the stable characters with an extra detail tucked inside. Choose commas, dashes, or parentheses, and write why that mark fits the mood.",
       items: [
         { type: "Pick the correct sentence", stem: "Which sentence is punctuated correctly?",
           choices: ["Pickles, the barn cat sleeps on the saddle every afternoon.", "Pickles the barn cat, sleeps on the saddle every afternoon.", "Pickles, the barn cat, sleeps on the saddle every afternoon.", "Pickles, the barn cat sleeps, on the saddle every afternoon."],
@@ -398,7 +398,7 @@
         ["Example clue", "Duchess is so <b>ostentatious</b> — glitter, three bows, and a cape — that the other ponies squint. (Ostentatious = showy.)"]
       ],
       tip: "Cover the hard word, guess a simple word that fits, then check the choices.",
-      write: "Write a sentence about a stable animal that uses a hard word AND gives a clue to its meaning. See if your coach can figure out the word from your clue.",
+      write: "Write a sentence about a stable animal that uses a hard word AND gives a clue to its meaning. Could a friend figure out the word from your clue?",
       items: [
         { type: "Word meaning", stem: "Pickles is usually <b>lethargic</b>, dozing in the sun all day, but when a mouse appeared she sprang into action. What does <b>lethargic</b> mean?",
           choices: ["sluggish and sleepy", "fierce and fast", "curious and nosy", "hungry and grumpy"],
@@ -457,7 +457,7 @@
         ["Hyperbole", "Duchess has told the story of her ‘win’ <b>a million times</b>."]
       ],
       tip: "Ask: what does the writer really mean, and what feeling does the comparison give?",
-      write: "Write a simile or metaphor that describes Duchess, Pewter, or Pickles. Tell your coach what it shows about the character.",
+      write: "Write a simile or metaphor that describes Duchess, Pewter, or Pickles. Then write what it shows about the character.",
       items: [
         { type: "Identify", stem: "“The wind whispered secrets through the barn rafters.” What kind of figurative language is this?",
           choices: ["simile", "personification", "hyperbole", "idiom"],
@@ -484,7 +484,7 @@
         ["Part to whole", "hoof : horse :: paw : cat (A hoof is part of a horse; a paw is part of a cat.)"]
       ],
       tip: "Make a bridge sentence: “A ___ is ___ of a ___.” Then test each choice in the same sentence.",
-      write: "Make your own analogy using stable words (for example, saddle : horse :: ___ : ___). Explain the relationship to your coach.",
+      write: "Make your own analogy using stable words (for example, saddle : horse :: ___ : ___). Write the relationship in your own words.",
       items: [
         { type: "Analogy", stem: "mane : horse :: whiskers : ___",
           choices: ["cat", "brush", "purr", "barn"],
@@ -538,7 +538,7 @@
   ];
 
   var STORE_KEY = "stable-talk-v1";
-  /* Spread the right answers across A-D (fixed order per question, so the coach and the student see the same thing). */
+  /* Spread the right answers across A-D (fixed order per question, so it is the same every time). */
   (function(){var n=0;ROUNDS.forEach(function(r){r.items.forEach(function(q){n++;var seed=n*9301+49297;function rnd(){seed=(seed*9301+49297)%233280;return seed/233280;}var idx=q.choices.map(function(_,k){return k;});for(var j=idx.length-1;j>0;j--){var m=Math.floor(rnd()*(j+1));var t=idx[j];idx[j]=idx[m];idx[m]=t;}q.choices=idx.map(function(k){return q.choices[k];});q.answer=idx.indexOf(q.answer);if(typeof q.trap==="number")q.trap=idx.indexOf(q.trap);});});})();
   var LETTERS = ["A", "B", "C", "D"];
   var state = load();
@@ -720,9 +720,9 @@
     var row = el("div", "row");
     var menuBtn = el("button", "btn secondary", "Menu"); menuBtn.type = "button";
     menuBtn.addEventListener("click", renderHome);
-    var thinkBtn = el("button", "btn think", "Show me your thinking"); thinkBtn.type = "button";
+    var thinkBtn = el("button", "btn think", "Think it through"); thinkBtn.type = "button";
     thinkBtn.disabled = true;
-    var revealBtn = el("button", "btn reveal", "Reveal"); revealBtn.type = "button";
+    var revealBtn = el("button", "btn reveal", "Check my answer"); revealBtn.type = "button";
     revealBtn.style.display = "none";
     var nextBtn = el("button", "btn", "Next"); nextBtn.type = "button";
     nextBtn.style.display = "none";
@@ -733,8 +733,8 @@
     thinkBtn.addEventListener("click", function () {
       stage = "thinking";
       area.innerHTML =
-        '<div class="thinking"><h3>Show me your thinking</h3>' +
-        '<p style="margin:0">Say it out loud to your coach before anyone presses Reveal:</p>' +
+        '<div class="thinking"><h3>Think it through</h3>' +
+        '<p style="margin:0">Think it through before you check:</p>' +
         '<ul><li>Why did you pick <b>' + LETTERS[picked] + '</b>?</li>' +
         '<li>Which word or mark in the sentence gave you the clue?</li>' +
         '<li>Pick one other choice and tell why it is wrong.</li></ul>' +
@@ -800,7 +800,7 @@
     });
     box.appendChild(ta);
     c.appendChild(box);
-    c.appendChild(el("p", "hint", "Coach: ask her to point to the exact word or mark that shows the skill."));
+    c.appendChild(el("p", "hint", "Point to the exact word or mark that shows the skill."));
     var row = el("div", "row");
     var back = el("button", "btn secondary", "Back to question 1"); back.type = "button";
     back.addEventListener("click", function () { renderItem(r, 0); });
