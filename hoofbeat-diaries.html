@@ -1,0 +1,1366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hoofbeat Diaries</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #FBF3E4;
+  --card: #FFFDF8;
+  --ink: #2B1D14;
+  --muted: #6E5845;
+  --saddle: #7A4A28;
+  --red: #A63A2B;
+  --gold: #D99A1E;
+  --gold-soft: #FBE7B8;
+  --green: #3F7A3A;
+  --green-soft: #DCEFD6;
+  --bad-soft: #F7D9D3;
+  --line: #E4D3BA;
+  --tap: #FFF1C9;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Atkinson Hyperlegible", Verdana, sans-serif;
+  font-size: 20px;
+  line-height: 1.55;
+}
+h1, h2, h3, .brand { font-family: "Fredoka", "Trebuchet MS", sans-serif; font-weight: 600; line-height: 1.2; }
+button { font: inherit; color: inherit; cursor: pointer; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 16px; }
+
+/* top bar */
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 4px 0 12px; border-bottom: 2px solid var(--line); margin-bottom: 16px; }
+.brand { font-size: 28px; color: var(--saddle); display: flex; align-items: center; gap: 10px; margin: 0; }
+.score { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--saddle); background: var(--card); border: 2px solid var(--line); border-radius: 999px; padding: 4px 14px; }
+.shoe { width: 26px; height: 26px; flex: none; }
+
+/* menu */
+.intro { background: var(--card); border: 2px solid var(--line); border-radius: 18px; padding: 18px 20px; margin-bottom: 18px; }
+.intro p { margin: 6px 0; }
+.rounds { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.round-btn { text-align: left; background: var(--card); border: 2px solid var(--line); border-radius: 18px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; min-height: 150px; transition: transform .1s, border-color .1s; }
+.round-btn:hover, .round-btn:focus-visible { border-color: var(--gold); transform: translateY(-2px); outline: none; }
+.round-btn h3 { margin: 0; font-size: 22px; color: var(--saddle); }
+.round-btn .blurb { color: var(--muted); font-size: 17px; }
+.round-btn .meta { margin-top: auto; font-size: 16px; font-weight: 700; color: var(--saddle); }
+.tag { display: inline-block; background: var(--red); color: #fff; font-size: 14px; font-weight: 700; border-radius: 999px; padding: 2px 10px; letter-spacing: .02em; align-self: flex-start; }
+.menu-foot { display: flex; justify-content: flex-end; margin-top: 18px; }
+.ghost { background: transparent; border: 2px solid var(--line); border-radius: 12px; padding: 8px 14px; font-size: 16px; color: var(--muted); }
+.ghost.armed { border-color: var(--red); color: var(--red); }
+
+/* play layout */
+.play { display: grid; gap: 16px; grid-template-columns: 1fr; }
+@media (min-width: 900px) {
+  .play { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: start; }
+  .passages { position: sticky; top: 12px; max-height: calc(100vh - 24px); overflow-y: auto; }
+  .qcol { order: 2; }
+}
+.qcol { order: -1; }
+@media (min-width: 900px) { .qcol { order: 2; } }
+.panel { background: var(--card); border: 2px solid var(--line); border-radius: 18px; padding: 18px 20px; }
+.passage + .passage { margin-top: 18px; padding-top: 18px; border-top: 2px dashed var(--line); }
+.kind { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--red); }
+.passage h2 { margin: 2px 0 10px; font-size: 24px; color: var(--saddle); }
+.passage p { margin: 0 0 12px; }
+.stanza { margin: 0 0 16px; }
+.stanza .s { display: inline; }
+.line { display: block; }
+.s { border-radius: 6px; padding: 1px 2px; transition: background .12s; }
+.tappable .s { cursor: pointer; background: rgba(217, 154, 30, .10); box-shadow: inset 0 -2px 0 rgba(217, 154, 30, .35); }
+.tappable .s:hover { background: var(--tap); }
+.s.picked { background: var(--gold-soft) !important; box-shadow: inset 0 0 0 2px var(--gold) !important; }
+.s.proof { background: var(--green-soft) !important; box-shadow: inset 0 0 0 2px var(--green) !important; }
+.s.picked.wrongproof { background: var(--bad-soft) !important; box-shadow: inset 0 0 0 2px var(--red) !important; }
+.credit { font-size: 15px; color: var(--muted); font-style: italic; margin-top: 6px; }
+
+.qhead { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.skill { font-size: 15px; font-weight: 700; color: #fff; background: var(--saddle); border-radius: 999px; padding: 3px 12px; }
+.count { font-size: 16px; color: var(--muted); font-weight: 700; }
+.qtext { font-size: 22px; font-weight: 700; margin: 6px 0 14px; }
+.step { font-size: 15px; font-weight: 700; color: var(--red); text-transform: uppercase; letter-spacing: .06em; margin: 14px 0 6px; }
+.opts { display: grid; gap: 10px; }
+.opt { display: flex; gap: 12px; align-items: flex-start; text-align: left; background: #fff; border: 2px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+.opt:hover:not(:disabled) { border-color: var(--gold); }
+.opt .letter { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--paper); border: 2px solid var(--line); font-weight: 700; }
+.opt.sel { border-color: var(--gold); background: var(--gold-soft); }
+.opt.sel .letter { background: var(--gold); border-color: var(--gold); color: #fff; }
+.opt.right { border-color: var(--green); background: var(--green-soft); }
+.opt.right .letter { background: var(--green); border-color: var(--green); color: #fff; }
+.opt.wrong { border-color: var(--red); background: var(--bad-soft); }
+.opt.wrong .letter { background: var(--red); border-color: var(--red); color: #fff; }
+.opt:disabled { cursor: default; }
+.prove { background: var(--paper); border: 2px dashed var(--gold); border-radius: 14px; padding: 12px 14px; }
+.prove .picked-text { font-style: italic; margin-top: 6px; }
+.think { background: #F3E6FA; border: 2px solid #B48BC9; border-radius: 14px; padding: 14px; margin-top: 14px; }
+.think h3 { margin: 0 0 6px; color: #5B2E77; font-size: 21px; }
+.think ul { margin: 6px 0 0; padding-left: 22px; }
+.btn { border: none; border-radius: 14px; padding: 12px 20px; font-weight: 700; font-size: 19px; }
+.btn.main { background: var(--saddle); color: #fff; }
+.btn.main:disabled { background: #C9B49E; cursor: not-allowed; }
+.btn.alt { background: var(--gold); color: var(--ink); }
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.result { border-radius: 14px; padding: 14px; margin-top: 14px; border: 2px solid var(--line); background: #fff; }
+.result h3 { margin: 0 0 6px; font-size: 21px; }
+.result p { margin: 6px 0; }
+.result .label { font-weight: 700; }
+.earned { display: flex; gap: 6px; align-items: center; font-weight: 700; color: var(--saddle); margin-bottom: 4px; }
+.earned .shoe.off { opacity: .25; filter: grayscale(1); }
+.done-card { text-align: center; }
+.done-card .big { font-size: 46px; font-family: "Fredoka", sans-serif; color: var(--saddle); margin: 6px 0; }
+.dots { display: flex; gap: 5px; flex-wrap: wrap; }
+.dot { width: 14px; height: 14px; border-radius: 50%; background: var(--line); }
+.dot.ok2 { background: var(--green); }
+.dot.ok1 { background: var(--gold); }
+.dot.ok0 { background: var(--red); }
+.dot.cur { outline: 3px solid var(--saddle); outline-offset: 1px; }
+.hidden { display: none !important; }
+@media (max-width: 520px) {
+  body { font-size: 19px; }
+  .brand { font-size: 24px; }
+  .qtext { font-size: 20px; }
+  .panel { padding: 14px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="bar">
+    <h1 class="brand"><span id="logo"></span>Hoofbeat Diaries</h1>
+    <div class="score" title="Horseshoes earned"><span id="scoreShoe"></span><span id="scoreNum">0</span><span style="font-weight:400">/ <span id="scoreMax">0</span></span></div>
+  </header>
+  <main id="app"></main>
+</div>
+
+<script>
+const PASSAGES = {
+ "pepper1": {
+  "kind": "Pepper's Diary",
+  "title": "The Great Ribbon Robbery",
+  "text": "Dear Diary,\nIt is a tragedy that the world has not yet discovered my talent. Everyone at Willow Creek Stables thinks I am a plain brown pony with short legs and a fondness for carrots. But in my heart, I am a champion racehorse waiting for her first big race. Yesterday, Rosa, the stable owner, hung a poster on the barn door about the Spring Show. I knew at once that my moment had finally arrived.\nTo prepare, I have been practicing my victory gallop around the paddock every afternoon. I lift my knees magnificently and toss my mane in the breeze. I even snort at the fence posts so they know who is boss. Captain, the old gray horse in the next stall, says I look like a wind-up toy with a stuck spring. Captain is obviously jealous.\nThis morning, however, a terrible crime occurred. My lucky blue ribbon vanished from the hook beside my stall. I always wear it braided into my forelock. I searched the hay, the water trough, and the wheelbarrow. It was nowhere to be found. Then I noticed Gus, the stable goat, chewing something very slowly near the feed room. He stared at me with his strange sideways eyes. He did not say a single word. That is exactly what a guilty goat would do.\nI will not rest until justice is served. Tomorrow I will follow Gus everywhere, silently and secretly, like a detective in a raincoat. A champion cannot run her greatest race without her lucky ribbon.\nYours with tremendous determination,\nPepper, Future Racing Legend"
+ },
+ "barn": {
+  "kind": "Chapter 1",
+  "title": "Something Soggy and Blue",
+  "text": "Juniper had worked at Willow Creek Stables every Saturday since she was nine. She was used to odd behavior from the animals. Still, nothing had prepared her for the sight of a small brown pony tiptoeing behind a goat. Pepper crept from the feed room to the hay barn and back again. She froze dramatically whenever Gus turned around. Gus, who was busy nibbling the corner of the Spring Show poster, did not seem to notice.\n\"What is she doing?\" Juniper asked Rosa, the stable owner, who was sweeping the aisle.\n\"Your guess is as good as mine,\" Rosa replied with a chuckle. \"She has been following that goat around since breakfast.\"\nJuniper wondered whether Pepper was sick, or bored, or simply being Pepper. Then she remembered that the pony's blue ribbon had been missing since the day before. She walked to Pepper's stall and reached into the water bucket. Something soggy and blue was floating at the bottom under a layer of hay. It was the missing ribbon, of course, and it had clearly been soaking there all night.\nJuniper rinsed the ribbon under the faucet and carefully braided it back into Pepper's forelock. The pony stopped spying at once. She lifted her head, flared her nostrils proudly, and gave Gus a long look that seemed to say, \"I forgive you.\" Gus went on chewing the poster. He had no idea that he had been accused of anything.\nJuniper laughed so hard that she had to lean against the stall door. Pepper had blamed the innocent goat for a crime that she had probably committed herself."
+ },
+ "juniper": {
+  "kind": "The Stable Kid's Diary",
+  "title": "Jumping Crickets",
+  "credit": "The quoted lines are the real opening of Black Beauty by Anna Sewell (1877).",
+  "text": "Thursday night\nRosa asked me today if I would play my fiddle in the costume parade at the Spring Show. Before my brain could stop my mouth, I said yes. Now my stomach feels like it is full of jumping crickets. I can play my song perfectly in my bedroom. But whenever people are watching, my fingers turn into cold noodles and my bow squeaks like a frightened mouse.\nThe plan is simple. I will walk beside Pepper in the parade while she wears a costume, and I will play a cheerful song for the crowd. Pepper's costume is a sparkly cape with a gold number seven sewn on the back. She refuses to wear anything that does not look like a racing outfit. When I showed it to her, she pranced in a circle three times and nearly knocked over a bucket.\nTo calm down before bed, I reread the opening of Black Beauty, which is still my favorite book. It begins, \"The first place that I can well remember was a large pleasant meadow with a pond of clear water in it. Some shady trees overhung the pond, and rushes and water-lilies grew at the deep end.\" I love that the horse tells the whole story himself. It makes me feel as if I can hear exactly what he is thinking. I wonder what Pepper would write if she kept a diary. Probably something ridiculous about being a champion.\nI practiced my song four more times tonight. I am still nervous. But I keep reminding myself that Pepper will be right beside me, and she is never nervous about anything."
+ },
+ "show": {
+  "kind": "Chapter 2",
+  "title": "Thunder at the Spring Show",
+  "text": "Saturday began with sunshine. By noon, the sky above the show ring had turned the color of a bruise. Families crowded onto the bleachers anyway, holding umbrellas and lemonade. Riders in their best jackets waited nervously by the gate. Juniper stood beside Pepper at the end of the costume line. She gripped her fiddle so tightly that her knuckles turned white.\n\"Next in the costume parade,\" the announcer called, \"Pepper the Pony, with music by Juniper!\"\nJuniper's legs felt as though they belonged to someone else. Still, she stepped into the ring and raised her bow. She had played only three notes when a crack of thunder exploded overhead. Pepper threw up her head and bolted toward the gate, her sparkly cape flapping wildly. People in the bleachers gasped, and a little boy dropped his lemonade.\nFor one awful moment, Juniper wanted to run away too. Then she thought about how scared Pepper must be. Her own fear seemed to shrink. She planted her boots in the sand and began to play again, slowly and steadily. It was the gentle tune she always hummed while brushing Pepper in the evenings. The pony stopped. Her ears swiveled toward the music, and she took one careful step back toward Juniper, then another.\nBy the time the rain began to fall, Pepper was standing calmly beside her. The whole crowd was clapping along with the song. The judges huddled under an umbrella, whispering, and then the announcer cleared his throat. \"This year's ribbon for Most Courageous Pair,\" he declared, \"goes to Pepper and Juniper!\"\nJuniper hugged Pepper's damp neck. She had forgotten to be nervous. Pepper, wearing her soggy cape and a brand-new ribbon, looked very pleased with herself."
+ },
+ "pepper2": {
+  "kind": "Pepper's Diary",
+  "title": "My Greatest Victory",
+  "text": "Dear Diary,\nToday was the most glorious day of my entire career. The Spring Show finally arrived. Just as I expected, the whole town came to watch me. I wore my magnificent racing cape with the gold number seven. Juniper carried her squeaky wooden box with strings, which she insists on calling a fiddle.\nWhen we entered the ring, the sky gave me a standing ovation. It was the loudest applause I have ever heard. The tremendous boom rattled the bleachers. Naturally, I took off at top speed to begin my victory lap. I was halfway to the gate, galloping like the wind. Then I heard Juniper playing my favorite brushing song. A true champion never leaves her musician behind, so I graciously returned to her side.\nThen the clouds began crying. They were probably moved by my performance. The crowd clapped, and the judges whispered about my extraordinary talent. Then a man with a microphone gave us a shiny ribbon. He said the words \"Most Courageous,\" which I believe is a fancy way of saying \"Fastest Pony in History.\"\nJuniper hugged me afterward and told me I was very brave. I do not know why she said that. I was never scared for even a second. But I will let her keep believing it. She seemed so happy, and a good champion is always generous to her fans.\nYours in victory,\nPepper, Champion at Last"
+ },
+ "poem": {
+  "kind": "A Poem",
+  "title": "The Littlest Racehorse",
+  "poem": true,
+  "text": "I have stood in this stall for twenty-two springs,\nand I have watched many youngsters grow tall.\nBut the pony next door is a comet in boots,\nthe boldest and smallest of all.\n\nShe gallops at dawn while the meadow's asleep\nand snorts at the posts in her way.\nThe wind, hurrying after her, whistles a tune\nand tangles her mane up with hay.\n\nWhen thunder came growling one cloudy afternoon,\nher courage slipped off like a shoe.\nSo a girl with a fiddle stood firm in the rain\nand played her a song that she knew.\n\nNow she struts past my door with her ribbon of blue,\ninsisting she won the big race.\nI just nod my gray head, for I know that her heart\nis the bravest of hearts in the place."
+ }
+};
+const ROUNDS = [
+ {
+  "id": "plot",
+  "name": "Plot and Conflict",
+  "extra": true,
+  "blurb": "Exposition, conflict, rising action, climax, resolution, and how the problem gets solved."
+ },
+ {
+  "id": "pov",
+  "name": "Point of View",
+  "extra": true,
+  "blurb": "Who is telling the story? Whose thoughts do we get? How does that help the reader?"
+ },
+ {
+  "id": "img",
+  "name": "Imagery and the Senses",
+  "blurb": "Words that help you see, hear, and feel the story."
+ },
+ {
+  "id": "evid",
+  "name": "Best Evidence",
+  "blurb": "Pick the sentence that BEST supports an idea."
+ },
+ {
+  "id": "poem",
+  "name": "Poem Power",
+  "blurb": "Speaker, stanzas, rhyme, and figurative language."
+ },
+ {
+  "id": "pair",
+  "name": "Two Texts, One Event",
+  "blurb": "Pepper's diary next to the narrator's chapter."
+ },
+ {
+  "id": "mix",
+  "name": "Mixed Gallop",
+  "blurb": "Theme, summary, inference, author's purpose, and context clues."
+ }
+];
+const QUESTIONS = [
+ {
+  "r": "plot",
+  "p": [
+   "show"
+  ],
+  "skill": "Exposition",
+  "q": "Which part of \"Thunder at the Spring Show\" is the EXPOSITION, the beginning that introduces the setting and characters?",
+  "o": [
+   "Pepper bolts toward the gate when the thunder cracks.",
+   "On a cloudy show day, Juniper waits with Pepper at the end of the costume line.",
+   "The announcer gives Pepper and Juniper a ribbon.",
+   "Juniper hugs Pepper's damp neck."
+  ],
+  "a": 1,
+  "proof": [
+   "Saturday began with sunshine",
+   "By noon, the sky",
+   "Families crowded",
+   "Riders in their best jackets",
+   "Juniper stood beside Pepper at the end"
+  ],
+  "why": "The exposition comes first. It tells WHERE (the show ring), WHEN (Saturday, a stormy noon), and WHO (Juniper and Pepper) before the trouble starts.",
+  "trap": "A is tempting because it is exciting, but exciting is not the same as the beginning. Pepper bolting is when the trouble hits, not the setup."
+ },
+ {
+  "r": "plot",
+  "p": [
+   "show"
+  ],
+  "skill": "Main conflict",
+  "q": "What is the main conflict Juniper faces in this chapter?",
+  "o": [
+   "She has to beat the other riders in a race.",
+   "She cannot find her fiddle before the parade.",
+   "She argues with the announcer about the ribbon.",
+   "She is nervous about performing, and then thunder frightens Pepper in the middle of their act."
+  ],
+  "a": 3,
+  "proof": [
+   "She gripped her fiddle so tightly",
+   "She had played only three notes when a crack of thunder",
+   "Pepper threw up her head and bolted"
+  ],
+  "why": "The conflict is the problem the character must deal with. Juniper is already nervous, and then the storm sends Pepper running.",
+  "trap": "A sounds right because Pepper THINKS she is a racehorse, but this is a costume parade. Nobody is racing."
+ },
+ {
+  "r": "plot",
+  "p": [
+   "show"
+  ],
+  "skill": "Conflict types",
+  "q": "The thunderstorm that scares Pepper is an example of which type of conflict?",
+  "o": [
+   "Character vs. nature (an outside force)",
+   "Character vs. self",
+   "Character vs. character",
+   "There is no conflict. The storm is only part of the setting."
+  ],
+  "a": 0,
+  "proof": [
+   "a crack of thunder exploded overhead",
+   "By noon, the sky"
+  ],
+  "why": "A storm is part of nature. When weather causes the trouble, that is character vs. nature.",
+  "trap": "B is tempting because Juniper's nervousness IS character vs. self. But the question asks about the storm, and the storm is outside the characters."
+ },
+ {
+  "r": "plot",
+  "p": [
+   "juniper"
+  ],
+  "skill": "Conflict types",
+  "q": "In \"Jumping Crickets,\" Juniper has a character vs. self conflict. Which detail shows that the struggle is inside her?",
+  "o": [
+   "Pepper refuses to wear anything but a racing outfit.",
+   "Rosa asks Juniper to play in the parade.",
+   "Juniper's fingers \"turn into cold noodles\" when people watch her play.",
+   "Juniper rereads the opening of Black Beauty."
+  ],
+  "a": 2,
+  "proof": [
+   "my fingers turn into cold noodles",
+   "Now my stomach feels like it is full of jumping crickets",
+   "I am still nervous"
+  ],
+  "why": "Character vs. self means the problem is a feeling inside the character. Juniper's stage fright is her own nerves fighting her.",
+  "trap": "B is tempting because Rosa starts things, but Rosa and Juniper do not fight. Juniper said yes. The battle is with her own nerves."
+ },
+ {
+  "r": "plot",
+  "p": [
+   "pepper1"
+  ],
+  "skill": "Conflict types",
+  "q": "In \"The Great Ribbon Robbery,\" Pepper believes her problem is a conflict with which character?",
+  "o": [
+   "Captain, the old gray horse",
+   "Rosa, the stable owner",
+   "Juniper",
+   "Gus, the stable goat"
+  ],
+  "a": 3,
+  "proof": [
+   "Then I noticed Gus",
+   "That is exactly what a guilty goat would do",
+   "Tomorrow I will follow Gus everywhere"
+  ],
+  "why": "Pepper blames Gus for the missing ribbon and plans to follow him. That is character vs. character, at least in Pepper's mind.",
+  "trap": "A is tempting because Captain teases her and she calls him jealous. But she never blames Captain for the ribbon."
+ },
+ {
+  "r": "plot",
+  "p": [
+   "show"
+  ],
+  "skill": "Rising action",
+  "q": "Which event is part of the RISING ACTION, where the tension builds?",
+  "o": [
+   "Juniper's legs feel like they belong to someone else as she steps into the ring.",
+   "Pepper looks very pleased with herself at the end.",
+   "The announcer gives the ribbon to Pepper and Juniper.",
+   "Juniper realizes she forgot to be nervous."
+  ],
+  "a": 0,
+  "proof": [
+   "Juniper's legs felt as though",
+   "Still, she stepped into the ring",
+   "She had played only three notes"
+  ],
+  "why": "Rising action is the climb toward the big moment. Walking into the ring with shaky legs makes us worry about what will happen next.",
+  "trap": "D is a happy ending moment. Once the problem is solved, we are in the resolution, not the rising action."
+ },
+ {
+  "r": "plot",
+  "p": [
+   "show"
+  ],
+  "skill": "Climax",
+  "q": "Which event is the CLIMAX, the turning point where the problem starts to change?",
+  "o": [
+   "Families crowd onto the bleachers holding umbrellas.",
+   "The announcer calls out Pepper's and Juniper's names.",
+   "Juniper plants her boots and plays the brushing tune, and Pepper stops and turns back.",
+   "Juniper hugs Pepper after they win."
+  ],
+  "a": 2,
+  "proof": [
+   "She planted her boots in the sand",
+   "The pony stopped.",
+   "Her ears swiveled toward the music"
+  ],
+  "why": "The climax is the turning point. Juniper chooses to keep playing, and Pepper turns around. From here, things get better.",
+  "trap": "D happens after the problem is already solved, so it belongs to the resolution."
+ },
+ {
+  "r": "plot",
+  "p": [
+   "barn"
+  ],
+  "skill": "How the problem is solved",
+  "q": "In \"Something Soggy and Blue,\" how is the missing-ribbon problem solved?",
+  "o": [
+   "Gus gives the ribbon back to Pepper.",
+   "Juniper remembers the missing ribbon, checks Pepper's water bucket, and finds it.",
+   "Rosa buys Pepper a new ribbon.",
+   "Pepper catches Gus chewing the ribbon."
+  ],
+  "a": 1,
+  "proof": [
+   "She walked to Pepper's stall and reached into the water bucket",
+   "Something soggy and blue",
+   "It was the missing ribbon"
+  ],
+  "why": "Juniper solves it by thinking (she remembers the ribbon is missing) and then looking in the right place.",
+  "trap": "D is tempting because Pepper suspects Gus, but Gus was chewing the POSTER, not the ribbon."
+ },
+ {
+  "r": "plot",
+  "p": [
+   "show"
+  ],
+  "skill": "Resolution",
+  "q": "How is the conflict RESOLVED at the end of the chapter?",
+  "o": [
+   "Pepper wins the race.",
+   "Pepper calms down, the crowd claps along, and the pair win a ribbon for courage.",
+   "The show is canceled because of the rain.",
+   "Juniper decides never to perform again."
+  ],
+  "a": 1,
+  "proof": [
+   "Pepper was standing calmly beside her",
+   "goes to Pepper and Juniper",
+   "She had forgotten to be nervous"
+  ],
+  "why": "The resolution shows how things end up after the problem. Pepper is calm, Juniper is no longer nervous, and they win Most Courageous Pair.",
+  "trap": "A is what PEPPER wishes happened. There is no race in this chapter."
+ },
+ {
+  "r": "pov",
+  "p": [
+   "pepper1"
+  ],
+  "skill": "First person",
+  "q": "Who is telling \"The Great Ribbon Robbery,\" and what point of view is it?",
+  "o": [
+   "A narrator outside the story, third person",
+   "Juniper, third person",
+   "Gus, first person",
+   "Pepper, first person"
+  ],
+  "a": 3,
+  "proof": [
+   "It is a tragedy that the world has not yet discovered my talent",
+   "But in my heart, I am a champion racehorse",
+   "My lucky blue ribbon"
+  ],
+  "why": "Pepper is a character in the story, and she uses I, me, and my. A character telling her own story is first person.",
+  "trap": "A is wrong because an outside narrator would say \"she\" and \"her\" about Pepper, not \"I\" and \"my.\""
+ },
+ {
+  "r": "pov",
+  "p": [
+   "barn"
+  ],
+  "skill": "Clue words",
+  "q": "\"Something Soggy and Blue\" is told in third person. Which clue shows this?",
+  "o": [
+   "The narrator uses \"she\" and \"her\" for Juniper instead of \"I.\"",
+   "The story has dialogue in quotation marks.",
+   "The story takes place in a barn.",
+   "Pepper writes \"Dear Diary\" at the top."
+  ],
+  "a": 0,
+  "proof": [
+   "Juniper wondered whether",
+   "She walked to Pepper's stall",
+   "Juniper had worked at Willow Creek"
+  ],
+  "why": "Third person uses he, she, and they. The narrator is outside the story, talking ABOUT Juniper.",
+  "trap": "B is tempting, but any story can have dialogue. Quotation marks do not tell you the point of view. Look at the narrator's own words instead."
+ },
+ {
+  "r": "pov",
+  "p": [
+   "barn"
+  ],
+  "skill": "Whose thoughts?",
+  "q": "Whose thoughts does the narrator tell us in \"Something Soggy and Blue\"?",
+  "o": [
+   "Gus's",
+   "Pepper's",
+   "Juniper's",
+   "Rosa's"
+  ],
+  "a": 2,
+  "proof": [
+   "Juniper wondered whether Pepper was sick",
+   "Then she remembered that the pony's blue ribbon"
+  ],
+  "why": "The narrator tells us what Juniper wondered and remembered. We are inside Juniper's head and nobody else's.",
+  "trap": "B is the trap. The narrator says Pepper gave a look that \"seemed to say\" something. That is a guess from the outside, not Pepper's real thoughts."
+ },
+ {
+  "r": "pov",
+  "p": [
+   "barn"
+  ],
+  "skill": "Trap answers",
+  "q": "Which statement can a reader NOT know from this narrator?",
+  "o": [
+   "Juniper thought Pepper might be sick or bored.",
+   "Rosa chuckled when she answered.",
+   "Gus was chewing the poster.",
+   "Pepper felt embarrassed about blaming Gus."
+  ],
+  "a": 3,
+  "proof": [
+   "She lifted her head, flared her nostrils proudly",
+   "Juniper wondered whether Pepper was sick"
+  ],
+  "hint": "Tap the sentence that shows what we can SEE Pepper do.",
+  "why": "The narrator never goes inside Pepper's head. We only see what she does, and she acts proud, not embarrassed.",
+  "trap": "On a test, watch out for answers that name a feeling of a character the narrator never gets inside. The answer about Pepper feeling embarrassed does exactly that."
+ },
+ {
+  "r": "pov",
+  "p": [
+   "pepper1"
+  ],
+  "skill": "First person",
+  "q": "Which detail could ONLY be in the story because Pepper is the narrator?",
+  "o": [
+   "Pepper is sure Captain is jealous of her.",
+   "Gus is the stable goat.",
+   "The poster announced the Spring Show.",
+   "The ribbon was missing from the hook."
+  ],
+  "a": 0,
+  "proof": [
+   "Captain is obviously jealous",
+   "But in my heart, I am a champion racehorse"
+  ],
+  "why": "Only Pepper can tell us her private opinion that Captain is jealous. A first-person narrator shares her own thoughts and opinions, even silly ones.",
+  "trap": "D is a fact that anyone could tell us, including an outside narrator."
+ },
+ {
+  "r": "pov",
+  "p": [
+   "show"
+  ],
+  "skill": "How point of view helps",
+  "q": "How does the third-person narrator help the reader in \"Thunder at the Spring Show\"?",
+  "o": [
+   "It tells what every person in the crowd is thinking.",
+   "It lets Pepper explain that she thought the thunder was applause.",
+   "It helps the reader understand why Juniper keeps playing even though she is scared.",
+   "It shows how Gus feels about the show."
+  ],
+  "a": 2,
+  "proof": [
+   "Then she thought about how scared Pepper must be",
+   "Her own fear seemed to shrink"
+  ],
+  "why": "The narrator lets us into Juniper's thoughts, so we understand WHY she keeps playing: she is thinking about Pepper.",
+  "trap": "B is from Pepper's diary, a different text. This narrator never gets inside Pepper's head."
+ },
+ {
+  "r": "pov",
+  "p": [
+   "pepper2"
+  ],
+  "skill": "How point of view helps",
+  "q": "How does Pepper's first-person point of view affect \"My Greatest Victory\"?",
+  "o": [
+   "Readers know exactly how scared Pepper was.",
+   "Readers only get Pepper's version, so her funny mix-ups, like calling thunder applause, are never corrected.",
+   "Readers learn exactly what Juniper was thinking.",
+   "Readers hear the judges explain their decision."
+  ],
+  "a": 1,
+  "proof": [
+   "the sky gave me a standing ovation",
+   "It was the loudest applause I have ever heard"
+  ],
+  "why": "A first-person narrator can only tell her own version. Pepper misunderstands what happens, and that is what makes it funny.",
+  "trap": "C is wrong because Pepper can only guess about Juniper. She even says she does not know why Juniper called her brave."
+ },
+ {
+  "r": "pov",
+  "p": [
+   "juniper"
+  ],
+  "skill": "Real book: Black Beauty",
+  "q": "Look at the opening of Black Beauty (Anna Sewell, 1877) that Juniper copies. What point of view does it use?",
+  "o": [
+   "Third person, a narrator watching the horse",
+   "First person, the horse telling his own story",
+   "Second person, talking to \"you\"",
+   "First person, a stable girl telling the story"
+  ],
+  "a": 1,
+  "proof": [
+   "The first place that I can well remember",
+   "I love that the horse tells the whole story himself"
+  ],
+  "why": "\"The first place that I can well remember\" uses I. Juniper even tells us the horse tells the whole story himself.",
+  "trap": "D is tempting because Juniper's DIARY is first person from a girl. But the Black Beauty lines are told by the horse."
+ },
+ {
+  "r": "img",
+  "p": [
+   "show"
+  ],
+  "skill": "Imagery",
+  "q": "The narrator says the sky \"had turned the color of a bruise.\" What does this imagery help the reader picture?",
+  "o": [
+   "A rainbow after the rain",
+   "A bright, sunny afternoon",
+   "A horse that has been hurt",
+   "Dark purple-gray storm clouds building"
+  ],
+  "a": 3,
+  "proof": [
+   "the color of a bruise"
+  ],
+  "why": "Bruises are dark purple and gray. The author wants you to SEE a sky full of dark storm clouds.",
+  "trap": "C is the trap. The bruise is only about color. Nobody in this part is hurt."
+ },
+ {
+  "r": "img",
+  "p": [
+   "show"
+  ],
+  "skill": "Sensory language",
+  "q": "Which sentence uses SOUND imagery to show the storm arriving?",
+  "o": [
+   "She had played only three notes when a crack of thunder exploded overhead.",
+   "Juniper stood beside Pepper at the end of the costume line.",
+   "Riders in their best jackets waited nervously by the gate.",
+   "Pepper, wearing her soggy cape and a brand-new ribbon, looked very pleased with herself."
+  ],
+  "a": 0,
+  "proof": [
+   "a crack of thunder exploded overhead"
+  ],
+  "why": "\"Crack\" and \"exploded\" are sound words. You can almost hear the thunder.",
+  "trap": "D has sensory language too, but \"soggy\" is about touch, not sound."
+ },
+ {
+  "r": "img",
+  "p": [
+   "juniper"
+  ],
+  "skill": "Sensory language",
+  "q": "\"My fingers turn into cold noodles and my bow squeaks like a frightened mouse.\" Which senses does this imagery appeal to?",
+  "o": [
+   "Taste and smell",
+   "Sight only",
+   "Touch and hearing",
+   "Smell and hearing"
+  ],
+  "a": 2,
+  "proof": [
+   "my fingers turn into cold noodles"
+  ],
+  "why": "Cold, floppy noodles is how her fingers FEEL (touch). A squeak is something you HEAR.",
+  "trap": "A is tempting because noodles are food, but the author is not asking you to taste anything. It is about how her fingers feel."
+ },
+ {
+  "r": "evid",
+  "p": [
+   "pepper2"
+  ],
+  "skill": "Best evidence",
+  "q": "Which sentence BEST supports the idea that Pepper was actually frightened by the thunder?",
+  "o": [
+   "I wore my magnificent racing cape with the gold number seven.",
+   "Juniper carried her squeaky wooden box with strings, which she insists on calling a fiddle.",
+   "The crowd clapped, and the judges whispered about my extraordinary talent.",
+   "Naturally, I took off at top speed to begin my victory lap."
+  ],
+  "a": 3,
+  "proof": [
+   "Naturally, I took off at top speed"
+  ],
+  "why": "Right after the BOOM, Pepper runs at top speed. She calls it a victory lap, but running away from a loud noise shows she was scared.",
+  "trap": "C happens after the scary part is over, so it cannot prove how she felt during the thunder."
+ },
+ {
+  "r": "evid",
+  "p": [
+   "pepper1"
+  ],
+  "skill": "Best evidence",
+  "q": "Which sentence BEST supports the idea that Pepper thinks very highly of herself?",
+  "o": [
+   "It is a tragedy that the world has not yet discovered my talent.",
+   "This morning, however, a terrible crime occurred.",
+   "I searched the hay, the water trough, and the wheelbarrow.",
+   "Then I noticed Gus, the stable goat, chewing something very slowly near the feed room."
+  ],
+  "a": 0,
+  "proof": [
+   "It is a tragedy that the world has not yet discovered my talent",
+   "I lift my knees magnificently"
+  ],
+  "why": "Pepper calls it a tragedy that nobody has noticed her talent. She is sure she is amazing.",
+  "trap": "B is dramatic, but it is about the missing ribbon, not about how Pepper sees herself."
+ },
+ {
+  "r": "evid",
+  "p": [
+   "show"
+  ],
+  "skill": "Best evidence",
+  "q": "Which sentence BEST supports the idea that Juniper's music calms Pepper?",
+  "o": [
+   "People in the bleachers gasped, and a little boy dropped his lemonade.",
+   "The judges huddled under an umbrella, whispering, and then the announcer cleared his throat.",
+   "Her ears swiveled toward the music, and she took one careful step back toward Juniper, then another.",
+   "Saturday began with sunshine."
+  ],
+  "a": 2,
+  "proof": [
+   "Her ears swiveled toward the music"
+  ],
+  "why": "This sentence connects the music directly to what Pepper does. She turns toward the sound and walks back.",
+  "trap": "B is near the end, but it is about the judges. It does not show the music changing Pepper."
+ },
+ {
+  "r": "evid",
+  "p": [
+   "juniper"
+  ],
+  "skill": "Best evidence",
+  "q": "Which sentence BEST supports the idea that Juniper is trying to be brave?",
+  "o": [
+   "The plan is simple.",
+   "But I keep reminding myself that Pepper will be right beside me, and she is never nervous about anything.",
+   "Pepper's costume is a sparkly cape with a gold number seven sewn on the back.",
+   "Probably something ridiculous about being a champion."
+  ],
+  "a": 1,
+  "proof": [
+   "But I keep reminding myself"
+  ],
+  "why": "Juniper is giving herself a pep talk. Reminding yourself of something comforting is a way of trying to be brave.",
+  "trap": "A sounds calm, but it is about the plan, not about her feelings. Bonus: is Pepper REALLY never nervous? Read the show chapter to find out."
+ },
+ {
+  "r": "poem",
+  "p": [
+   "poem"
+  ],
+  "skill": "Speaker",
+  "q": "Who is the speaker of \"The Littlest Racehorse\"?",
+  "o": [
+   "Pepper",
+   "An old horse who lives next door to Pepper",
+   "Juniper",
+   "The wind"
+  ],
+  "a": 1,
+  "proof": [
+   "I have stood in this stall for twenty-two springs",
+   "But the pony next door",
+   "I just nod my gray head"
+  ],
+  "why": "The speaker has lived in a stall for twenty-two springs, has a gray head, and lives next door to the pony. That sounds like Captain!",
+  "trap": "A is the trap. The poem is ABOUT Pepper (she, her), but it is not told BY Pepper."
+ },
+ {
+  "r": "poem",
+  "p": [
+   "poem"
+  ],
+  "skill": "Stanzas",
+  "q": "Which stanza tells about the problem at the Spring Show?",
+  "fixed": true,
+  "o": [
+   "Stanza 1",
+   "Stanza 2",
+   "Stanza 3",
+   "Stanza 4"
+  ],
+  "a": 2,
+  "proof": [
+   "When thunder came growling",
+   "her courage slipped off like a shoe"
+  ],
+  "why": "A stanza is a group of lines, like a paragraph in a poem. Stanza 3 tells about the thunder and the girl with the fiddle.",
+  "trap": "D mentions the ribbon from the show, but it tells what happens AFTER, not the problem itself."
+ },
+ {
+  "r": "poem",
+  "p": [
+   "poem"
+  ],
+  "skill": "Rhyme",
+  "q": "In stanza 2, which word rhymes with \"way\"?",
+  "o": [
+   "asleep",
+   "tune",
+   "dawn",
+   "hay"
+  ],
+  "a": 3,
+  "proof": [
+   "and tangles her mane up with hay"
+  ],
+  "why": "Way and hay end with the same sound. In this poem, lines 2 and 4 of each stanza rhyme.",
+  "trap": "A is at the end of a line too, but asleep does not sound like way."
+ },
+ {
+  "r": "poem",
+  "p": [
+   "poem"
+  ],
+  "skill": "Figurative language",
+  "q": "\"The pony next door is a comet in boots.\" What kind of figurative language is this, and what does it mean?",
+  "o": [
+   "A metaphor. The pony is fast and bold, zooming like a comet.",
+   "A simile. The pony is wearing boots.",
+   "Personification. A comet is acting like a pony.",
+   "Onomatopoeia. Comet is a sound word."
+  ],
+  "a": 0,
+  "proof": [
+   "is a comet in boots"
+  ],
+  "why": "A metaphor says one thing IS another thing, without like or as. Pepper is not really a comet, but she zooms like one.",
+  "trap": "B is wrong twice: there is no like or as, and Pepper is not actually wearing boots."
+ },
+ {
+  "r": "poem",
+  "p": [
+   "poem"
+  ],
+  "skill": "Figurative language",
+  "q": "\"Her courage slipped off like a shoe.\" What does this simile mean?",
+  "o": [
+   "Pepper lost a horseshoe in the mud.",
+   "Pepper wanted new shoes for the show.",
+   "Pepper's bravery suddenly disappeared.",
+   "Pepper kicked off her shoe to run faster."
+  ],
+  "a": 2,
+  "proof": [
+   "her courage slipped off like a shoe"
+  ],
+  "why": "A simile compares with like or as. Her courage left as easily as a loose shoe falls off. She got scared.",
+  "trap": "A is the trap. The shoe is only the comparison. The line is really about COURAGE."
+ },
+ {
+  "r": "poem",
+  "p": [
+   "poem"
+  ],
+  "skill": "What a line shows",
+  "q": "What do the last two lines show about the speaker?",
+  "o": [
+   "He is angry that Pepper is not telling the truth.",
+   "He thinks Pepper is the fastest horse in the barn.",
+   "He is too tired to argue with Pepper.",
+   "He kindly lets Pepper brag because he knows she was truly brave."
+  ],
+  "a": 3,
+  "proof": [
+   "I just nod my gray head",
+   "is the bravest of hearts in the place"
+  ],
+  "why": "He nods instead of arguing, and he says her heart is the bravest. He cares about her courage more than the race she imagines.",
+  "trap": "B is tempting because Pepper brags about racing, but the speaker praises her HEART (courage), not her speed."
+ },
+ {
+  "r": "pair",
+  "p": [
+   "pepper2",
+   "show"
+  ],
+  "skill": "Compare two texts",
+  "q": "Both texts tell about the thunder. How are they DIFFERENT?",
+  "o": [
+   "The narrator says thunder scares Pepper. Pepper says the sky was applauding her.",
+   "Both texts say Pepper stayed calm the whole time.",
+   "Pepper's diary says it rained, but the chapter says it stayed dry.",
+   "Only the chapter mentions a ribbon."
+  ],
+  "a": 0,
+  "proof": [
+   "the sky gave me a standing ovation",
+   "It was the loudest applause I have ever heard",
+   "a crack of thunder exploded overhead"
+  ],
+  "hint": "Tap a sentence in EITHER text that proves your answer.",
+  "why": "Same event, two tellings. The narrator tells what really happened. Pepper's diary tells what she wants to believe.",
+  "trap": "D is wrong because both texts mention the ribbon. Check both before choosing."
+ },
+ {
+  "r": "pair",
+  "p": [
+   "pepper2",
+   "show"
+  ],
+  "skill": "Compare two texts",
+  "q": "Both texts say Pepper ran toward the gate. Which statement explains the difference?",
+  "o": [
+   "The chapter says she was chasing a goat. The diary says she was looking for Juniper.",
+   "Both texts say she was running a real race.",
+   "The chapter says she bolted in fright. The diary says she was starting a victory lap.",
+   "The diary says she was scared, but the chapter says she was proud."
+  ],
+  "a": 2,
+  "proof": [
+   "Naturally, I took off at top speed",
+   "Pepper threw up her head and bolted"
+  ],
+  "hint": "Tap a sentence in EITHER text that proves your answer.",
+  "why": "The third-person narrator describes her bolting after the thunder. Pepper describes the same run as a victory lap.",
+  "trap": "D has it backward. Pepper's DIARY says she was never scared."
+ },
+ {
+  "r": "pair",
+  "p": [
+   "pepper2",
+   "show"
+  ],
+  "skill": "Compare two texts",
+  "q": "What do BOTH texts agree on?",
+  "o": [
+   "Pepper was never scared.",
+   "Juniper's music brought Pepper back, and they won a ribbon.",
+   "Gus ruined the show.",
+   "The ribbon was for the fastest pony."
+  ],
+  "a": 1,
+  "proof": [
+   "Then I heard Juniper playing my favorite brushing song",
+   "Her ears swiveled toward the music",
+   "goes to Pepper and Juniper",
+   "gave us a shiny ribbon"
+  ],
+  "hint": "Tap a sentence in EITHER text that proves your answer.",
+  "why": "Both texts say Pepper heard the brushing song, came back to Juniper, and got the ribbon. That is the part they agree on.",
+  "trap": "D is only Pepper's guess. The ribbon is for courage, and only Pepper thinks it means fastest."
+ },
+ {
+  "r": "pair",
+  "p": [
+   "pepper1",
+   "barn"
+  ],
+  "skill": "Compare two texts",
+  "q": "How does reading \"Something Soggy and Blue\" change the way you understand Pepper's diary about the missing ribbon?",
+  "o": [
+   "It proves Gus really did steal the ribbon.",
+   "It shows the ribbon was in Pepper's own water bucket, so her robbery story was a mix-up.",
+   "It shows Captain took the ribbon to tease Pepper.",
+   "It does not change anything. Both texts say the same thing."
+  ],
+  "a": 1,
+  "proof": [
+   "It was the missing ribbon",
+   "Pepper had blamed the innocent goat",
+   "Something soggy and blue"
+  ],
+  "hint": "Tap a sentence in EITHER text that proves your answer.",
+  "why": "Pepper's diary only shows what Pepper believes. The narrator shows the ribbon was in her own bucket all along.",
+  "trap": "A is what Pepper believes, but the narrator's chapter proves it wrong."
+ },
+ {
+  "r": "pair",
+  "p": [
+   "pepper2",
+   "show"
+  ],
+  "skill": "Author's purpose (paired)",
+  "q": "Why might the author tell the same show day in BOTH Pepper's diary and a narrator's chapter?",
+  "o": [
+   "To teach readers how thunderstorms form",
+   "To make the story longer",
+   "To prove that Pepper is the fastest pony",
+   "To show what really happened and also how funny Pepper's version is"
+  ],
+  "a": 3,
+  "proof": [
+   "which I believe is a fancy way of saying",
+   "the sky gave me a standing ovation",
+   "Pepper threw up her head and bolted"
+  ],
+  "hint": "Tap a sentence in EITHER text that proves your answer.",
+  "why": "When you put the two side by side, the narrator's facts make Pepper's bragging even funnier.",
+  "trap": "A is tempting because there is a storm, but the texts are stories, not science lessons."
+ },
+ {
+  "r": "mix",
+  "p": [
+   "show"
+  ],
+  "skill": "Theme",
+  "q": "Which sentence BEST states a theme of \"Thunder at the Spring Show\"?",
+  "o": [
+   "Caring about someone else can help you find your own courage.",
+   "Ponies should not wear capes at shows.",
+   "Thunderstorms can be dangerous for horses.",
+   "You should always try to win first place."
+  ],
+  "a": 0,
+  "proof": [
+   "Then she thought about how scared Pepper must be",
+   "Her own fear seemed to shrink"
+  ],
+  "why": "A theme is a lesson about life. Juniper stops feeling scared when she thinks about Pepper instead of herself.",
+  "trap": "C is a fact about the topic, not a life lesson. A theme should work for people outside the story too."
+ },
+ {
+  "r": "mix",
+  "p": [
+   "barn"
+  ],
+  "skill": "Summary",
+  "q": "Which is the BEST summary of \"Something Soggy and Blue\"?",
+  "o": [
+   "Juniper works at a stable. Rosa sweeps the aisle. Gus eats a poster.",
+   "Gus steals Pepper's ribbon, and Pepper catches him.",
+   "Pepper spies on Gus because she thinks he stole her ribbon, but Juniper finds it in Pepper's own water bucket.",
+   "Juniper laughs so hard that she leans on the stall door."
+  ],
+  "a": 2,
+  "proof": [
+   "Pepper had blamed the innocent goat",
+   "It was the missing ribbon",
+   "Pepper crept from the feed room"
+  ],
+  "why": "A good summary tells the most important events in order: the problem, what happens, and how it ends.",
+  "trap": "A lists small details, but it leaves out the problem and the solution."
+ },
+ {
+  "r": "mix",
+  "p": [
+   "pepper2"
+  ],
+  "skill": "Inference",
+  "q": "Pepper writes, \"I was never scared for even a second.\" What can the reader infer?",
+  "o": [
+   "She is telling the exact truth.",
+   "She did not hear the thunder at all.",
+   "She does not like Juniper.",
+   "She was scared but does not want to admit it."
+  ],
+  "a": 3,
+  "proof": [
+   "Naturally, I took off at top speed",
+   "I was never scared for even a second"
+  ],
+  "why": "An inference uses clues plus what you know. She ran at top speed right after the boom. Champions in her mind are never scared, so she won't say it.",
+  "trap": "A is what Pepper SAYS, but her actions tell a different story."
+ },
+ {
+  "r": "mix",
+  "p": [
+   "pepper1"
+  ],
+  "skill": "Author's purpose",
+  "q": "Why does the author have Pepper say she will follow Gus \"like a detective in a raincoat\"?",
+  "o": [
+   "To entertain readers by showing how seriously Pepper takes her silly mission",
+   "To inform readers about how real detectives work",
+   "To persuade readers to buy raincoats",
+   "To explain how goats behave"
+  ],
+  "a": 0,
+  "proof": [
+   "like a detective in a raincoat"
+  ],
+  "why": "Picturing a pony sneaking around like a detective is funny. The author wants to entertain you.",
+  "trap": "B mentions detectives, but the passage teaches nothing about real detective work."
+ },
+ {
+  "r": "mix",
+  "p": [
+   "pepper2"
+  ],
+  "skill": "Context clues",
+  "q": "\"She seemed so happy, and a good champion is always generous to her fans.\" What does generous mean?",
+  "o": [
+   "Angry and grumpy",
+   "Fast and strong",
+   "Kind and giving",
+   "Sleepy and slow"
+  ],
+  "a": 2,
+  "proof": [
+   "a good champion is always generous to her fans"
+  ],
+  "why": "Pepper lets Juniper keep her happy belief. That is a kind thing to do, so generous means kind and giving.",
+  "trap": "B describes a champion racer, but the clue is about how Pepper TREATS Juniper."
+ },
+ {
+  "r": "mix",
+  "p": [
+   "show"
+  ],
+  "skill": "Context clues",
+  "q": "\"Her ears swiveled toward the music, and she took one careful step back.\" What does swiveled mean?",
+  "o": [
+   "Froze in place",
+   "Turned to face",
+   "Drooped down",
+   "Flattened back"
+  ],
+  "a": 1,
+  "proof": [
+   "Her ears swiveled toward the music"
+  ],
+  "why": "The word toward is a clue. Her ears moved to point at the music, so swiveled means turned.",
+  "trap": "A is wrong because frozen ears could not move toward anything."
+ }
+];
+
+(function () {
+  "use strict";
+  var STORE_KEY = "hoofbeat-diaries-v1";
+  var app = document.getElementById("app");
+
+  var SHOE = '<svg class="shoe" viewBox="0 0 32 32" aria-hidden="true"><path d="M7 4h5v12a4 4 0 0 0 8 0V4h5v12a9 9 0 0 1-18 0z" fill="#D99A1E" stroke="#7A4A28" stroke-width="1.6" stroke-linejoin="round"/><circle cx="9.5" cy="9" r="1.1" fill="#7A4A28"/><circle cx="9.5" cy="14" r="1.1" fill="#7A4A28"/><circle cx="22.5" cy="9" r="1.1" fill="#7A4A28"/><circle cx="22.5" cy="14" r="1.1" fill="#7A4A28"/></svg>';
+  document.getElementById("logo").innerHTML = SHOE.replace('class="shoe"', 'class="shoe" style="width:34px;height:34px"');
+  document.getElementById("scoreShoe").innerHTML = SHOE;
+
+  /* ---------- storage (optional, never required) ---------- */
+  function load() {
+    try { var raw = window.localStorage.getItem(STORE_KEY); return raw ? JSON.parse(raw) : {}; }
+    catch (e) { return {}; }
+  }
+  function save() {
+    try { window.localStorage.setItem(STORE_KEY, JSON.stringify(progress)); } catch (e) { /* ignore */ }
+  }
+  var progress = load(); // { questionIndex: { a: bool, p: bool } }
+  if (!progress || typeof progress !== "object") progress = {};
+
+  /* ---------- helpers ---------- */
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function splitSentences(par) {
+    return par.split(/(?<=[.!?]["”]?)\s+(?=["“A-Z])/).filter(function (s) { return s.trim(); });
+  }
+  function qsFor(roundId) {
+    var out = [];
+    QUESTIONS.forEach(function (q, i) { if (q.r === roundId) out.push(i); });
+    return out;
+  }
+  function shoesFor(i) { var r = progress[i]; return r ? (r.a ? 1 : 0) + (r.p ? 1 : 0) : 0; }
+  function totalScore() {
+    var t = 0; QUESTIONS.forEach(function (_, i) { t += shoesFor(i); }); return t;
+  }
+  function updateScore() {
+    document.getElementById("scoreNum").textContent = totalScore();
+    document.getElementById("scoreMax").textContent = QUESTIONS.length * 2;
+  }
+  var LETTERS = ["A", "B", "C", "D"];
+
+  /* ---------- passage rendering ---------- */
+  function renderPassage(id) {
+    var P = PASSAGES[id];
+    var html = '<section class="passage" data-pid="' + id + '"><div class="kind">' + esc(P.kind) + '</div><h2>' + esc(P.title) + '</h2>';
+    var k = 0;
+    if (P.poem) {
+      P.text.split(/\n\s*\n/).forEach(function (st) {
+        html += '<div class="stanza">';
+        st.split("\n").forEach(function (ln) {
+          html += '<span class="line"><span class="s" data-k="' + id + ':' + (k++) + '">' + esc(ln) + '</span></span>';
+        });
+        html += '</div>';
+      });
+    } else {
+      P.text.split("\n").forEach(function (par) {
+        html += '<p>' + splitSentences(par).map(function (s) {
+          return '<span class="s" data-k="' + id + ':' + (k++) + '">' + esc(s) + '</span>';
+        }).join(" ") + '</p>';
+      });
+    }
+    if (P.credit) html += '<div class="credit">' + esc(P.credit) + '</div>';
+    return html + '</section>';
+  }
+
+  /* ---------- screens ---------- */
+  var state = null; // { round, list, pos, choice, proofKey, revealed }
+
+  function showMenu() {
+    state = null;
+    updateScore();
+    var html = '<div class="intro"><p><strong>Welcome to Willow Creek Stables!</strong> Pepper the pony thinks she is a champion racehorse. She keeps a diary. So does the stable kid. A narrator tells the same events, too.</p>' +
+      '<p>Every question has two steps: <strong>1. Pick an answer.</strong> <strong>2. Prove it</strong> by tapping the sentence in the story. Then show your thinking before your coach reveals the answer. Each step earns a horseshoe.</p></div>';
+    html += '<div class="rounds">';
+    ROUNDS.forEach(function (r) {
+      var list = qsFor(r.id), got = 0, done = 0;
+      list.forEach(function (i) { got += shoesFor(i); if (progress[i]) done++; });
+      html += '<button class="round-btn" data-round="' + r.id + '">' +
+        (r.extra ? '<span class="tag">Extra practice</span>' : '') +
+        '<h3>' + esc(r.name) + '</h3><div class="blurb">' + esc(r.blurb) + '</div>' +
+        '<div class="meta">' + list.length + ' questions &middot; ' + done + ' done &middot; ' + got + ' / ' + (list.length * 2) + ' horseshoes</div></button>';
+    });
+    html += '</div><div class="menu-foot"><button class="ghost" id="resetBtn">Reset all progress</button></div>';
+    app.innerHTML = html;
+    app.querySelectorAll(".round-btn").forEach(function (b) {
+      b.addEventListener("click", function () { startRound(b.getAttribute("data-round")); });
+    });
+    var rb = document.getElementById("resetBtn");
+    rb.addEventListener("click", function () {
+      if (!rb.classList.contains("armed")) {
+        rb.classList.add("armed"); rb.textContent = "Tap again to erase all horseshoes";
+        setTimeout(function () { if (rb.isConnected) { rb.classList.remove("armed"); rb.textContent = "Reset all progress"; } }, 4000);
+        return;
+      }
+      progress = {}; save(); showMenu();
+    });
+    window.scrollTo(0, 0);
+  }
+
+  function startRound(id) {
+    var list = qsFor(id);
+    var pos = 0;
+    for (var j = 0; j < list.length; j++) { if (!progress[list[j]]) { pos = j; break; } }
+    state = { round: id, list: list, pos: pos };
+    showQuestion();
+  }
+
+  function showQuestion() {
+    var qi = state.list[state.pos];
+    var Q = QUESTIONS[qi];
+    var R = ROUNDS.filter(function (r) { return r.id === state.round; })[0];
+    state.choice = null; state.proofKey = null; state.revealed = false;
+
+    var dots = state.list.map(function (i, n) {
+      var r = progress[i], cls = "dot";
+      if (r) cls += " ok" + shoesFor(i);
+      if (n === state.pos) cls += " cur";
+      return '<span class="' + cls + '"></span>';
+    }).join("");
+
+    var html = '<div class="play">';
+    html += '<div class="panel passages" id="passages">' + Q.p.map(renderPassage).join("") + '</div>';
+    html += '<div class="panel qcol">';
+    html += '<div class="qhead"><button class="ghost" id="menuBtn">&larr; Rounds</button><span class="count">' + esc(R.name) + ' &middot; ' + (state.pos + 1) + ' of ' + state.list.length + '</span></div>';
+    html += '<div class="dots" style="margin-bottom:10px">' + dots + '</div>';
+    html += '<span class="skill">' + esc(Q.skill) + '</span>';
+    html += '<div class="step">Step 1 &middot; Pick an answer</div>';
+    html += '<div class="qtext">' + esc(Q.q) + '</div><div class="opts">';
+    Q.o.forEach(function (o, n) {
+      html += '<button class="opt" data-n="' + n + '"><span class="letter">' + LETTERS[n] + '</span><span>' + esc(o) + '</span></button>';
+    });
+    html += '</div>';
+    html += '<div id="proveBox" class="hidden"><div class="step">Step 2 &middot; Prove it</div><div class="prove" id="proveMsg"></div></div>';
+    html += '<div id="thinkBox" class="think hidden"><h3>Show me your thinking</h3>' +
+      '<ul><li>Why did you pick that answer?</li><li>How does your sentence prove it?</li><li>Which answer was the trickiest to rule out?</li></ul>' +
+      '<div class="btn-row"><button class="btn main" id="revealBtn">Coach: Reveal</button></div></div>';
+    html += '<div id="resultBox"></div>';
+    html += '</div></div>';
+    app.innerHTML = html;
+
+    document.getElementById("menuBtn").addEventListener("click", showMenu);
+    app.querySelectorAll(".opt").forEach(function (b) {
+      b.addEventListener("click", function () { pickOption(parseInt(b.getAttribute("data-n"), 10)); });
+    });
+    document.getElementById("passages").addEventListener("click", function (e) {
+      var s = e.target.closest(".s");
+      if (s) pickSentence(s);
+    });
+    document.getElementById("revealBtn").addEventListener("click", reveal);
+    window.scrollTo(0, 0);
+  }
+
+  function proveMessage() {
+    var Q = QUESTIONS[state.list[state.pos]];
+    var hint = Q.hint || (Q.p.length > 1 ? "Tap the sentence in EITHER text that proves your answer." : (PASSAGES[Q.p[0]].poem ? "Tap the line in the poem that proves your answer." : "Tap the sentence in the story that proves your answer."));
+    var msg = '<strong>' + esc(hint) + '</strong>';
+    if (state.proofKey) {
+      var el = document.querySelector('.s[data-k="' + state.proofKey + '"]');
+      msg += '<div class="picked-text">Your proof: &ldquo;' + esc(el ? el.textContent : "") + '&rdquo;</div><div style="font-size:16px;color:var(--muted)">Tap a different sentence to change it.</div>';
+    }
+    document.getElementById("proveMsg").innerHTML = msg;
+  }
+
+  function pickOption(n) {
+    if (state.revealed) return;
+    state.choice = n;
+    app.querySelectorAll(".opt").forEach(function (b) { b.classList.toggle("sel", parseInt(b.getAttribute("data-n"), 10) === n); });
+    document.getElementById("proveBox").classList.remove("hidden");
+    document.getElementById("passages").classList.add("tappable");
+    proveMessage();
+    updateThink();
+    if (narrow() && !state.proofKey) document.getElementById("passages").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function narrow() { return window.innerWidth < 900; }
+
+  function pickSentence(el) {
+    if (state.revealed || state.choice === null) return;
+    app.querySelectorAll(".s.picked").forEach(function (s) { s.classList.remove("picked"); });
+    el.classList.add("picked");
+    state.proofKey = el.getAttribute("data-k");
+    proveMessage();
+    updateThink();
+    if (narrow()) document.getElementById("thinkBox").scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function updateThink() {
+    var box = document.getElementById("thinkBox");
+    if (state.choice !== null && state.proofKey) box.classList.remove("hidden");
+  }
+
+  function isProof(text, Q) {
+    var t = text.replace(/[“”]/g, '"');
+    return Q.proof.some(function (p) { return t.indexOf(p) !== -1; });
+  }
+
+  function reveal() {
+    if (state.revealed) return;
+    state.revealed = true;
+    var qi = state.list[state.pos], Q = QUESTIONS[qi];
+    var ansOk = state.choice === Q.a;
+    var pickedEl = state.proofKey ? document.querySelector('.s[data-k="' + state.proofKey + '"]') : null;
+    var proofOk = !!(pickedEl && isProof(pickedEl.textContent, Q));
+
+    app.querySelectorAll(".opt").forEach(function (b) {
+      var n = parseInt(b.getAttribute("data-n"), 10);
+      b.disabled = true; b.classList.remove("sel");
+      if (n === Q.a) b.classList.add("right");
+      else if (n === state.choice) b.classList.add("wrong");
+    });
+    var passages = document.getElementById("passages");
+    passages.classList.remove("tappable");
+    passages.querySelectorAll(".s").forEach(function (s) { if (isProof(s.textContent, Q)) s.classList.add("proof"); });
+    if (pickedEl && !proofOk) pickedEl.classList.add("wrongproof");
+    document.getElementById("thinkBox").classList.add("hidden");
+
+    var prev = progress[qi];
+    // keep the best result if the round is replayed
+    progress[qi] = { a: ansOk || !!(prev && prev.a), p: proofOk || !!(prev && prev.p) };
+    save(); updateScore();
+
+    var got = (ansOk ? 1 : 0) + (proofOk ? 1 : 0);
+    var heads = ["Keep trotting!", "Nice work!", "Double horseshoe!"];
+    var shoes = '<span class="shoe-wrap">' + SHOE.replace('class="shoe"', 'class="shoe' + (ansOk ? '' : ' off') + '"') + '</span>' +
+      '<span class="shoe-wrap">' + SHOE.replace('class="shoe"', 'class="shoe' + (proofOk ? '' : ' off') + '"') + '</span>';
+    var html = '<div class="result"><div class="earned">' + shoes + '<span>' + heads[got] + '</span></div>';
+    html += '<p><span class="label">Answer:</span> ' + (ansOk ? 'Yes! ' : 'Not this time. ') + 'The answer is <strong>' + LETTERS[Q.a] + '</strong>.</p>';
+    html += '<p><span class="label">Proof:</span> ' + (proofOk ? 'Your sentence proves it. ' : (pickedEl ? 'Your sentence does not prove it. ' : 'No sentence tapped. ')) + 'The green sentence' + (Q.proof.length > 1 ? 's are' : ' is') + ' strong proof.</p>';
+    html += '<p><span class="label">Why:</span> ' + esc(Q.why) + '</p>';
+    html += '<p><span class="label">The trap:</span> ' + esc(Q.trap) + '</p></div>';
+    var last = state.pos === state.list.length - 1;
+    html += '<div class="btn-row"><button class="btn main" id="nextBtn">' + (last ? 'Finish round' : 'Next question &rarr;') + '</button>' +
+      '<button class="btn alt" id="retryBtn">Try it again</button></div>';
+    var rbox = document.getElementById("resultBox");
+    rbox.innerHTML = html;
+    document.getElementById("nextBtn").addEventListener("click", function () {
+      if (last) showRoundDone(); else { state.pos++; showQuestion(); }
+    });
+    document.getElementById("retryBtn").addEventListener("click", showQuestion);
+    rbox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  function showRoundDone() {
+    var R = ROUNDS.filter(function (r) { return r.id === state.round; })[0];
+    var got = 0;
+    state.list.forEach(function (i) { got += shoesFor(i); });
+    var max = state.list.length * 2;
+    var pct = Math.round(got / max * 100);
+    var msg = pct >= 90 ? "Champion level! That is test-out territory." : pct >= 70 ? "Strong ride. Which questions tripped you up? Try those again." : "Every champion practices. Run this round again and hunt for proof first.";
+    var idx = ROUNDS.indexOf(R);
+    var next = ROUNDS[(idx + 1) % ROUNDS.length];
+    app.innerHTML = '<div class="panel done-card"><h2>' + esc(R.name) + ' complete</h2><div class="big">' + got + ' / ' + max + '</div>' +
+      '<p>horseshoes (' + pct + '%)</p><p>' + esc(msg) + '</p>' +
+      '<div class="btn-row" style="justify-content:center"><button class="btn main" id="nextRound">Next round: ' + esc(next.name) + '</button>' +
+      '<button class="btn alt" id="againBtn">Replay this round</button><button class="ghost" id="toMenu">All rounds</button></div></div>';
+    document.getElementById("nextRound").addEventListener("click", function () { startRound(next.id); });
+    document.getElementById("againBtn").addEventListener("click", function () { state = { round: R.id, list: qsFor(R.id), pos: 0 }; showQuestion(); });
+    document.getElementById("toMenu").addEventListener("click", showMenu);
+    window.scrollTo(0, 0);
+  }
+
+  showMenu();
+})();
+</script>
+</body>
+</html>
