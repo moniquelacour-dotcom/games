@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stable Talk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FBF3E4;
+    --paper: #FFFDF8;
+    --ink: #2E2118;
+    --ink-soft: #5C4A3C;
+    --barn: #A63D2F;
+    --barn-dark: #7E2B20;
+    --hay: #E9B949;
+    --hay-soft: #FBEBC0;
+    --sage: #3F7D5C;
+    --sage-soft: #DDF0E4;
+    --sky: #2F6690;
+    --sky-soft: #DCEAF5;
+    --rose: #B23A48;
+    --rose-soft: #F8DDE0;
+    --line: #E2D3BC;
+    --shoe: #8A8F98;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Atkinson Hyperlegible", Verdana, sans-serif;
+    font-size: 20px;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 16px 16px 64px; }
+  h1, h2, h3 { font-family: "Fredoka", "Trebuchet MS", sans-serif; line-height: 1.2; margin: 0; }
+  header.top {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    flex-wrap: wrap; padding: 8px 0 16px; border-bottom: 3px dashed var(--line); margin-bottom: 20px;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  .brand h1 { font-size: 34px; color: var(--barn); }
+  .brand small { display: block; font-size: 15px; color: var(--ink-soft); font-family: "Atkinson Hyperlegible", sans-serif; }
+  .tally {
+    display: flex; align-items: center; gap: 8px; background: var(--paper); border: 2px solid var(--line);
+    border-radius: 999px; padding: 6px 16px; font-family: "Fredoka", sans-serif; font-size: 22px; color: var(--ink);
+  }
+  .shoe { width: 28px; height: 28px; flex: none; }
+  .card {
+    background: var(--paper); border: 2px solid var(--line); border-radius: 18px; padding: 22px;
+    box-shadow: 0 4px 0 var(--line); margin-bottom: 18px;
+  }
+  .cast { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; }
+  .cast div { background: var(--hay-soft); border-radius: 14px; padding: 12px 14px; font-size: 17px; color: var(--ink); }
+  .cast b { font-family: "Fredoka", sans-serif; font-size: 20px; color: var(--barn-dark); display: block; }
+  .menu { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+  .round-btn {
+    text-align: left; background: var(--paper); color: var(--ink); border: 2px solid var(--line); border-radius: 16px;
+    padding: 16px; font: inherit; cursor: pointer; box-shadow: 0 4px 0 var(--line); display: flex; flex-direction: column; gap: 6px;
+  }
+  .round-btn:hover, .round-btn:focus-visible { border-color: var(--barn); outline: none; }
+  .round-btn .num { font-family: "Fredoka", sans-serif; font-size: 15px; color: var(--barn); letter-spacing: .04em; text-transform: uppercase; }
+  .round-btn .name { font-family: "Fredoka", sans-serif; font-size: 22px; color: var(--ink); }
+  .round-btn .meta { display: flex; align-items: center; gap: 6px; font-size: 16px; color: var(--ink-soft); }
+  .round-btn.done { background: var(--sage-soft); border-color: var(--sage); }
+  .eyebrow { font-family: "Fredoka", sans-serif; font-size: 16px; text-transform: uppercase; letter-spacing: .05em; color: var(--barn); margin-bottom: 6px; }
+  .rule { font-size: 22px; background: var(--hay-soft); border-left: 6px solid var(--hay); padding: 14px 16px; border-radius: 10px; margin: 14px 0; }
+  .example { background: var(--sky-soft); border-radius: 12px; padding: 12px 16px; margin: 10px 0; font-size: 20px; color: var(--ink); }
+  .example .tag { font-family: "Fredoka", sans-serif; font-size: 15px; color: var(--sky); display: block; }
+  .tip { font-size: 18px; color: var(--ink-soft); margin-top: 10px; }
+  .btn {
+    font-family: "Fredoka", sans-serif; font-size: 21px; border: none; border-radius: 14px; padding: 12px 22px; cursor: pointer;
+    background: var(--barn); color: #FFFFFF; box-shadow: 0 4px 0 var(--barn-dark);
+  }
+  .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--barn-dark); }
+  .btn.secondary { background: var(--paper); color: var(--barn-dark); border: 2px solid var(--barn); box-shadow: none; }
+  .btn.think { background: var(--sky); box-shadow: 0 4px 0 #1F4766; }
+  .btn.reveal { background: var(--hay); color: var(--ink); box-shadow: 0 4px 0 #B88A24; }
+  .btn[disabled] { opacity: .45; cursor: not-allowed; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+  .spacer { flex: 1; }
+  .progress { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .dot { width: 16px; height: 16px; border-radius: 50%; background: var(--line); }
+  .dot.now { background: var(--hay); }
+  .dot.right { background: var(--sage); }
+  .dot.wrong { background: var(--rose); }
+  .qtype { display: inline-block; font-family: "Fredoka", sans-serif; font-size: 15px; background: var(--sky-soft); color: var(--sky); border-radius: 999px; padding: 3px 12px; margin-bottom: 10px; }
+  .stem { font-size: 23px; margin: 0 0 14px; }
+  .stem .quote { display: block; background: var(--hay-soft); border-radius: 10px; padding: 10px 14px; margin-top: 10px; font-style: italic; }
+  .choices { display: grid; gap: 10px; }
+  .choice {
+    display: flex; gap: 12px; align-items: flex-start; text-align: left; width: 100%; font: inherit; font-size: 21px;
+    background: #FFFFFF; color: var(--ink); border: 2px solid var(--line); border-radius: 14px; padding: 12px 14px; cursor: pointer;
+  }
+  .choice .letter {
+    flex: none; width: 34px; height: 34px; border-radius: 50%; background: var(--bg); color: var(--barn-dark);
+    font-family: "Fredoka", sans-serif; display: grid; place-items: center; font-size: 19px; border: 2px solid var(--line);
+  }
+  .choice.picked { border-color: var(--sky); background: var(--sky-soft); }
+  .choice.picked .letter { background: var(--sky); color: #FFFFFF; border-color: var(--sky); }
+  .choice.correct { border-color: var(--sage); background: var(--sage-soft); }
+  .choice.correct .letter { background: var(--sage); color: #FFFFFF; border-color: var(--sage); }
+  .choice.miss { border-color: var(--rose); background: var(--rose-soft); }
+  .choice.miss .letter { background: var(--rose); color: #FFFFFF; border-color: var(--rose); }
+  .choice[disabled] { cursor: default; }
+  .thinking { background: var(--sky-soft); border: 2px dashed var(--sky); border-radius: 14px; padding: 14px 16px; margin-top: 16px; }
+  .thinking h3 { color: var(--sky); font-size: 22px; margin-bottom: 6px; }
+  .thinking ul { margin: 6px 0 0; padding-left: 22px; }
+  .verdict { border-radius: 14px; padding: 14px 16px; margin-top: 16px; }
+  .verdict.good { background: var(--sage-soft); border: 2px solid var(--sage); }
+  .verdict.bad { background: var(--rose-soft); border: 2px solid var(--rose); }
+  .verdict h3 { font-size: 23px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .verdict.good h3 { color: var(--sage); }
+  .verdict.bad h3 { color: var(--rose); }
+  .verdict p { margin: 8px 0 0; }
+  .verdict .lbl { font-family: "Fredoka", sans-serif; color: var(--ink); }
+  textarea {
+    width: 100%; min-height: 130px; font: inherit; font-size: 21px; color: var(--ink); background: #FFFFFF;
+    border: 2px solid var(--line); border-radius: 14px; padding: 12px; resize: vertical;
+  }
+  textarea:focus { outline: 3px solid var(--hay); border-color: var(--hay); }
+  .diary { background: #FFFDF2; border: 2px solid var(--hay); border-radius: 14px; padding: 16px;
+    background-image: repeating-linear-gradient(transparent, transparent 34px, #EADFC6 34px, #EADFC6 35px); }
+  .big-shoes { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+  .big-shoes .shoe { width: 40px; height: 40px; }
+  .shoe.empty { opacity: .2; }
+  .hint { font-size: 17px; color: var(--ink-soft); }
+  .footer-note { font-size: 16px; color: var(--ink-soft); text-align: center; margin-top: 24px; }
+  @media (max-width: 560px) {
+    body { font-size: 18px; }
+    .brand h1 { font-size: 28px; }
+    .stem { font-size: 20px; }
+    .choice { font-size: 19px; }
+    .rule { font-size: 19px; }
+    .card { padding: 16px; }
+    .btn { font-size: 19px; padding: 11px 16px; }
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="hs" viewBox="0 0 64 64">
+      <path d="M14 8 C6 22 6 42 18 54 L26 54 C17 44 16 26 22 12 Z" fill="#8A8F98" stroke="#4B4F57" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M50 8 C58 22 58 42 46 54 L38 54 C47 44 48 26 42 12 Z" fill="#8A8F98" stroke="#4B4F57" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M14 8 C22 2 42 2 50 8 L42 12 C36 8 28 8 22 12 Z" fill="#8A8F98" stroke="#4B4F57" stroke-width="2.5" stroke-linejoin="round"/>
+      <circle cx="14" cy="24" r="2.2" fill="#FFFDF8"/><circle cx="13" cy="36" r="2.2" fill="#FFFDF8"/>
+      <circle cx="50" cy="24" r="2.2" fill="#FFFDF8"/><circle cx="51" cy="36" r="2.2" fill="#FFFDF8"/>
+    </symbol>
+  </defs>
+</svg>
+<div class="wrap">
+  <header class="top">
+    <div class="brand" id="homeLink" role="button" tabindex="0" aria-label="Back to the stable menu">
+      <svg class="shoe" style="width:44px;height:44px"><use href="#hs"/></svg>
+      <div><h1>Stable Talk</h1><small>Grade 6 Language, straight from the barn</small></div>
+    </div>
+    <div class="tally" aria-live="polite"><svg class="shoe"><use href="#hs"/></svg><span id="tally">0</span></div>
+  </header>
+  <main id="app"></main>
+  <p class="footer-note">Coach tip: let her pick and explain first. Press Reveal only after she has said her thinking out loud.</p>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var ROUNDS = [
+    {
+      id: "case", name: "Pronoun Case",
+      rule: "Use a <b>subject</b> pronoun (I, he, she, we, they, who) for whoever does the action, an <b>object</b> pronoun (me, him, her, us, them, whom) after an action word or a word like <i>to, for, with, at</i>, and a <b>possessive</b> pronoun (mine, hers, its, theirs, whose) to show ownership. Possessive pronouns never get an apostrophe.",
+      examples: [
+        ["Subject", "Duchess and <b>I</b> polished the trophy she has never actually won."],
+        ["Object", "Pickles the barn cat left a ‘present’ on the doormat for Pewter and <b>me</b>."]
+      ],
+      tip: "Trick: cover up the other person. “Pickles and me hid” becomes “me hid.” Sounds wrong, so it’s I.",
+      write: "Write a diary sentence about you and a horse doing something together. Use “and I” or “and me” correctly, then tell your coach which one you used and why.",
+      items: [
+        { type: "Pick the correct sentence", stem: "Which sentence is written correctly?",
+          choices: ["Pickles and me hid in the hayloft during the thunderstorm.", "Pickles and I hid in the hayloft during the thunderstorm.", "Me and Pickles hid in the hayloft during the thunderstorm.", "Pickles and myself hid in the hayloft during the thunderstorm."],
+          answer: 1, trap: 0,
+          why: "Pickles and I are the ones doing the hiding, so we need the subject pronoun I. Cover Pickles: “I hid” works.",
+          trapWhy: "“Pickles and me” is how lots of people talk, but cover Pickles and you get “me hid,” which no pony would say." },
+        { type: "Fill the blank", stem: "The farrier said the loudest snoring in the whole barn belonged to Pewter and ___.",
+          choices: ["I", "me", "myself", "my"], answer: 1, trap: 0,
+          why: "The pronoun comes after “to,” so it is an object: “belonged to me.” Me it is (sadly, the snoring is yours).",
+          trapWhy: "“Pewter and I” sounds fancy, but fancy is not the test. “Belonged to I” is wrong, so “Pewter and I” is wrong here too." },
+        { type: "Fix the error", stem: "Duchess insists the blue ribbon is ___, even though the judge clearly handed it to a goat.",
+          choices: ["her's", "hers", "she's", "her"], answer: 1, trap: 0,
+          why: "Hers is a possessive pronoun, and possessive pronouns (hers, its, theirs, ours) never use an apostrophe.",
+          trapWhy: "Her’s looks like “the pony’s,” but pronouns already show ownership on their own. The apostrophe is a trap." },
+        { type: "Fill the blank", stem: "The pony ___ the judges laughed at still bowed grandly to the crowd.",
+          choices: ["who", "whom", "whose", "which"], answer: 1, trap: 0,
+          why: "The judges laughed at <i>her</i>. Her is an object, and the object partner of who is whom. Quick test: if him or her fits, use whom.",
+          trapWhy: "Who is for the one doing the action. Duchess isn’t doing the laughing here; the judges are." }
+      ]
+    },
+    {
+      id: "intensive", name: "Intensive Pronouns",
+      rule: "An <b>intensive pronoun</b> is a -self or -selves word that adds <b>emphasis</b> right after the noun it points back to. Test: delete it, and the sentence still works. Never use one as the subject (“Myself went”), and “hisself” and “theirselves” are not words.",
+      examples: [
+        ["Emphasis", "Pewter <b>himself</b> admitted that the carrot cake was delicious."],
+        ["Emphasis", "We cleaned the tack room <b>ourselves</b>, without a single grown-up."]
+      ],
+      tip: "If deleting the -self word breaks the sentence (“Duchess admired in the mirror”), it is reflexive, not intensive.",
+      write: "Write a sentence where a stable animal does something surprising, and use an intensive pronoun to show how surprising it is (for example: “The barn cat herself...”).",
+      items: [
+        { type: "Identify", stem: "Which sentence uses an intensive pronoun?",
+          choices: ["Duchess admired herself in the water trough for an hour.", "The stable owner herself came out to watch the pony’s ‘victory lap.’", "Pickles washed herself after the mud incident.", "The kids made themselves a feeding chart."],
+          answer: 1, trap: 0,
+          why: "Delete herself: “The stable owner came out to watch...” still works. Herself is only there for emphasis, so it is intensive.",
+          trapWhy: "Delete herself from “Duchess admired herself” and you get “Duchess admired in the water trough.” The sentence breaks, so that one is reflexive." },
+        { type: "Fill the blank", stem: "The twins groomed the grumpy gray horse ___ and refused all help.",
+          choices: ["theirselves", "themselves", "themself", "them"], answer: 1, trap: 0,
+          why: "Two people means the plural form themselves. It adds emphasis: they did it with no help.",
+          trapWhy: "Theirselves sounds logical, but it is not a standard English word. Same for hisself." },
+        { type: "Pick the correct sentence", stem: "Which sentence is correct?",
+          choices: ["Myself and the barn cat will guard the oats.", "The barn cat and myself will guard the oats.", "I myself will guard the oats from the barn cat.", "The barn cat will guard the oats with myself."],
+          answer: 2, trap: 1,
+          why: "I is the subject, and myself sits right after it for emphasis. Delete myself and “I will guard the oats” still works.",
+          trapWhy: "Myself can’t be a subject. Cover the barn cat: “Myself will guard the oats” sounds like a robot pony." }
+      ]
+    },
+    {
+      id: "shift", name: "Pronoun Shifts",
+      rule: "Once you choose a pronoun’s <b>person</b> (I/we, you, he/she/they) and <b>number</b> (one or more than one), stay with it. Don’t switch from “a rider” to “you,” or from “ponies” to “it.”",
+      examples: [
+        ["Person", "Shift: “When riders enter the ring, you should smile.” Fixed: “When riders enter the ring, <b>they</b> should smile.”"],
+        ["Number", "Shift: “The ponies tossed its manes.” Fixed: “The ponies tossed <b>their</b> manes.”"]
+      ],
+      tip: "Underline the first person or animal named, then check that every pronoun after it matches.",
+      write: "Write two sentences of advice for someone visiting the stable. Pick “you” or “visitors” and keep the same pronoun all the way through.",
+      items: [
+        { type: "Find the error", stem: "Which sentence has an unnecessary shift in pronoun?",
+          choices: ["When I clean the stalls, you always find a missing sock.", "When I clean the stalls, I always find a missing sock.", "When we clean the stalls, we always find a missing sock.", "When they clean the stalls, they always find a missing sock."],
+          answer: 0, trap: 2,
+          why: "It starts with I and then jumps to you. The person cleaning and the person finding the sock should be the same.",
+          trapWhy: "We and we match, so that sentence is steady. The shift only happens when the pronoun changes partway through." },
+        { type: "Best revision", stem: "Choose the best revision.<span class=\"quote\">If a person wants to befriend Pewter, you have to bring at least six carrots.</span>",
+          choices: ["If a person wants to befriend Pewter, they has to bring at least six carrots.", "If you want to befriend Pewter, you have to bring at least six carrots.", "If a person wants to befriend Pewter, we have to bring at least six carrots.", "No change is needed."],
+          answer: 1, trap: 3,
+          why: "Now it’s “you” and “you” from start to finish. No shift.",
+          trapWhy: "The original starts with “a person” (third person) and switches to “you” (second person). That switch is the error." },
+        { type: "Pick the correct sentence", stem: "Which sentence keeps the pronoun number consistent?",
+          choices: ["The ponies trotted into the arena, and it bowed to the crowd.", "The ponies trotted into the arena, and she bowed to the crowd.", "The ponies trotted into the arena, and they bowed to the crowd.", "The ponies trotted into the arena, and he bowed to the crowd."],
+          answer: 2, trap: 0,
+          why: "Ponies is plural (more than one), so the pronoun must be plural too: they.",
+          trapWhy: "It is singular. One “it” can’t stand for a whole line of bowing ponies." }
+      ]
+    },
+    {
+      id: "vague", name: "Vague Pronouns",
+      rule: "A pronoun must point to <b>one clear noun</b>. If a reader could ask “Who?” or “Which one?”, swap the pronoun for the noun. Also skip a mystery “they” or “it” that points to nobody.",
+      examples: [
+        ["Unclear who", "Vague: “When Duchess bumped into the new mare, she sneezed.” Clear: “<b>Duchess</b> sneezed when she bumped into the new mare.”"],
+        ["Mystery it", "Vague: “On the feed bag, it says to give two scoops.” Clear: “<b>The feed bag</b> says to give two scoops.”"]
+      ],
+      tip: "Ask: could this pronoun mean two different characters? If yes, it’s vague.",
+      write: "Write a sentence with two animals in it where it is crystal clear who does what. Then try writing a vague version on purpose and see if your coach can spot the problem.",
+      items: [
+        { type: "Find the error", stem: "Which sentence has a vague pronoun?",
+          choices: ["When Duchess met the new mare, she tossed her mane.", "Duchess tossed her mane proudly when the new mare arrived.", "The new mare arrived, and Pewter ignored her completely.", "Pickles knocked a brush off the shelf, then acted as if she had never seen a brush before."],
+          answer: 0, trap: 2,
+          why: "Two female horses, one “she.” Did Duchess toss her mane, or did the new mare? The reader can’t tell.",
+          trapWhy: "Her in “Pewter ignored her” can only mean the new mare, because Pewter is the one doing the ignoring. Clear." },
+        { type: "Best revision", stem: "Choose the clearest revision.<span class=\"quote\">Pewter told the donkey that his blanket smelled like old cheese.</span>",
+          choices: ["Pewter told the donkey that the blanket smelled like old cheese.", "Pewter told the donkey, “Your blanket smells like old cheese.”", "He told him that his blanket smelled like old cheese.", "Pewter told the donkey that his own blanket smelled like old cheese."],
+          answer: 1, trap: 3,
+          why: "Turning it into Pewter’s exact words makes it clear: “your” means the donkey. Rude, but clear.",
+          trapWhy: "“His own” still could be Pewter’s or the donkey’s. Adding “own” doesn’t tell us whose blanket stinks." },
+        { type: "Best revision", stem: "Choose the best revision.<span class=\"quote\">In the riding manual, they say a pony should never eat dessert first.</span>",
+          choices: ["In the riding manual, it says a pony should never eat dessert first.", "The riding manual says a pony should never eat dessert first.", "They say in the riding manual a pony should never eat dessert first.", "In the riding manual, they all say a pony should never eat dessert first."],
+          answer: 1, trap: 0,
+          why: "Who is “they”? Nobody. Making the manual the subject removes the mystery pronoun.",
+          trapWhy: "Swapping they for it just trades one mystery pronoun for another. The fix is to name the manual." }
+      ]
+    },
+    {
+      id: "nonres", name: "Commas, Dashes, Parentheses",
+      rule: "Extra (nonrestrictive) information that the sentence could live without gets a <b>matching pair</b> of marks around it: two commas (normal voice), two dashes (drama!), or parentheses (a whisper). Information needed to tell <b>which one</b> gets no marks at all.",
+      examples: [
+        ["Commas", "Pewter<b>,</b> the grumpiest horse in the county<b>,</b> refuses to wear a bow."],
+        ["Dashes", "Duchess entered the big race <b>—</b> a race for toddlers on ponies <b>—</b> and called it her comeback."]
+      ],
+      tip: "Read the sentence without the extra part. If it still makes sense, the extra part needs a pair of marks.",
+      write: "Write a sentence about one of the stable characters with an extra detail tucked inside. Choose commas, dashes, or parentheses, and tell your coach why that mark fits the mood.",
+      items: [
+        { type: "Pick the correct sentence", stem: "Which sentence is punctuated correctly?",
+          choices: ["Pickles, the barn cat sleeps on the saddle every afternoon.", "Pickles the barn cat, sleeps on the saddle every afternoon.", "Pickles, the barn cat, sleeps on the saddle every afternoon.", "Pickles, the barn cat sleeps, on the saddle every afternoon."],
+          answer: 2, trap: 0,
+          why: "“The barn cat” is extra information about Pickles, so it needs a comma on both sides.",
+          trapWhy: "Only one comma means the extra part never gets closed off. Commas around extra information come in pairs." },
+        { type: "Fill the blanks", stem: "Duchess finally won a prize ___ a ribbon for “Most Enthusiastic Snort” ___ and has not stopped talking about it.",
+          choices: ["— and —", "— and ,", ", and —", "( and ,"],
+          answer: 0, trap: 1,
+          why: "The marks have to match: dash with dash. The dashes add drama, which a snort ribbon clearly deserves.",
+          trapWhy: "Starting with a dash and ending with a comma is a mismatched pair, like wearing one boot and one sneaker." },
+        { type: "Pick the correct sentence", stem: "Which sentence is punctuated correctly?",
+          choices: ["The horse, that ate my homework, lives in stall four.", "The horse that ate my homework lives in stall four.", "The horse that ate my homework, lives in stall four.", "The horse that, ate my homework lives in stall four."],
+          answer: 1, trap: 0,
+          why: "“That ate my homework” tells us which horse. Without it, we don’t know which horse lives in stall four, so it is needed and gets no commas.",
+          trapWhy: "Commas would mean the detail is extra. But this detail is the whole point: it’s the homework-eating horse." },
+        { type: "Pick the correct sentence", stem: "Which sentence uses parentheses correctly?",
+          choices: ["Pewter (who is twenty-six years old) still bites anyone who sings off-key.", "Pewter (who is twenty-six years old still bites) anyone who sings off-key.", "Pewter (who is twenty-six) years old still bites anyone who sings off-key.", "Pewter who is (twenty-six years old,) still bites anyone who sings off-key."],
+          answer: 0, trap: 2,
+          why: "The parentheses wrap the whole extra detail. Remove it and you get “Pewter still bites anyone who sings off-key.”",
+          trapWhy: "This closes the parentheses too early and leaves “years old” stranded outside. Remove the parentheses part and the sentence falls apart." }
+      ]
+    },
+    {
+      id: "spell", name: "Spelling",
+      rule: "Watch the tricky patterns: <b>i before e, except after c</b> (receive), <b>double the last consonant</b> when a short-vowel word gets -ing or -ed (trot → trotting), <b>drop the silent e</b> before a vowel suffix (ride → riding), and pick the right <b>homophone</b> (their / there / they’re, its / it’s).",
+      examples: [
+        ["Double it", "Duchess was <b>trotting</b> and <b>writing</b> in her diary at the same time. (Impressive.)"],
+        ["Homophones", "<b>It’s</b> clear the barn has lost <b>its</b> last carrot."]
+      ],
+      tip: "For homophones, expand the word: they’re = they are, it’s = it is. If the long version fits, use the apostrophe.",
+      write: "Write a diary sentence about a stable disaster that uses their, there, AND they’re correctly.",
+      items: [
+        { type: "Spelling", stem: "Duchess told everyone she would ___ a gold medal any day now.",
+          choices: ["recieve", "receive", "receeve", "resieve"], answer: 1, trap: 0,
+          why: "After c, the e comes first: c-e-i. Receive, like ceiling.",
+          trapWhy: "“I before e” is the rule most people remember, but they forget the “except after c” part." },
+        { type: "Spelling", stem: "Which sentence has every word spelled correctly?",
+          choices: ["The stable kid was definately embarrassed.", "The stable kid was definitely embarassed.", "The stable kid was definitely embarrassed.", "The stable kid was definitly embarrased."],
+          answer: 2, trap: 1,
+          why: "Definitely has “finite” hiding in it. Embarrassed has double r AND double s (you get so embarrassed you go really red, so seriously).",
+          trapWhy: "Definitely is right here, but embarrassed is missing an r. You have to check every word, not just the first tricky one." },
+        { type: "Homophones", stem: "___ going to be furious when they see that ___ ponies ate the party decorations over ___.",
+          choices: ["Their / they’re / there", "They’re / their / there", "There / their / they’re", "They’re / there / their"],
+          answer: 1, trap: 3,
+          why: "They’re = they are (they are going to be furious). Their = belongs to them (their ponies). There = a place (over there).",
+          trapWhy: "This one starts right, then swaps the last two. “There ponies” and “over their” don’t make sense." }
+      ]
+    },
+    {
+      id: "variety", name: "Sentence Variety",
+      rule: "Good writers <b>mix it up</b>: short sentences and long ones, and different ways to begin (a time word, an -ing phrase, an “although” or “when” clause). Combine choppy sentences so the writing flows.",
+      examples: [
+        ["Choppy", "Pewter woke up. Pewter was grumpy. Pewter ate breakfast."],
+        ["Combined", "<b>Grumpy as usual</b>, Pewter woke up and ate breakfast."]
+      ],
+      tip: "Read the paragraph out loud. If it sounds like a robot (thump, thump, thump), it needs variety.",
+      write: "Write three sentences about a moment in the barn. Make one short, one long, and start one with “When,” “Although,” or an -ing word.",
+      items: [
+        { type: "Combine sentences", stem: "What is the best way to combine these sentences?<span class=\"quote\">Duchess saw the trophy. The trophy was shiny. Duchess galloped toward it.</span>",
+          choices: ["Duchess saw the shiny trophy and galloped toward it.", "Duchess saw the trophy, the trophy was shiny, Duchess galloped toward it.", "Duchess saw the trophy that was shiny, and Duchess galloped toward the trophy.", "The trophy was shiny Duchess saw it and galloped toward it."],
+          answer: 0, trap: 2,
+          why: "It keeps every idea, cuts the repeats, and reads smoothly in one sentence.",
+          trapWhy: "This is correct grammar, but it says Duchess and trophy twice. Combining should make writing tighter, not longer." },
+        { type: "Best revision", stem: "Read this diary entry. Which revision best varies the sentences?<span class=\"quote\">I fed the horses. I swept the barn. I found Pickles in a bucket. I laughed.</span>",
+          choices: ["After I fed the horses and swept the barn, I found Pickles curled up in a bucket — and I could not stop laughing.", "I fed the horses, and I swept the barn, and I found Pickles in a bucket, and I laughed.", "I fed. I swept. I found. I laughed.", "Fed the horses. Swept the barn. Found Pickles in a bucket. Laughed."],
+          answer: 0, trap: 1,
+          why: "It opens with a time clause, joins related actions, and ends with a dash for the funny part. Different shapes, same events.",
+          trapWhy: "It’s one sentence now, but “and... and... and” is just as repetitive as the choppy version." },
+        { type: "Identify", stem: "Which sentence begins with a dependent clause (a part that can’t stand alone)?",
+          choices: ["Although Pewter pretends to hate everyone, he lets the barn cat nap on his back.", "Pewter pretends to hate everyone, but he lets the barn cat nap on his back.", "Pretending to hate everyone, Pewter lets the barn cat nap on his back.", "Pewter, a famous grump, lets the barn cat nap on his back."],
+          answer: 0, trap: 2,
+          why: "“Although Pewter pretends to hate everyone” has a subject and verb but can’t stand alone. It needs the rest of the sentence.",
+          trapWhy: "“Pretending to hate everyone” is a phrase, not a clause. It has no subject doing the pretending inside it." }
+      ]
+    },
+    {
+      id: "tone", name: "Style and Tone",
+      rule: "Match your words to your <b>audience and purpose</b>, and keep the same tone all the way through. A diary can be chatty. A sign, report, or letter to a judge should sound <b>formal</b>: no slang, no “lol.”",
+      examples: [
+        ["Formal", "Each pony receives two measured scoops of grain per day."],
+        ["Informal", "Duchess is <b>totally</b> obsessed with snacks. Like, obsessed."]
+      ],
+      tip: "Imagine who is reading. Would you say it that way to them in person?",
+      write: "Write the same news two ways: “Duchess lost the race.” Once as a chatty diary entry, once as a formal note to the race judges.",
+      items: [
+        { type: "Best sentence", stem: "A sign for stable visitors reads: “Please do not feed the horses. Some horses follow special diets.” Which sentence best continues the sign’s tone?",
+          choices: ["Seriously, don’t even think about it.", "Thank you for helping keep our horses healthy.", "Pewter will literally eat your sandwich, lol.", "Whatever, it’s your funeral."],
+          answer: 1, trap: 2,
+          why: "The sign is polite and formal. This sentence keeps that same calm, respectful voice.",
+          trapWhy: "It is funny and probably true, but slang like “literally” and “lol” doesn’t belong on an official sign." },
+        { type: "Find the shift", stem: "Read this part of a report.<span class=\"quote\">(1) Horses need fresh water every day. (2) An adult horse can drink up to ten gallons. (3) That is a TON of water, which is kind of wild.</span>Which sentence breaks the formal tone?",
+          choices: ["Sentence 1", "Sentence 2", "Sentence 3", "All three sentences match."],
+          answer: 2, trap: 3,
+          why: "“A TON” and “kind of wild” are chatty. A report would say something like “That is a large amount of water.”",
+          trapWhy: "The facts all match, but tone is about how it sounds, not just what it says. Sentence 3 suddenly sounds like texting." },
+        { type: "Best revision", stem: "In a formal letter to the county fair judges, which is the best way to write “Our pony was super bummed she didn’t win”?",
+          choices: ["Our pony was disappointed that she did not win.", "Our pony was totally crushed, no joke.", "Our pony was sad, ugh.", "Our pony was majorly bummed out."],
+          answer: 0, trap: 1,
+          why: "“Disappointed” is clear and respectful, and “did not” is more formal than “didn’t.”",
+          trapWhy: "“Crushed” is a strong word, but “totally” and “no joke” are slang that doesn’t fit a letter to judges." }
+      ]
+    },
+    {
+      id: "context", name: "Context Clues",
+      rule: "When you meet a hard word, look <b>around</b> it. Clues can be a <b>definition</b>, a <b>synonym</b>, an <b>opposite</b> (signal words: but, unlike, however), or <b>examples</b>.",
+      examples: [
+        ["Opposite clue", "Pewter is usually <b>taciturn</b>, but today he whinnied nonstop. (Taciturn = quiet.)"],
+        ["Example clue", "Duchess is so <b>ostentatious</b> — glitter, three bows, and a cape — that the other ponies squint. (Ostentatious = showy.)"]
+      ],
+      tip: "Cover the hard word, guess a simple word that fits, then check the choices.",
+      write: "Write a sentence about a stable animal that uses a hard word AND gives a clue to its meaning. See if your coach can figure out the word from your clue.",
+      items: [
+        { type: "Word meaning", stem: "Pickles is usually <b>lethargic</b>, dozing in the sun all day, but when a mouse appeared she sprang into action. What does <b>lethargic</b> mean?",
+          choices: ["sluggish and sleepy", "fierce and fast", "curious and nosy", "hungry and grumpy"],
+          answer: 0, trap: 1,
+          why: "“Dozing in the sun all day” is the example clue, and “but... sprang into action” shows the opposite.",
+          trapWhy: "Fierce and fast describes her after the mouse appears. The word “but” tells you lethargic is the opposite of that." },
+        { type: "Word meaning", stem: "The judge was <b>skeptical</b> when Duchess claimed to have won a famous race; he raised one eyebrow and asked to see proof. What does <b>skeptical</b> mean?",
+          choices: ["delighted", "doubtful", "frightened", "bored"],
+          answer: 1, trap: 3,
+          why: "Raising an eyebrow and asking for proof are what you do when you don’t believe something.",
+          trapWhy: "A bored judge wouldn’t bother asking for proof. The clue shows he cared enough to question her." },
+        { type: "Word meaning", stem: "Old Pewter is famously <b>cantankerous</b>: he grumbles at the sunrise, snaps at flies, and glares at anyone who whistles. What does <b>cantankerous</b> mean?",
+          choices: ["very old", "bad-tempered", "sleepy", "musical"],
+          answer: 1, trap: 0,
+          why: "Grumbling, snapping, and glaring are all examples of a bad temper.",
+          trapWhy: "The sentence says he is old, but “old” is a separate word. The examples after the colon describe his mood, not his age." }
+      ]
+    },
+    {
+      id: "roots", name: "Greek and Latin Roots",
+      rule: "Many big words are built from small <b>Greek and Latin parts</b>. Know the parts and you can crack the word. A few to keep: <b>chron</b> = time, <b>mal</b> = bad, <b>bene</b> = good, <b>aud</b> = hear, <b>dict</b> = say, <b>pre-</b> = before, <b>-ible/-able</b> = can be.",
+      examples: [
+        ["Break it apart", "Duchess is writing her <b>auto·bio·graphy</b> (self + life + write): 400 pages about herself."],
+        ["Break it apart", "Pickles is <b>noct·urnal</b> (night): she prowls the barn while everyone sleeps."]
+      ],
+      tip: "Split the word into parts, define each part, then put the meanings back together.",
+      write: "Invent a new word for something that happens at the stable using a Greek or Latin part (for example, “carrot-ology”). Write its meaning and use it in a sentence.",
+      items: [
+        { type: "Roots", stem: "The root <b>chron</b> means time. The stable kid wrote her diary entries in ___ order, from Monday to Sunday.",
+          choices: ["chronological", "geographical", "biological", "autographic"],
+          answer: 0, trap: 3,
+          why: "Chron (time) + logical: in the order things happened in time.",
+          trapWhy: "Autographic has “graph” (write), which sounds diary-ish, but it has nothing to do with time order." },
+        { type: "Roots", stem: "Pewter gave the leaf blower a <b>malevolent</b> stare. The prefix <b>mal</b> means bad. What does <b>malevolent</b> mean?",
+          choices: ["wishing harm", "kind and gentle", "sleepy", "confused"],
+          answer: 0, trap: 3,
+          why: "Mal = bad, vol = wish. A malevolent stare wishes something bad on the leaf blower. Pewter holds grudges.",
+          trapWhy: "Confused doesn’t connect to “bad.” Use the root: mal points to something negative and meant on purpose." },
+        { type: "Roots", stem: "Pickles’s purr was barely <b>audible</b> over the rain on the barn roof. What does <b>audible</b> mean?",
+          choices: ["able to be seen", "able to be heard", "very loud", "soft to the touch"],
+          answer: 1, trap: 2,
+          why: "Aud = hear (like audio and audience), and -ible = able to be. Audible = able to be heard.",
+          trapWhy: "Audible connects to hearing, but “barely audible” tells you the purr was quiet, not loud." },
+        { type: "Roots", stem: "Duchess claims she can <b>predict</b> the winner of every race. Using <b>pre-</b> (before) and <b>dict</b> (say), what does <b>predict</b> mean?",
+          choices: ["to say again", "to say before it happens", "to say quietly", "to say something wrong"],
+          answer: 1, trap: 0,
+          why: "Pre (before) + dict (say) = to say before. She says who will win before the race. She is usually wrong.",
+          trapWhy: "“Again” is the prefix re-, as in repeat. Pre- means before." }
+      ]
+    },
+    {
+      id: "fig", name: "Figurative Language",
+      rule: "Figurative language means <b>more than the words say</b>. A <b>simile</b> compares with like or as; a <b>metaphor</b> says one thing <i>is</i> another; <b>personification</b> gives human actions to things; <b>hyperbole</b> is a huge exaggeration; an <b>idiom</b> is a saying with a hidden meaning.",
+      examples: [
+        ["Metaphor", "Pewter’s mood was <b>a thundercloud parked over the barn</b>."],
+        ["Hyperbole", "Duchess has told the story of her ‘win’ <b>a million times</b>."]
+      ],
+      tip: "Ask: what does the writer really mean, and what feeling does the comparison give?",
+      write: "Write a simile or metaphor that describes Duchess, Pewter, or Pickles. Tell your coach what it shows about the character.",
+      items: [
+        { type: "Identify", stem: "“The wind whispered secrets through the barn rafters.” What kind of figurative language is this?",
+          choices: ["simile", "personification", "hyperbole", "idiom"],
+          answer: 1, trap: 0,
+          why: "Wind can’t really whisper or keep secrets. Giving it human actions is personification.",
+          trapWhy: "A simile needs “like” or “as.” There is no comparison word here." },
+        { type: "What does it mean", stem: "When the farrier arrived to trim his hooves, Pewter <b>dug in his heels</b>. What does the idiom mean?",
+          choices: ["He pressed his hooves into the dirt.", "He refused to cooperate.", "He ran away as fast as he could.", "He kicked the farrier."],
+          answer: 1, trap: 0,
+          why: "“Dig in your heels” means to stubbornly refuse to change. Very Pewter.",
+          trapWhy: "A horse really could press his hooves into dirt, which makes this a sneaky trap. But idioms mean something beyond the literal words." },
+        { type: "What does it mean", stem: "“Duchess’s pride is a hot-air balloon that swells every time someone says ‘good pony.’” What does this metaphor suggest?",
+          choices: ["Duchess is afraid of heights.", "Duchess’s pride grows whenever she is praised.", "Duchess wants to fly.", "Duchess gets angry when people praise her."],
+          answer: 1, trap: 2,
+          why: "A balloon swells with air; her pride swells with compliments. The comparison is about growing bigger.",
+          trapWhy: "Balloons fly, but the metaphor is about pride, not travel. Look for what is being compared: pride and swelling." }
+      ]
+    },
+    {
+      id: "relate", name: "Word Relationships",
+      rule: "An <b>analogy</b> (A : B :: C : D) means “A is to B as C is to D.” Find how the first pair is related (opposites, part to whole, young to adult, home of...), say it as a sentence, then make the second pair match.",
+      examples: [
+        ["Young to adult", "foal : horse :: kitten : cat (A foal is a young horse; a kitten is a young cat.)"],
+        ["Part to whole", "hoof : horse :: paw : cat (A hoof is part of a horse; a paw is part of a cat.)"]
+      ],
+      tip: "Make a bridge sentence: “A ___ is ___ of a ___.” Then test each choice in the same sentence.",
+      write: "Make your own analogy using stable words (for example, saddle : horse :: ___ : ___). Explain the relationship to your coach.",
+      items: [
+        { type: "Analogy", stem: "mane : horse :: whiskers : ___",
+          choices: ["cat", "brush", "purr", "barn"],
+          answer: 0, trap: 2,
+          why: "A mane is part of a horse. Whiskers are part of a cat. Part to whole.",
+          trapWhy: "Purr goes with a cat, but it is a sound the cat makes, not the animal the whiskers belong to." },
+        { type: "Analogy", stem: "timid : bold :: grumpy : ___",
+          choices: ["cranky", "cheerful", "old", "gray"],
+          answer: 1, trap: 0,
+          why: "Timid and bold are opposites. The opposite of grumpy is cheerful.",
+          trapWhy: "Cranky means the same as grumpy. The first pair is opposites, so the second pair has to be opposites too." },
+        { type: "Analogy", stem: "stable : horse :: ___ : bird",
+          choices: ["feather", "nest", "sky", "worm"],
+          answer: 1, trap: 2,
+          why: "A stable is the home of a horse. A nest is the home of a bird.",
+          trapWhy: "Birds fly in the sky, but the sky is not a bird’s home the way a stable is a horse’s home." }
+      ]
+    },
+    {
+      id: "conn", name: "Connotation and Denotation",
+      rule: "<b>Denotation</b> is a word’s dictionary meaning. <b>Connotation</b> is the <b>feeling</b> it carries: positive, negative, or neutral. Two words can mean almost the same thing but feel very different.",
+      examples: [
+        ["Positive", "Duchess is <b>confident</b> about her racing career."],
+        ["Negative", "Duchess is <b>arrogant</b> about her racing career. (Same idea, much meaner feeling.)"]
+      ],
+      tip: "Ask: would the character be happy or upset to be described with this word?",
+      write: "Describe Pewter twice: once with words that make him sound lovable, once with words that make him sound awful. Same facts, different feelings.",
+      items: [
+        { type: "Connotation", stem: "The stable kid adores Pewter and writes: “Pewter is ___ and never gives up.” Which word has the most positive connotation?",
+          choices: ["stubborn", "pig-headed", "determined", "mulish"],
+          answer: 2, trap: 0,
+          why: "All four mean “won’t change his mind,” but determined makes it sound like a strength.",
+          trapWhy: "Stubborn is close in meaning, but it usually sounds like a complaint, not a compliment." },
+        { type: "Connotation", stem: "Which sentence makes the tack room sound the MOST unpleasant?",
+          choices: ["The tack room smelled of old leather.", "The tack room reeked of old leather.", "The tack room had the aroma of old leather.", "The tack room carried a hint of old leather."],
+          answer: 1, trap: 0,
+          why: "Reeked means smelled strongly and badly. It carries a negative feeling.",
+          trapWhy: "Smelled is neutral. It tells you there was a smell but not whether it was nice or awful." },
+        { type: "Connotation", stem: "<b>Slender</b> and <b>scrawny</b> both mean thin. How are they different?",
+          choices: ["They have different denotations.", "Slender sounds positive; scrawny sounds negative.", "Scrawny sounds positive; slender sounds negative.", "There is no difference at all."],
+          answer: 1, trap: 0,
+          why: "The dictionary meaning (thin) is the same. The feeling is different: slender sounds graceful, scrawny sounds weak or underfed.",
+          trapWhy: "Their denotations (dictionary meanings) are the same. The difference is in connotation, the feeling." },
+        { type: "Connotation", stem: "Duchess is writing her own biography and wants to sound impressive. Which word should she use to describe how she eats?",
+          choices: ["She eats daintily.", "She eats greedily.", "She gobbles.", "She devours everything in sight."],
+          answer: 0, trap: 3,
+          why: "Daintily sounds elegant and careful, exactly the image a would-be champion wants.",
+          trapWhy: "“Devours everything in sight” is more honest about Duchess, but it sounds greedy, not impressive." }
+      ]
+    }
+  ];
+
+  var STORE_KEY = "stable-talk-v1";
+  /* Spread the right answers across A-D (fixed order per question, so the coach and the student see the same thing). */
+  (function(){var n=0;ROUNDS.forEach(function(r){r.items.forEach(function(q){n++;var seed=n*9301+49297;function rnd(){seed=(seed*9301+49297)%233280;return seed/233280;}var idx=q.choices.map(function(_,k){return k;});for(var j=idx.length-1;j>0;j--){var m=Math.floor(rnd()*(j+1));var t=idx[j];idx[j]=idx[m];idx[m]=t;}q.choices=idx.map(function(k){return q.choices[k];});q.answer=idx.indexOf(q.answer);if(typeof q.trap==="number")q.trap=idx.indexOf(q.trap);});});})();
+  var LETTERS = ["A", "B", "C", "D"];
+  var state = load();
+  var app = document.getElementById("app");
+
+  function load() {
+    var blank = { results: {}, writes: {} };
+    try {
+      var raw = window.localStorage.getItem(STORE_KEY);
+      if (!raw) return blank;
+      var data = JSON.parse(raw);
+      if (!data || typeof data !== "object") return blank;
+      data.results = data.results || {};
+      data.writes = data.writes || {};
+      return data;
+    } catch (e) { return blank; }
+  }
+  function save() {
+    try { window.localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+  }
+  function key(r, i) { return ROUNDS[r].id + ":" + i; }
+  function totalShoes() {
+    var n = 0;
+    Object.keys(state.results).forEach(function (k) { if (state.results[k] === true) n++; });
+    return n;
+  }
+  function roundShoes(r) {
+    var n = 0;
+    ROUNDS[r].items.forEach(function (_, i) { if (state.results[key(r, i)] === true) n++; });
+    return n;
+  }
+  function roundAnswered(r) {
+    var n = 0;
+    ROUNDS[r].items.forEach(function (_, i) { if (typeof state.results[key(r, i)] === "boolean") n++; });
+    return n;
+  }
+  function totalItems() {
+    return ROUNDS.reduce(function (s, r) { return s + r.items.length; }, 0);
+  }
+  function updateTally() { document.getElementById("tally").textContent = totalShoes() + " / " + totalItems(); }
+
+  function el(tag, cls, html) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html !== undefined) e.innerHTML = html;
+    return e;
+  }
+  function shoeSvg(extra) {
+    return '<svg class="shoe' + (extra ? " " + extra : "") + '" aria-hidden="true"><use href="#hs"/></svg>';
+  }
+  function top() { try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (e) { window.scrollTo(0, 0); } }
+
+  /* ---------- Home ---------- */
+  function renderHome() {
+    app.innerHTML = "";
+    var intro = el("section", "card");
+    intro.innerHTML =
+      '<div class="eyebrow">Welcome to the barn</div>' +
+      '<h2 style="font-size:28px;color:var(--ink)">Grammar, but make it horses.</h2>' +
+      '<p style="margin:10px 0 0">Pick a round. Each one starts with a quick <b>Learn it</b> card, then practice questions like the ones on a real Language test. Every right answer earns a horseshoe.</p>' +
+      '<div class="cast">' +
+        '<div><b>Duchess</b>A small, round pony who is certain she is a champion racehorse. She is not.</div>' +
+        '<div><b>Pewter</b>A grumpy old gray horse. Hates whistling, leaf blowers, and joy.</div>' +
+        '<div><b>Pickles</b>The barn cat. Sleeps on saddles. Answers to no one.</div>' +
+        '<div><b>The Stable Kid</b>Keeps a diary of everything that goes wrong at the barn. It is a long diary.</div>' +
+      '</div>';
+    app.appendChild(intro);
+
+    var menu = el("section", "menu");
+    ROUNDS.forEach(function (r, idx) {
+      var b = el("button", "round-btn");
+      var answered = roundAnswered(idx);
+      if (answered === r.items.length) b.classList.add("done");
+      b.type = "button";
+      b.innerHTML =
+        '<span class="num">Round ' + (idx + 1) + '</span>' +
+        '<span class="name">' + r.name + '</span>' +
+        '<span class="meta">' + shoeSvg() + roundShoes(idx) + ' of ' + r.items.length +
+        (answered > 0 && answered < r.items.length ? ' &middot; in progress' : '') +
+        (answered === r.items.length ? ' &middot; done' : '') + '</span>';
+      b.addEventListener("click", function () { renderLearn(idx); });
+      menu.appendChild(b);
+    });
+    app.appendChild(menu);
+
+    var resetRow = el("div", "row");
+    var spacer = el("div", "spacer");
+    var resetAll = el("button", "btn secondary", "Clear all progress");
+    resetAll.type = "button";
+    var armed = false;
+    resetAll.addEventListener("click", function () {
+      if (!armed) { armed = true; resetAll.textContent = "Tap again to clear everything"; return; }
+      state = { results: {}, writes: {} }; save(); updateTally(); renderHome();
+    });
+    resetRow.appendChild(spacer); resetRow.appendChild(resetAll);
+    app.appendChild(resetRow);
+    updateTally();
+  }
+
+  /* ---------- Learn ---------- */
+  function renderLearn(r) {
+    var R = ROUNDS[r];
+    app.innerHTML = "";
+    var c = el("section", "card");
+    var html = '<div class="eyebrow">Round ' + (r + 1) + ' &middot; Learn it</div>' +
+      '<h2 style="font-size:30px;color:var(--ink)">' + R.name + '</h2>' +
+      '<div class="rule">' + R.rule + '</div>';
+    R.examples.forEach(function (ex) {
+      html += '<div class="example"><span class="tag">' + ex[0] + '</span>' + ex[1] + '</div>';
+    });
+    html += '<p class="tip"><b>Tip:</b> ' + R.tip + '</p>';
+    c.innerHTML = html;
+    var row = el("div", "row");
+    var back = el("button", "btn secondary", "Back to the barn"); back.type = "button";
+    back.addEventListener("click", renderHome);
+    var go = el("button", "btn", "Start practice"); go.type = "button";
+    go.addEventListener("click", function () { renderItem(r, firstOpen(r)); });
+    row.appendChild(back); row.appendChild(el("div", "spacer")); row.appendChild(go);
+    if (roundAnswered(r) > 0) {
+      var redo = el("button", "btn secondary", "Redo round"); redo.type = "button";
+      redo.addEventListener("click", function () {
+        ROUNDS[r].items.forEach(function (_, i) { delete state.results[key(r, i)]; });
+        save(); updateTally(); renderItem(r, 0);
+      });
+      row.insertBefore(redo, go);
+    }
+    c.appendChild(row);
+    app.appendChild(c);
+    top();
+  }
+  function firstOpen(r) {
+    for (var i = 0; i < ROUNDS[r].items.length; i++) {
+      if (typeof state.results[key(r, i)] !== "boolean") return i;
+    }
+    return 0;
+  }
+
+  /* ---------- Practice item ---------- */
+  function renderItem(r, i) {
+    var R = ROUNDS[r], Q = R.items[i];
+    var picked = null, stage = "pick";
+    app.innerHTML = "";
+    var c = el("section", "card");
+
+    var prog = el("div", "progress");
+    R.items.forEach(function (_, j) {
+      var d = el("span", "dot");
+      var res = state.results[key(r, j)];
+      if (j === i) d.classList.add("now");
+      else if (res === true) d.classList.add("right");
+      else if (res === false) d.classList.add("wrong");
+      prog.appendChild(d);
+    });
+    c.appendChild(prog);
+    c.appendChild(el("div", "eyebrow", "Round " + (r + 1) + " &middot; " + R.name + " &middot; Question " + (i + 1) + " of " + R.items.length));
+    c.appendChild(el("span", "qtype", Q.type));
+    c.appendChild(el("p", "stem", Q.stem));
+
+    var list = el("div", "choices");
+    var btns = Q.choices.map(function (txt, k) {
+      var b = el("button", "choice");
+      b.type = "button";
+      b.innerHTML = '<span class="letter">' + LETTERS[k] + '</span><span></span>';
+      b.lastChild.textContent = txt;
+      b.addEventListener("click", function () {
+        if (stage === "revealed") return;
+        picked = k;
+        btns.forEach(function (x, m) { x.classList.toggle("picked", m === k); });
+        thinkBtn.disabled = false;
+      });
+      list.appendChild(b);
+      return b;
+    });
+    c.appendChild(list);
+
+    var area = el("div");
+    c.appendChild(area);
+
+    var row = el("div", "row");
+    var menuBtn = el("button", "btn secondary", "Menu"); menuBtn.type = "button";
+    menuBtn.addEventListener("click", renderHome);
+    var thinkBtn = el("button", "btn think", "Show me your thinking"); thinkBtn.type = "button";
+    thinkBtn.disabled = true;
+    var revealBtn = el("button", "btn reveal", "Reveal"); revealBtn.type = "button";
+    revealBtn.style.display = "none";
+    var nextBtn = el("button", "btn", "Next"); nextBtn.type = "button";
+    nextBtn.style.display = "none";
+    row.appendChild(menuBtn); row.appendChild(el("div", "spacer"));
+    row.appendChild(thinkBtn); row.appendChild(revealBtn); row.appendChild(nextBtn);
+    c.appendChild(row);
+
+    thinkBtn.addEventListener("click", function () {
+      stage = "thinking";
+      area.innerHTML =
+        '<div class="thinking"><h3>Show me your thinking</h3>' +
+        '<p style="margin:0">Say it out loud to your coach before anyone presses Reveal:</p>' +
+        '<ul><li>Why did you pick <b>' + LETTERS[picked] + '</b>?</li>' +
+        '<li>Which word or mark in the sentence gave you the clue?</li>' +
+        '<li>Pick one other choice and tell why it is wrong.</li></ul>' +
+        '<p class="hint" style="margin:8px 0 0">Changed your mind while explaining? Tap a different answer. That is good thinking, not cheating.</p></div>';
+      thinkBtn.style.display = "none";
+      revealBtn.style.display = "";
+    });
+
+    revealBtn.addEventListener("click", function () {
+      if (picked === null) return;
+      stage = "revealed";
+      var right = picked === Q.answer;
+      state.results[key(r, i)] = right; save(); updateTally();
+      btns.forEach(function (b, k) {
+        b.disabled = true;
+        b.classList.remove("picked");
+        if (k === Q.answer) b.classList.add("correct");
+        else if (k === picked) b.classList.add("miss");
+      });
+      var trapIdx = (!right) ? picked : Q.trap;
+      var trapLabel = (!right && picked === Q.trap) ? "The trap you stepped in (" + LETTERS[Q.trap] + ")"
+        : (!right ? "Why " + LETTERS[picked] + " doesn’t work" : "The trap: " + LETTERS[Q.trap]);
+      var trapText = (trapIdx === Q.trap) ? Q.trapWhy
+        : "Try it in the sentence and compare it with " + LETTERS[Q.answer] + ". " + Q.why.split(". ")[0] + ".";
+      area.innerHTML =
+        '<div class="verdict ' + (right ? "good" : "bad") + '">' +
+        '<h3>' + (right ? shoeSvg() + " Horseshoe earned!" : "Not this time. " + LETTERS[Q.answer] + " is the one.") + '</h3>' +
+        '<p><span class="lbl">Why ' + LETTERS[Q.answer] + ' is right:</span> ' + Q.why + '</p>' +
+        '<p><span class="lbl">' + trapLabel + ':</span> ' + trapText + '</p></div>';
+      revealBtn.style.display = "none";
+      nextBtn.style.display = "";
+      nextBtn.focus();
+    });
+
+    nextBtn.addEventListener("click", function () {
+      for (var j = i + 1; j < R.items.length; j++) {
+        if (state.results[key(r, j)] !== true) { renderItem(r, j); return; }
+      }
+      renderWrite(r);
+    });
+
+    app.appendChild(c);
+    top();
+  }
+
+  /* ---------- Say it your way ---------- */
+  function renderWrite(r) {
+    var R = ROUNDS[r];
+    app.innerHTML = "";
+    var c = el("section", "card");
+    c.innerHTML = '<div class="eyebrow">Round ' + (r + 1) + ' &middot; Say it your way</div>' +
+      '<h2 style="font-size:28px;color:var(--ink)">Your turn to write</h2>' +
+      '<p style="margin:10px 0 14px">' + R.write + '</p>';
+    var box = el("div", "diary");
+    var ta = el("textarea");
+    ta.setAttribute("aria-label", "Your sentence");
+    ta.placeholder = "Dear Diary, today at the barn...";
+    ta.value = state.writes[R.id] || "";
+    var t = null;
+    ta.addEventListener("input", function () {
+      clearTimeout(t);
+      t = setTimeout(function () { state.writes[R.id] = ta.value; save(); }, 300);
+    });
+    box.appendChild(ta);
+    c.appendChild(box);
+    c.appendChild(el("p", "hint", "Coach: ask her to point to the exact word or mark that shows the skill."));
+    var row = el("div", "row");
+    var back = el("button", "btn secondary", "Back to question 1"); back.type = "button";
+    back.addEventListener("click", function () { renderItem(r, 0); });
+    var done = el("button", "btn", "Finish round"); done.type = "button";
+    done.addEventListener("click", function () { state.writes[R.id] = ta.value; save(); renderDone(r); });
+    row.appendChild(back); row.appendChild(el("div", "spacer")); row.appendChild(done);
+    c.appendChild(row);
+    app.appendChild(c);
+    top();
+    try { ta.focus(); } catch (e) { /* ignore */ }
+  }
+
+  /* ---------- Round done ---------- */
+  var CHEERS = [
+    "Pewter almost smiled. Almost.",
+    "Duchess is calling it a world record.",
+    "Pickles opened one eye. That is basically applause.",
+    "The stable kid is writing this in the diary right now."
+  ];
+  function renderDone(r) {
+    var R = ROUNDS[r];
+    var got = roundShoes(r);
+    app.innerHTML = "";
+    var c = el("section", "card");
+    var shoes = "";
+    for (var k = 0; k < R.items.length; k++) shoes += shoeSvg(k < got ? "" : "empty");
+    c.innerHTML = '<div class="eyebrow">Round ' + (r + 1) + ' complete</div>' +
+      '<h2 style="font-size:30px;color:var(--ink)">' + R.name + '</h2>' +
+      '<div class="big-shoes">' + shoes + '</div>' +
+      '<p style="font-size:24px;margin:6px 0">' + got + ' of ' + R.items.length + ' horseshoes</p>' +
+      '<p style="margin:6px 0 0;color:var(--ink-soft)">' + CHEERS[(r + got) % CHEERS.length] + '</p>';
+    var row = el("div", "row");
+    var home = el("button", "btn secondary", "Back to the barn"); home.type = "button";
+    home.addEventListener("click", renderHome);
+    row.appendChild(home); row.appendChild(el("div", "spacer"));
+    if (got < R.items.length) {
+      var again = el("button", "btn secondary", "Try the misses again"); again.type = "button";
+      again.addEventListener("click", function () {
+        var first = -1;
+        R.items.forEach(function (_, i) {
+          if (state.results[key(r, i)] !== true) { delete state.results[key(r, i)]; if (first < 0) first = i; }
+        });
+        save(); updateTally(); renderItem(r, first < 0 ? 0 : first);
+      });
+      row.appendChild(again);
+    }
+    if (r + 1 < ROUNDS.length) {
+      var next = el("button", "btn", "Next round"); next.type = "button";
+      next.addEventListener("click", function () { renderLearn(r + 1); });
+      row.appendChild(next);
+    }
+    c.appendChild(row);
+    app.appendChild(c);
+    top();
+  }
+
+  var home = document.getElementById("homeLink");
+  home.addEventListener("click", renderHome);
+  home.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); renderHome(); } });
+
+  renderHome();
+})();
+</script>
+</body>
+</html>
