@@ -54,7 +54,7 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset
   <section class="how" aria-label="How it works">
     <div><b>1</b>Tap a time</div>
     <div><b>2</b>Tap what you need</div>
-    <div><b>3</b>Tap the green button</div>
+    <div><b>3</b>Tap Copy</div>
     <div><b>4</b>Paste it in your chat with Monique and send</div>
   </section>
 
@@ -125,12 +125,13 @@ function renderBook(){
   if(!pick){ w.hidden=true; return; }
   w.hidden=false;
   var h='<h2>✅ '+esc(label(pick))+'</h2><p>What do you need?</p><div class="needs">'+NEEDS.map(function(n){return '<button type="button" class="need" aria-pressed="'+(n===need)+'">'+esc(n)+'</button>';}).join("")+'</div>';
-  h+='<div class="msg" id="msg">'+esc(message())+'</div><div class="row"><a class="btn" id="copy" href="https://chat.google.com" target="_blank" rel="noopener">Copy and open my chat</a></div><p class="small">Paste it in your chat with Monique and send. She will write back when your time is saved. 👍</p>';
+  h+='<div class="msg" id="msg">'+esc(message())+'</div><div class="row"><button type="button" class="btn" id="copy">📋 Copy</button></div><p>Now paste it in your chat with Monique and send. She will write back when your time is saved. 👍</p><p class="small">Chat not open? <a href="https://chat.google.com" target="_blank" rel="noopener">Open Google Chat</a></p>';
   w.innerHTML=h;
   Array.prototype.forEach.call(w.querySelectorAll(".need"),function(b){ b.addEventListener("click",function(){ need=b.textContent; renderBook(); }); });
   var c=$("copy"); if(c) c.addEventListener("click",function(){
     var t=message();
-    try{ navigator.clipboard.writeText(t).then(function(){c.textContent="Copied! Now paste it in your chat";}).catch(function(){}); }catch(e){}
+    function sel(){ var r=document.createRange(); r.selectNodeContents($("msg")); var g=getSelection(); g.removeAllRanges(); g.addRange(r); c.textContent="Press Ctrl+C (or ⌘+C) to copy"; }
+    try{ navigator.clipboard.writeText(t).then(function(){c.textContent="✅ Copied! Paste it in your chat";}).catch(sel); }catch(e){ sel(); }
   });
 }
 function message(){ return "Hi Monique! I'd like a reading drop-in on "+label(pick)+"."+(need?" I need: "+need+".":""); }
