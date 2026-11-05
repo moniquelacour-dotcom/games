@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Readers Theater</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&family=Baloo+2:wght@700;800&display=swap">
+<style>
+/* Readers Theater: "The Spell That Went Sideways". Original script, Grade 3.1 (Flesch-Kincaid). Silent. No names. */
+:root{--bg:#f6f3fb;--card:#fff;--ink:#221f33;--muted:#615b78;--line:#e1dcef;--plum:#6b3fa0;--plum-soft:#efe6fa;--hi:#fff3b0;
+  --stop:#d33b3b;--up:#2f6fd6;--zap:#e07b00;--pause:#2e8a5c;--trail:#7b4fc9;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;--body:"Lexend","Segoe UI",Arial,sans-serif}
+@media (prefers-color-scheme: dark){:root{--bg:#15131d;--card:#201c2c;--ink:#ece9f6;--muted:#a9a3bf;--line:#342e45;--plum:#c3a2ef;--plum-soft:#2d2340;--hi:#4a4220;
+  --stop:#ff7a7a;--up:#7fb0ff;--zap:#ffb453;--pause:#7fd6a8;--trail:#c4a6ff;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:20px/1.55 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 56px}
+main{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-size:2.2rem;margin:0;line-height:1.1;color:var(--plum)}
+p{margin:0}.small{font-size:.9rem;color:var(--muted)}
+.parts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.part{font:inherit;text-align:left;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:16px;padding:10px 12px;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.part b{font-size:1rem}.part small{color:var(--muted);font-size:.8rem;line-height:1.3}
+.part[aria-pressed="true"]{border-color:var(--plum);background:var(--plum-soft)}
+.script{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.line{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;padding:8px 10px;border-radius:12px;transition:opacity .2s}
+.line .who{font-weight:700;font-size:.85rem;color:var(--muted);white-space:nowrap}
+.line.mine{background:var(--hi)}
+.line.mine .who{color:var(--ink)}
+.dim .line:not(.mine){opacity:.45}
+.m{font-weight:800}
+.m.stop{color:var(--stop)}.m.up{color:var(--up)}.m.zap{color:var(--zap)}.m.pause{color:var(--pause)}.m.trail{color:var(--trail)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{font:inherit;font-weight:700;border-radius:999px;padding:8px 16px;cursor:pointer;border:2px solid var(--plum);background:none;color:var(--plum)}
+button:focus-visible{outline:3px solid var(--zap);outline-offset:2px}
+@media (max-width:480px){.line{grid-template-columns:1fr;gap:2px}}
+</style>
+</head>
+<body>
+<main>
+  <header style="display:flex;flex-direction:column;gap:6px">
+    <h1>🎭 The Spell That Went Sideways</h1>
+    <p>A Readers Theater play. Pick your part. Your lines light up yellow. Read them with the feeling your character has!</p>
+    <p class="small">Signs in color: <span class="m stop">.</span> stop · <span class="m up">?</span> voice up · <span class="m zap">!</span> excited · <span class="m pause">,</span> tiny pause · <span class="m trail">...</span> trail off</p>
+  </header>
+  <section class="parts" id="parts" role="group" aria-label="Pick your parts"></section>
+  <div class="row"><button type="button" class="btn" id="clear">Clear my parts</button><span class="small">Tap more than one part if there are only a few readers.</span></div>
+  <section class="script" id="script"></section>
+</main>
+<script>
+(function(){
+"use strict";
+var D={"PARTS":{"N":{"name":"Narrator","icon":"📖","tip":"Clear and steady. You set the scene."},"F":{"name":"Professor Fern","icon":"🧙‍♀️","tip":"Strict and crisp. Firm voice, never shouting."},"P":{"name":"Pip","icon":"😟","tip":"Nervous and wobbly. Your sentences trail off..."},"R":{"name":"Rosa","icon":"📚","tip":"Fast and sure of herself. A little bossy!"},"T":{"name":"Toad","icon":"🐸","tip":"Grumpy and croaky. You are NOT happy about this."}},"SCRIPT":[["N","Every Monday morning, the first-year students practiced their spells in the old stone classroom at the very top of the castle tower."],["F","Wands out, everyone, and please pay attention. Today we are learning the floating spell, which is much harder than it looks."],["R","I already know that one! You flick your wand quickly, and then you whisper the magic words very carefully."],["F","Thank you, Rosa. Pip, would you like to try it first, in front of the whole class?"],["P","Me? Um... I guess I could try, if nobody else wants to..."],["N","Pip pointed his wand at an enormous green toad that was sitting on the teacher's wooden desk. His hand was shaking nervously."],["P","Float... please, please float..."],["N","Suddenly, there was a loud POP and a puff of bright purple smoke! The toad did not float at all. Instead, it started talking."],["T","Excuse me! Who exactly turned me purple without asking permission?"],["R","Pip, what did you do? You were supposed to flick your wand, not wiggle it around!"],["P","I don't know... I think I wiggled it by accident..."],["F","Everyone, stay calm, and remember what we practiced. Nobody panic."],["T","Calm? I am a talking purple toad! How am I supposed to stay calm about that?"],["N","The whole class burst out laughing. Even Professor Fern was trying very hard not to smile."],["F","Pip, take a slow, deep breath. Point your wand again, and this time, flick it gently and carefully."],["P","Okay. Deep breath. Flick it, don't wiggle it..."],["N","Pip flicked his wand. Slowly, the purple toad lifted off the desk and floated gracefully above everyone's heads."],["R","You did it! Pip, you actually did it, and it was perfect!"],["T","Wonderful. Now I am a purple toad who can float. Could somebody please put me back down?"],["F","Excellent work, Pip. Class, let's give Pip a big round of applause!"],["N","And from that day on, Pip never forgot the important difference between a flick and a wiggle."]]}, mine={};
+try{ mine=JSON.parse(localStorage.getItem("rt.spell.parts")||"{}")||{}; }catch(e){ mine={}; }
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
+var K={".":"stop","?":"up","!":"zap",",":"pause"};
+function marks(t){ var o="",i=0; while(i<t.length){ if(t.substr(i,3)==="..."){o+='<span class="m trail">...</span>';i+=3;continue;} var c=t[i]; o+= K[c]?'<span class="m '+K[c]+'">'+c+'</span>':esc(c); i++; } return o; }
+function save(){ try{ localStorage.setItem("rt.spell.parts",JSON.stringify(mine)); }catch(e){} }
+function render(){
+  $("parts").innerHTML=Object.keys(D.PARTS).map(function(k){ var P=D.PARTS[k]; return '<button type="button" class="part" data-k="'+k+'" aria-pressed="'+(!!mine[k])+'"><b>'+P.icon+' '+esc(P.name)+'</b><small>'+esc(P.tip)+'</small></button>'; }).join("");
+  Array.prototype.forEach.call(document.querySelectorAll("[data-k]"),function(b){ b.addEventListener("click",function(){ var k=b.getAttribute("data-k"); mine[k]=!mine[k]; save(); render(); }); });
+  var any=Object.keys(mine).some(function(k){return mine[k];});
+  $("script").className="script"+(any?" dim":"");
+  $("script").innerHTML=D.SCRIPT.map(function(l){ var P=D.PARTS[l[0]]; return '<div class="line'+(mine[l[0]]?" mine":"")+'"><span class="who">'+P.icon+' '+esc(P.name)+'</span><span>'+marks(l[1])+'</span></div>'; }).join("");
+}
+$("clear").addEventListener("click",function(){ mine={}; save(); render(); });
+render();
+})();
+</script>
+</body>
+</html>
