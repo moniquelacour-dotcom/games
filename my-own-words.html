@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<style>[hidden]{display:none!important}</style>
+<title>My Own Words</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Lexend:wght@400;500;600&display=swap">
+<style>
+  /* Layout: seven colored word-cards. One card at a time, big type, little text.
+     Lexend is drawn for struggling readers; Archivo carries the headings. */
+  :root{
+    --bg:#f2f0ec; --panel:#ffffff; --sunk:#eceae5;
+    --fg:#1b1a18; --muted:#5f5b55; --line:#d8d4cd;
+    --good:#1c7a53; --good-soft:#dcf0e7;
+    --t1:#c2410c; --t1s:#fdeee6;
+    --t2:#0b63a8; --t2s:#e5f0f9;
+    --t3:#6d28d9; --t3s:#f0eafd;
+    --t4:#0f766e; --t4s:#e3f3f1;
+    --t5:#a16207; --t5s:#faf0dc;
+    --t6:#be123c; --t6s:#fdeaef;
+    --t7:#15803d; --t7s:#e6f4ea;
+    --t8:#4338ca; --t8s:#e8e8fb;
+    --t9:#b45309; --t9s:#fdf0de;
+    --t10:#0e7490; --t10s:#dff3f8;
+    --display:"Archivo",system-ui,sans-serif;
+    --body:"Lexend",system-ui,-apple-system,sans-serif;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161a; --panel:#1e2228; --sunk:#191d22;
+      --fg:#eef1f4; --muted:#9aa4af; --line:#30363e;
+      --good:#5fcf9f; --good-soft:#13311f;
+      --t1:#fb923c; --t1s:#38200f;
+      --t2:#5cb3f0; --t2s:#10263a;
+      --t3:#b093f7; --t3s:#241a3d;
+      --t4:#5eead4; --t4s:#0e3330;
+      --t5:#fbbf24; --t5s:#352a0e;
+      --t6:#fb7185; --t6s:#3a1420;
+      --t7:#55d47f; --t7s:#10311c;
+      --t8:#a5b4fc; --t8s:#1e1f3d;
+      --t9:#fdba74; --t9s:#3a2412;
+      --t10:#67e8f9; --t10s:#0f2e36;
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161a; --panel:#1e2228; --sunk:#191d22;
+    --fg:#eef1f4; --muted:#9aa4af; --line:#30363e;
+    --good:#5fcf9f; --good-soft:#13311f;
+    --t1:#fb923c; --t1s:#38200f;
+    --t2:#5cb3f0; --t2s:#10263a;
+    --t3:#b093f7; --t3s:#241a3d;
+    --t4:#5eead4; --t4s:#0e3330;
+    --t5:#fbbf24; --t5s:#352a0e;
+    --t6:#fb7185; --t6s:#3a1420;
+    --t7:#55d47f; --t7s:#10311c;
+      --t8:#a5b4fc; --t8s:#1e1f3d;
+      --t9:#fdba74; --t9s:#3a2412;
+      --t10:#67e8f9; --t10s:#0f2e36;
+    color-scheme:dark;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--bg); color:var(--fg);
+    font:18px/1.65 var(--body);
+    margin:0;
+    padding-block:20px 44px;
+    padding-left:max(16px,env(safe-area-inset-left,0px));
+    padding-right:max(16px,env(safe-area-inset-right,0px));
+  }
+  .wrap{max-width:660px; margin:0 auto; display:flex; flex-direction:column; gap:18px}
+
+  h1{font:800 2rem/1.05 var(--display); margin:0; letter-spacing:-.025em}
+  .dek{margin:0; color:var(--muted); font-size:1rem}
+
+  /* the rail of seven */
+  .rail{display:flex; gap:8px; flex-wrap:wrap}
+  .rail button{
+    font:700 1.35rem/1 var(--display); cursor:pointer;
+    width:52px; height:52px; border-radius:14px;
+    background:var(--panel); border:2px solid var(--line); color:var(--muted);
+    display:flex; align-items:center; justify-content:center; position:relative;
+  }
+  .rail button.on{background:var(--c); border-color:var(--c); color:#fff}
+  .rail button:focus-visible{outline:3px solid var(--fg); outline-offset:2px}
+  .rail .tick{
+    position:absolute; right:-3px; top:-3px; width:17px; height:17px; border-radius:50%;
+    background:var(--good); color:#fff; font:700 10px/17px var(--display); text-align:center;
+  }
+
+  /* the card */
+  .card{background:var(--panel); border:2px solid var(--c); border-radius:18px; overflow:hidden}
+  .band{background:var(--c); color:#fff; padding:16px 20px; display:flex; align-items:center; gap:14px}
+  .band .sym{font-size:2.1rem; line-height:1}
+  .band h2{font:800 1.6rem/1.1 var(--display); margin:0; letter-spacing:-.02em}
+  .band .es{display:inline-block; margin-top:7px; font:600 1.1rem/1 var(--body);
+            background:rgba(255,255,255,.26); padding:7px 12px; border-radius:999px}
+  .body{padding:18px 20px; display:flex; flex-direction:column; gap:18px}
+
+  .step{display:flex; flex-direction:column; gap:10px}
+  .lab{font:800 .72rem/1 var(--display); letter-spacing:.16em; text-transform:uppercase; color:var(--c); margin:0}
+  .ask{margin:0; font-size:1.3rem; font-weight:500}
+
+  .def{background:var(--cs); border-radius:14px; padding:16px 18px}
+  .def .big{margin:0; font-size:1.35rem; font-weight:600; line-height:1.45}
+  .def .sub{margin:10px 0 0; font-size:1.05rem; color:var(--muted)}
+  .def .es2{margin:14px 0 0; padding-top:12px; border-top:2px dashed var(--c);
+            font-size:1.2rem; font-weight:600; color:var(--c)}
+  .def .esx{margin:10px 0 0; font-size:1.2rem; font-style:italic}
+  .def .esn{margin:7px 0 0; font-size:1rem; color:var(--muted)}
+
+  button.go{
+    font:700 1.05rem/1 var(--display); cursor:pointer; align-self:flex-start;
+    background:var(--c); color:#fff; border:0; border-radius:12px; padding:14px 20px;
+  }
+  button.go:focus-visible{outline:3px solid var(--fg); outline-offset:2px}
+
+  label.f{display:flex; flex-direction:column; gap:6px}
+  label.f span{font:600 .95rem/1.3 var(--body); color:var(--muted)}
+  textarea{
+    width:100%; min-height:72px; resize:vertical;
+    font:400 1.15rem/1.6 var(--body); padding:13px 15px;
+    border:2px solid var(--line); border-radius:12px;
+    background:var(--sunk); color:var(--fg);
+  }
+  textarea:focus-visible{outline:3px solid var(--c); outline-offset:1px}
+
+  /* find it */
+  .item{background:var(--sunk); border-radius:14px; padding:15px 17px; display:flex; flex-direction:column; gap:12px}
+  .tag{font:800 .66rem/1 var(--display); letter-spacing:.1em; text-transform:uppercase;
+       color:#fff; background:var(--c); padding:6px 9px; border-radius:6px; align-self:flex-start}
+  .q{margin:0; font-size:1.05rem; font-weight:600; color:var(--muted)}
+  .sent{display:flex; flex-wrap:wrap; gap:6px; font-size:1.3rem; line-height:2}
+  .tok{background:var(--panel); border:2px solid var(--line); border-radius:9px;
+       padding:5px 10px; cursor:pointer; font:inherit; color:inherit}
+  .tok:focus-visible{outline:3px solid var(--c); outline-offset:2px}
+  .tok.hit{background:var(--good-soft); border-color:var(--good); color:var(--good); font-weight:600}
+  .tok.miss{opacity:.4; text-decoration:line-through}
+  .tok.flat{cursor:default}
+  .opts{display:flex; flex-direction:column; gap:9px}
+  .opt{text-align:left; font:400 1.2rem/1.5 var(--body); background:var(--panel);
+       border:2px solid var(--line); border-radius:12px; padding:13px 16px; cursor:pointer; color:inherit}
+  .opt:focus-visible{outline:3px solid var(--c); outline-offset:2px}
+  .opt.hit{background:var(--good-soft); border-color:var(--good); font-weight:600}
+  .opt.miss{opacity:.4}
+  .note{margin:0; font-size:1.05rem; color:var(--good); font-weight:600}
+  .hint{margin:0; font-size:1.05rem; color:var(--c); font-weight:600; background:var(--cs); border-radius:10px; padding:8px 12px}
+  .sub2{margin:0; font-size:.95rem; color:var(--muted)}
+
+  /* box */
+  .box{background:var(--panel); border:2px solid var(--line); border-radius:16px; padding:16px 18px; display:flex; flex-direction:column; gap:12px}
+  .box h3{font:800 1.05rem/1 var(--display); margin:0}
+  .mycard{border-left:5px solid var(--mc); padding:4px 0 4px 14px; display:flex; flex-direction:column; gap:3px}
+  .mycard b{font:700 1.1rem/1.3 var(--display)}
+  .mycard i{font-style:italic; color:var(--muted); font-size:1rem}
+  .empty{color:var(--muted); margin:0}
+  .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  button.quiet{font:700 .95rem/1 var(--display); cursor:pointer; background:var(--sunk);
+               color:var(--fg); border:2px solid var(--line); border-radius:11px; padding:12px 16px}
+  button.quiet:focus-visible{outline:3px solid var(--fg); outline-offset:2px}
+  .said{font-size:.95rem; color:var(--good); font-weight:600}
+
+  .wi{width:100%;font:400 1.1rem/1.4 var(--body);padding:11px 13px;border:2px solid var(--line);border-radius:12px;background:var(--sunk);color:var(--fg)}
+  .wrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:1.15rem;border-left:5px solid var(--t9);padding:4px 0 4px 12px}
+  .wrow s{color:var(--muted)} .wrow b{color:var(--good)} .wrow i{color:var(--muted);font-size:.95rem}
+  .wrow button{font:600 .8rem/1 var(--display);background:none;border:0;color:var(--muted);cursor:pointer;text-decoration:underline}
+  .toggle{display:flex; align-items:center; gap:10px; font:600 .95rem/1 var(--body); color:var(--muted); cursor:pointer}
+  .toggle input{width:20px; height:20px}
+  .foot{font-size:.9rem; color:var(--muted); margin:0}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>My Own Words</h1>
+    <p class="dek">Ten words. Learn it, practice it, then write it your way.</p>
+  </header>
+
+  <div class="rail" id="rail"></div>
+
+  <div class="card" id="card"></div>
+
+  <div class="box">
+    <h3>📝 Words from today</h3>
+    <p class="empty">Write a word we worked on: how it was said or written, and the right way.</p>
+    <div class="row" style="align-items:stretch">
+      <label class="f" style="flex:1;min-width:140px"><span>I said / wrote</span><input id="wa" class="wi" placeholder="meaned"></label>
+      <label class="f" style="flex:1;min-width:140px"><span>The right way</span><input id="wb" class="wi" placeholder="meant"></label>
+    </div>
+    <label class="f"><span>Why (optional)</span><input id="wc" class="wi" placeholder="tricky past tense"></label>
+    <div class="row"><button class="quiet" id="wadd" type="button">Add word</button></div>
+    <div id="wlist"></div>
+  </div>
+
+  <div class="box">
+    <h3>My cards</h3>
+    <div id="box"></div>
+    <div class="row">
+      <button class="quiet" id="copy" type="button">Copy my cards</button>
+      <span class="said" id="said"></span>
+    </div>
+  </div>
+
+  <label class="toggle"><input type="checkbox" id="spanish"> Show the Spanish word</label>
+  <p class="foot">Your cards save on this computer only. Copy them out before you finish.</p>
+</div>
+
+<script>
+var TERMS = [
+  {
+    id:"adjective", n:1, sym:"🎨", word:"Adjective", es:"adjetivo", es2:"noun = sustantivo", esEx:"El perro hambriento come.", esNote:"hambriento describes perro. In Spanish the describing word usually comes AFTER. In English it comes before.",
+    ask:"What is an adjective?",
+    plain:"A word that describes a noun.",
+    sub:"It tells which one, what kind, or how many. A noun is a person, a place, a thing, or an idea — and animals and objects count as things.",
+    items:[
+      {type:"pick", test:true, s:"Feed his hungry dog right after coming home from school.", q:"Click the describing word.", a:"hungry", note:"hungry describes dog."},
+      {type:"pick", s:"Ana practiced her solo in the small studio.", q:"Click the describing word.", a:"small", note:"small describes studio."},
+      {type:"pick", s:"The nervous dancers waited behind the curtain.", q:"Click the describing word.", a:"nervous", note:"nervous describes dancers."}
+    ]
+  },
+  {
+    id:"subjectpred", n:2, sym:"🎯", word:"Subject &amp; predicate", es:"sujeto y predicado", es2:"subject = sujeto · predicate = predicado", esEx:"Mi prima baila.", esNote:"Mi prima is the subject. baila is the predicate.",
+    ask:"What is the subject of a sentence?",
+    plain:"The subject is who or what the sentence is about.",
+    sub:"The predicate is what they do. Find the subject first — the verb has to match it. One colony consists. Two colonies consist.",
+    items:[
+      {type:"choose", test:true, q:"A typical ant colony ___ of many thousands of workers and a single queen.", opts:["consist","consists","consisted"], a:"consists", note:"The subject is colony. One colony, so consists."},
+      {type:"pick", s:"My cousin dances every Saturday.", q:"Click the subject.", a:"cousin", note:"The sentence is about cousin."},
+      {type:"pick", s:"The rehearsal ended late.", q:"Click the predicate.", a:"ended", note:"ended is what it did."}
+    ]
+  },
+  {
+    id:"complete", n:3, sym:"📦", word:"Complete subject", es:"sujeto completo", es2:"word = palabra", esEx:"El viejo escenario de madera crujió.", esNote:"El viejo escenario de madera is the complete subject.",
+    ask:"What is a complete subject?",
+    plain:"The subject plus every word that goes with it.",
+    sub:"the tired brown dog — all four words together.",
+    items:[
+      {type:"choose", q:"The old wooden stage creaked.", opts:["stage","The old wooden stage","creaked"], a:"The old wooden stage", note:"Every word that goes with stage comes too."},
+      {type:"choose", q:"Her two little brothers watched from the back.", opts:["brothers","Her two little brothers","watched from the back"], a:"Her two little brothers", note:"All four words."}
+    ]
+  },
+  {
+    id:"synonym", n:4, sym:"🔁", word:"Synonym", es:"sinónimo", es2:"meaning = significado", esEx:"cansado · agotado", esNote:"Both mean tired. agotado is stronger.",
+    ask:"What is a synonym?",
+    plain:"Words that mean almost the same thing.",
+    sub:"warm · hot · boiling. All about heat. Not the same amount.",
+    items:[
+      {type:"choose", q:"Which means the MOST tired?", opts:["sleepy","tired","exhausted"], a:"exhausted", note:"exhausted is the most."},
+      {type:"choose", q:"Which shows the MOST excitement?", opts:["glad","happy","thrilled"], a:"thrilled", note:"thrilled is the strongest."},
+      {type:"choose", q:"Which is the LEAST rain?", opts:["downpour","drizzle","shower"], a:"drizzle", note:"drizzle is the lightest."}
+    ]
+  },
+  {
+    id:"titles", n:5, sym:"🔠", word:"Capitals in titles", es:"mayúsculas en los títulos", es2:"capital letter = mayúscula", esEx:"El secreto del reloj viejo", esNote:"Spanish capitalizes ONLY the first word. English also capitalizes the big words. That is why this one feels wrong.",
+    ask:"Which words get capitals in a title?",
+    plain:"The first word, the last word, and the big words.",
+    sub:"Small words stay small in the middle: a, an, the, of, and, in, to, for.",
+    items:[
+      {type:"choose", q:"Which one is right?", opts:["The Secret Of The Old Clock","The Secret of the Old Clock","the secret of the old clock"], a:"The Secret of the Old Clock", note:"of and the are small words."},
+      {type:"choose", q:"Which one is right?", opts:["A Dance To Remember","A Dance to Remember","a dance to Remember"], a:"A Dance to Remember", note:"A is first. to is small."}
+    ]
+  },
+  {
+    id:"possessive", n:6, sym:"➕", word:"Possessives (who owns it)", es:"posesivo plural", es2:"apostrophe = apóstrofo", esEx:"los zapatos de las bailarinas", esNote:"Spanish has no apostrophe. It uses de instead. English moves the apostrophe instead.",
+    ask:"Where does the apostrophe go?",
+    plain:"One owner: before the s. More than one owner: after the s.",
+    sub:"one dancer’s shoes — one dancer.  the dancers’ shoes — lots of them.  If the plural has no s (children), add ’s: the children’s books.",
+    items:[
+      {type:"choose", q:"Shoes belonging to ALL the dancers:", opts:["the dancer’s shoes","the dancers’ shoes","the dancers shoes"], a:"the dancers’ shoes", note:"Many dancers. After the s."},
+      {type:"choose", q:"The classroom belonging to BOTH teachers:", opts:["the teachers’ classroom","the teacher’s classroom","the teachers classroom"], a:"the teachers’ classroom", note:"Two teachers. After the s."},
+      {type:"choose", q:"The tail belonging to ONE dog:", opts:["the dogs’ tail","the dog’s tail","the dogs tail"], a:"the dog’s tail", note:"One dog. Before the s."},
+      {type:"choose", q:"The bowls belonging to MANY dogs:", opts:["the dog’s bowls","the dogs’ bowls","the dogs bowls"], a:"the dogs’ bowls", note:"Many dogs. After the s."},
+      {type:"choose", q:"The toys belonging to the children:", opts:["the childrens’ toys","the children’s toys","the childs’ toys"], a:"the children’s toys", note:"children has no s, so add ’s."},
+      {type:"choose", q:"Which sentence is right?", opts:["I have two cat’s.","I have two cats.","I have two cats’."], a:"I have two cats.", note:"No owner, no apostrophe. An apostrophe never makes a word plural."}
+    ]
+  },
+  {
+    id:"plurals", n:8, sym:"🔀", word:"Tricky plurals", es:"plurales irregulares", es2:"plural = plural", esEx:"un niño · dos niños", esNote:"Spanish almost always adds -s or -es. English has words that change inside: goose → geese. And words ending in consonant + y change y to ies.",
+    ask:"How do you make MORE THAN ONE of these words?",
+    plain:"Most words add s. Some words change instead.",
+    sub:"goose → geese · mouse → mice · child → children · tooth → teeth · foot → feet · man → men. Consonant + y → ies: party → parties, berry → berries. Vowel + y just adds s: day → days.",
+    items:[
+      {type:"choose", q:"Two ___ swam across the pond.", opts:["gooses","geese","goose’s"], a:"geese", note:"goose → geese."},
+      {type:"choose", q:"We went to three birthday ___ this month.", opts:["partys","parties","party’s"], a:"parties", note:"consonant + y → ies."},
+      {type:"choose", q:"The ___ played on the playground.", opts:["childs","children","childrens"], a:"children", note:"child → children."},
+      {type:"choose", q:"I brushed my ___ before bed.", opts:["tooths","teeth","teeths"], a:"teeth", note:"tooth → teeth."},
+      {type:"choose", q:"We picked a bucket of ___.", opts:["berrys","berries","berry’s"], a:"berries", note:"consonant + y → ies."},
+      {type:"choose", q:"We stayed for three ___.", opts:["daies","days","day’s"], a:"days", note:"a + y is a vowel + y, so just add s."}
+    ]
+  },
+  {
+    id:"verb", n:9, sym:"🏃", word:"Verb", es:"verbo", es2:"verb = verbo", esEx:"Ella baila.", esNote:"baila is the verb. Same idea in both languages.",
+    ask:"What is a verb?",
+    plain:"A verb is a word for an action, something you DO.",
+    sub:"run · dance · fetch · vary · sway. Some verbs show being: is, am, are, was. Quick test: can you say \"she ___\" or \"I ___\" in front of it? She dances. ✓  She table. ✗  When the subject is ONE person (she, he, Aunt Doli), most verbs add -s: she dances. After ch, sh, s, x: add -es (she fetches). Consonant + y: change y to -ies (she varies). Vowel + y: just -s (she sways).",
+    items:[
+      {type:"pick", s:"The dancers twirl across the stage.", q:"Click the verb (the action).", a:"twirl", note:"twirl is what they do."},
+      {type:"pick", s:"My brother sleeps late on Saturday.", q:"Click the verb.", a:"sleeps", note:"sleeps is the action."},
+      {type:"choose", q:"Aunt Doli ___ the yarn.", opts:["fetchs","fetches","fetchies"], a:"fetches", note:"fetch ends in ch, so add -es."},
+      {type:"choose", q:"She ___ the colors.", opts:["varys","varies","varyes"], a:"varies", note:"consonant + y → ies."},
+      {type:"choose", q:"The tree ___ in the wind.", opts:["sways","swaies","swayes"], a:"sways", note:"a + y is a vowel + y, so just add -s."}
+    ]
+  },
+  {
+    id:"past", n:10, sym:"⏪", word:"Past tense", es:"pasado", es2:"past tense = tiempo pasado", esEx:"Ayer bailé.", esNote:"Spanish changes the ending too: bailo → bailé. English usually adds -ed, but some verbs change completely.",
+    ask:"How do you show something already happened?",
+    plain:"Most verbs add -ed. Some tricky verbs change their spelling instead.",
+    sub:"walk → walked · dance → danced · vary → varied. Tricky ones: mean → meant (not meaned) · go → went · see → saw · run → ran · buy → bought · think → thought · teach → taught.",
+    items:[
+      {type:"choose", q:"Yesterday I ___ what I said.", opts:["meaned","meant","means"], a:"meant", note:"mean → meant. Tricky verb!"},
+      {type:"choose", q:"Last week we ___ to the park.", opts:["goed","went","gone"], a:"went", note:"go → went."},
+      {type:"choose", q:"She ___ the colors on the rug.", opts:["varyed","varied","varies"], a:"varied", note:"consonant + y → ied."},
+      {type:"choose", q:"We ___ for an hour after school.", opts:["danced","danceded","dance"], a:"danced", note:"dance ends in e, so just add -d."},
+      {type:"choose", q:"He ___ a new book at the store.", opts:["buyed","bought","buys"], a:"bought", note:"buy → bought."}
+    ]
+  },
+  {
+    id:"topic", n:7, sym:"🏷️", word:"Topic sentence", es:"oración principal", es2:"paragraph = párrafo", esEx:"Hacer mantequilla en casa es más fácil de lo que parece.", esNote:"Same job in both languages.",
+    ask:"What does the first sentence of a paragraph do?",
+    plain:"It tells you what the whole paragraph is about.",
+    sub:"The other sentences just add details.",
+    items:[
+      {type:"choose", q:"Which is the topic sentence?", opts:["Making butter at home is easier than it sounds.","You shake the jar for about ten minutes.","Then you pour off the liquid."], a:"Making butter at home is easier than it sounds.", note:"The others are steps."},
+      {type:"choose", q:"Which is the topic sentence?", opts:["We arrive at seven in the morning.","Competition day is a very long day.","My number was forty-two."], a:"Competition day is a very long day.", note:"The others are details."}
+    ]
+  }
+];
+
+var KEY = "my-own-words-shelf-v1";
+var cur = 0, state = {}, showEs = false, words = [];
+
+function load(){
+  try{
+    var raw = localStorage.getItem(KEY);
+    if(raw){ var p = JSON.parse(raw); state = p.state || {}; showEs = !!p.showEs; words = p.words || []; }
+  }catch(e){ state = {}; }
+}
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify({state:state, showEs:showEs, words:words})); }catch(e){}
+}
+function st(id){
+  if(!state[id]) state[id] = {mine:"", example:"", revealed:false, hits:{}};
+  if(!state[id].hits) state[id].hits = {};
+  return state[id];
+}
+function el(tag, cls, txt){
+  var n = document.createElement(tag);
+  if(cls) n.className = cls;
+  if(txt != null) n.textContent = txt;
+  return n;
+}
+function norm(w){ return w.replace(/[^A-Za-z’']/g, "").toLowerCase(); }
+function flat(html){ var d = document.createElement("div"); d.innerHTML = html; return d.textContent; }
+
+function hits(id){
+  var s = st(id), n = 0;
+  for(var k in s.hits){ if(s.hits[k] === true) n++; }
+  return n;
+}
+function doneAll(t){ return st(t.id).mine.trim() && hits(t.id) >= t.items.length; }
+
+function drawRail(){
+  var rail = document.getElementById("rail");
+  rail.textContent = "";
+  TERMS.forEach(function(t, i){
+    var b = el("button", i === cur ? "on" : "");
+    b.type = "button";
+    b.style.setProperty("--c", "var(--t" + t.n + ")");
+    b.setAttribute("aria-label", flat(t.word));
+    b.appendChild(el("span", null, t.sym));
+    if(doneAll(t)) b.appendChild(el("span", "tick", "✓"));
+    b.addEventListener("click", function(){ cur = i; draw(); });
+    rail.appendChild(b);
+  });
+}
+
+function drawItem(t, item, idx){
+  var s = st(t.id);
+  var wrap = el("div", "item");
+  if(item.test) wrap.appendChild(el("span", "tag", "Your test"));
+  wrap.appendChild(el("p", "q", item.q));
+  var done = s.hits[idx] === true;
+
+  function win(){ s.hits[idx] = true; save(); draw(); }
+  function hint(){ var h = wrap.querySelector(".hint"); if(!h){ h = el("p","hint"); wrap.appendChild(h); } h.textContent = "Not quite. Remember: " + t.plain + " Try again!"; }
+
+  if(item.type === "pick"){
+    var line = el("div", "sent");
+    item.s.split(" ").forEach(function(w){
+      var b = el("button", "tok", w);
+      b.type = "button";
+      if(done) b.className = norm(w) === norm(item.a) ? "tok hit flat" : "tok flat";
+      else b.addEventListener("click", function(){
+        if(norm(w) === norm(item.a)) win(); else { b.className = "tok miss"; hint(); }
+      });
+      line.appendChild(b);
+    });
+    wrap.appendChild(line);
+  } else {
+    var opts = el("div", "opts");
+    item.opts.forEach(function(o){
+      var b = el("button", "opt", o);
+      b.type = "button";
+      if(done && o === item.a) b.className = "opt hit";
+      if(!done) b.addEventListener("click", function(){
+        if(o === item.a) win(); else { b.className = "opt miss"; hint(); }
+      });
+      opts.appendChild(b);
+    });
+    wrap.appendChild(opts);
+  }
+  if(done && item.note) wrap.appendChild(el("p", "note", "✓ " + item.note));
+  return wrap;
+}
+
+function draw(){
+  drawRail();
+  var t = TERMS[cur], s = st(t.id);
+  var card = document.getElementById("card");
+  card.textContent = "";
+  card.style.setProperty("--c", "var(--t" + t.n + ")");
+  card.style.setProperty("--cs", "var(--t" + t.n + "s)");
+
+  var band = el("div", "band");
+  band.appendChild(el("span", "sym", t.sym));
+  var h = el("div");
+  var h2 = el("h2");
+  h2.innerHTML = t.word;
+  h.appendChild(h2);
+  if(showEs) h.appendChild(el("span", "es", "🇲🇽  " + t.es));
+  band.appendChild(h);
+  card.appendChild(band);
+
+  var body = el("div", "body");
+
+  var s1 = el("div", "step");
+  s1.appendChild(el("p", "lab", "1 · Learn it"));
+  s1.appendChild(el("p", "ask", t.ask));
+  if(true){
+    var d = el("div", "def");
+    d.appendChild(el("p", "big", t.plain));
+    d.appendChild(el("p", "sub", t.sub));
+    if(showEs && t.es2) d.appendChild(el("p", "es2", t.es2));
+    if(showEs && t.esEx) d.appendChild(el("p", "esx", "“" + t.esEx + "”"));
+    if(showEs && t.esNote) d.appendChild(el("p", "esn", t.esNote));
+    s1.appendChild(d);
+  } else {
+    var rb = el("button", "go", "Show me");
+    rb.type = "button";
+    rb.addEventListener("click", function(){ s.revealed = true; save(); draw(); });
+    s1.appendChild(rb);
+  }
+  body.appendChild(s1);
+
+  var s3 = el("div", "step");
+  s3.appendChild(el("p", "lab", "2 · Practice"));
+  s3.appendChild(el("p", "sub2", "Tap the answer. If it's not right, you'll get a reminder. Keep trying!"));
+  t.items.forEach(function(item, i){ s3.appendChild(drawItem(t, item, i)); });
+  body.appendChild(s3);
+
+  var s2 = el("div", "step");
+  s2.appendChild(el("p", "lab", "3 · Now say it your way"));
+  var l1 = el("label", "f");
+  l1.appendChild(el("span", null, "In my own words"));
+  var ta1 = document.createElement("textarea");
+  ta1.id = "mine-" + t.id;
+  ta1.value = s.mine;
+  ta1.placeholder = "Say it your way.";
+  ta1.addEventListener("input", function(){ s.mine = ta1.value; save(); drawRail(); drawBox(); });
+  l1.appendChild(ta1);
+  s2.appendChild(l1);
+
+  var l2 = el("label", "f");
+  l2.appendChild(el("span", null, "My example"));
+  var ta2 = document.createElement("textarea");
+  ta2.id = "eg-" + t.id;
+  ta2.value = s.example;
+  ta2.placeholder = "Make one up.";
+  ta2.addEventListener("input", function(){ s.example = ta2.value; save(); drawBox(); });
+  l2.appendChild(ta2);
+  s2.appendChild(l2);
+  body.appendChild(s2);
+
+  card.appendChild(body);
+  drawBox();
+}
+
+function drawBox(){
+  var box = document.getElementById("box");
+  box.textContent = "";
+  var any = false;
+  TERMS.forEach(function(t){
+    var s = st(t.id);
+    if(!s.mine.trim()) return;
+    any = true;
+    var c = el("div", "mycard");
+    c.style.setProperty("--mc", "var(--t" + t.n + ")");
+    var b = el("b");
+    b.innerHTML = t.sym + " " + t.word;
+    c.appendChild(b);
+    c.appendChild(el("span", null, s.mine));
+    if(s.example.trim()) c.appendChild(el("i", null, "“" + s.example + "”"));
+    box.appendChild(c);
+  });
+  if(!any) box.appendChild(el("p", "empty", "Nothing yet."));
+}
+
+function drawWords(){
+  var w = document.getElementById("wlist"); w.textContent = "";
+  words.forEach(function(x, i){
+    var r = el("div","wrow");
+    if(x.a){ r.appendChild(el("s", null, x.a)); r.appendChild(el("span", null, "→")); }
+    r.appendChild(el("b", null, x.b));
+    if(x.c) r.appendChild(el("i", null, x.c));
+    var del = el("button", null, "remove"); del.type="button";
+    del.addEventListener("click", function(){ words.splice(i,1); save(); drawWords(); });
+    r.appendChild(del); w.appendChild(r);
+  });
+}
+document.getElementById("wadd").addEventListener("click", function(){
+  var a=document.getElementById("wa"), b=document.getElementById("wb"), c=document.getElementById("wc");
+  if(!b.value.trim()) { b.focus(); return; }
+  words.push({a:a.value.trim(), b:b.value.trim(), c:c.value.trim(), d:new Date().toISOString().slice(0,10)});
+  a.value=""; b.value=""; c.value=""; save(); drawWords(); a.focus();
+});
+document.getElementById("copy").addEventListener("click", function(){
+  var out = "My Own Words\n\n";
+  if(words.length){ out += "Words from today\n"; words.forEach(function(x){ out += "  " + (x.a ? x.a + " → " : "") + x.b + (x.c ? " (" + x.c + ")" : "") + "\n"; }); out += "\n"; }
+  TERMS.forEach(function(t){
+    var s = st(t.id);
+    if(!s.mine.trim()) return;
+    out += flat(t.word) + "\n  " + s.mine + "\n";
+    if(s.example.trim()) out += "  Example: " + s.example + "\n";
+    out += "\n";
+  });
+  var said = document.getElementById("said");
+  function ok(){ said.textContent = "Copied."; setTimeout(function(){ said.textContent = ""; }, 2500); }
+  function no(){ said.textContent = "Copy didn't work here. Select your cards and copy them."; }
+  try{
+    var p = navigator.clipboard.writeText(out);
+    if(p && p.then) p.then(ok, no); else ok();
+  }catch(e){ no(); }
+});
+
+var sp = document.getElementById("spanish");
+sp.addEventListener("change", function(){ showEs = sp.checked; save(); draw(); });
+
+function start(){
+  load();
+  sp.checked = showEs;
+  draw();
+  drawWords();
+}
+if(window.claude && window.claude.hot && window.claude.hot.ready){
+  window.claude.hot.ready(start);
+} else {
+  start();
+}
+if(window.claude && window.claude.hot && window.claude.hot.snapshot){
+  window.claude.hot.snapshot(function(){ return {}; });
+}
+</script>
+
+
+</body>
+</html>
