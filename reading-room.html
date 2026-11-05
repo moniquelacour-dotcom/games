@@ -110,7 +110,7 @@ var WINS = [
 
 var ZONES=[{id:"America/New_York",label:"Eastern",key:"eastern"},{id:"America/Chicago",label:"Central",key:"central"},{id:"America/Denver",label:"Mountain",key:"mountain"}];
 var NEEDS=["Help with a lesson","Test review","Getting ready for a test","Something else"];
-var FEELS=[["😀","great"],["🙂","good"],["😐","okay"],["😕","hard"]];
+var GROW=["🌊 Reading smoothly","🧩 Tricky words","💡 Understanding what I read","📚 Word meanings","🎯 Test strategies","💪 Trying even when it's hard"];
 var zone="America/Chicago", pick=null, need=null, feel=null;
 var fromLink=false;
 var hz=(location.hash||"").replace("#","").toLowerCase();
@@ -151,7 +151,7 @@ function renderBook(){
   if(!pick){ w.hidden=true; return; }
   w.hidden=false;
   var h='<h2>✅ '+esc(label(pick))+'</h2><p><b>What do you need?</b></p><div class="chips">'+NEEDS.map(function(n){return '<button type="button" class="chip" data-need="'+esc(n)+'" aria-pressed="'+(n===need)+'">'+esc(n)+'</button>';}).join("")+'</div>';
-  h+='<p><b>How did your last reading session feel?</b> <span class="small">(you can skip this)</span></p><div class="chips">'+FEELS.map(function(f){return '<button type="button" class="chip feel" data-feel="'+f[0]+'" aria-label="'+f[1]+'" aria-pressed="'+(feel===f[0])+'">'+f[0]+'</button>';}).join("")+'</div>';
+  h+='<p><b>Something I'+"'"+'m getting better at:</b> <span class="small">(pick one, or skip)</span></p><div class="chips">'+GROW.map(function(g){return '<button type="button" class="chip" data-feel="'+esc(g)+'" aria-pressed="'+(feel===g)+'">'+esc(g)+'</button>';}).join("")+'</div>';
   h+='<div class="msg" id="msg">'+esc(message())+'</div><div><button type="button" class="btn" id="copy">📋 Copy</button></div><p>Now paste it in your chat with Monique and send. She will write back when your time is saved. 👍</p><p class="small">Chat not open? <a href="https://chat.google.com" target="_blank" rel="noopener">Open Google Chat</a></p>';
   w.innerHTML=h;
   Array.prototype.forEach.call(w.querySelectorAll("[data-need]"),function(b){ b.addEventListener("click",function(){ need=b.getAttribute("data-need"); renderBook(); }); });
@@ -164,7 +164,7 @@ function renderBook(){
     else { var r=document.createRange(); r.selectNodeContents($("msg")); var g=getSelection(); g.removeAllRanges(); g.addRange(r); c.textContent="Press Ctrl+C (or ⌘+C) to copy"; }
   });
 }
-function message(){ return "Hi Monique! I'd like a reading drop-in on "+label(pick)+"."+(need?" I need: "+need+".":"")+(feel?" My last session felt: "+feel:""); }
+function message(){ return "Hi Monique! I'd like a reading drop-in on "+label(pick)+"."+(need?" I need: "+need+".":"")+(feel?" Something I'm getting better at: "+feel+"!":""); }
 $("wall").innerHTML=WINS.map(function(w){ return '<div class="note"><span>'+w.e+'</span>'+esc(w.t)+'</div>'; }).join("");
 render();
 })();
