@@ -129,9 +129,13 @@ function renderBook(){
   w.innerHTML=h;
   Array.prototype.forEach.call(w.querySelectorAll(".need"),function(b){ b.addEventListener("click",function(){ need=b.textContent; renderBook(); }); });
   var c=$("copy"); if(c) c.addEventListener("click",function(){
-    var t=message();
-    function sel(){ var r=document.createRange(); r.selectNodeContents($("msg")); var g=getSelection(); g.removeAllRanges(); g.addRange(r); c.textContent="Press Ctrl+C (or ⌘+C) to copy"; }
-    try{ navigator.clipboard.writeText(t).then(function(){c.textContent="✅ Copied! Paste it in your chat";}).catch(sel); }catch(e){ sel(); }
+    var t=message(), ok=false;
+    /* 1) old-school copy: works on most school laptops, needs the text selected */
+    try{ var ta=document.createElement("textarea"); ta.value=t; ta.setAttribute("readonly",""); ta.style.position="fixed"; ta.style.top="0"; ta.style.opacity="0"; document.body.appendChild(ta); ta.focus(); ta.select(); ok=document.execCommand("copy"); document.body.removeChild(ta); }catch(e){}
+    /* 2) modern copy as a backup */
+    try{ if(navigator.clipboard) navigator.clipboard.writeText(t).then(function(){ c.textContent="✅ Copied! Paste it in your chat"; }).catch(function(){}); }catch(e){}
+    if(ok){ c.textContent="✅ Copied! Paste it in your chat"; }
+    else { var r=document.createRange(); r.selectNodeContents($("msg")); var g=getSelection(); g.removeAllRanges(); g.addRange(r); c.textContent="Press Ctrl+C (or ⌘+C) to copy"; }
   });
 }
 function message(){ return "Hi Monique! I'd like a reading drop-in on "+label(pick)+"."+(need?" I need: "+need+".":""); }
