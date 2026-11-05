@@ -47,18 +47,18 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset
 <main>
   <header style="display:flex;flex-direction:column;gap:6px">
     <h1>📖 Reading Room</h1>
-    <p>Pick a time for a <b>30-minute reading drop-in</b> with Ms. Monique.</p>
+    <p>Pick a time for a <b>30-minute reading drop-in</b> with Monique.</p>
     <p class="small" id="week"></p>
   </header>
 
   <section class="how" aria-label="How it works">
-    <div><b>1</b>Pick your time zone</div>
-    <div><b>2</b>Tap a time</div>
-    <div><b>3</b>Say what you need</div>
-    <div><b>4</b>Send it in your Google Chat</div>
+    <div><b>1</b>Tap a time</div>
+    <div><b>2</b>Tap what you need</div>
+    <div><b>3</b>Tap the green button</div>
+    <div><b>4</b>Paste it in your chat with Monique and send</div>
   </section>
 
-  <section style="display:flex;flex-direction:column;gap:8px">
+  <section id="zonebox" style="display:flex;flex-direction:column;gap:8px">
     <h2>My time zone</h2>
     <div class="zones" id="zones" role="group" aria-label="Time zone"></div>
   </section>
@@ -67,7 +67,7 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset
 
   <section class="book" id="book" hidden></section>
 
-  <p class="small">We meet in your regular Zoom room. Can't come after you booked? Tell Ms. Monique so someone else can have the time.</p>
+  <p class="small">We meet in your regular Zoom room. Can't come after you booked? Tell Monique so someone else can have the time.</p>
 </main>
 <script>
 (function(){
@@ -82,10 +82,14 @@ var SLOTS = [
 ];
 /* ================================================ */
 
-var ZONES=[{id:"America/New_York",label:"Eastern"},{id:"America/Chicago",label:"Central"},{id:"America/Denver",label:"Mountain"},{id:"America/Vancouver",label:"Pacific"}];
+var ZONES=[{id:"America/New_York",label:"Eastern",key:"eastern"},{id:"America/Chicago",label:"Central",key:"central"},{id:"America/Denver",label:"Mountain",key:"mountain"}];
 var NEEDS=["Help with a lesson","Test review","Getting ready for a test","Something else"];
 var zone="America/Chicago", pick=null, need=null;
-try{ var z=localStorage.getItem("readingroom.zone"); if(z && ZONES.some(function(x){return x.id===z;})) zone=z; }catch(e){}
+/* Each student gets their own link ending in #eastern, #central or #mountain, so they never have to know their zone. */
+var fromLink=false;
+var hz=(location.hash||"").replace("#","").toLowerCase();
+ZONES.forEach(function(Z){ if(Z.key===hz){ zone=Z.id; fromLink=true; } });
+if(!fromLink){ try{ var z=localStorage.getItem("readingroom.zone"); if(z && ZONES.some(function(x){return x.id===z;})) zone=z; }catch(e){} }
 
 function $(id){return document.getElementById(id);}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
@@ -104,10 +108,11 @@ function renderZones(){
 function render(){
   $("week").textContent=WEEK+" · times shown in "+zl()+" time";
   renderZones();
+  $("zonebox").hidden=fromLink;
   var now=new Date(), groups={}, order=[];
   SLOTS.forEach(function(s){ var d=instant(s); if(d<now) return; var k=fmtDay(d); if(!groups[k]){groups[k]=[];order.push(k);} groups[k].push(s); });
   var h="";
-  if(!order.length) h='<div class="day"><p class="none">All the times are taken this week. Ask Ms. Monique in your chat. 💬</p></div>';
+  if(!order.length) h='<div class="day"><p class="none">All the times are taken this week. Ask Monique in your chat. 💬</p></div>';
   order.forEach(function(k){
     h+='<div class="day"><h2>'+esc(k)+'</h2><div class="times">'+groups[k].map(function(s){ return '<button type="button" class="time" data-s="'+s+'" aria-pressed="'+(s===pick)+'">'+esc(fmtTime(instant(s)))+'</button>'; }).join("")+'</div></div>';
   });
@@ -120,16 +125,15 @@ function renderBook(){
   if(!pick){ w.hidden=true; return; }
   w.hidden=false;
   var h='<h2>✅ '+esc(label(pick))+'</h2><p>What do you need?</p><div class="needs">'+NEEDS.map(function(n){return '<button type="button" class="need" aria-pressed="'+(n===need)+'">'+esc(n)+'</button>';}).join("")+'</div>';
-  h+='<p>Copy this and send it to Ms. Monique in Google Chat:</p><div class="msg" id="msg">'+esc(message())+'</div><div class="row"><button type="button" class="btn" id="copy">1 · Copy</button><a class="btn ghost" href="https://chat.google.com" target="_blank" rel="noopener">2 · Open Google Chat</a></div><p class="small">Ms. Monique will write back when your time is saved. 👍</p>';
+  h+='<div class="msg" id="msg">'+esc(message())+'</div><div class="row"><a class="btn" id="copy" href="https://chat.google.com" target="_blank" rel="noopener">Copy and open my chat</a></div><p class="small">Paste it in your chat with Monique and send. She will write back when your time is saved. 👍</p>';
   w.innerHTML=h;
   Array.prototype.forEach.call(w.querySelectorAll(".need"),function(b){ b.addEventListener("click",function(){ need=b.textContent; renderBook(); }); });
   var c=$("copy"); if(c) c.addEventListener("click",function(){
     var t=message();
-    try{ navigator.clipboard.writeText(t).then(function(){c.textContent="Copied! Now paste it in your chat";}).catch(sel); }catch(e){ sel(); }
-    function sel(){ var r=document.createRange(); r.selectNodeContents($("msg")); var s=getSelection(); s.removeAllRanges(); s.addRange(r); c.textContent="Press Ctrl+C (or ⌘+C) to copy"; }
+    try{ navigator.clipboard.writeText(t).then(function(){c.textContent="Copied! Now paste it in your chat";}).catch(function(){}); }catch(e){}
   });
 }
-function message(){ return "Hi Ms. Monique! I'd like a reading drop-in on "+label(pick)+"."+(need?" I need: "+need+".":""); }
+function message(){ return "Hi Monique! I'd like a reading drop-in on "+label(pick)+"."+(need?" I need: "+need+".":""); }
 render();
 })();
 </script>
