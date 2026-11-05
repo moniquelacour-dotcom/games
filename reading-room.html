@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Reading Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&family=Baloo+2:wght@700;800&display=swap">
+<style>
+/* Reading Room: this week's open reading drop-in times. No student names anywhere. Silent. */
+:root{--bg:#f3f7f4;--card:#fff;--ink:#1f2a24;--muted:#5b6b62;--line:#d9e4dd;--green:#2f7a55;--green-soft:#e2f2e8;--sun:#d98a2b;--sun-soft:#fcefdc;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;--body:"Lexend","Segoe UI",Arial,sans-serif}
+@media (prefers-color-scheme: dark){:root{--bg:#121a16;--card:#1b2620;--ink:#e8f1ec;--muted:#a3b5ab;--line:#2c3b33;--green:#7fd0a6;--green-soft:#1d3328;--sun:#f0b46a;--sun-soft:#3a2c1a;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:19px/1.5 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px}
+main{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-family:var(--display);color:var(--green);font-size:2.4rem;margin:0;line-height:1.1}
+h2{font-family:var(--display);font-size:1.5rem;margin:0}
+p{margin:0}
+.small{font-size:.9rem;color:var(--muted)}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.how div{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:12px;display:flex;gap:10px;align-items:center;font-size:1rem}
+.how b{font-size:1.6rem}
+.zones{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.zone{font:inherit;font-weight:600;font-size:1rem;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 16px;cursor:pointer}
+.zone[aria-pressed="true"]{border-color:var(--green);background:var(--green-soft);color:var(--green)}
+.day{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.times{display:flex;gap:10px;flex-wrap:wrap}
+.time{font:inherit;font-weight:700;font-size:1.15rem;border:2px solid var(--green);background:var(--card);color:var(--green);border-radius:14px;padding:10px 18px;cursor:pointer;font-variant-numeric:tabular-nums}
+.time:hover{background:var(--green-soft)}
+.time[aria-pressed="true"]{background:var(--green);color:var(--card)}
+.none{color:var(--muted)}
+.book{background:var(--sun-soft);border:2px solid var(--sun);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.needs{display:flex;gap:8px;flex-wrap:wrap}
+.need{font:inherit;font-size:1rem;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer}
+.need[aria-pressed="true"]{border-color:var(--sun);font-weight:700}
+.msg{background:var(--card);border:2px dashed var(--line);border-radius:14px;padding:12px;font-size:1rem;white-space:pre-wrap;user-select:all}
+.btn{font:inherit;font-weight:700;border-radius:999px;padding:10px 20px;cursor:pointer;border:2px solid var(--green);background:var(--green);color:var(--card);text-decoration:none;display:inline-block}
+.btn.ghost{background:none;color:var(--green)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+button:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+  <header style="display:flex;flex-direction:column;gap:6px">
+    <h1>📖 Reading Room</h1>
+    <p>Pick a time for a <b>30-minute reading drop-in</b> with Ms. Monique.</p>
+    <p class="small" id="week"></p>
+  </header>
+
+  <section class="how" aria-label="How it works">
+    <div><b>1</b>Pick your time zone</div>
+    <div><b>2</b>Tap a time</div>
+    <div><b>3</b>Say what you need</div>
+    <div><b>4</b>Send it in your Google Chat</div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:8px">
+    <h2>My time zone</h2>
+    <div class="zones" id="zones" role="group" aria-label="Time zone"></div>
+  </section>
+
+  <section id="days" style="display:flex;flex-direction:column;gap:14px" aria-live="polite"></section>
+
+  <section class="book" id="book" hidden></section>
+
+  <p class="small">We meet in your regular Zoom room. Can't come after you booked? Tell Ms. Monique so someone else can have the time.</p>
+</main>
+<script>
+(function(){
+"use strict";
+/* ===== Coach settings: update every Friday ===== */
+var WEEK = "Week of Monday 9 November";
+/* Open drop-in times, written in Central time (America/Chicago). Remove a line when it's booked. */
+var SLOTS = [
+  "2026-11-10T10:00","2026-11-10T14:30","2026-11-10T15:00",
+  "2026-11-11T11:30","2026-11-11T14:30","2026-11-11T15:00",
+  "2026-11-12T08:30","2026-11-12T10:30","2026-11-12T12:00","2026-11-12T14:00","2026-11-12T14:30","2026-11-12T15:00"
+];
+/* ================================================ */
+
+var ZONES=[{id:"America/New_York",label:"Eastern"},{id:"America/Chicago",label:"Central"},{id:"America/Denver",label:"Mountain"},{id:"America/Vancouver",label:"Pacific"}];
+var NEEDS=["Help with a lesson","Test review","Getting ready for a test","Something else"];
+var zone="America/Chicago", pick=null, need=null;
+try{ var z=localStorage.getItem("readingroom.zone"); if(z && ZONES.some(function(x){return x.id===z;})) zone=z; }catch(e){}
+
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
+/* Central wall time -> real instant. Nov–Mar: Central is UTC-6. */
+function instant(central){ return new Date(central+":00-06:00"); }
+function zl(){ return ZONES.filter(function(x){return x.id===zone;})[0].label; }
+function fmtTime(d){ return d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",timeZone:zone}); }
+function fmtDay(d){ return d.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",timeZone:zone}); }
+function label(s){ var d=instant(s); return fmtDay(d)+" at "+fmtTime(d)+" "+zl()+" time"; }
+
+function renderZones(){
+  var w=$("zones"); w.innerHTML="";
+  ZONES.forEach(function(Z){ var b=document.createElement("button"); b.type="button"; b.className="zone"; b.textContent=Z.label; b.setAttribute("aria-pressed",String(Z.id===zone));
+    b.addEventListener("click",function(){ zone=Z.id; try{localStorage.setItem("readingroom.zone",zone);}catch(e){} render(); }); w.appendChild(b); });
+}
+function render(){
+  $("week").textContent=WEEK+" · times shown in "+zl()+" time";
+  renderZones();
+  var now=new Date(), groups={}, order=[];
+  SLOTS.forEach(function(s){ var d=instant(s); if(d<now) return; var k=fmtDay(d); if(!groups[k]){groups[k]=[];order.push(k);} groups[k].push(s); });
+  var h="";
+  if(!order.length) h='<div class="day"><p class="none">All the times are taken this week. Ask Ms. Monique in your chat. 💬</p></div>';
+  order.forEach(function(k){
+    h+='<div class="day"><h2>'+esc(k)+'</h2><div class="times">'+groups[k].map(function(s){ return '<button type="button" class="time" data-s="'+s+'" aria-pressed="'+(s===pick)+'">'+esc(fmtTime(instant(s)))+'</button>'; }).join("")+'</div></div>';
+  });
+  $("days").innerHTML=h;
+  Array.prototype.forEach.call(document.querySelectorAll(".time"),function(b){ b.addEventListener("click",function(){ pick=b.getAttribute("data-s"); render(); renderBook(); $("book").scrollIntoView({behavior:"smooth",block:"nearest"}); }); });
+  renderBook();
+}
+function renderBook(){
+  var w=$("book");
+  if(!pick){ w.hidden=true; return; }
+  w.hidden=false;
+  var h='<h2>✅ '+esc(label(pick))+'</h2><p>What do you need?</p><div class="needs">'+NEEDS.map(function(n){return '<button type="button" class="need" aria-pressed="'+(n===need)+'">'+esc(n)+'</button>';}).join("")+'</div>';
+  h+='<p>Copy this and send it to Ms. Monique in Google Chat:</p><div class="msg" id="msg">'+esc(message())+'</div><div class="row"><button type="button" class="btn" id="copy">1 · Copy</button><a class="btn ghost" href="https://chat.google.com" target="_blank" rel="noopener">2 · Open Google Chat</a></div><p class="small">Ms. Monique will write back when your time is saved. 👍</p>';
+  w.innerHTML=h;
+  Array.prototype.forEach.call(w.querySelectorAll(".need"),function(b){ b.addEventListener("click",function(){ need=b.textContent; renderBook(); }); });
+  var c=$("copy"); if(c) c.addEventListener("click",function(){
+    var t=message();
+    try{ navigator.clipboard.writeText(t).then(function(){c.textContent="Copied! Now paste it in your chat";}).catch(sel); }catch(e){ sel(); }
+    function sel(){ var r=document.createRange(); r.selectNodeContents($("msg")); var s=getSelection(); s.removeAllRanges(); s.addRange(r); c.textContent="Press Ctrl+C (or ⌘+C) to copy"; }
+  });
+}
+function message(){ return "Hi Ms. Monique! I'd like a reading drop-in on "+label(pick)+"."+(need?" I need: "+need+".":""); }
+render();
+})();
+</script>
+</body>
+</html>
