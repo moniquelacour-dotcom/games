@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Book Club Vote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&family=Creepster&family=Baloo+2:wght@700;800&display=swap">
+<style>
+/* Book Club Vote: six spooky trailers, the club picks one. Silent. No names. */
+:root{--bg:#14121c;--card:#201c2c;--ink:#efeaf8;--muted:#b3abc8;--line:#3a3350;--glow:#ffb453;--glow-soft:#3a2b17;--win:#7fd6a8;--win-soft:#1c3329;
+  --display:"Creepster","Baloo 2",system-ui,sans-serif;--head:"Baloo 2","Trebuchet MS",system-ui,sans-serif;--body:"Lexend","Segoe UI",Arial,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:19px/1.6 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px}
+main{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-family:var(--display);font-size:2.8rem;font-weight:400;margin:0;color:var(--glow);letter-spacing:.03em;line-height:1.1}
+h2{font-family:var(--head);font-size:1.4rem;margin:0}
+p{margin:0}.small{font-size:.9rem;color:var(--muted)}
+.cards{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.card.win{border-color:var(--win);box-shadow:0 0 0 3px var(--win-soft)}
+.top{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.top .ic{font-size:2.4rem;line-height:1}
+.meta{font-size:.85rem;color:var(--muted)}
+details summary{cursor:pointer;font-weight:700;color:var(--glow)}
+details p{white-space:pre-line;margin-top:8px;font-size:1.05rem}
+.last{font-weight:700}
+.vote{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn{font:inherit;font-weight:700;border-radius:999px;padding:8px 16px;cursor:pointer;border:2px solid var(--glow);background:var(--glow-soft);color:var(--glow)}
+.btn.small{padding:4px 12px;font-size:.9rem}
+.count{font-family:var(--head);font-size:1.6rem;min-width:2ch;text-align:center}
+.bar{position:sticky;bottom:12px;background:var(--card);border:2px solid var(--line);border-radius:16px;padding:12px 16px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.winner{font-family:var(--head);font-size:1.3rem;color:var(--win)}
+button:focus-visible{outline:3px solid var(--win);outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+  <header style="display:flex;flex-direction:column;gap:6px">
+    <h1>Pick Our Book</h1>
+    <p>Six spooky stories. Read each trailer out loud. Then everyone picks their top 2!</p>
+  </header>
+  <section class="cards" id="cards"></section>
+  <div class="bar"><span class="winner" id="winner">Votes: 0</span><span><button type="button" class="btn" id="reveal">🏆 Show the winner</button> <button type="button" class="btn small" id="reset">Start over</button></span></div>
+</main>
+<script>
+(function(){
+"use strict";
+var B=[
+ {id:"hound",ic:"🐕",t:"The Hound of the Baskervilles",by:"Sherlock Holmes, 1902",sp:"👻👻👻",tr:"For two hundred years, the Baskerville family has whispered about a curse.\nA giant hound. Eyes that glow. A howl across the foggy moor at night.\nNow Sir Charles Baskerville is dead, and next to him in the mud…\nare the footprints of an enormous dog.\nIs it a ghost? Or is someone using the legend to hide a crime?\nOnly the greatest detective in the world can find out.",last:"Do you dare walk onto the moor?"},
+ {id:"hollow",ic:"🎃",t:"The Legend of Sleepy Hollow",by:"Washington Irving, 1820",sp:"👻👻👻",tr:"In a sleepy little town, nobody goes near the old bridge after dark.\nBecause every night, a rider gallops through the woods…\na rider with no head.\nIchabod Crane doesn't believe in ghosts. He's new in town, and he laughs at the stories.\nBut one night, riding home alone, he hears hoofbeats behind him.\nCloser. And closer.",last:"Will he make it to the bridge?"},
+ {id:"canterville",ic:"👻",t:"The Canterville Ghost",by:"Oscar Wilde, 1887",sp:"👻 and funny!",tr:"The Canterville ghost has been scaring people for three hundred years.\nHe rattles chains. He moans. He leaves a bloodstain on the floor that never goes away.\nThen a new family moves in… and they are NOT scared.\nThey scrub away his bloodstain. They oil his squeaky chains. The twins set traps for him!\nNow the ghost is the one who's terrified.",last:"Can a ghost who can't scare anyone ever rest?"},
+ {id:"phantom",ic:"🎭",t:"The Phantom of the Opera",by:"Gaston Leroux, 1910",sp:"👻👻",tr:"Deep under the Paris Opera House, past the stage and the costumes and the dark stairs,\nthere is a lake. And something lives beside it.\nSingers hear a voice in the walls. Notes appear, signed “O.G.”: the Opera Ghost.\nAnd a young singer named Christine is getting secret lessons from a teacher she has never seen.\nWho is the Phantom? And what does he want with her?",last:"The show must go on… but should it?"},
+ {id:"goldbug",ic:"🪲",t:"The Gold-Bug",by:"Edgar Allan Poe, 1843",sp:"👻 + a puzzle 🔍🔍🔍",tr:"William finds a strange golden beetle on the beach.\nIt's heavy. It shines like real gold.\nThen, by firelight, a secret message appears on an old scrap of paper:\nnumbers and symbols, a pirate's code.\nSomewhere on this island, a treasure is buried.\nCan you crack the code before anyone else does?",last:"You'll get the real code. You'll solve it yourself."},
+ {id:"painting",ic:"🖼️",t:"The Painting That Blinked",by:"An original mystery, written for our club",sp:"👻👻",tr:"The old museum on Hollow Street has a painting of a girl with a gray cat in her lap.\nNobody pays much attention to it.\nUntil the night two friends stay late… and the girl in the painting blinks.\nThe next morning, the cat in the painting is gone.\nAnd a gray cat is sitting on the museum steps, waiting for them.",last:"What happened to the girl in the frame? And why does the cat want our help?"}
+];
+var votes={}; B.forEach(function(b){votes[b.id]=0;});
+try{ var s=JSON.parse(localStorage.getItem("bookclub.votes")||"null"); if(s) Object.keys(votes).forEach(function(k){ if(typeof s[k]==="number") votes[k]=s[k]; }); }catch(e){}
+var shown=false;
+function $(id){return document.getElementById(id);}
+function esc(x){return String(x).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
+function save(){ try{ localStorage.setItem("bookclub.votes",JSON.stringify(votes)); }catch(e){} }
+function top(){ var m=Math.max.apply(null,B.map(function(b){return votes[b.id];})); return m? B.filter(function(b){return votes[b.id]===m;}) : []; }
+function render(){
+  var w=shown?top():[];
+  $("cards").innerHTML=B.map(function(b){ var isW=w.some(function(x){return x.id===b.id;});
+    return '<article class="card'+(isW?" win":"")+'"><div class="top"><span class="ic">'+b.ic+'</span><div><h2>'+esc(b.t)+'</h2><div class="meta">'+esc(b.by)+' · Spooky: '+b.sp+'</div></div></div>'+
+      '<details><summary>Read the trailer</summary><p>'+esc(b.tr)+'</p><p class="last">'+esc(b.last)+'</p></details>'+
+      '<div class="vote"><button type="button" class="btn small" data-m="'+b.id+'" aria-label="Remove a vote">−</button><span class="count">'+votes[b.id]+'</span><button type="button" class="btn" data-p="'+b.id+'">+ Vote</button>'+(isW?' <span class="winner">🏆 Our book!</span>':'')+'</div></article>'; }).join("");
+  var total=B.reduce(function(a,b){return a+votes[b.id];},0);
+  $("winner").textContent = shown ? (w.length===1 ? "🏆 We're reading: "+w[0].t : (w.length>1 ? "It's a tie! Decide together." : "No votes yet")) : "Votes: "+total;
+  Array.prototype.forEach.call(document.querySelectorAll("[data-p]"),function(x){ x.addEventListener("click",function(){ votes[x.getAttribute("data-p")]++; save(); render(); }); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-m]"),function(x){ x.addEventListener("click",function(){ var k=x.getAttribute("data-m"); if(votes[k]>0) votes[k]--; save(); render(); }); });
+}
+$("reveal").addEventListener("click",function(){ shown=true; render(); });
+$("reset").addEventListener("click",function(){ Object.keys(votes).forEach(function(k){votes[k]=0;}); shown=false; save(); render(); });
+render();
+})();
+</script>
+</body>
+</html>
