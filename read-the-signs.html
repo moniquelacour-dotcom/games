@@ -11,10 +11,10 @@
 <style>
 /* Read the Signs: honoring punctuation. Grade 2 texts (Flesch-Kincaid 2.1-2.5). Silent unless tapped. No names. */
 :root{--bg:#f5f6fb;--card:#fff;--ink:#1f2333;--muted:#5d6275;--line:#dfe2ee;
-  --stop:#d33b3b;--stop-soft:#fde4e4;--up:#2f6fd6;--up-soft:#e2ecfc;--zap:#e07b00;--zap-soft:#fdeed9;--hi:#fff3b0;--ok:#2e8a5c;--ok-soft:#e0f3e8;
+  --stop:#d33b3b;--stop-soft:#fde4e4;--up:#2f6fd6;--up-soft:#e2ecfc;--zap:#e07b00;--zap-soft:#fdeed9;--pause:#2e8a5c;--pause-soft:#e0f3e8;--trail:#7b4fc9;--trail-soft:#efe6fb;--talk:#0f8a8a;--talk-soft:#dcf3f3;--hi:#fff3b0;--ok:#2e8a5c;--ok-soft:#e0f3e8;
   --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;--body:"Lexend","Segoe UI",Arial,sans-serif}
 @media (prefers-color-scheme: dark){:root{--bg:#14161f;--card:#1e2130;--ink:#eceef6;--muted:#a6abc0;--line:#323648;
-  --stop:#ff7a7a;--stop-soft:#3b2226;--up:#7fb0ff;--up-soft:#1f2b44;--zap:#ffb453;--zap-soft:#3a2b17;--hi:#4a4220;--ok:#7fd6a8;--ok-soft:#1c3329;color-scheme:dark}}
+  --stop:#ff7a7a;--stop-soft:#3b2226;--up:#7fb0ff;--up-soft:#1f2b44;--zap:#ffb453;--zap-soft:#3a2b17;--pause:#7fd6a8;--pause-soft:#1c3329;--trail:#c4a6ff;--trail-soft:#2c2340;--talk:#6fd9d9;--talk-soft:#173334;--hi:#4a4220;--ok:#7fd6a8;--ok-soft:#1c3329;color-scheme:dark}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:20px/1.55 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 56px}
 [hidden]{display:none!important}
@@ -30,6 +30,9 @@ p{margin:0}.small{font-size:.9rem;color:var(--muted)}
 .sign.stop{background:var(--stop-soft);border-color:var(--stop)}
 .sign.up{background:var(--up-soft);border-color:var(--up)}
 .sign.zap{background:var(--zap-soft);border-color:var(--zap)}
+.sign.pause{background:var(--pause-soft);border-color:var(--pause)}
+.sign.trail{background:var(--trail-soft);border-color:var(--trail)}
+.sign.talk{background:var(--talk-soft);border-color:var(--talk)}
 .sign .big{font-family:var(--display);font-size:3rem;line-height:1}
 .sign b{font-size:1.2rem}
 .card{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:14px}
@@ -51,6 +54,10 @@ p{margin:0}.small{font-size:.9rem;color:var(--muted)}
 .m.stop{background:var(--stop-soft);color:var(--stop)}
 .m.up{background:var(--up-soft);color:var(--up)}
 .m.zap{background:var(--zap-soft);color:var(--zap)}
+.m.pause{background:var(--pause-soft);color:var(--pause)}
+.m.trail{background:var(--trail-soft);color:var(--trail)}
+.talk{border-radius:8px;background:var(--talk-soft);color:var(--talk);font-weight:600;padding:0 4px}
+.talk.plain{background:none;color:inherit;font-weight:inherit;padding:0}
 .m.plain{background:none;padding:0;margin:0;color:inherit;font-weight:inherit}
 .stories{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
 .st{font:inherit;font-weight:700;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:18px;padding:14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
@@ -72,7 +79,7 @@ button:focus-visible{outline:3px solid var(--zap);outline-offset:2px}
 <main>
   <header style="display:flex;flex-direction:column;gap:6px">
     <h1>🚦 Read the Signs</h1>
-    <p>Punctuation marks are signs. They tell your voice what to do.</p>
+    <p>Punctuation marks are signs. They tell your voice what to do: stop, go up, get excited, pause, trail off, or talk like a character.</p>
   </header>
   <div class="tabs" id="tabs" role="group" aria-label="Choose a game"></div>
   <section id="pane" aria-live="polite"></section>
@@ -80,12 +87,16 @@ button:focus-visible{outline:3px solid var(--zap);outline-offset:2px}
 <script>
 (function(){
 "use strict";
-var DATA = {"STORIES":[{"id":"puppy","title":"Max and the Ball","icon":"🐶","text":"Max the puppy raced out into the back yard after breakfast. He saw a shiny blue ball next to the wooden fence. He wanted to play with it more than anything! Then the ball started rolling away from him. Where was it going? It rolled under the old fence and was gone. Max dug and dug in the soft, muddy dirt. Could a little puppy fit under there? Max wiggled forward and pushed with his nose. He finally got the ball back!"},{"id":"owl","title":"The Little Owl","icon":"🦉","text":"A little owl was sitting high up in a tall oak tree. It was very dark, and the moon was shining over the field. The owl was wide awake and listening. What was that sound down below? It was a tiny gray mouse running through the long grass. The owl slowly opened its huge yellow eyes. Would it fly down to take a closer look? Whoosh! The little owl glided across the field. Owls can see very well in the dark!"},{"id":"seeds","title":"Seeds in a Cup","icon":"🌱","text":"Nora planted three bean seeds in a cup of dirt. She gave them a little water every morning before school. She set the cup next to a sunny window in the kitchen. How long would it take for the seeds to grow? Nora looked at the cup every day. On the fifth morning, she saw a tiny green sprout! Plants need water, dirt, and sun to grow. Do you think the sprout will grow taller? Nora is going to measure it every week. She can hardly wait!"},{"id":"bee","title":"The Busy Bee","icon":"🐝","text":"A busy bee buzzed from flower to flower in the garden. It was looking for sweet nectar to drink. The bee had yellow dust stuck all over its fuzzy legs. Do you know what that yellow dust is called? It is called pollen, and it is very important. The bee carries pollen from one flower to the next. That helps the plants make new seeds! Bees work hard from morning until night. What would our gardens do without bees? We should thank them!"},{"id":"ice","title":"The Melting Ice","icon":"🧊","text":"Sam took a cold ice cube out of the freezer after lunch. He put it on a plate outside in the hot afternoon sun. What do you think happened next? The ice cube slowly started getting smaller and smaller. Soon there was a little puddle of water on the plate. The ice had melted! Heat from the sun makes ice change into water. Can the water ever change back into ice? Yes, it can, if you put it back in the freezer. Science is so cool!"},{"id":"turtle","title":"The Turtle Race","icon":"🐢","text":"Two turtles wanted to have a race to the edge of the pond. Ready, set, go! The first turtle walked very slowly, but he never stopped. The second turtle ran ahead and then took a long nap under a tree. Which turtle do you think is going to win? The slow turtle kept going, one step at a time. He reached the pond first! The fast turtle woke up and could not believe his eyes. Is slow and steady always the best way to go?"}],"PICKS":[{"t":"The orange cat is sleeping on the warm, fuzzy rug","a":"."},{"t":"Where did you put my red hat","a":"?"},{"t":"Watch out, the puppy is running right at us","a":"!"},{"t":"We had pancakes for breakfast today","a":"."},{"t":"Could you please help me carry this heavy box","a":"?"},{"t":"Wow, that is the biggest fish I have ever seen","a":"!"},{"t":"Frogs can jump very far","a":"."},{"t":"What time does the yellow school bus come","a":"?"},{"t":"Hooray, our team finally won the big game","a":"!"},{"t":"The sun goes down behind the hills at night","a":"."},{"t":"Is it going to rain again this afternoon","a":"?"},{"t":"Ouch, I stubbed my toe on the bottom step","a":"!"},{"t":"My sister likes to draw horses","a":"."},{"t":"How many legs does a garden spider have","a":"?"},{"t":"Yay, it is finally snowing outside","a":"!"},{"t":"Bees make honey in their hives","a":"."},{"t":"Did you feed the fish today","a":"?"},{"t":"Oh no, the milk spilled all over the table","a":"!"}]};
+var DATA = {"STORIES":[{"id":"puppy","title":"Max and the Ball","icon":"🐶","s":["Max the puppy ran out into the back yard after breakfast.","He saw a shiny blue ball next to the wooden fence.","\"Can I play with it?\" Max asked his friend Rosa.","\"Yes, you can!\" Rosa called back.","Then the ball started rolling, rolling, rolling away.","It went under the old fence and was gone...","Max dug and dug in the soft, muddy dirt.","Could a little puppy fit under there?","He wiggled, pushed with his nose, and got it.","He finally got the ball back!"]},{"id":"owl","title":"The Little Owl","icon":"🦉","s":["A little owl was sitting high up in a tall oak tree.","It was very dark, and the moon was shining over the field.","\"What was that sound?\" the owl whispered.","It was a tiny gray mouse, running through the long grass.","The owl slowly opened its huge yellow eyes.","Would it fly down to take a closer look?","The owl waited, and waited, and waited...","Whoosh!","\"I can see you!\" the little owl hooted.","Owls can see very well in the dark."]},{"id":"seeds","title":"Seeds in a Cup","icon":"🌱","s":["Nora planted three bean seeds in a cup of dirt.","She gave them water every morning, before school.","She set the cup next to a sunny window in the kitchen.","\"How long will it take?\" Nora asked her mom.","\"You will have to wait and see,\" her mom said.","Nora looked at the cup every day, but nothing happened...","On the fifth morning, she saw a tiny green sprout!","Plants need water, dirt, and sun to grow.","Do you think the sprout will grow taller?","\"I can hardly wait!\" Nora said."]},{"id":"bee","title":"The Busy Bee","icon":"🐝","s":["A busy bee buzzed from flower to flower in the garden.","It was looking for sweet nectar to drink.","The bee had yellow dust stuck all over its fuzzy legs.","\"What is that yellow dust?\" asked Leo.","\"It is called pollen,\" his dad said.","The bee takes pollen from one flower, to the next, to the next...","That helps the plants make new seeds!","Bees work hard from morning until night.","What would our gardens do without bees?","\"Thank you, bees!\" Leo shouted."]},{"id":"ice","title":"The Melting Ice","icon":"🧊","s":["Sam took a cold ice cube out of the freezer after lunch.","He put it on a plate outside, in the hot afternoon sun.","\"What will happen to it?\" asked his sister.","The ice cube got smaller, and smaller, and smaller...","Soon there was a little puddle of water on the plate.","\"It melted!\" Sam yelled.","Heat from the sun makes ice change into water.","Can the water ever change back into ice?","Yes, it can, if you put it back in the freezer.","Science is so cool!"]},{"id":"turtle","title":"The Turtle Race","icon":"🐢","s":["Two turtles wanted to have a race to the edge of the pond.","\"Ready, set, go!\" shouted the frog.","The first turtle walked very slowly, but he never stopped.","The second turtle ran ahead, and then took a long nap under a tree.","Which turtle do you think is going to win?","The slow turtle kept going, one step at a time.","He reached the pond first!","The fast turtle woke up, rubbed his eyes, and looked around...","\"How did you beat me?\" he asked.","\"Slow and steady,\" said the first turtle."]}],"PICKS":[{"t":"The orange cat is sleeping on the warm, fuzzy rug","a":"."},{"t":"Where did you put my red hat","a":"?"},{"t":"Watch out, the puppy is running right at us","a":"!"},{"t":"We had pancakes for breakfast today","a":"."},{"t":"Could you please help me carry this heavy box","a":"?"},{"t":"Wow, that is the biggest fish I have ever seen","a":"!"},{"t":"Frogs can jump very far","a":"."},{"t":"What time does the yellow school bus come","a":"?"},{"t":"Hooray, our team finally won the big game","a":"!"},{"t":"The sun goes down behind the hills at night","a":"."},{"t":"Is it going to rain again this afternoon","a":"?"},{"t":"Ouch, I stubbed my toe on the bottom step","a":"!"},{"t":"My sister likes to draw horses","a":"."},{"t":"How many legs does a garden spider have","a":"?"},{"t":"Yay, it is finally snowing outside","a":"!"},{"t":"Bees make honey in their hives","a":"."},{"t":"Did you feed the fish today","a":"?"},{"t":"Oh no, the milk spilled all over the table","a":"!"}]};
 var SIGN = {
   ".": {k:"stop", icon:"🛑", name:"Period", say:"Stop. Let your voice go down.", ex:"The cat is asleep on the rug."},
   "?": {k:"up",   icon:"⬆️", name:"Question mark", say:"Let your voice go up at the end.", ex:"Where is my red hat?"},
-  "!": {k:"zap",  icon:"⚡", name:"Exclamation mark", say:"Say it with lots of feeling!", ex:"Wow, it is snowing!"}
+  "!": {k:"zap",  icon:"⚡", name:"Exclamation mark", say:"Say it with lots of feeling!", ex:"Wow, it is snowing!"},
+  ",": {k:"pause",icon:"⏸️", name:"Comma", say:"Take a tiny pause, then keep going.", ex:"I like apples, grapes, and pears."},
+  "...": {k:"trail",icon:"〰️", name:"Ellipsis", say:"Let your voice trail off and wait...", ex:"The owl waited, and waited, and waited..."},
+  "\"": {k:"talk", icon:"💬", name:"Quotation marks", say:"Someone is talking. Use their voice!", ex:"\"I can see you!\" the owl hooted."}
 };
+var ORDER=[".","?","!",",","...","\""];
 var mode="meet", pickOrder=[], pi=0, pickStars=0, picked=null, story=null, si=0, stars=0, view="signs";
 function $(id){return document.getElementById(id);}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
@@ -94,7 +105,16 @@ function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){var j=Math.floor
 function mark(ch){ var S=SIGN[ch]; if(!S) return esc(ch);
   if(view==="plain") return '<span class="m plain">'+esc(ch)+'</span>';
   return '<span class="m '+S.k+'">'+(view==="signs"?S.icon+" ":"")+esc(ch)+'</span>'; }
-function splitSentences(t){ return t.match(/[^.?!]+[.?!]+/g).map(function(s){return s.trim();}); }
+function renderS(str){ var out="", inQ=false, i=0;
+  while(i<str.length){
+    if(str.substr(i,3)==="..."){ out+=mark("..."); i+=3; continue; }
+    var ch=str[i];
+    if(ch==='"'){ if(!inQ){ out+='<span class="talk'+(view==="plain"?" plain":"")+'">'+(view==="signs"?"💬 ":"")+'“'; inQ=true; } else { out+='”</span>'; inQ=false; } i++; continue; }
+    if(SIGN[ch]) out+=mark(ch); else out+=esc(ch);
+    i++;
+  }
+  if(inQ) out+="</span>"; return out; }
+function signsIn(str){ var f=[]; ORDER.forEach(function(k){ if(str.indexOf(k)>=0 && (k!=="."||str.replace(/.../g,"").indexOf(".")>=0)) f.push(k); }); return f; }
 
 function tabs(){
   var T=[["meet","1 · Meet the signs"],["pick","2 · Pick the sign"],["story","3 · Read a story"]];
@@ -104,8 +124,8 @@ function tabs(){
 function render(){ tabs(); if(mode==="meet") meet(); else if(mode==="pick") pick(); else storyPane(); }
 
 function meet(){
-  var h='<div class="signs">'+[".","?","!"].map(function(ch){ var S=SIGN[ch];
-    return '<div class="sign '+S.k+'"><div class="big">'+S.icon+' '+ch+'</div><b>'+S.name+'</b><p>'+S.say+'</p><p><i>'+esc(S.ex)+'</i></p><div class="row"><button type="button" class="btn ghost" data-ex="'+esc(S.ex)+'">🔊 Hear it</button></div></div>'; }).join("")+'</div>';
+  var h='<div class="signs">'+ORDER.map(function(ch){ var S=SIGN[ch];
+    return '<div class="sign '+S.k+'"><div class="big">'+S.icon+' '+(ch==="\""?"“ ”":ch)+'</div><b>'+S.name+'</b><p>'+S.say+'</p><p><i>'+esc(S.ex)+'</i></p><div class="row"><button type="button" class="btn ghost" data-ex="'+esc(S.ex)+'">🔊 Hear it</button></div></div>'; }).join("")+'</div>';
   h+='<p class="small">Read each example out loud. Then try game 2.</p>';
   $("pane").innerHTML=h;
   Array.prototype.forEach.call(document.querySelectorAll("[data-ex]"),function(b){ b.addEventListener("click",function(){ say(b.getAttribute("data-ex")); }); });
@@ -134,14 +154,14 @@ function pick(){
 function storyPane(){
   var h='<div class="stories">'+DATA.STORIES.map(function(s){ return '<button type="button" class="st" data-s="'+s.id+'" aria-pressed="'+(story&&story.id===s.id)+'"><span>'+s.icon+'</span>'+esc(s.title)+'</button>'; }).join("")+'</div>';
   if(!story){ $("pane").innerHTML=h+'<p class="small">Pick a story.</p>'; wireStories(); return; }
-  var sents=splitSentences(story.text);
+  var sents=story.s;
   h+='<div class="card"><div class="row" style="justify-content:space-between"><h2>'+story.icon+' '+esc(story.title)+'</h2><div class="view" role="group" aria-label="How the signs look">'+
      [["signs","Big signs"],["marks","Colored marks"],["plain","Plain, like a test"]].map(function(v){return '<button type="button" class="tab" data-v="'+v[0]+'" aria-pressed="'+(view===v[0])+'">'+v[1]+'</button>';}).join("")+'</div></div>';
-  h+='<p class="story">'+sents.map(function(s,i){ var body=s.slice(0,-1), ch=s.slice(-1);
-      return '<span class="s'+(i===si?" now":(i<si?" done":""))+'">'+esc(body)+mark(ch)+'</span>'; }).join(" ")+'</p>';
+  h+='<p class="story">'+sents.map(function(s,i){
+      return '<span class="s'+(i===si?" now":(i<si?" done":""))+'">'+renderS(s)+'</span>'; }).join(" ")+'</p>';
   if(si<sents.length){
-    var ch=sents[si].slice(-1);
-    h+='<p class="small">Read the yellow sentence. The sign at the end says: <b>'+SIGN[ch].say+'</b></p>';
+    var found=signsIn(sents[si]);
+    h+='<p class="small">Read the yellow sentence. Watch for: '+found.map(function(k){ return '<b>'+SIGN[k].icon+' '+SIGN[k].say+'</b>'; }).join(" · ")+'</p>';
     h+='<div class="row"><button type="button" class="star" id="star">⭐ Read the sign right</button><button type="button" class="btn ghost" id="skip">Next ▶</button><span class="score">⭐ '+stars+'</span></div>';
   } else {
     h+='<p class="score">🎉 You read '+stars+' of '+sents.length+' signs right!</p><div class="row"><button type="button" class="btn" id="re">Read it again</button></div>';
