@@ -1170,7 +1170,7 @@ const QUESTIONS = [
     state = null;
     updateScore();
     var html = '<div class="intro"><p><strong>Welcome to Willow Creek Stables!</strong> Pepper the pony thinks she is a champion racehorse. She keeps a diary. So does the stable kid. A narrator tells the same events, too.</p>' +
-      '<p>Every question has two steps: <strong>1. Pick an answer.</strong> <strong>2. Prove it</strong> by tapping the sentence in the story. Then show your thinking before your coach reveals the answer. Each step earns a horseshoe.</p></div>';
+      '<p>Every question has two steps: <strong>1. Pick an answer.</strong> <strong>2. Prove it</strong> by tapping the sentence in the story. Then think it through before you check your answer. Each step earns a horseshoe.</p></div>';
     html += '<div class="rounds">';
     ROUNDS.forEach(function (r) {
       var list = qsFor(r.id), got = 0, done = 0;
@@ -1231,9 +1231,9 @@ const QUESTIONS = [
     });
     html += '</div>';
     html += '<div id="proveBox" class="hidden"><div class="step">Step 2 &middot; Prove it</div><div class="prove" id="proveMsg"></div></div>';
-    html += '<div id="thinkBox" class="think hidden"><h3>Show me your thinking</h3>' +
+    html += '<div id="thinkBox" class="think hidden"><h3>Think it through</h3>' +
       '<ul><li>Why did you pick that answer?</li><li>How does your sentence prove it?</li><li>Which answer was the trickiest to rule out?</li></ul>' +
-      '<div class="btn-row"><button class="btn main" id="revealBtn">Coach: Reveal</button></div></div>';
+      '<div class="btn-row"><button class="btn main" id="revealBtn">Check my answer</button></div></div>';
     html += '<div id="resultBox"></div>';
     html += '</div></div>';
     app.innerHTML = html;
