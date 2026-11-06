@@ -1172,14 +1172,23 @@ var HORDER = ["ember","quill","thorn","oak"];
 /* ===================================================================
    THE GAME
    =================================================================== */
-var KEY = "wwyd.v3";
+var KEY = "wwyd.v4";
+var PREFKEY = "wwyd.prefs.v1";
 var S = {story:null, i:0, pick:null, why:"", log:[], houses:{}, stage:"title", big:false};
 
 function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+/* Progress lives in sessionStorage, so every fresh open starts at the menu,
+   but an accidental reload mid-game does not lose the story.
+   Only the text-size preference is remembered across opens. */
+function save(){
+  try{ sessionStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
+  try{ localStorage.setItem(PREFKEY, JSON.stringify({big:S.big})); }catch(e){}
+}
 (function load(){
-  try{ var r = localStorage.getItem(KEY); if(r){ var o = JSON.parse(r); for(var k in o){ if(k in S) S[k] = o[k]; } } }catch(e){}
+  try{ localStorage.removeItem("wwyd.v3"); }catch(e){}
+  try{ var p = localStorage.getItem(PREFKEY); if(p){ var q = JSON.parse(p); if(typeof q.big === "boolean") S.big = q.big; } }catch(e){}
+  try{ var r = sessionStorage.getItem(KEY); if(r){ var o = JSON.parse(r); for(var k in o){ if(k in S) S[k] = o[k]; } } }catch(e){}
 })();
 
 /* night sky behind everything */
@@ -1379,12 +1388,7 @@ $("tBig").onclick = function(){
 $("tFull").onclick = function(){
   try{ if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); }catch(e){}
 };
-var armed = false;
-$("tReset").onclick = function(){
-  var b = this;
-  if(!armed){ armed = true; b.textContent = "Tap again"; setTimeout(function(){ armed=false; b.textContent="Start over"; }, 3000); return; }
-  armed = false; b.textContent = "Start over"; reset();
-};
+$("tReset").onclick = function(){ reset(); };
 
 /* ---------- boot ---------- */
 document.body.style.fontSize = S.big ? "21px" : "18px";
