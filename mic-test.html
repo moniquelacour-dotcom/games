@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Mic Check</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Baloo+2:wght@600;800&display=swap">
+<style>
+/* Mic Check: one big button records 5 seconds, then plays it back on tap. Nothing is uploaded. Silent unless tapped. */
+:root{--bg:#f3f7fb;--card:#ffffff;--ink:#1c2633;--muted:#5b6878;--line:#d9e2ec;--go:#2c7a3f;--goBg:#e5f3e8;--rec:#c23b2e;--recBg:#fbe6e3;--blue:#2559b8}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1622;--card:#182233;--ink:#e8eef6;--muted:#a3afc0;--line:#2a374b;--go:#7fd095;--goBg:#1a3322;--rec:#f19a85;--recBg:#3a211c;--blue:#93b6f5;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif;padding:32px max(16px,env(safe-area-inset-left)) 48px max(16px,env(safe-area-inset-right))}
+main{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:18px;text-align:center}
+h1{font-family:"Baloo 2",system-ui,sans-serif;font-size:40px;margin:0;line-height:1.1}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:14px;align-items:center}
+button{font:700 22px "Atkinson Hyperlegible",sans-serif;border:none;border-radius:999px;padding:16px 30px;cursor:pointer;background:var(--blue);color:#fff;min-width:240px}
+button.rec{background:var(--rec)}
+button:disabled{opacity:.5;cursor:not-allowed}
+button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.big{font-size:56px;line-height:1}
+#status{font-size:20px;min-height:60px}
+.ok{color:var(--go)} .bad{color:var(--rec)}
+.meter{width:100%;height:16px;border-radius:999px;background:var(--line);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--go);transition:width .08s}
+.note{color:var(--muted);font-size:15px}
+.result{border-radius:14px;padding:14px;font-size:17px;text-align:left;width:100%}
+.result.ok{background:var(--goBg);color:var(--ink)} .result.bad{background:var(--recBg);color:var(--ink)}
+code{font-size:14px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+  <h1>Mic Check 🎙️</h1>
+  <p>Let's see if this computer can record your reading.</p>
+  <div class="card">
+    <div class="big" id="face">🙂</div>
+    <button id="go" type="button">Record 5 seconds</button>
+    <div class="meter" aria-hidden="true"><i id="level"></i></div>
+    <div id="status">Tap the button, then say: <b>"Hello, I am ready to read!"</b></div>
+    <button id="play" type="button" hidden>▶ Play it back</button>
+    <div id="result" class="result" hidden></div>
+  </div>
+  <p class="note">Your recording stays on this computer. Nothing is sent anywhere.</p>
+  <p class="note" id="tech"></p>
+</main>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var url=null, stream=null, ctx=null, raf=null;
+  $("tech").innerHTML="<code>"+(navigator.userAgent.match(/(Chrome|Edg|Firefox|Safari)\/[\d.]+/g)||["browser?"]).join(" ")+(window.MediaRecorder?" · recorder ok":" · no recorder")+"</code>";
+
+  function show(ok,html){var r=$("result");r.hidden=false;r.className="result "+(ok?"ok":"bad");r.innerHTML=html;$("face").textContent=ok?"🎉":"🤔";}
+  function why(e){
+    var n=e&&e.name||"";
+    if(n==="NotAllowedError"||n==="SecurityError") return "<b>The mic is blocked.</b> Click the lock or camera icon next to the web address, set Microphone to <b>Allow</b>, then reload this page.";
+    if(n==="NotFoundError"||n==="OverconstrainedError") return "<b>No mic was found.</b> Plug in a headset, or check the computer's sound settings.";
+    if(n==="NotReadableError"||n==="AbortError") return "<b>Another app is using the mic</b> (maybe Zoom or TimeBack). Tell your coach. This is what we're testing!";
+    return "<b>Something else went wrong:</b> "+(n||"unknown")+". Tell your coach.";
+  }
+  function stopMeter(){if(raf)cancelAnimationFrame(raf);raf=null;if(ctx){ctx.close().catch(function(){});ctx=null;}$("level").style.width="0";}
+  function meter(st){
+    try{
+      ctx=new (window.AudioContext||window.webkitAudioContext)();
+      var an=ctx.createAnalyser();an.fftSize=512;ctx.createMediaStreamSource(st).connect(an);
+      var buf=new Uint8Array(an.fftSize), peak=0;
+      (function tick(){an.getByteTimeDomainData(buf);var m=0;for(var i=0;i<buf.length;i++){m=Math.max(m,Math.abs(buf[i]-128));}
+        peak=Math.max(peak,m);$("level").style.width=Math.min(100,m*1.6)+"%";meter.peak=peak;raf=requestAnimationFrame(tick);})();
+    }catch(e){}
+  }
+
+  $("go").addEventListener("click",function(){
+    $("result").hidden=true;$("play").hidden=true;$("face").textContent="🙂";
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.MediaRecorder){
+      show(false,"<b>This browser can't record.</b> Try Chrome or Edge, and tell your coach which browser you used.");return;}
+    $("go").disabled=true;$("status").textContent="Asking for the mic… if a box pops up, click Allow.";
+    navigator.mediaDevices.getUserMedia({audio:true}).then(function(st){
+      stream=st;meter.peak=0;meter(st);
+      var chunks=[],rec=new MediaRecorder(st);
+      rec.ondataavailable=function(e){if(e.data&&e.data.size)chunks.push(e.data)};
+      rec.onstop=function(){
+        stopMeter();st.getTracks().forEach(function(t){t.stop()});
+        var blob=new Blob(chunks,{type:rec.mimeType||"audio/webm"});
+        if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(blob);
+        $("go").disabled=false;$("go").className="";$("go").textContent="Record again";
+        if(!blob.size){show(false,"<b>It recorded, but the file is empty.</b> Tell your coach.");$("status").textContent="";return;}
+        $("play").hidden=false;
+        var quiet=(meter.peak||0)<4;
+        $("status").innerHTML="Done! Tap <b>Play it back</b>. Can you hear yourself?";
+        show(!quiet, quiet
+          ? "<b>It recorded, but it sounds silent.</b> Maybe the mic is muted, or another app has it. Play it back to check, and tell your coach."
+          : "<b>The mic works on this computer.</b> 🎉 Tell your coach: <i>Mic check passed.</i>");
+      };
+      rec.start();$("go").className="rec";$("go").textContent="Recording… 5";
+      var n=5,t=setInterval(function(){n--;if(n>0){$("go").textContent="Recording… "+n;}else{clearInterval(t);rec.stop();}},1000);
+      $("status").innerHTML="Say: <b>\"Hello, I am ready to read!\"</b>";
+    }).catch(function(e){
+      $("go").disabled=false;$("status").textContent="";show(false,why(e));
+    });
+  });
+  $("play").addEventListener("click",function(){if(url){new Audio(url).play().catch(function(){});}});
+})();
+</script>
+</body>
+</html>
