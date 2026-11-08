@@ -204,9 +204,10 @@ $("ttt").addEventListener("click", function(e){
 });
 function paintBoard(){
   var who = mover(), L = line() || [], mine = (who === me || bothMode) && !boardOver() && G.mv < 2;
-  $("ttt").innerHTML = G.b.map(function(x, i){
+  var html = G.b.map(function(x, i){
     return '<button type="button" data-i="' + i + '" class="' + (x ? "" : "open") + (L.indexOf(i) >= 0 ? " win" : "") + '"' + (x || !mine ? " disabled" : "") + ' aria-label="Square ' + (i + 1) + (x ? ", " + x : ", empty") + '">' + (x || "") + '</button>';
   }).join("");
+  if($("ttt").dataset.html !== html){ $("ttt").dataset.html = html; $("ttt").innerHTML = html; }   // redraw only on a change, so taps never land mid-redraw
   $("tttLabel").textContent = G.w === "draw" ? "It's a tie! New board next word." :
     G.w ? G.w + " wins the board! 🎉 New board next word." :
     G.mv >= 2 ? "Both moves done. Tap Next word!" :
