@@ -153,7 +153,7 @@ function words(st, my, remaining, stale){
   else if(st.ph === "done"){ out.big = "Practice is over! 🎉"; out.sub = "Come back to Zoom for share-out."; out.tone = "done"; }
   else if(st.ph === "turn"){
     if(my && my === cur){ out.big = "It's your turn! Unmute 🎤"; out.sub = "Read with your coach. Have fun!"; out.tone = "mine"; }
-    else if(my && my === cur + 1 && remaining <= 60000){ out.big = "You're next! 👀"; out.sub = "Finish what you're doing and get ready to unmute."; out.tone = "next"; }
+    else if(my && my === cur + 1 && remaining <= 60000){ out.big = "You're next up! 👀"; out.sub = "Finish what you're doing and get ready to unmute."; out.tone = "next"; }
     else {
       out.big = "Keep practicing!";
       out.sub = "Turn " + cur + " is reading with your coach.";
