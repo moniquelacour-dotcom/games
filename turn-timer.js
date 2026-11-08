@@ -219,7 +219,7 @@ function mountStudent(host, opts){
   var pill = null;
   if(isFloat){ pill = document.createElement("button"); pill.type = "button"; pill.className = "tt tt-pill"; pill.hidden = true; pill.setAttribute("aria-label", "Show the turn timer"); host.appendChild(pill); }
 
-  var room = null, st = null, lastMsg = 0, localEnd = 0, prevKey = "", collapsed = !!(isFloat && store("tt-collapsed"));
+  var room = null, st = null, lastMsg = 0, localEnd = 0, prevKey = "", collapsed = !!(isFloat && store("tt-collapsed") !== false);
   var view = "code";   // code → pick → main
   var bubUntil = 0, nextBub = Date.now() + 12000, bubText = "", hiTimer = null, tickTimer = null, autoMain = recent && !!saved.av;
   var minBtn = isFloat ? '<button type="button" class="tt-min" aria-label="Hide">–</button>' : "";
