@@ -16,7 +16,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 "Atkinson Hype
 h1,h2{font-family:"Baloo 2",system-ui,sans-serif;margin:0;line-height:1.1;text-wrap:balance}
 h1{font-size:34px} h2{font-size:20px}
 button{font:inherit;cursor:pointer}
-button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 #student{max-width:640px;margin:0 auto}
 #coach{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
 .grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
@@ -30,18 +30,28 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 .btn.main{background:var(--accent);border-color:var(--accent);color:var(--accentInk);font-size:20px;padding:12px 24px}
 .btn[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--accentInk)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:4px 10px;font-size:14px}
 .small{font-size:14px;color:var(--muted)}
 .mono{font-family:ui-monospace,Consolas,monospace;font-size:14px;word-break:break-all;background:var(--soft);border-radius:10px;padding:8px 10px}
-textarea{width:100%;min-height:150px;font:inherit;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--card);color:var(--ink);resize:vertical}
+input[type=text]{font:inherit;border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:var(--card);color:var(--ink);min-width:0}
 .label{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .now{font:800 30px/1.15 "Baloo 2",system-ui,sans-serif}
 .clock{font:800 64px/1 "Baloo 2",system-ui,sans-serif;font-variant-numeric:tabular-nums}
 .status{font-weight:700}
 .status.ok{color:var(--go)} .status.bad{color:var(--warn)}
+.here{font-size:20px}
 ol.turns{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:4px}
 ol.turns li.cur{font-weight:700;color:var(--accent)}
 ol.turns li.past{color:var(--muted);text-decoration:line-through}
 .check{display:flex;gap:8px;align-items:center}
+.kids{display:flex;flex-direction:column;gap:6px}
+.kid{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.kid .av{font-size:26px;line-height:1;border:1px solid var(--line);background:var(--soft);border-radius:12px;padding:4px 8px}
+.kid .nm{flex:1;min-width:120px;font-weight:700}
+.pick{display:flex;flex-wrap:wrap;gap:4px;padding:8px;background:var(--soft);border-radius:12px;width:100%}
+.pick button{font-size:24px;line-height:1;border:1px solid transparent;background:none;border-radius:10px;padding:4px 6px}
+.pick button:disabled{opacity:.2;cursor:not-allowed}
+.pick button[aria-pressed=true]{border-color:var(--accent)}
 </style>
 </head>
 <body>
@@ -50,27 +60,36 @@ ol.turns li.past{color:var(--muted);text-decoration:line-through}
 <main id="coach" hidden>
   <div>
     <h1>Turn Timer · Coach</h1>
-    <p class="lede">You run the clock here. Students see the same countdown on their screens with no sound, so it pulls them back for their turn even with Zoom turned down.</p>
+    <p class="lede">Pick a group, then run the clock. Each student's screen shows the same countdown with no sound and tells them when their turn is coming. Students tap their animal; names stay on this computer.</p>
   </div>
   <div class="grid">
     <div class="col">
+      <section class="card" aria-labelledby="h-groups">
+        <h2 id="h-groups">My groups</h2>
+        <div class="row" id="groupTabs"></div>
+        <div class="row"><label class="label" for="gname">Group name</label><input type="text" id="gname" style="flex:1"><button class="btn sm" id="delgroup" type="button">Delete group</button></div>
+        <div class="label">Students, in turn order</div>
+        <div class="kids" id="kids"></div>
+        <form class="row" id="addKid"><input type="text" id="kidName" placeholder="Student's first name" autocomplete="off" style="flex:1"><button class="btn" type="submit">Add</button></form>
+        <p class="small">Each student keeps the same animal in every group. Tap an animal to change it.</p>
+      </section>
+
       <section class="card" aria-labelledby="h-room">
         <h2 id="h-room">Room</h2>
         <div class="row"><span class="code" id="code">····</span><button class="btn" id="newcode" type="button">New code</button></div>
         <div class="status" id="status">Connecting…</div>
-        <div class="small" id="screens">No student screens yet.</div>
+        <div class="here" id="here"></div>
         <div class="label">Student link</div>
         <div class="mono" id="link"></div>
         <div class="row"><button class="btn" id="copylink" type="button">Copy link</button><button class="btn" id="copychat" type="button">Copy chat message</button><span class="small" id="copied" aria-live="polite"></span></div>
-        <p class="small">The chat message lists each turn number with your labels. Only turn numbers go through the timer; names stay on this computer.</p>
       </section>
 
       <section class="card" aria-labelledby="h-set">
-        <h2 id="h-set">Setup</h2>
+        <h2 id="h-set">Timer setup</h2>
+        <div class="label">Turns</div>
+        <div class="row" id="modes"></div>
         <div class="label">Minutes per turn</div>
         <div class="row" id="durs"></div>
-        <div class="label"><label for="turns">Turns, one per line</label></div>
-        <textarea id="turns" spellcheck="false"></textarea>
         <div class="label">Timer buddy</div>
         <div class="row" id="themes"></div>
         <label class="check"><input type="checkbox" id="auto"> Start the next turn by itself 10 seconds after time's up</label>
@@ -114,51 +133,61 @@ if((location.hash || "").toLowerCase() !== "#coach"){
 }
 document.getElementById("coach").hidden = false;
 var $ = function(id){ return document.getElementById(id); };
+function uid(){ return Math.random().toString(36).slice(2, 9); }
 
-var cfg = T.store("tt-coach") || {};
+/* Saved only in this browser (names never leave this computer). */
+var cfg = T.store("tt-coach2") || {};
 cfg.code = cfg.code || T.newCode();
 cfg.min = cfg.min || 5;
-cfg.turns = cfg.turns || "Pair 1\nPair 2\nPair 3";
 cfg.th = cfg.th || "cat";
 cfg.auto = !!cfg.auto;
-var S = T.store("tt-coach-state") || {ph:"wait", i:0, endAt:0, left:0, run:false, switchAt:0};
-function save(){ T.store("tt-coach", cfg); T.store("tt-coach-state", S); }
+cfg.mode = cfg.mode || "pairs";
+cfg.students = cfg.students || [];
+cfg.groups = cfg.groups && cfg.groups.length ? cfg.groups : [{id:uid(), name:"Group 1", ids:[]}];
+cfg.cur = cfg.cur || cfg.groups[0].id;
+var S = T.store("tt-coach2-state") || fresh();
+function fresh(){ return {ph:"wait", i:0, endAt:0, left:0, run:false, switchAt:0}; }
+function save(){ T.store("tt-coach2", cfg); T.store("tt-coach2-state", S); }
 
-function labels(){ return cfg.turns.split("\n").map(function(s){ return s.trim(); }).filter(Boolean); }
-function n(){ return Math.max(1, labels().length); }
+function group(){ return cfg.groups.filter(function(g){ return g.id === cfg.cur; })[0] || cfg.groups[0]; }
+function kid(id){ return cfg.students.filter(function(s){ return s.id === id; })[0]; }
+function kids(){ return group().ids.map(kid).filter(Boolean); }
+function turns(){                       // lists of students, in order
+  var k = kids(), out = [], size = cfg.mode === "pairs" ? 2 : 1;
+  for(var i = 0; i < k.length; i += size) out.push(k.slice(i, i + size));
+  return out;
+}
+function n(){ return Math.max(1, turns().length); }
 function dur(){ return Math.round(cfg.min * 60000); }
 function left(){ return S.ph === "turn" ? (S.run ? Math.max(0, S.endAt - Date.now()) : S.left) : (S.ph === "wait" ? dur() : 0); }
+function nameTurn(t){ return t.map(function(s){ return s.av + " " + s.name; }).join(" + "); }
 
-var room = null, screens = {};
+/* ---------- relay ---------- */
+var room = null, here = {};
 function link(){ return location.origin + location.pathname + "#" + cfg.code; }
 function openRoom(){
   if(room) room.close();
-  screens = {};
+  here = {};
   room = T.Room(cfg.code, {
     onStatus:function(s){
       var el = $("status");
-      el.textContent = s === "open" ? "Connected. Students can join." : s === "blocked" ? "Can't reach the relay from this network. Same-computer testing still works." : s === "reconnecting" ? "Reconnecting…" : "Connecting…";
+      el.textContent = s === "open" ? "Connected. Students can join." : s === "blocked" ? "Can't reach the relay from this network." : s === "reconnecting" ? "Reconnecting…" : "Connecting…";
       el.className = "status " + (s === "open" ? "ok" : s === "blocked" ? "bad" : "");
       if(s === "open") publish();
     },
-    onHi:function(m){ screens[m.from] = {t:m.t || 0, at:Date.now()}; }
+    onHi:function(m){ if(m.a) here[m.a] = Date.now(); }
   });
-  $("code").textContent = cfg.code;
-  $("link").textContent = link();
 }
-
-function msg(){ return {v:1, n:n(), i:S.i, ms:left(), dur:dur(), run:S.ph === "turn" && S.run, ph:S.ph, th:cfg.th}; }
+function msg(){
+  return {v:2, t:turns().map(function(t){ return t.map(function(s){ return s.av; }); }), g:kids().map(function(s){ return s.av; }),
+          i:S.i, ms:left(), dur:dur(), run:S.ph === "turn" && S.run, ph:S.ph, th:cfg.th};
+}
 var preview;
-function publish(){
-  var m = msg();
-  if(room) room.send("state", m, true);
-  if(preview) preview.feed(m);
-  save(); paint();
-}
+function publish(){ var m = msg(); if(room) room.send("state", m, true); if(preview) preview.feed(m); save(); paint(); }
 
+/* ---------- clock controls ---------- */
 function startTurn(i){ S.i = Math.max(0, Math.min(n() - 1, i)); S.ph = "turn"; S.run = true; S.endAt = Date.now() + dur(); publish(); }
 function next(){ if(S.ph === "wait") return startTurn(0); if(S.i < n() - 1) startTurn(S.i + 1); else { S.ph = "done"; S.run = false; publish(); } }
-
 $("start").addEventListener("click", next);
 $("back").addEventListener("click", function(){ if(S.ph !== "wait") startTurn(S.ph === "done" ? n() - 1 : S.i - 1); });
 $("pause").addEventListener("click", function(){
@@ -175,69 +204,135 @@ function shift(ms){
 $("plus").addEventListener("click", function(){ shift(60000); });
 $("minus").addEventListener("click", function(){ shift(-30000); });
 $("end").addEventListener("click", function(){ S.ph = "done"; S.run = false; publish(); });
-$("reset").addEventListener("click", function(){ S = {ph:"wait", i:0, endAt:0, left:0, run:false, switchAt:0}; publish(); });
+$("reset").addEventListener("click", function(){ S = fresh(); publish(); });
 $("newcode").addEventListener("click", function(){
-  if(room) room.send("state", {v:1, n:n(), i:0, ms:0, dur:dur(), run:false, ph:"done", th:cfg.th}, true);   // close out the old room
-  cfg.code = T.newCode(); S = {ph:"wait", i:0, endAt:0, left:0, run:false, switchAt:0}; save(); openRoom();
+  if(room) room.send("state", {v:2, t:[], g:[], i:0, ms:0, dur:dur(), run:false, ph:"done", th:cfg.th}, true);   // close the old room
+  cfg.code = T.newCode(); S = fresh(); save(); openRoom(); publish();
 });
 
+/* ---------- groups and students ---------- */
+var picking = null;   // student id whose animal grid is open
+function freeAvatar(){ var used = cfg.students.map(function(s){ return s.av; }); return T.AVATARS.filter(function(a){ return used.indexOf(a) < 0; })[0] || "⭐"; }
+$("addKid").addEventListener("submit", function(e){
+  e.preventDefault();
+  var name = $("kidName").value.trim(); if(!name) return;
+  var s = cfg.students.filter(function(x){ return x.name.toLowerCase() === name.toLowerCase(); })[0];   // same child, same animal
+  if(!s){ s = {id:uid(), name:name, av:freeAvatar()}; cfg.students.push(s); }
+  if(group().ids.indexOf(s.id) < 0) group().ids.push(s.id);
+  $("kidName").value = ""; publish();
+});
+$("kids").addEventListener("click", function(e){
+  var b = e.target.closest("button"); if(!b) return;
+  var id = b.dataset.id, ids = group().ids, k = ids.indexOf(id);
+  if(b.dataset.do === "av"){ picking = picking === id ? null : id; return paint(); }
+  if(b.dataset.do === "set"){ var s = kid(picking); if(s) s.av = b.dataset.av; picking = null; return publish(); }
+  if(b.dataset.do === "up" && k > 0){ ids.splice(k, 1); ids.splice(k - 1, 0, id); }
+  if(b.dataset.do === "down" && k < ids.length - 1){ ids.splice(k, 1); ids.splice(k + 1, 0, id); }
+  if(b.dataset.do === "out"){ ids.splice(k, 1); }
+  publish();
+});
+$("groupTabs").addEventListener("click", function(e){
+  var b = e.target.closest("button"); if(!b) return;
+  if(b.dataset.g === "new"){ var g = {id:uid(), name:"Group " + (cfg.groups.length + 1), ids:[]}; cfg.groups.push(g); cfg.cur = g.id; }
+  else cfg.cur = b.dataset.g;
+  picking = null; S = fresh(); publish(); $("gname").value = group().name;
+});
+$("gname").addEventListener("input", function(){ group().name = $("gname").value; save(); paintTabs(); });
+$("delgroup").addEventListener("click", function(){
+  var b = $("delgroup");
+  if(b.dataset.sure !== "1"){ b.dataset.sure = "1"; b.textContent = "Tap again to delete"; setTimeout(function(){ b.dataset.sure = ""; b.textContent = "Delete group"; }, 3000); return; }
+  b.dataset.sure = ""; b.textContent = "Delete group";
+  cfg.groups = cfg.groups.filter(function(g){ return g.id !== cfg.cur; });
+  if(!cfg.groups.length) cfg.groups.push({id:uid(), name:"Group 1", ids:[]});
+  cfg.cur = cfg.groups[0].id; S = fresh(); publish(); $("gname").value = group().name;
+});
+
+/* ---------- setup buttons ---------- */
+[["pairs", "Pairs"], ["solo", "One at a time"]].forEach(function(m){
+  var b = document.createElement("button"); b.type = "button"; b.className = "btn"; b.textContent = m[1]; b.dataset.mode = m[0];
+  b.addEventListener("click", function(){ cfg.mode = m[0]; S = fresh(); publish(); });
+  $("modes").appendChild(b);
+});
 [2, 3, 4, 5, 6].forEach(function(m){
   var b = document.createElement("button"); b.type = "button"; b.className = "btn"; b.textContent = m + " min"; b.dataset.m = m;
-  b.addEventListener("click", function(){ cfg.min = m; if(S.ph === "wait") publish(); else { save(); paint(); } });
+  b.addEventListener("click", function(){ cfg.min = m; publish(); });
   $("durs").appendChild(b);
 });
 Object.keys(T.THEMES).forEach(function(k){
   var th = T.THEMES[k], b = document.createElement("button");
-  b.type = "button"; b.className = "btn"; b.dataset.th = k; b.textContent = th.who + " → " + th.goal;
-  b.setAttribute("aria-label", k);
+  b.type = "button"; b.className = "btn"; b.dataset.th = k; b.textContent = th.who + " → " + th.goal; b.setAttribute("aria-label", k);
   b.addEventListener("click", function(){ cfg.th = k; publish(); });
   $("themes").appendChild(b);
 });
-$("turns").value = cfg.turns;
-$("turns").addEventListener("input", function(){ cfg.turns = $("turns").value; publish(); });
 $("auto").checked = cfg.auto;
 $("auto").addEventListener("change", function(){ cfg.auto = $("auto").checked; save(); });
+$("gname").value = group().name;
 
 function copy(text){
   function done(){ $("copied").textContent = "Copied!"; setTimeout(function(){ $("copied").textContent = ""; }, 2000); }
   try{ navigator.clipboard.writeText(text).then(done, function(){ $("copied").textContent = "Select the link and copy it."; }); }catch(e){ $("copied").textContent = "Select the link and copy it."; }
 }
 $("copylink").addEventListener("click", function(){ copy(link()); });
-$("copychat").addEventListener("click", function(){
-  var L = labels();
-  copy("Open your Turn Timer and pick your turn number: " + link() + "\n" + L.map(function(s, i){ return "Turn " + (i + 1) + ": " + s; }).join("\n"));
-});
+$("copychat").addEventListener("click", function(){ copy("Open your Turn Timer and tap your animal: " + link()); });
 
+/* ---------- drawing ---------- */
+function paintTabs(){
+  $("groupTabs").innerHTML = cfg.groups.map(function(g){
+    return '<button type="button" class="btn" data-g="' + g.id + '" aria-pressed="' + (g.id === cfg.cur) + '">' + T.esc(g.name || "Untitled") + '</button>';
+  }).join("") + '<button type="button" class="btn" data-g="new">+ New group</button>';
+}
+function paintKids(){
+  var used = cfg.students.map(function(s){ return s.av; });
+  $("kids").innerHTML = kids().map(function(s, k, all){
+    var h = '<div class="kid"><button type="button" class="av" data-do="av" data-id="' + s.id + '" aria-label="Change animal for ' + T.esc(s.name) + '">' + s.av + '</button>' +
+      '<span class="nm">' + T.esc(s.name) + '</span>' +
+      '<button type="button" class="btn sm" data-do="up" data-id="' + s.id + '" aria-label="Move up"' + (k === 0 ? " disabled" : "") + '>↑</button>' +
+      '<button type="button" class="btn sm" data-do="down" data-id="' + s.id + '" aria-label="Move down"' + (k === all.length - 1 ? " disabled" : "") + '>↓</button>' +
+      '<button type="button" class="btn sm" data-do="out" data-id="' + s.id + '" aria-label="Take out of this group">✕</button></div>';
+    if(picking === s.id){
+      h += '<div class="pick">' + T.AVATARS.map(function(a){
+        var taken = a !== s.av && used.indexOf(a) >= 0;
+        return '<button type="button" data-do="set" data-av="' + a + '" aria-pressed="' + (a === s.av) + '"' + (taken ? " disabled" : "") + '>' + a + '</button>';
+      }).join("") + '</div>';
+    }
+    return h;
+  }).join("") || '<p class="small">No students yet. Add them below.</p>';
+}
 function paint(){
-  var L = labels(), cur = S.i;
+  var L = turns(), cur = S.i;
+  paintTabs(); paintKids();
   $("code").textContent = cfg.code;
+  $("link").textContent = link();
   $("nowLabel").textContent = S.ph === "wait" ? "Not started" : S.ph === "done" ? "Practice is over. Share-out!" :
-    (S.ph === "switch" ? "Time's up: " : "Turn " + (cur + 1) + ": ") + (L[cur] || "Turn " + (cur + 1)) + (S.ph === "turn" && !S.run ? " (paused)" : "");
+    (S.ph === "switch" ? "Time's up: " : "Turn " + (cur + 1) + ": ") + (L[cur] ? nameTurn(L[cur]) : "") + (S.ph === "turn" && !S.run ? " (paused)" : "");
   $("clock").textContent = S.ph === "done" ? "🎉" : T.fmt(left());
   $("start").textContent = S.ph === "wait" ? "Start turn 1" : S.ph === "done" ? "Done" : (S.i >= n() - 1 ? "Finish practice" : "Next turn ▶");
-  $("start").disabled = S.ph === "done";
+  $("start").disabled = S.ph === "done" || !L.length;
   $("pause").textContent = S.ph === "turn" && !S.run ? "Resume" : "Pause";
   $("pause").disabled = S.ph !== "turn";
+  $("modes").querySelectorAll("button").forEach(function(b){ b.setAttribute("aria-pressed", String(b.dataset.mode === cfg.mode)); });
   $("durs").querySelectorAll("button").forEach(function(b){ b.setAttribute("aria-pressed", String(+b.dataset.m === cfg.min)); });
   $("themes").querySelectorAll("button").forEach(function(b){ b.setAttribute("aria-pressed", String(b.dataset.th === cfg.th)); });
-  $("turnList").innerHTML = L.map(function(s, i){
+  $("turnList").innerHTML = L.map(function(t, i){
     var c = S.ph === "wait" ? "" : (i < cur || S.ph === "done") ? "past" : i === cur ? "cur" : "";
-    return '<li class="' + c + '">' + T.esc(s) + '</li>';
+    return '<li class="' + c + '">' + T.esc(nameTurn(t)) + '</li>';
   }).join("");
-  var now = Date.now(), live = Object.keys(screens).filter(function(k){ return now - screens[k].at < 25000; });
-  if(!live.length) $("screens").textContent = "No student screens yet.";
-  else {
-    var byTurn = {};
-    live.forEach(function(k){ var t = screens[k].t; byTurn[t] = (byTurn[t] || 0) + 1; });
-    $("screens").textContent = live.length + " student screen" + (live.length === 1 ? "" : "s") + " connected (" +
-      Object.keys(byTurn).sort().map(function(t){ return (t === "0" ? "no turn" : "turn " + t) + ": " + byTurn[t]; }).join(", ") + ").";
-  }
+  paintHere();
+}
+function paintHere(){
+  var now = Date.now(), k = kids();
+  if(!k.length){ $("here").textContent = ""; return; }
+  var inn = k.filter(function(s){ return here[s.av] && now - here[s.av] < 25000; });
+  var out = k.filter(function(s){ return inn.indexOf(s) < 0; });
+  $("here").textContent = "Here: " + (inn.map(function(s){ return s.av + " " + s.name; }).join(", ") || "nobody yet") +
+    (out.length ? "  ·  Not here yet: " + out.map(function(s){ return s.av + " " + s.name; }).join(", ") : "  ·  Everyone's here! 🎉");
 }
 
 setInterval(function(){
-  if(S.ph === "turn" && S.run && Date.now() >= S.endAt){ S.ph = "switch"; S.run = false; S.switchAt = Date.now(); publish(); }
-  else if(S.ph === "switch" && cfg.auto && Date.now() - S.switchAt >= 10000){ next(); }
-  paint();
+  if(S.ph === "turn" && S.run && Date.now() >= S.endAt){ S.ph = "switch"; S.run = false; S.switchAt = Date.now(); publish(); return; }
+  if(S.ph === "switch" && cfg.auto && Date.now() - S.switchAt >= 10000){ next(); return; }
+  $("clock").textContent = S.ph === "done" ? "🎉" : T.fmt(left());
+  paintHere();
 }, 250);
 setInterval(publish, 3000);   // late joiners and reconnects always get the current state
 
