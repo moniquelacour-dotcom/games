@@ -79,6 +79,7 @@ var CSS = [
 "@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .tt{--tt-bg:#1d1828;--tt-ink:#efeaf7;--tt-muted:#b3aac3;--tt-line:#3a3150;--tt-track:#2b2440;--tt-mine:#173822;--tt-mineInk:#8fe0a6;--tt-next:#3a2f12;--tt-nextInk:#f4d27a;--tt-done:#2e2650;--tt-btn:#9d86ff;--tt-btnInk:#160f2b}}",
 ":root[data-theme=dark] .tt{--tt-bg:#1d1828;--tt-ink:#efeaf7;--tt-muted:#b3aac3;--tt-line:#3a3150;--tt-track:#2b2440;--tt-mine:#173822;--tt-mineInk:#8fe0a6;--tt-next:#3a2f12;--tt-nextInk:#f4d27a;--tt-done:#2e2650;--tt-btn:#9d86ff;--tt-btnInk:#160f2b}",
 ".tt *{box-sizing:border-box}",
+".tt[hidden]{display:none!important}",
 ".tt.tone-mine{background:var(--tt-mine)} .tt.tone-next{background:var(--tt-next)} .tt.tone-done{background:var(--tt-done)}",
 ".tt button{font:inherit;cursor:pointer}",
 ".tt-full{padding:22px;display:flex;flex-direction:column;gap:14px}",
