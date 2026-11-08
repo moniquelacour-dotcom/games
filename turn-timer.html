@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Turn Timer</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Baloo+2:wght@600;800&display=swap">
+<style>
+:root{--bg:#f6f1fb;--card:#ffffff;--ink:#241d30;--muted:#665d73;--line:#e3dbee;--accent:#5b3fc4;--accentInk:#fff;--soft:#efe9fb;--go:#1f7a3c;--warn:#8a5a00;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#141020;--card:#1d1828;--ink:#efeaf7;--muted:#b3aac3;--line:#342b48;--accent:#9d86ff;--accentInk:#160f2b;--soft:#272038;--go:#8fe0a6;--warn:#f4d27a;color-scheme:dark}}
+:root[data-theme=dark]{--bg:#141020;--card:#1d1828;--ink:#efeaf7;--muted:#b3aac3;--line:#342b48;--accent:#9d86ff;--accentInk:#160f2b;--soft:#272038;--go:#8fe0a6;--warn:#f4d27a;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif;padding-block:24px 48px;padding-inline:max(16px,env(safe-area-inset-left)) max(16px,env(safe-area-inset-right))}
+h1,h2{font-family:"Baloo 2",system-ui,sans-serif;margin:0;line-height:1.1;text-wrap:balance}
+h1{font-size:34px} h2{font-size:20px}
+button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#student{max-width:640px;margin:0 auto}
+#coach{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:820px){.grid{grid-template-columns:minmax(0,1fr)}}
+.col{display:flex;flex-direction:column;gap:18px;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.lede{color:var(--muted);margin:0;max-width:65ch}
+.code{font:800 56px/1 "Baloo 2",system-ui,sans-serif;letter-spacing:.18em}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 16px;font-weight:700}
+.btn.main{background:var(--accent);border-color:var(--accent);color:var(--accentInk);font-size:20px;padding:12px 24px}
+.btn[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--accentInk)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.small{font-size:14px;color:var(--muted)}
+.mono{font-family:ui-monospace,Consolas,monospace;font-size:14px;word-break:break-all;background:var(--soft);border-radius:10px;padding:8px 10px}
+textarea{width:100%;min-height:150px;font:inherit;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--card);color:var(--ink);resize:vertical}
+.label{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.now{font:800 30px/1.15 "Baloo 2",system-ui,sans-serif}
+.clock{font:800 64px/1 "Baloo 2",system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.status{font-weight:700}
+.status.ok{color:var(--go)} .status.bad{color:var(--warn)}
+ol.turns{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:4px}
+ol.turns li.cur{font-weight:700;color:var(--accent)}
+ol.turns li.past{color:var(--muted);text-decoration:line-through}
+.check{display:flex;gap:8px;align-items:center}
+</style>
+</head>
+<body>
+<div id="student" hidden></div>
+
+<main id="coach" hidden>
+  <div>
+    <h1>Turn Timer · Coach</h1>
+    <p class="lede">You run the clock here. Students see the same countdown on their screens with no sound, so it pulls them back for their turn even with Zoom turned down.</p>
+  </div>
+  <div class="grid">
+    <div class="col">
+      <section class="card" aria-labelledby="h-room">
+        <h2 id="h-room">Room</h2>
+        <div class="row"><span class="code" id="code">····</span><button class="btn" id="newcode" type="button">New code</button></div>
+        <div class="status" id="status">Connecting…</div>
+        <div class="small" id="screens">No student screens yet.</div>
+        <div class="label">Student link</div>
+        <div class="mono" id="link"></div>
+        <div class="row"><button class="btn" id="copylink" type="button">Copy link</button><button class="btn" id="copychat" type="button">Copy chat message</button><span class="small" id="copied" aria-live="polite"></span></div>
+        <p class="small">The chat message lists each turn number with your labels. Only turn numbers go through the timer; names stay on this computer.</p>
+      </section>
+
+      <section class="card" aria-labelledby="h-set">
+        <h2 id="h-set">Setup</h2>
+        <div class="label">Minutes per turn</div>
+        <div class="row" id="durs"></div>
+        <div class="label"><label for="turns">Turns, one per line</label></div>
+        <textarea id="turns" spellcheck="false"></textarea>
+        <div class="label">Timer buddy</div>
+        <div class="row" id="themes"></div>
+        <label class="check"><input type="checkbox" id="auto"> Start the next turn by itself 10 seconds after time's up</label>
+      </section>
+    </div>
+
+    <div class="col">
+      <section class="card" aria-labelledby="h-now">
+        <h2 id="h-now">Now</h2>
+        <div class="now" id="nowLabel">Not started</div>
+        <div class="clock" id="clock">–:––</div>
+        <div class="row">
+          <button class="btn main" id="start" type="button">Start turn 1</button>
+          <button class="btn" id="pause" type="button">Pause</button>
+          <button class="btn" id="plus" type="button">+1 min</button>
+          <button class="btn" id="minus" type="button">−30 sec</button>
+          <button class="btn" id="back" type="button">Back a turn</button>
+        </div>
+        <div class="row">
+          <button class="btn" id="end" type="button">End practice</button>
+          <button class="btn" id="reset" type="button">Reset</button>
+        </div>
+        <ol class="turns" id="turnList"></ol>
+      </section>
+      <section class="card" aria-label="What students see">
+        <div id="preview"></div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<script src="turn-timer.js"></script>
+<script>
+(function(){
+"use strict";
+var T = window.TurnTimer;
+if((location.hash || "").toLowerCase() !== "#coach"){
+  document.getElementById("student").hidden = false;
+  T.mountStudent(document.getElementById("student"), {});
+  return;
+}
+document.getElementById("coach").hidden = false;
+var $ = function(id){ return document.getElementById(id); };
+
+var cfg = T.store("tt-coach") || {};
+cfg.code = cfg.code || T.newCode();
+cfg.min = cfg.min || 5;
+cfg.turns = cfg.turns || "Pair 1\nPair 2\nPair 3";
+cfg.th = cfg.th || "cat";
+cfg.auto = !!cfg.auto;
+var S = T.store("tt-coach-state") || {ph:"wait", i:0, endAt:0, left:0, run:false, switchAt:0};
+function save(){ T.store("tt-coach", cfg); T.store("tt-coach-state", S); }
+
+function labels(){ return cfg.turns.split("\n").map(function(s){ return s.trim(); }).filter(Boolean); }
+function n(){ return Math.max(1, labels().length); }
+function dur(){ return Math.round(cfg.min * 60000); }
+function left(){ return S.ph === "turn" ? (S.run ? Math.max(0, S.endAt - Date.now()) : S.left) : (S.ph === "wait" ? dur() : 0); }
+
+var room = null, screens = {};
+function link(){ return location.origin + location.pathname + "#" + cfg.code; }
+function openRoom(){
+  if(room) room.close();
+  screens = {};
+  room = T.Room(cfg.code, {
+    onStatus:function(s){
+      var el = $("status");
+      el.textContent = s === "open" ? "Connected. Students can join." : s === "blocked" ? "Can't reach the relay from this network. Same-computer testing still works." : s === "reconnecting" ? "Reconnecting…" : "Connecting…";
+      el.className = "status " + (s === "open" ? "ok" : s === "blocked" ? "bad" : "");
+      if(s === "open") publish();
+    },
+    onHi:function(m){ screens[m.from] = {t:m.t || 0, at:Date.now()}; }
+  });
+  $("code").textContent = cfg.code;
+  $("link").textContent = link();
+}
+
+function msg(){ return {v:1, n:n(), i:S.i, ms:left(), dur:dur(), run:S.ph === "turn" && S.run, ph:S.ph, th:cfg.th}; }
+var preview;
+function publish(){
+  var m = msg();
+  if(room) room.send("state", m, true);
+  if(preview) preview.feed(m);
+  save(); paint();
+}
+
+function startTurn(i){ S.i = Math.max(0, Math.min(n() - 1, i)); S.ph = "turn"; S.run = true; S.endAt = Date.now() + dur(); publish(); }
+function next(){ if(S.ph === "wait") return startTurn(0); if(S.i < n() - 1) startTurn(S.i + 1); else { S.ph = "done"; S.run = false; publish(); } }
+
+$("start").addEventListener("click", next);
+$("back").addEventListener("click", function(){ if(S.ph !== "wait") startTurn(S.ph === "done" ? n() - 1 : S.i - 1); });
+$("pause").addEventListener("click", function(){
+  if(S.ph !== "turn") return;
+  if(S.run){ S.left = left(); S.run = false; } else { S.endAt = Date.now() + S.left; S.run = true; }
+  publish();
+});
+function shift(ms){
+  if(S.ph === "switch" && ms > 0){ S.ph = "turn"; S.run = true; S.endAt = Date.now() + ms; return publish(); }
+  if(S.ph !== "turn") return;
+  if(S.run) S.endAt = Math.max(Date.now() + 1000, S.endAt + ms); else S.left = Math.max(1000, S.left + ms);
+  publish();
+}
+$("plus").addEventListener("click", function(){ shift(60000); });
+$("minus").addEventListener("click", function(){ shift(-30000); });
+$("end").addEventListener("click", function(){ S.ph = "done"; S.run = false; publish(); });
+$("reset").addEventListener("click", function(){ S = {ph:"wait", i:0, endAt:0, left:0, run:false, switchAt:0}; publish(); });
+$("newcode").addEventListener("click", function(){
+  if(room) room.send("state", {v:1, n:n(), i:0, ms:0, dur:dur(), run:false, ph:"done", th:cfg.th}, true);   // close out the old room
+  cfg.code = T.newCode(); S = {ph:"wait", i:0, endAt:0, left:0, run:false, switchAt:0}; save(); openRoom();
+});
+
+[2, 3, 4, 5, 6].forEach(function(m){
+  var b = document.createElement("button"); b.type = "button"; b.className = "btn"; b.textContent = m + " min"; b.dataset.m = m;
+  b.addEventListener("click", function(){ cfg.min = m; if(S.ph === "wait") publish(); else { save(); paint(); } });
+  $("durs").appendChild(b);
+});
+Object.keys(T.THEMES).forEach(function(k){
+  var th = T.THEMES[k], b = document.createElement("button");
+  b.type = "button"; b.className = "btn"; b.dataset.th = k; b.textContent = th.who + " → " + th.goal;
+  b.setAttribute("aria-label", k);
+  b.addEventListener("click", function(){ cfg.th = k; publish(); });
+  $("themes").appendChild(b);
+});
+$("turns").value = cfg.turns;
+$("turns").addEventListener("input", function(){ cfg.turns = $("turns").value; publish(); });
+$("auto").checked = cfg.auto;
+$("auto").addEventListener("change", function(){ cfg.auto = $("auto").checked; save(); });
+
+function copy(text){
+  function done(){ $("copied").textContent = "Copied!"; setTimeout(function(){ $("copied").textContent = ""; }, 2000); }
+  try{ navigator.clipboard.writeText(text).then(done, function(){ $("copied").textContent = "Select the link and copy it."; }); }catch(e){ $("copied").textContent = "Select the link and copy it."; }
+}
+$("copylink").addEventListener("click", function(){ copy(link()); });
+$("copychat").addEventListener("click", function(){
+  var L = labels();
+  copy("Open your Turn Timer and pick your turn number: " + link() + "\n" + L.map(function(s, i){ return "Turn " + (i + 1) + ": " + s; }).join("\n"));
+});
+
+function paint(){
+  var L = labels(), cur = S.i;
+  $("code").textContent = cfg.code;
+  $("nowLabel").textContent = S.ph === "wait" ? "Not started" : S.ph === "done" ? "Practice is over. Share-out!" :
+    (S.ph === "switch" ? "Time's up: " : "Turn " + (cur + 1) + ": ") + (L[cur] || "Turn " + (cur + 1)) + (S.ph === "turn" && !S.run ? " (paused)" : "");
+  $("clock").textContent = S.ph === "done" ? "🎉" : T.fmt(left());
+  $("start").textContent = S.ph === "wait" ? "Start turn 1" : S.ph === "done" ? "Done" : (S.i >= n() - 1 ? "Finish practice" : "Next turn ▶");
+  $("start").disabled = S.ph === "done";
+  $("pause").textContent = S.ph === "turn" && !S.run ? "Resume" : "Pause";
+  $("pause").disabled = S.ph !== "turn";
+  $("durs").querySelectorAll("button").forEach(function(b){ b.setAttribute("aria-pressed", String(+b.dataset.m === cfg.min)); });
+  $("themes").querySelectorAll("button").forEach(function(b){ b.setAttribute("aria-pressed", String(b.dataset.th === cfg.th)); });
+  $("turnList").innerHTML = L.map(function(s, i){
+    var c = S.ph === "wait" ? "" : (i < cur || S.ph === "done") ? "past" : i === cur ? "cur" : "";
+    return '<li class="' + c + '">' + T.esc(s) + '</li>';
+  }).join("");
+  var now = Date.now(), live = Object.keys(screens).filter(function(k){ return now - screens[k].at < 25000; });
+  if(!live.length) $("screens").textContent = "No student screens yet.";
+  else {
+    var byTurn = {};
+    live.forEach(function(k){ var t = screens[k].t; byTurn[t] = (byTurn[t] || 0) + 1; });
+    $("screens").textContent = live.length + " student screen" + (live.length === 1 ? "" : "s") + " connected (" +
+      Object.keys(byTurn).sort().map(function(t){ return (t === "0" ? "no turn" : "turn " + t) + ": " + byTurn[t]; }).join(", ") + ").";
+  }
+}
+
+setInterval(function(){
+  if(S.ph === "turn" && S.run && Date.now() >= S.endAt){ S.ph = "switch"; S.run = false; S.switchAt = Date.now(); publish(); }
+  else if(S.ph === "switch" && cfg.auto && Date.now() - S.switchAt >= 10000){ next(); }
+  paint();
+}, 250);
+setInterval(publish, 3000);   // late joiners and reconnects always get the current state
+
+preview = T.mountStudent($("preview"), {preview:true});
+openRoom(); publish();
+})();
+</script>
+</body>
+</html>
