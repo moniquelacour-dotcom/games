@@ -118,6 +118,10 @@ var CSS = [
 ".tt-turns button.tt-ns{font-size:16px}",
 ".tt-go{font-size:22px;font-weight:700;border:none;border-radius:999px;padding:12px 24px;background:var(--tt-btn);color:var(--tt-btnInk)}",
 ".tt-err{color:var(--tt-nextInk);text-align:center;min-height:1.2em}",
+".tt-me{font-size:30px;line-height:1}",
+".tt-avs button{font-size:34px;min-width:64px;padding:6px 10px}",
+".tt-float .tt-avs button{font-size:24px;min-width:46px}",
+".tt-float .tt-me{font-size:22px}",
 /* floating card for game pages */
 ".tt-float{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:2147483000;width:min(300px,calc(100vw - 24px));padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:0 6px 24px rgba(0,0,0,.18)}",
 ".tt-float .tt-track{height:52px;border-radius:12px}",
@@ -145,27 +149,34 @@ function injectCss(){
 }
 
 /* ---------- what a student sees ---------- */
+/* Every student has one animal for the year. Only animals travel over the
+   relay; which child is which animal lives only on the coach's computer. */
+var AVATARS = ["🦊","🐸","🐼","🦄","🐯","🐨","🐵","🐧","🦉","🐙","🦋","🐢","🦁","🐰","🐻","🐷","🐮","🐔","🦖","🐳","🐬","🦈","🐝","🐞","🦜","🦩","🦒","🐘","🦔","🦦","🦥","🐿️","🦝","🐹","🐲","🦕","🐠","🦀","🐌","🦓","🦘","🐊","🦚","🐺","🐑","🐫"];
+
+function together(list){ return list.join(" + ") + (list.length > 1 ? " are" : " is"); }
 function words(st, my, remaining, stale){
   var out = {big:"", sub:"", tone:"work"};
   if(!st){ out.big = "Waiting for your coach's timer…"; out.sub = "Keep working. It will show up here."; return out; }
-  var cur = st.i + 1;
+  var t = st.t || [], cur = t[st.i] || [], nxt = t[st.i + 1] || [];
+  var mine = !!my && cur.indexOf(my) >= 0, isNext = !!my && nxt.indexOf(my) >= 0, at = -1;
+  t.forEach(function(turn, k){ if(my && turn.indexOf(my) >= 0) at = k; });
   if(st.ph === "wait"){ out.big = "Get ready!"; out.sub = "Your coach will start the timer soon."; }
   else if(st.ph === "done"){ out.big = "Practice is over! 🎉"; out.sub = "Come back to Zoom for share-out."; out.tone = "done"; }
   else if(st.ph === "turn"){
-    if(my && my === cur){ out.big = "It's your turn! Unmute 🎤"; out.sub = "Read with your coach. Have fun!"; out.tone = "mine"; }
-    else if(my && my === cur + 1 && remaining <= 60000){ out.big = "You're next up! 👀"; out.sub = "Finish what you're doing and get ready to unmute."; out.tone = "next"; }
+    if(mine){ out.big = my + " It's your turn! Unmute 🎤"; out.sub = "Read with your coach. Have fun!"; out.tone = "mine"; }
+    else if(isNext && remaining <= 60000){ out.big = my + " You're next up! 👀"; out.sub = "Finish what you're doing and get ready to unmute."; out.tone = "next"; }
     else {
       out.big = "Keep practicing!";
-      out.sub = "Turn " + cur + " is reading with your coach.";
-      if(my && my > cur) out.sub += " Your turn is #" + my + ".";
-      if(my && my < cur) out.sub += " You already had your turn. Nice reading!";
+      out.sub = cur.length ? together(cur) + " reading with your coach." : "Your coach is reading with a group.";
+      if(at > st.i) out.sub += " Your turn is coming.";
+      if(at >= 0 && at < st.i) out.sub += " You already had your turn. Nice reading!";
     }
     if(!st.run) out.sub += " (Timer is paused.)";
   }
   else if(st.ph === "switch"){
-    if(cur >= st.n){ out.big = "Time's up!"; out.sub = "Your coach will tell you what's next."; }
-    else if(my && my === cur + 1){ out.big = "Switch! You're up 🎤"; out.sub = "Unmute when your coach calls you."; out.tone = "next"; }
-    else { out.big = "Switch!"; out.sub = "Keep working. Turn " + (cur + 1) + " is next."; }
+    if(st.i >= t.length - 1){ out.big = "Time's up!"; out.sub = "Your coach will tell you what's next."; }
+    else if(isNext){ out.big = my + " Switch! You're up 🎤"; out.sub = "Unmute when your coach calls you."; out.tone = "next"; }
+    else { out.big = "Switch!"; out.sub = "Keep working. " + nxt.join(" + ") + " " + (nxt.length > 1 ? "are" : "is") + " next."; }
   }
   if(stale && st.ph !== "done") out.warn = "Can't reach your coach's timer right now. Keep working and watch Zoom.";
   return out;
@@ -175,9 +186,11 @@ function mountStudent(host, opts){
   opts = opts || {};
   injectCss();
   var isFloat = !!opts.float, preview = !!opts.preview;
-  var saved = preview ? {code:"", turn:0} : (store("tt-join") || {code:"", turn:0});
+  var saved = preview ? {code:"", av:""} : (store("tt-join2") || {code:"", av:""});
   var hash = (location.hash || "").replace("#", "").toUpperCase();
-  if(!preview && /^[A-Z]{4}$/.test(hash) && hash !== "COACH" && saved.code !== hash) saved = {code:hash, turn:0};
+  var fromLink = !preview && /^[A-Z]{4}$/.test(hash);
+  if(fromLink && saved.code !== hash) saved = {code:hash, av:""};
+  var recent = saved.at && Date.now() - saved.at < 90 * 60000;
 
   var root = document.createElement("div");
   root.className = "tt " + (isFloat ? "tt-float" : "tt-full");
@@ -186,46 +199,59 @@ function mountStudent(host, opts){
   var pill = null;
   if(isFloat){ pill = document.createElement("button"); pill.type = "button"; pill.className = "tt tt-pill"; pill.hidden = true; pill.setAttribute("aria-label", "Show the turn timer"); host.appendChild(pill); }
 
-  var room = null, st = null, lastMsg = 0, localEnd = 0, prevKey = "", collapsed = !!(isFloat && store("tt-collapsed")), joined = false;
-  var bubUntil = 0, nextBub = Date.now() + 12000, bubText = "", hiTimer = null, tickTimer = null, picked = saved.turn || 0;
+  var room = null, st = null, lastMsg = 0, localEnd = 0, prevKey = "", collapsed = !!(isFloat && store("tt-collapsed"));
+  var view = "code";   // code → pick → main
+  var bubUntil = 0, nextBub = Date.now() + 12000, bubText = "", hiTimer = null, tickTimer = null, autoMain = recent && !!saved.av;
+  var minBtn = isFloat ? '<button type="button" class="tt-min" aria-label="Hide">–</button>' : "";
 
-  function showJoin(){
-    joined = false;
+  function showCode(){
+    view = "code";
     if(room){ room.close(); room = null; }
-    var n = (st && st.n) || 6, btns = "";
-    for(var t = 1; t <= Math.max(3, Math.min(6, n)); t++) btns += '<button type="button" data-t="' + t + '" aria-pressed="' + (picked === t) + '">' + t + '</button>';
-    btns += '<button type="button" class="tt-ns" data-t="0" aria-pressed="' + (picked === 0) + '">Not sure</button>';
     root.className = "tt " + (isFloat ? "tt-float" : "tt-full");
-    root.innerHTML =
-      (isFloat ? '<div class="tt-top"><span class="tt-title">Turn Timer ⏳</span><button type="button" class="tt-min" aria-label="Hide">–</button></div>' : '<div class="tt-title">Turn Timer ⏳</div>') +
+    root.innerHTML = '<div class="tt-top"><span class="tt-title">Turn Timer ⏳</span>' + minBtn + '</div>' +
       '<div class="tt-join"><label class="tt-q" for="tt-code-in">Room code from your coach</label>' +
       '<input id="tt-code-in" class="tt-code" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" value="' + esc(saved.code || "") + '">' +
-      '<div class="tt-q">Which turn are you?</div><div class="tt-turns">' + btns + '</div>' +
-      '<button type="button" class="tt-go">Join</button><div class="tt-err" aria-live="polite"></div></div>';
+      '<button type="button" class="tt-go">Next</button><div class="tt-err" aria-live="polite"></div></div>';
     var inp = root.querySelector(".tt-code");
     inp.addEventListener("input", function(){ inp.value = inp.value.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 4); });
-    root.querySelectorAll(".tt-turns button").forEach(function(b){
-      b.addEventListener("click", function(){ picked = +b.dataset.t; root.querySelectorAll(".tt-turns button").forEach(function(x){ x.setAttribute("aria-pressed", String(x === b)); }); });
-    });
     function go(){
-      var c = inp.value;
-      if(c.length !== 4){ root.querySelector(".tt-err").textContent = "The code has 4 letters."; return; }
-      saved = {code:c, turn:picked, at:Date.now()}; store("tt-join", saved); join();
+      if(inp.value.length !== 4){ root.querySelector(".tt-err").textContent = "The code has 4 letters."; return; }
+      if(inp.value !== saved.code) saved = {code:inp.value, av:""};
+      connect();
     }
     root.querySelector(".tt-go").addEventListener("click", go);
     inp.addEventListener("keydown", function(e){ if(e.key === "Enter") go(); });
     wireMin();
   }
 
+  function showPick(){
+    view = "pick";
+    var g = (st && st.g) || [];
+    root.className = "tt " + (isFloat ? "tt-float" : "tt-full");
+    root.innerHTML = '<div class="tt-top"><span class="tt-title">Turn Timer ⏳</span>' + minBtn + '</div>' +
+      '<div class="tt-join">' + (g.length
+        ? '<div class="tt-q">Tap your animal</div><div class="tt-turns tt-avs">' +
+          g.map(function(a){ return '<button type="button" data-a="' + esc(a) + '" aria-label="' + esc(a) + '">' + esc(a) + '</button>'; }).join("") + '</div>'
+        : '<div class="tt-q">Finding your coach\'s timer…</div>') +
+      '<div class="tt-err" aria-live="polite">' + (room && room.status === "blocked" ? "This network may be blocking the timer. Tell your coach." : "") + '</div>' +
+      '<button type="button" class="tt-link tt-change">Different room code</button></div>';
+    root.querySelectorAll(".tt-avs button").forEach(function(b){
+      b.addEventListener("click", function(){ saved.av = b.dataset.a; saved.at = Date.now(); store("tt-join2", saved); showMain(); });
+    });
+    root.querySelector(".tt-change").addEventListener("click", showCode);
+    wireMin();
+  }
+
   function showMain(){
+    view = "main";
     root.innerHTML =
       '<div class="tt-top">' + (preview ? '<span class="tt-chip">What students see</span>' :
-        '<span class="tt-chip">Room ' + esc(saved.code) + '</span><span class="tt-chip">' + (saved.turn ? "Turn " + saved.turn : "No turn picked") + '</span><button type="button" class="tt-link tt-change">change</button>') +
-        (isFloat ? '<button type="button" class="tt-min" aria-label="Hide">–</button>' : '') + '</div>' +
+        '<span class="tt-me" aria-label="Your animal">' + esc(saved.av) + '</span><span class="tt-chip">Room ' + esc(saved.code) + '</span><button type="button" class="tt-link tt-change">change</button>') +
+        minBtn + '</div>' +
       '<div class="tt-track" aria-hidden="true"><span class="tt-goal"></span><span class="tt-who"><span class="tt-face"></span><span class="tt-bub"></span></span></div>' +
       '<div class="tt-time" aria-hidden="true">–:––</div><div class="tt-msg" aria-live="polite"></div><div class="tt-sub"></div><div class="tt-warn"></div>';
-    var ch = root.querySelector(".tt-change"); if(ch) ch.addEventListener("click", showJoin);
-    wireMin(); prevKey = ""; render();
+    var ch = root.querySelector(".tt-change"); if(ch) ch.addEventListener("click", function(){ saved.av = ""; showPick(); });
+    wireMin(); prevKey = ""; render(); sayHi();
   }
 
   function wireMin(){
@@ -238,39 +264,42 @@ function mountStudent(host, opts){
   if(pill) pill.addEventListener("click", function(){ collapsed = false; store("tt-collapsed", false); applyCollapse(); });
 
   function onState(m){
-    if(!m || m.v !== 1) return;
-    st = m; lastMsg = Date.now();
-    localEnd = Date.now() + (m.ms || 0);
-    if(joined) render();
+    if(!m || m.v !== 2) return;
+    var hadGroup = st && (st.g || []).join("");
+    st = m; lastMsg = Date.now(); localEnd = Date.now() + (m.ms || 0);
+    var inGroup = saved.av && (m.g || []).indexOf(saved.av) >= 0;
+    if(view === "pick"){
+      if(autoMain && inGroup){ autoMain = false; showMain(); }
+      else if(hadGroup !== (m.g || []).join("")) showPick();
+    } else if(view === "main" && !preview && !inGroup){ saved.av = ""; showPick(); }
+    else if(view === "main") render();
   }
 
-  function join(){
-    joined = true;
-    if(room) room.close();
+  function connect(){
+    store("tt-join2", saved);
     st = null; lastMsg = 0;
-    room = Room(saved.code, {onState:onState, onStatus:function(){ render(); }, onOpen:sayHi});
-    showMain();
+    if(room) room.close();
+    room = Room(saved.code, {onState:onState, onStatus:function(){ if(view === "pick") showPick(); else render(); }, onOpen:sayHi});
+    showPick();
     clearInterval(hiTimer); hiTimer = setInterval(sayHi, 10000);
   }
-  function sayHi(){ if(room) room.send("hi", {t:saved.turn || 0}, false); }
+  function sayHi(){ if(room && view === "main" && saved.av) room.send("hi", {a:saved.av}, false); }
 
   function render(){
-    if(!joined && !preview) return;
+    if(view !== "main") return;
     var now = Date.now(), stale = !preview && st && lastMsg && now - lastMsg > 12000;
     var remaining = !st ? 0 : (st.ph === "turn" && st.run ? Math.max(0, localEnd - now) : (st.ms || 0));
     if(st && st.ph === "wait") remaining = st.dur;
     var p = (!st || st.ph === "wait") ? 0 : (st.ph === "turn" ? 1 - remaining / (st.dur || 1) : 1);
     p = Math.max(0, Math.min(1, p));
     var th = THEMES[(st && st.th) || "cat"] || THEMES.cat;
-    var w = words(st, saved.turn, remaining, stale);
-    if(!preview && room && room.status === "blocked" && !st) w.warn = "This network may be blocking the timer. Keep working and watch Zoom.";
+    var w = words(st, saved.av, remaining, stale);
 
     var face = root.querySelector(".tt-face");
     if(face){
       face.textContent = th.who;
       root.querySelector(".tt-goal").textContent = th.goal;
       root.querySelector(".tt-who").style.setProperty("--p", p);
-      root.querySelector(".tt-track").style.setProperty("--p", p);
       root.querySelector(".tt-time").textContent = st && st.ph !== "done" ? fmt(remaining) : (st ? "🎉" : "–:––");
       root.querySelector(".tt-msg").textContent = w.big;
       root.querySelector(".tt-sub").textContent = w.sub;
@@ -279,16 +308,14 @@ function mountStudent(host, opts){
       root.classList.toggle("tt-hurry", !!(st && st.ph === "turn" && st.run && remaining <= 30000 && remaining > 0));
       root.classList.toggle("tt-arrive", !!(st && st.ph === "switch"));
       ["mine", "next", "done", "work"].forEach(function(t){ root.classList.toggle("tone-" + t, w.tone === t); });
-      /* silly speech bubble, a few seconds at a time */
       var bub = root.querySelector(".tt-bub");
       if(st && st.ph === "switch"){ bubText = th.done; bubUntil = now + 1000; }
       else if(st && st.ph === "turn" && st.run && remaining <= 30000 && remaining > 0){ bubText = "Hurry hurry!"; bubUntil = now + 1000; }
       else if(st && st.ph === "turn" && st.run && now >= nextBub){ bubText = th.lines[Math.floor(Math.random() * th.lines.length)]; bubUntil = now + 4000; nextBub = now + 16000 + Math.random() * 8000; }
       bub.textContent = bubText; bub.classList.toggle("on", now < bubUntil);
     }
-    if(pill){ pill.textContent = th.who + " " + (st && st.ph !== "done" ? fmt(remaining) : "⏳") + (w.tone === "mine" ? " 🎤" : w.tone === "next" ? " 👀" : ""); pill.className = "tt tt-pill tone-" + w.tone; }
+    if(pill){ pill.textContent = (saved.av || th.who) + " " + (st && st.ph !== "done" ? fmt(remaining) : "⏳") + (w.tone === "mine" ? " 🎤" : w.tone === "next" ? " 👀" : ""); pill.className = "tt tt-pill tone-" + w.tone; }
 
-    /* a change everyone should notice: flash, and pop the card open if it's about you */
     var key = st ? st.ph + ":" + st.i + ":" + w.tone : "";
     if(prevKey && key !== prevKey){
       var target = collapsed ? pill : root;
@@ -299,9 +326,9 @@ function mountStudent(host, opts){
   }
 
   tickTimer = setInterval(render, 250);
-  if(preview){ joined = true; showMain(); }
-  else if(saved.code && saved.at && Date.now() - saved.at < 90 * 60000) join();   // same session: rejoin quietly
-  else showJoin();                                                    // otherwise pick today's turn first
+  if(preview) showMain();
+  else if(saved.code && (fromLink || recent)) connect();
+  else showCode();
 
   return {
     feed:function(m){ st = m; lastMsg = Date.now(); localEnd = Date.now() + (m.ms || 0); render(); },
@@ -309,7 +336,7 @@ function mountStudent(host, opts){
   };
 }
 
-window.TurnTimer = {Room:Room, mountStudent:mountStudent, THEMES:THEMES, newCode:newCode, fmt:fmt, store:store, esc:esc, injectCss:injectCss};
+window.TurnTimer = {Room:Room, mountStudent:mountStudent, THEMES:THEMES, AVATARS:AVATARS, newCode:newCode, fmt:fmt, store:store, esc:esc, injectCss:injectCss};
 
 var me_script = document.currentScript;
 if(me_script && me_script.hasAttribute("data-float")){
