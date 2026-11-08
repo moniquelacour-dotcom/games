@@ -119,6 +119,14 @@ var CSS = [
 ".tt-go{font-size:22px;font-weight:700;border:none;border-radius:999px;padding:12px 24px;background:var(--tt-btn);color:var(--tt-btnInk)}",
 ".tt-err{color:var(--tt-nextInk);text-align:center;min-height:1.2em}",
 ".tt-me{font-size:30px;line-height:1}",
+".tt-act{display:flex;flex-direction:column;gap:10px;align-items:center}",
+".tt-act:empty{display:none}",
+".tt-open{display:inline-block;text-decoration:none;font:800 22px 'Baloo 2',system-ui,sans-serif;background:var(--tt-btn);color:var(--tt-btnInk);border-radius:999px;padding:12px 26px;text-align:center}",
+".tt-float .tt-open{font-size:16px;padding:7px 14px}",
+".tt-cue{font-weight:700;font-size:20px;text-align:center;text-wrap:balance}",
+".tt-part{font-family:'Atkinson Hyperlegible',system-ui,sans-serif;font-size:34px;line-height:1.5;font-weight:700;text-align:center;background:var(--tt-track);border-radius:16px;padding:18px 22px;width:100%;text-wrap:pretty}",
+".tt-of{font-size:14px;color:var(--tt-muted)}",
+".tt-sharedwait .tt-track,.tt-sharedwait .tt-time{display:none}",
 ".tt-avs button{font-size:34px;min-width:64px;padding:6px 10px}",
 ".tt-float .tt-avs button{font-size:24px;min-width:46px}",
 ".tt-float .tt-me{font-size:22px}",
@@ -153,6 +161,15 @@ function injectCss(){
    relay; which child is which animal lives only on the coach's computer. */
 var AVATARS = ["🦊","🐸","🐼","🦄","🐯","🐨","🐵","🐧","🦉","🐙","🦋","🐢","🦁","🐰","🐻","🐷","🐮","🐔","🦖","🐳","🐬","🦈","🐝","🐞","🦜","🦩","🦒","🐘","🦔","🦦","🦥","🐿️","🦝","🐹","🐲","🦕","🐠","🦀","🐌","🦓","🦘","🐊","🦚","🐺","🐑","🐫"];
 
+/* Today's practice: the coach picks one; every student's page offers it. */
+var ACTS = {
+  signs:  {name:"Read the Signs", url:"read-the-signs.html", icon:"🚦"},
+  trail:  {name:"Fluency Trail",  url:"fluency-home.html",   icon:"🥾"},
+  words:  {name:"Word Stage",     url:"word-stage.html",     icon:"🎭"},
+  shared: {name:"Shared Reading", url:"turn-timer.html",     icon:"📖"}
+};
+function onPage(url){ var p = location.pathname.split("/").pop() || "index.html"; return p === url; }
+
 function together(list){ return list.join(" + ") + (list.length > 1 ? " are" : " is"); }
 function words(st, my, remaining, stale){
   var out = {big:"", sub:"", tone:"work"};
@@ -160,7 +177,8 @@ function words(st, my, remaining, stale){
   var t = st.t || [], cur = t[st.i] || [], nxt = t[st.i + 1] || [];
   var mine = !!my && cur.indexOf(my) >= 0, isNext = !!my && nxt.indexOf(my) >= 0, at = -1;
   t.forEach(function(turn, k){ if(my && turn.indexOf(my) >= 0) at = k; });
-  if(st.ph === "wait"){ out.big = "Get ready!"; out.sub = "Your coach will start the timer soon."; }
+  if(st.ph === "wait" && st.act === "shared"){ out.big = "Shared Reading 📖"; out.sub = ""; }
+  else if(st.ph === "wait"){ out.big = "Get ready!"; out.sub = "Your coach will start the timer soon."; }
   else if(st.ph === "done"){ out.big = "Practice is over! 🎉"; out.sub = "Come back to Zoom for share-out."; out.tone = "done"; }
   else if(st.ph === "turn"){
     if(mine){ out.big = my + " It's your turn! Unmute 🎤"; out.sub = "Read with your coach. Have fun!"; out.tone = "mine"; }
@@ -249,7 +267,7 @@ function mountStudent(host, opts){
         '<span class="tt-me" aria-label="Your animal">' + esc(saved.av) + '</span><span class="tt-chip">Room ' + esc(saved.code) + '</span><button type="button" class="tt-link tt-change">change</button>') +
         minBtn + '</div>' +
       '<div class="tt-track" aria-hidden="true"><span class="tt-goal"></span><span class="tt-who"><span class="tt-face"></span><span class="tt-bub"></span></span></div>' +
-      '<div class="tt-time" aria-hidden="true">–:––</div><div class="tt-msg" aria-live="polite"></div><div class="tt-sub"></div><div class="tt-warn"></div>';
+      '<div class="tt-time" aria-hidden="true">–:––</div><div class="tt-msg" aria-live="polite"></div><div class="tt-sub"></div><div class="tt-warn"></div><div class="tt-act"></div>';
     var ch = root.querySelector(".tt-change"); if(ch) ch.addEventListener("click", function(){ saved.av = ""; showPick(); });
     wireMin(); prevKey = ""; render(); sayHi();
   }
@@ -314,6 +332,27 @@ function mountStudent(host, opts){
       else if(st && st.ph === "turn" && st.run && now >= nextBub){ bubText = th.lines[Math.floor(Math.random() * th.lines.length)]; bubUntil = now + 4000; nextBub = now + 16000 + Math.random() * 8000; }
       bub.textContent = bubText; bub.classList.toggle("on", now < bubUntil);
     }
+    var box = root.querySelector(".tt-act");
+    if(box){
+      var act = st && ACTS[st.act], sr = (st && st.sr) || {}, parts = sr.parts || [], k = Math.min(sr.k || 0, Math.max(0, parts.length - 1));
+      var shared = !!(st && st.act === "shared" && parts.length && onPage("turn-timer.html") && !isFloat);
+      root.classList.toggle("tt-sharedwait", shared && st.ph === "wait");
+      var cue = "";
+      if(shared){
+        var curTurn = (st.t || [])[st.i] || [], mineNow = st.ph === "turn" && saved.av && curTurn.indexOf(saved.av) >= 0;
+        cue = sr.cue === "listen" ? "👂 Listen and follow along while your coach reads." :
+              sr.cue === "together" ? "🗣️ Now read it out loud together! Keep your mic muted." :
+              mineNow ? saved.av + " Your turn! Unmute and read this part with your coach." :
+              "🔁 Whisper-read this part again while you wait.";
+      }
+      var akey = !act ? "" : shared ? "S|" + k + "|" + cue + "|" + parts[k] + "|" + parts.length : (onPage(act.url) ? "" : "B|" + st.act);
+      if(box.dataset.key !== akey){
+        box.dataset.key = akey;
+        if(!akey) box.innerHTML = "";
+        else if(shared) box.innerHTML = '<div class="tt-cue">' + esc(cue) + '</div><div class="tt-part">' + esc(parts[k]) + '</div><div class="tt-of">Part ' + (k + 1) + ' of ' + parts.length + '</div>';
+        else box.innerHTML = '<a class="tt-open" href="' + act.url + '">' + act.icon + ' ' + (isFloat ? "Go to today's practice" : "Open today's practice: " + esc(act.name)) + '</a>';
+      }
+    }
     if(pill){ pill.textContent = (saved.av || th.who) + " " + (st && st.ph !== "done" ? fmt(remaining) : "⏳") + (w.tone === "mine" ? " 🎤" : w.tone === "next" ? " 👀" : ""); pill.className = "tt tt-pill tone-" + w.tone; }
 
     var key = st ? st.ph + ":" + st.i + ":" + w.tone : "";
@@ -336,7 +375,7 @@ function mountStudent(host, opts){
   };
 }
 
-window.TurnTimer = {Room:Room, mountStudent:mountStudent, THEMES:THEMES, AVATARS:AVATARS, newCode:newCode, fmt:fmt, store:store, esc:esc, injectCss:injectCss};
+window.TurnTimer = {ACTS:ACTS, Room:Room, mountStudent:mountStudent, THEMES:THEMES, AVATARS:AVATARS, newCode:newCode, fmt:fmt, store:store, esc:esc, injectCss:injectCss};
 
 var me_script = document.currentScript;
 if(me_script && me_script.hasAttribute("data-float")){
