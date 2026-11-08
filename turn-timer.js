@@ -39,13 +39,14 @@ function loadMqtt(cb){
 
 function Room(code, h){
   var self = {code:code, status:"connecting", closed:false}, sock = null, bc = null;
-  var stateT = TOPIC + code, hiT = TOPIC + code + "/hi";
+  var stateT = TOPIC + code, hiT = TOPIC + code + "/hi", xT = TOPIC + code + "/x";   // x = partner moves inside games
   function setStatus(s){ if(self.status !== s){ self.status = s; if(h.onStatus) h.onStatus(s); } }
   function deliver(raw){
     var m; try{ m = JSON.parse(raw); }catch(e){ return; }
     if(!m || m.from === me) return;
     if(m.kind === "state" && h.onState) h.onState(m);
     if(m.kind === "hi" && h.onHi) h.onHi(m);
+    if(m.kind === "x" && h.onX) h.onX(m);
   }
   if(!NO_BC){ try{ bc = new BroadcastChannel("aa-turn-timer-" + code); bc.onmessage = function(e){ deliver(e.data); }; }catch(e){} }
   loadMqtt(function(ok){
@@ -54,7 +55,7 @@ function Room(code, h){
     try{
       sock = mqtt.connect(RELAY, {clientId:"tt_" + me.slice(0, 14), clean:true, reconnectPeriod:3000, connectTimeout:7000, keepalive:30});
       sock.on("connect", function(){
-        sock.subscribe([stateT, hiT], {qos:0}, function(err){ setStatus(err ? "blocked" : "open"); if(!err && h.onOpen) h.onOpen(); });
+        sock.subscribe([stateT, hiT, xT], {qos:0}, function(err){ setStatus(err ? "blocked" : "open"); if(!err && h.onOpen) h.onOpen(); });
       });
       sock.on("message", function(t, p){ deliver(p.toString()); });
       sock.on("error", function(){ if(self.status !== "open") setStatus("blocked"); });
@@ -66,7 +67,7 @@ function Room(code, h){
     obj.kind = kind; obj.from = me;
     var raw = JSON.stringify(obj);
     try{ if(bc) bc.postMessage(raw); }catch(e){}
-    try{ if(sock && sock.connected) sock.publish(kind === "hi" ? hiT : stateT, raw, {qos:0, retain:!!retain}); }catch(e){}
+    try{ if(sock && sock.connected) sock.publish(kind === "hi" ? hiT : kind === "x" ? xT : stateT, raw, {qos:0, retain:!!retain}); }catch(e){}
   };
   self.close = function(){ self.closed = true; try{ if(bc) bc.close(); }catch(e){} try{ if(sock) sock.end(true); }catch(e){} };
   return self;
@@ -166,6 +167,7 @@ var ACTS = {
   signs:  {name:"Read the Signs", url:"read-the-signs.html", icon:"🚦"},
   trail:  {name:"Fluency Trail",  url:"fluency-home.html",   icon:"🥾"},
   words:  {name:"Word Stage",     url:"word-stage.html",     icon:"🎭"},
+  parts:  {name:"Word Parts (partners)", url:"word-parts.html", icon:"🧩"},
   shared: {name:"Shared Reading", url:"turn-timer.html",     icon:"📖"}
 };
 function onPage(url){ var p = location.pathname.split("/").pop() || "index.html"; return p === url; }
@@ -270,6 +272,7 @@ function mountStudent(host, opts){
       '<div class="tt-time" aria-hidden="true">–:––</div><div class="tt-msg" aria-live="polite"></div><div class="tt-sub"></div><div class="tt-warn"></div><div class="tt-act"></div>';
     var ch = root.querySelector(".tt-change"); if(ch) ch.addEventListener("click", function(){ saved.av = ""; showPick(); });
     wireMin(); prevKey = ""; render(); sayHi();
+    (changed || []).forEach(function(f){ try{ f(); }catch(e){} });
   }
 
   function wireMin(){
@@ -281,6 +284,7 @@ function mountStudent(host, opts){
   function applyCollapse(){ if(!isFloat) return; root.hidden = collapsed; pill.hidden = !collapsed; }
   if(pill) pill.addEventListener("click", function(){ collapsed = false; store("tt-collapsed", false); applyCollapse(); });
 
+  var changed = [], xs = [];
   function onState(m){
     if(!m || m.v !== 2) return;
     var hadGroup = st && (st.g || []).join("");
@@ -291,13 +295,14 @@ function mountStudent(host, opts){
       else if(hadGroup !== (m.g || []).join("")) showPick();
     } else if(view === "main" && !preview && !inGroup){ saved.av = ""; showPick(); }
     else if(view === "main") render();
+    changed.forEach(function(f){ try{ f(); }catch(e){} });
   }
 
   function connect(){
     store("tt-join2", saved);
     st = null; lastMsg = 0;
     if(room) room.close();
-    room = Room(saved.code, {onState:onState, onStatus:function(){ if(view === "pick") showPick(); else render(); }, onOpen:sayHi});
+    room = Room(saved.code, {onState:onState, onX:function(m){ xs.forEach(function(f){ try{ f(m); }catch(e){} }); }, onStatus:function(){ if(view === "pick") showPick(); else render(); }, onOpen:sayHi});
     showPick();
     clearInterval(hiTimer); hiTimer = setInterval(sayHi, 10000);
   }
@@ -370,6 +375,17 @@ function mountStudent(host, opts){
   else showCode();
 
   return {
+    /* for games: who am I, who is my partner, and a private line to them */
+    me:function(){ return view === "main" ? saved.av : ""; },
+    state:function(){ return st; },
+    partners:function(){
+      if(view !== "main" || !st || !saved.av) return [];
+      var mine = (st.t || []).filter(function(t){ return t.indexOf(saved.av) >= 0; })[0] || [];
+      return mine.filter(function(a){ return a !== saved.av; });
+    },
+    onChange:function(f){ changed.push(f); },
+    onX:function(f){ xs.push(f); },
+    sendX:function(obj){ if(room) room.send("x", obj, false); },
     feed:function(m){ st = m; lastMsg = Date.now(); localEnd = Date.now() + (m.ms || 0); render(); },
     destroy:function(){ clearInterval(tickTimer); clearInterval(hiTimer); if(room) room.close(); root.remove(); if(pill) pill.remove(); }
   };
@@ -379,7 +395,7 @@ window.TurnTimer = {ACTS:ACTS, Room:Room, mountStudent:mountStudent, THEMES:THEM
 
 var me_script = document.currentScript;
 if(me_script && me_script.hasAttribute("data-float")){
-  var start = function(){ mountStudent(document.body, {float:true}); };
+  var start = function(){ window.TurnTimer.card = mountStudent(document.body, {float:true}); };
   if(document.body) start(); else document.addEventListener("DOMContentLoaded", start);
 }
 })();
