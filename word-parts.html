@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Word Parts</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Baloo+2:wght@600;800&display=swap">
+<style>
+/* Word Parts: partners build a word together. One holds the beginnings,
+   the other holds the roots and endings. Taps only, no sound, no typing. */
+:root{--bg:#f2f7f4;--card:#ffffff;--ink:#1f2a24;--muted:#5d6b63;--line:#d6e3db;--pre:#d9534f;--preBg:#fbe7e6;--base:#2f6fb5;--baseBg:#e3eefa;--suf:#7a4fb8;--sufBg:#efe7fa;--go:#237a43;--goBg:#e2f4e8;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#121915;--card:#1b241f;--ink:#e8f0eb;--muted:#a8b8ae;--line:#2c3a32;--pre:#f19a95;--preBg:#3a2221;--base:#8fbaf0;--baseBg:#1d2b3d;--suf:#c4a5f2;--sufBg:#2c2240;--go:#8fe0a6;--goBg:#183a24;color-scheme:dark}}
+:root[data-theme=dark]{--bg:#121915;--card:#1b241f;--ink:#e8f0eb;--muted:#a8b8ae;--line:#2c3a32;--pre:#f19a95;--preBg:#3a2221;--base:#8fbaf0;--baseBg:#1d2b3d;--suf:#c4a5f2;--sufBg:#2c2240;--go:#8fe0a6;--goBg:#183a24;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif;padding-block:20px 140px;padding-inline:max(16px,env(safe-area-inset-left)) max(16px,env(safe-area-inset-right))}
+main{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font:800 36px/1.1 "Baloo 2",system-ui,sans-serif;margin:0}
+button{font:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.top{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.who{font-size:28px;font-weight:700}
+.status{color:var(--muted);font-size:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.clue{font:800 26px/1.25 "Baloo 2",system-ui,sans-serif;text-align:center;text-wrap:balance}
+.clue small{display:block;font:700 14px "Atkinson Hyperlegible",sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.slots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.slot{min-width:120px;min-height:76px;border:3px dashed var(--line);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 14px}
+.slot b{font:800 32px/1.1 "Baloo 2",system-ui,sans-serif}
+.slot span{font-size:13px;color:var(--muted);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.slot.pre.on{border-style:solid;border-color:var(--pre);background:var(--preBg)}
+.slot.base.on{border-style:solid;border-color:var(--base);background:var(--baseBg)}
+.slot.suf.on{border-style:solid;border-color:var(--suf);background:var(--sufBg)}
+.label{font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:center}
+.tiles{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.tile{font:800 28px/1 "Baloo 2",system-ui,sans-serif;border-radius:14px;padding:14px 20px;border:3px solid;min-width:96px}
+.tile.pre{color:var(--pre);border-color:var(--pre);background:var(--preBg)}
+.tile.base{color:var(--base);border-color:var(--base);background:var(--baseBg)}
+.tile.suf{color:var(--suf);border-color:var(--suf);background:var(--sufBg)}
+.tile:disabled{opacity:.3;cursor:default}
+.tile.no{animation:no .4s}
+@keyframes no{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.hint{text-align:center;color:var(--muted);min-height:1.5em}
+.done{background:var(--goBg);border-color:var(--go);text-align:center}
+.big{font:800 52px/1.1 "Baloo 2",system-ui,sans-serif;color:var(--go);overflow-wrap:anywhere}
+.big i{font-style:normal;color:var(--muted)}
+.go{font:800 22px "Baloo 2",system-ui,sans-serif;border:none;border-radius:999px;padding:12px 28px;background:var(--go);color:var(--card);align-self:center}
+.alt{background:none;border:2px solid var(--line);color:var(--ink);border-radius:999px;padding:8px 18px;font-weight:700;align-self:center}
+.count{text-align:center;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><h1>Word Parts 🧩</h1><div><div class="who" id="who"></div><div class="status" id="status"></div></div></div>
+
+  <section class="card" id="gate">
+    <p class="clue">Join your coach's room in the timer card in the corner to play with your partner.</p>
+    <button class="alt" id="solo" type="button">Practice on my own</button>
+  </section>
+
+  <section class="card" id="play" hidden>
+    <div class="clue" id="clue"></div>
+    <div class="slots" id="slots"></div>
+    <div class="label" id="mineLabel">Your pieces</div>
+    <div class="tiles" id="tiles"></div>
+    <div class="hint" id="hint" aria-live="polite"></div>
+  </section>
+
+  <section class="card done" id="done" hidden>
+    <div class="big" id="bigWord"></div>
+    <div class="clue" id="readIt"></div>
+    <button class="go" id="next" type="button">Next word ▶</button>
+  </section>
+
+  <div class="count" id="count"></div>
+</main>
+
+<script src="turn-timer.js?v=4" data-float></script>
+<script>
+(function(){
+"use strict";
+var WORDS = [
+  ["un","break","able","not able to be broken"],
+  ["re","read","ing","reading something again"],
+  ["dis","agree","ment","when people do not agree"],
+  ["pre","heat","ed","heated before"],
+  ["mis","spell","ed","spelled the wrong way"],
+  ["re","fill","able","able to be filled again"],
+  ["un","help","ful","not helpful"],
+  ["un","fair","ness","the feeling of something not being fair"],
+  ["dis","honest","ly","in a way that is not honest"],
+  ["over","cook","ed","cooked for too long"],
+  ["under","water","","below the water"],
+  ["non","stop","","without stopping"],
+  ["in","complete","","not complete"],
+  ["dis","appear","ing","going out of sight"],
+  ["pre","pay","ment","paying ahead of time"],
+  ["un","cover","ed","found after being hidden"],
+  ["re","play","ed","played again"],
+  ["mis","read","ing","reading something the wrong way"],
+  ["un","kind","ness","the act of not being kind"],
+  ["re","view","ed","looked at again"]
+];
+var PRE = ["un","re","dis","pre","mis","non","over","under","in"];
+var SUF = ["able","ed","ing","ful","ness","ment","ly","less"];
+var BASE = WORDS.map(function(w){ return w[1]; }).filter(function(b, i, a){ return a.indexOf(b) === i; });
+var $ = function(id){ return document.getElementById(id); };
+var TT = window.TurnTimer, card = TT && TT.card;
+var AV = (TT && TT.AVATARS) || [];
+
+/* seeded random, so both partners' screens agree without sending everything */
+function rng(seed){ var h = 2166136261; for(var i = 0; i < seed.length; i++){ h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619); } return function(){ h += 0x6D2B79F5; var t = h; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function shuffle(a, r){ a = a.slice(); for(var i = a.length - 1; i > 0; i--){ var j = Math.floor(r() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function pickOthers(pool, not, k, r){ return shuffle(pool.filter(function(x){ return x !== not; }), r).slice(0, k); }
+
+var me = "", partner = "", soloMode = false, key = "", G = null, lastHeard = 0;
+function load(k){ try{ return JSON.parse(localStorage.getItem("wp-" + k) || "null"); }catch(e){ return null; } }
+function keep(){ try{ localStorage.setItem("wp-" + key, JSON.stringify(G)); }catch(e){} }
+function order(){ return shuffle(WORDS.map(function(w, i){ return i; }), rng("order|" + key)); }
+function word(){ var o = order(); return WORDS[o[G.r % o.length]]; }
+
+/* who holds what: the two animals in a fixed order, and they swap each word */
+function roles(){
+  if(soloMode || !partner) return {pre:true, rest:true};
+  var pair = [me, partner].sort(function(a, b){ return AV.indexOf(a) - AV.indexOf(b); });
+  var preHolder = pair[G.r % 2];
+  return {pre:preHolder === me, rest:preHolder !== me};
+}
+
+function setup(){
+  var nextMe = card ? card.me() : "", ps = card ? card.partners() : [];
+  var nextPartner = ps[0] || "";
+  if(soloMode){ nextMe = nextMe || "🙂"; nextPartner = ""; }
+  if(!nextMe){ $("gate").hidden = false; $("play").hidden = $("done").hidden = true; $("who").textContent = ""; $("status").textContent = ""; $("count").textContent = ""; return; }
+  var nextKey = soloMode || !nextPartner ? "solo|" + nextMe : [nextMe, nextPartner].sort().join("");
+  if(nextKey !== key || nextMe !== me || nextPartner !== partner){
+    me = nextMe; partner = nextPartner; key = nextKey;
+    G = load(key) || {r:0, f:{pre:"", base:"", suf:""}, n:0};
+    say();
+  }
+  $("gate").hidden = true;
+  paint();
+}
+
+function say(){ if(card && partner && !soloMode) card.sendX({g:"wp", k:key, s:G}); }
+if(card){
+  card.onChange(setup);
+  card.onX(function(m){
+    if(!m || m.g !== "wp" || m.k !== key || !G) return;
+    lastHeard = Date.now();
+    var s = m.s; if(!s) return;
+    if(s.r > G.r){ G = s; }
+    else if(s.r === G.r){ ["pre", "base", "suf"].forEach(function(p){ if(s.f[p] && !G.f[p]) G.f[p] = s.f[p]; }); G.n = Math.max(G.n, s.n); }
+    else return say();          // they're behind: catch them up
+    keep(); paint();
+  });
+  setInterval(function(){ say(); paint(); }, 4000);   // late joiners and reloads catch up
+}
+$("solo").addEventListener("click", function(){ soloMode = true; setup(); });
+
+function complete(){ var w = word(); return !!(G.f.pre && G.f.base && (G.f.suf || !w[2])); }
+function myTiles(){
+  var w = word(), r = rng("tiles|" + key + "|" + G.r), R = roles(), out = [];
+  if(R.pre) out = out.concat([w[0]].concat(pickOthers(PRE, w[0], 2, r)).map(function(t){ return {t:t, p:"pre"}; }));
+  if(R.rest){
+    out = out.concat([w[1]].concat(pickOthers(BASE, w[1], 1, r)).map(function(t){ return {t:t, p:"base"}; }));
+    out = out.concat((w[2] ? [w[2]] : []).concat(pickOthers(SUF, w[2], 1, r)).map(function(t){ return {t:t, p:"suf"}; }));
+  }
+  return shuffle(out, r);
+}
+
+function paint(){
+  if(!G || !me) return;
+  var w = word(), R = roles(), done = complete();
+  $("who").textContent = partner && !soloMode ? "You " + me + " + " + partner : "You " + me;
+  var heard = Date.now() - lastHeard < 10000;
+  $("status").textContent = soloMode ? "Practicing on your own" : !partner ? "No partner this round: you hold all the pieces." : heard ? partner + " is here!" : "Waiting for " + partner + "… you can start your part.";
+  $("count").textContent = "Words built" + (partner && !soloMode ? " together" : "") + ": " + G.n;
+  $("play").hidden = done; $("done").hidden = !done;
+  if(done){
+    var parts = [w[0], w[1]].concat(w[2] ? [w[2]] : []);
+    $("bigWord").innerHTML = parts.map(function(p){ return TT.esc(p); }).join("<i>·</i>");
+    $("readIt").textContent = partner && !soloMode ? "Whisper-read it to " + partner + ": " + parts.join("") + "!" : "Whisper-read it: " + parts.join("") + "!";
+    return;
+  }
+  $("clue").innerHTML = "<small>Build a word that means</small>" + TT.esc(w[3]);
+  $("slots").innerHTML = [["pre", "beginning"], ["base", "root"]].concat(w[2] ? [["suf", "ending"]] : []).map(function(s){
+    return '<div class="slot ' + s[0] + (G.f[s[0]] ? " on" : "") + '"><b>' + (G.f[s[0]] ? TT.esc(G.f[s[0]]) : "&nbsp;") + '</b><span>' + s[1] + '</span></div>';
+  }).join("");
+  var tiles = myTiles();
+  $("mineLabel").textContent = partner && !soloMode ? (R.pre ? "Your pieces: beginnings" : "Your pieces: roots and endings") : "Your pieces";
+  var have = $("tiles").dataset.key, k2 = key + "|" + G.r + "|" + G.f.pre + G.f.base + G.f.suf;
+  if(have !== k2){
+    $("tiles").dataset.key = k2;
+    $("tiles").innerHTML = tiles.map(function(t){
+      var used = G.f[t.p] === t.t;
+      return '<button type="button" class="tile ' + t.p + '" data-t="' + TT.esc(t.t) + '" data-p="' + t.p + '"' + (used || G.f[t.p] ? " disabled" : "") + '>' + TT.esc(t.t) + '</button>';
+    }).join("");
+  }
+  var waiting = [];
+  if(partner && !soloMode){
+    if(!R.pre && !G.f.pre) waiting.push("the beginning");
+    if(!R.rest && (!G.f.base || (w[2] && !G.f.suf))) waiting.push("the root and ending");
+  }
+  if(!$("hint").dataset.busy) $("hint").textContent = waiting.length ? partner + " has " + waiting.join(" and ") + "." : "";
+}
+
+$("tiles").addEventListener("click", function(e){
+  var b = e.target.closest(".tile"); if(!b || b.disabled) return;
+  var w = word(), p = b.dataset.p, t = b.dataset.t;
+  var right = (p === "pre" && t === w[0]) || (p === "base" && t === w[1]) || (p === "suf" && t === w[2]);
+  if(!right){
+    b.classList.remove("no"); void b.offsetWidth; b.classList.add("no");
+    $("hint").dataset.busy = "1"; $("hint").textContent = "Hmm, does that part fit the meaning? Try another.";
+    setTimeout(function(){ $("hint").dataset.busy = ""; paint(); }, 1800);
+    return;
+  }
+  G.f[p] = t;
+  if(complete()) G.n += 1;
+  keep(); say(); paint();
+});
+$("next").addEventListener("click", function(){ G = {r:G.r + 1, f:{pre:"", base:"", suf:""}, n:G.n}; keep(); say(); paint(); });
+
+setup();
+if(!card){ $("gate").querySelector(".clue").textContent = "The timer didn't load. You can still practice on your own."; }
+})();
+</script>
+</body>
+</html>
