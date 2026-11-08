@@ -48,6 +48,13 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 .go{font:800 22px "Baloo 2",system-ui,sans-serif;border:none;border-radius:999px;padding:12px 28px;background:var(--go);color:var(--card);align-self:center}
 .alt{background:none;border:2px solid var(--line);color:var(--ink);border-radius:999px;padding:8px 18px;font-weight:700;align-self:center}
 .count{text-align:center;color:var(--muted)}
+.ttt{display:grid;grid-template-columns:repeat(3,72px);grid-template-rows:repeat(3,72px);gap:6px;justify-content:center}
+.ttt button{font-size:40px;line-height:1;border:2px solid var(--line);background:var(--card);border-radius:14px}
+.ttt button:disabled{cursor:default}
+.ttt button.win{background:var(--goBg);border-color:var(--go)}
+.ttt button.open:not(:disabled):hover{border-color:var(--go)}
+.score{text-align:center;font-weight:700;font-size:18px}
+.go:disabled{opacity:.35;cursor:not-allowed}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 </head>
@@ -71,8 +78,12 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   <section class="card done" id="done" hidden>
     <div class="big" id="bigWord"></div>
     <div class="clue" id="readIt"></div>
+    <div class="label" id="tttLabel"></div>
+    <div class="ttt" id="ttt" role="grid" aria-label="Tic-tac-toe board"></div>
+    <div class="score" id="score"></div>
     <button class="go" id="next" type="button">Next word ▶</button>
   </section>
+  <button class="alt" id="both" type="button" hidden>Partner not here? Play both sides</button>
 
   <div class="count" id="count"></div>
 </main>
@@ -115,7 +126,9 @@ function rng(seed){ var h = 2166136261; for(var i = 0; i < seed.length; i++){ h 
 function shuffle(a, r){ a = a.slice(); for(var i = a.length - 1; i > 0; i--){ var j = Math.floor(r() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
 function pickOthers(pool, not, k, r){ return shuffle(pool.filter(function(x){ return x !== not; }), r).slice(0, k); }
 
-var me = "", partner = "", soloMode = false, key = "", G = null, lastHeard = 0;
+var me = "", partner = "", soloMode = false, bothMode = false, key = "", G = null, lastHeard = 0;
+var EMPTY = ["", "", "", "", "", "", "", "", ""], LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+function norm(g){ g.b = g.b || EMPTY.slice(); g.mv = g.mv || 0; g.w = g.w || ""; g.s = g.s || {}; return g; }
 function load(k){ try{ return JSON.parse(localStorage.getItem("wp-" + k) || "null"); }catch(e){ return null; } }
 function keep(){ try{ localStorage.setItem("wp-" + key, JSON.stringify(G)); }catch(e){} }
 function order(){ return shuffle(WORDS.map(function(w, i){ return i; }), rng("order|" + key)); }
@@ -123,7 +136,7 @@ function word(){ var o = order(); return WORDS[o[G.r % o.length]]; }
 
 /* who holds what: the two animals in a fixed order, and they swap each word */
 function roles(){
-  if(soloMode || !partner) return {pre:true, rest:true};
+  if(soloMode || bothMode || !partner) return {pre:true, rest:true};
   var pair = [me, partner].sort(function(a, b){ return AV.indexOf(a) - AV.indexOf(b); });
   var preHolder = pair[G.r % 2];
   return {pre:preHolder === me, rest:preHolder !== me};
@@ -137,7 +150,7 @@ function setup(){
   var nextKey = soloMode || !nextPartner ? "solo|" + nextMe : [nextMe, nextPartner].sort().join("");
   if(nextKey !== key || nextMe !== me || nextPartner !== partner){
     me = nextMe; partner = nextPartner; key = nextKey;
-    G = load(key) || {r:0, f:{pre:"", base:"", suf:""}, n:0};
+    G = norm(load(key) || {r:0, f:{pre:"", base:"", suf:""}, n:0});
     say();
   }
   $("gate").hidden = true;
@@ -149,16 +162,59 @@ if(card){
   card.onChange(setup);
   card.onX(function(m){
     if(!m || m.g !== "wp" || m.k !== key || !G) return;
-    lastHeard = Date.now();
+    lastHeard = Date.now(); bothMode = false;
     var s = m.s; if(!s) return;
-    if(s.r > G.r){ G = s; }
-    else if(s.r === G.r){ ["pre", "base", "suf"].forEach(function(p){ if(s.f[p] && !G.f[p]) G.f[p] = s.f[p]; }); G.n = Math.max(G.n, s.n); }
+    if(s.r > G.r){ G = norm(s); }
+    else if(s.r === G.r){ ["pre", "base", "suf"].forEach(function(p){ if(s.f[p] && !G.f[p]) G.f[p] = s.f[p]; }); G.n = Math.max(G.n, s.n); if((s.mv || 0) > G.mv){ G.b = s.b; G.mv = s.mv; G.w = s.w; G.s = s.s; } }
     else return say();          // they're behind: catch them up
     keep(); paint();
   });
   setInterval(function(){ say(); paint(); }, 4000);   // late joiners and reloads catch up
 }
 $("solo").addEventListener("click", function(){ soloMode = true; setup(); });
+$("both").addEventListener("click", function(){ bothMode = true; paint(); });
+
+/* tic-tac-toe between words: each player gets one move after every word */
+function players(){
+  if(soloMode || !partner) return [me, "🤖"];
+  return [me, partner].sort(function(a, b){ return AV.indexOf(a) - AV.indexOf(b); });
+}
+function mover(){ var p = players(); return p[(G.r + G.mv) % 2]; }
+function full(){ return G.b.every(function(x){ return x; }); }
+function line(){ for(var i = 0; i < LINES.length; i++){ var L = LINES[i]; if(G.b[L[0]] && G.b[L[0]] === G.b[L[1]] && G.b[L[1]] === G.b[L[2]]) return L; } return null; }
+function boardOver(){ return !!G.w || full(); }
+function canGoOn(){ return G.mv >= 2 || boardOver(); }
+function place(i, who){
+  if(G.b[i] || boardOver() || G.mv >= 2) return;
+  G.b[i] = who; G.mv += 1;
+  if(line()){ G.w = who; G.s[who] = (G.s[who] || 0) + 1; }
+  else if(full()) G.w = "draw";
+  keep(); say(); paint();
+  if((soloMode || !partner) && !boardOver() && G.mv < 2 && mover() === "🤖") setTimeout(robot, 700);
+}
+function robot(){
+  var open = []; G.b.forEach(function(x, i){ if(!x) open.push(i); });
+  if(open.length) place(open[Math.floor(Math.random() * open.length)], "🤖");
+}
+$("ttt").addEventListener("click", function(e){
+  var b = e.target.closest("button"); if(!b || b.disabled) return;
+  var who = mover();
+  if(who !== me && !bothMode) return;
+  place(+b.dataset.i, who);
+});
+function paintBoard(){
+  var who = mover(), L = line() || [], mine = (who === me || bothMode) && !boardOver() && G.mv < 2;
+  $("ttt").innerHTML = G.b.map(function(x, i){
+    return '<button type="button" data-i="' + i + '" class="' + (x ? "" : "open") + (L.indexOf(i) >= 0 ? " win" : "") + '"' + (x || !mine ? " disabled" : "") + ' aria-label="Square ' + (i + 1) + (x ? ", " + x : ", empty") + '">' + (x || "") + '</button>';
+  }).join("");
+  $("tttLabel").textContent = G.w === "draw" ? "It's a tie! New board next word." :
+    G.w ? G.w + " wins the board! 🎉 New board next word." :
+    G.mv >= 2 ? "Both moves done. Tap Next word!" :
+    who === me ? "Your move! Tap a square." : who === "🤖" ? "🤖 is thinking…" : bothMode ? who + "'s move (you're playing both sides)" : who + " is choosing a square…";
+  var p = players();
+  $("score").textContent = p.map(function(a){ return a + " " + (G.s[a] || 0); }).join("   ·   ");
+  $("next").disabled = !canGoOn();
+}
 
 function complete(){ var w = word(); return !!(G.f.pre && G.f.base && (G.f.suf || !w[2])); }
 function myTiles(){
@@ -176,13 +232,16 @@ function paint(){
   var w = word(), R = roles(), done = complete();
   $("who").textContent = partner && !soloMode ? "You " + me + " + " + partner : "You " + me;
   var heard = Date.now() - lastHeard < 10000;
-  $("status").textContent = soloMode ? "Practicing on your own" : !partner ? "No partner this round: you hold all the pieces." : heard ? partner + " is here!" : "Waiting for " + partner + "… you can start your part.";
+  $("both").hidden = soloMode || bothMode || !partner || heard;
+  $("status").textContent = soloMode ? "Practicing on your own" : bothMode ? "Playing both sides until " + partner + " is here" : !partner ? "No partner this round: you hold all the pieces." : heard ? partner + " is here!" : "Waiting for " + partner + "… you can start your part.";
   $("count").textContent = "Words built" + (partner && !soloMode ? " together" : "") + ": " + G.n;
   $("play").hidden = done; $("done").hidden = !done;
   if(done){
     var parts = [w[0], w[1]].concat(w[2] ? [w[2]] : []);
     $("bigWord").innerHTML = parts.map(function(p){ return TT.esc(p); }).join("<i>·</i>");
     $("readIt").textContent = partner && !soloMode ? "Whisper-read it to " + partner + ": " + parts.join("") + "!" : "Whisper-read it: " + parts.join("") + "!";
+    paintBoard();
+    if((soloMode || !partner) && G.mv < 2 && !boardOver() && mover() === "🤖" && !robot.t){ robot.t = setTimeout(function(){ robot.t = 0; if(mover() === "🤖") robot(); }, 700); }
     return;
   }
   $("clue").innerHTML = "<small>Build a word that means</small>" + TT.esc(w[3]);
@@ -221,7 +280,12 @@ $("tiles").addEventListener("click", function(e){
   if(complete()) G.n += 1;
   keep(); say(); paint();
 });
-$("next").addEventListener("click", function(){ G = {r:G.r + 1, f:{pre:"", base:"", suf:""}, n:G.n}; keep(); say(); paint(); });
+$("next").addEventListener("click", function(){
+  if(!canGoOn()) return;
+  var over = boardOver();
+  G = {r:G.r + 1, f:{pre:"", base:"", suf:""}, n:G.n, b:over ? EMPTY.slice() : G.b, mv:0, w:"", s:G.s};
+  keep(); say(); paint();
+});
 
 setup();
 if(!card){ $("gate").querySelector(".clue").textContent = "The timer didn't load. You can still practice on your own."; }
