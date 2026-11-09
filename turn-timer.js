@@ -225,7 +225,7 @@ function mountStudent(host, opts){
   var minBtn = isFloat ? '<button type="button" class="tt-min" aria-label="Hide">–</button>' : "";
 
   function showCode(){
-    view = "code";
+    view = "code"; if(isFloat) collapsed = false;   // not joined yet: show the join form, not a bubble
     if(room){ room.close(); room = null; }
     root.className = "tt " + (isFloat ? "tt-float" : "tt-full");
     root.innerHTML = '<div class="tt-top"><span class="tt-title">Turn Timer ⏳</span>' + minBtn + '</div>' +
@@ -245,7 +245,7 @@ function mountStudent(host, opts){
   }
 
   function showPick(){
-    view = "pick";
+    view = "pick"; if(isFloat) collapsed = false;
     var g = (st && st.g) || [];
     root.className = "tt " + (isFloat ? "tt-float" : "tt-full");
     root.innerHTML = '<div class="tt-top"><span class="tt-title">Turn Timer ⏳</span>' + minBtn + '</div>' +
@@ -384,6 +384,7 @@ function mountStudent(host, opts){
       return mine.filter(function(a){ return a !== saved.av; });
     },
     onChange:function(f){ changed.push(f); },
+    open:function(){ collapsed = false; store("tt-collapsed", false); applyCollapse(); var i = root.querySelector("input"); if(i) i.focus(); },
     onX:function(f){ xs.push(f); },
     sendX:function(obj){ if(room) room.send("x", obj, false); },
     feed:function(m){ st = m; lastMsg = Date.now(); localEnd = Date.now() + (m.ms || 0); render(); },
