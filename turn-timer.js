@@ -310,9 +310,10 @@ function mountStudent(host, opts){
 
   function render(){
     if(view !== "main") return;
-    var now = Date.now(), stale = !preview && st && lastMsg && now - lastMsg > 12000;
+    var now = Date.now(), stale = !preview && st && lastMsg && (now - lastMsg > 90000 || (room && room.status !== "open" && now - lastMsg > 15000));
     var remaining = !st ? 0 : (st.ph === "turn" && st.run ? Math.max(0, localEnd - now) : (st.ms || 0));
     if(st && st.ph === "wait") remaining = st.dur;
+    if(st && st.ph === "turn" && st.run && remaining <= 0){ st = Object.assign({}, st, {ph:"switch", run:false, ms:0}); }
     var p = (!st || st.ph === "wait") ? 0 : (st.ph === "turn" ? 1 - remaining / (st.dur || 1) : 1);
     p = Math.max(0, Math.min(1, p));
     var th = THEMES[(st && st.th) || "cat"] || THEMES.cat;
