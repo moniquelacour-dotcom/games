@@ -141,7 +141,7 @@ textarea{width:100%;min-height:160px;font:inherit;border:1px solid var(--line);b
   </div>
 </main>
 
-<script src="turn-timer.js?v=6"></script>
+<script src="turn-timer.js?v=7"></script>
 <script>
 (function(){
 "use strict";
@@ -394,13 +394,21 @@ function paintHere(){
     (out.length ? "  ·  Not here yet: " + out.map(function(s){ return s.av + " " + s.name; }).join(", ") : "  ·  Everyone's here! 🎉");
 }
 
-setInterval(function(){
+function tick(){
   if(S.ph === "turn" && S.run && Date.now() >= S.endAt){ S.ph = "switch"; S.run = false; S.switchAt = Date.now(); publish(); return; }
   if(S.ph === "switch" && cfg.auto && Date.now() - S.switchAt >= 10000){ next(); return; }
   $("clock").textContent = S.ph === "done" ? "🎉" : T.fmt(left());
   paintHere();
-}, 250);
-setInterval(publish, 3000);   // late joiners and reconnects always get the current state
+}
+/* Chrome slows down a page that is not in front (Zoom usually is), so the clock
+   also runs from a small background worker, which Chrome does not slow down. */
+setInterval(tick, 250);
+var beats = 0;
+function beat(){ tick(); if(++beats % 3 === 0) publish(); }   // late joiners and reconnects always get the current state
+try{
+  var wk = new Worker(URL.createObjectURL(new Blob(["setInterval(function(){ postMessage(0); }, 1000);"], {type:"text/javascript"})));
+  wk.onmessage = beat;
+}catch(e){ setInterval(beat, 1000); }
 
 preview = T.mountStudent($("preview"), {preview:true});
 openRoom(); publish();
