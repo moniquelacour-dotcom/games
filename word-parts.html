@@ -76,8 +76,15 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   <div class="top"><h1>Word Parts 🧩</h1><div><div class="who" id="who"></div><div class="status" id="status"></div></div></div>
 
   <section class="card" id="gate">
-    <p class="clue">Join your coach's room in the timer card in the corner to play with your partner.</p>
+    <p class="clue">Play with your partner: type your coach's room code in the timer box in the bottom-right corner, then tap your animal.</p>
+    <button class="go" id="joinBtn" type="button">Show the room code box</button>
     <button class="alt" id="solo" type="button">Practice on my own</button>
+  </section>
+
+  <section class="card" id="start" hidden>
+    <div class="clue"><small>Before you build</small>Pick the game you want to play between words!</div>
+    <div class="picks" id="startPicks"></div>
+    <div class="turn" id="startNote" aria-live="polite"></div>
   </section>
 
   <section class="card" id="play" hidden>
@@ -93,7 +100,6 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
     <div class="big" id="bigWord"></div>
     <div class="clue" id="readIt"></div>
     <div class="turn" id="gameTurn" aria-live="polite"></div>
-    <div class="picks" id="picks"></div>
     <div class="board" id="board"></div>
     <div class="score" id="score"></div>
     <button class="go" id="next" type="button">Next word ▶</button>
@@ -103,7 +109,7 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   <div class="count" id="count"></div>
 </main>
 
-<script src="turn-timer.js?v=5" data-float></script>
+<script src="turn-timer.js?v=6" data-float></script>
 <script>
 (function(){
 "use strict";
@@ -145,10 +151,23 @@ function shuffle(a, r){ a = a.slice(); for(var i = a.length - 1; i > 0; i--){ va
 function pickOthers(pool, not, k, r){ return shuffle(pool.filter(function(x){ return x !== not; }), r).slice(0, k); }
 
 var me = "", partner = "", soloMode = false, bothMode = false, key = "", G = null, lastHeard = 0, robotTimer = 0;
-function blank(r){ return {r:r || 0, f:{pre:"", base:"", suf:""}, n:0, sq:0, gm:"", gc:0, b:null, mv:0, w:"", s:{}}; }
+function blank(r){ return {r:r || 0, f:{pre:"", base:"", suf:""}, n:0, sq:0, ch:{}, q:[], qi:0, gm:"", b:null, mv:0, w:"", s:{}, t:Date.now()}; }
 function norm(g){ var b = blank(g.r); for(var k in b) if(g[k] === undefined) g[k] = b[k]; return g; }
-function load(k){ try{ return JSON.parse(localStorage.getItem("wp2-" + k) || "null"); }catch(e){ return null; } }
-function keep(){ try{ localStorage.setItem("wp2-" + key, JSON.stringify(G)); }catch(e){} }
+function load(k){
+  try{ var g = JSON.parse(localStorage.getItem("wp3-" + k) || "null"); return g && Date.now() - (g.t || 0) < 3 * 3600000 ? g : null; }catch(e){ return null; }   // a new session starts fresh
+}
+function keep(){ G.t = Date.now(); try{ localStorage.setItem("wp3-" + key, JSON.stringify(G)); }catch(e){} }
+function ready(){ return G.q && G.q.length > 0; }
+
+/* both partners pick a game before building. Same pick: play it. Different picks: take turns, one game each. */
+function maybeStart(){
+  var need = soloMode || !partner ? [me] : players();
+  if(!need.every(function(a){ return G.ch[a]; })) return false;
+  var picks = need.map(function(a){ return G.ch[a]; });
+  G.q = picks.length === 1 || picks[0] === picks[1] ? [picks[0]] : picks;
+  G.qi = 0; G.gm = G.q[0]; G.b = newBoard(G.gm, 0); G.mv = 0; G.w = "";
+  return true;
+}
 function order(){ return shuffle(WORDS.map(function(w, i){ return i; }), rng("order|" + key)); }
 function word(){ var o = order(); return WORDS[o[G.r % o.length]]; }
 
@@ -172,12 +191,11 @@ function tiles(){
 }
 
 /* ---------- the games between words ---------- */
-function chooser(){ return soloMode || !partner ? me : players()[G.gc % 2]; }
 function mover(){ return players()[(G.r + G.mv) % 2]; }
-function newBoard(gm){
+function newBoard(gm, qi){
   if(gm === "tic") return {c:Array(9).fill("")};
   if(gm === "four") return {c:Array(42).fill("")};
-  var deck = shuffle(CARDS.concat(CARDS), rng("deck|" + key + "|" + G.r + "|" + G.sq));
+  var deck = shuffle(CARDS.concat(CARDS), rng("deck|" + key + "|" + qi));      // same deck on both screens
   return {deck:deck, won:Array(12).fill(""), up:[], show:[]};
 }
 function winLine(){
@@ -264,14 +282,19 @@ if(card){
   card.onX(function(m){
     if(!m || m.g !== "wp2" || m.k !== key || !G || !m.s) return;
     lastHeard = Date.now(); bothMode = false;
-    var s = m.s;
-    if(s.r > G.r || (s.r === G.r && s.sq > G.sq)){ G = norm(s); keep(); paint(); }
+    var s = m.s, old = G;
+    if(s.r > G.r || (s.r === G.r && s.sq > G.sq)) G = norm(s);
     else if(s.r < G.r || s.sq < G.sq) say();        // they're behind: catch them up
-    else paint();
+    if(!ready()){                                   // game picks can cross in the mail: keep both
+      [old.ch || {}, s.ch || {}].forEach(function(o){ Object.keys(o).forEach(function(a){ if(!G.ch[a]) G.ch[a] = o[a]; }); });
+      if(maybeStart()){ G.sq = Math.max(G.sq, s.sq) + 1; say(); }
+    }
+    keep(); paint();
   });
   setInterval(function(){ say(); paint(); }, 4000);
 }
 $("solo").addEventListener("click", function(){ soloMode = true; setup(); });
+$("joinBtn").addEventListener("click", function(){ if(card && card.open) card.open(); });
 $("both").addEventListener("click", function(){ bothMode = true; paint(); });
 
 /* ---------- taps ---------- */
@@ -290,10 +313,12 @@ $("tiles").addEventListener("click", function(e){
   if(complete()) G.n += 1;
   commit();
 });
-$("picks").addEventListener("click", function(e){
-  var b = e.target.closest("button"); if(!b || b.disabled || G.gm) return;
-  if(!canAct(chooser())) return;
-  G.gm = b.dataset.g; G.b = newBoard(G.gm); G.mv = 0; G.w = "";
+$("startPicks").addEventListener("click", function(e){
+  var b = e.target.closest("button"); if(!b || b.disabled || ready()) return;
+  var g = b.dataset.g;
+  G.ch[me] = g;
+  if(bothMode && partner && !G.ch[partner]) G.ch[partner] = g;
+  maybeStart();
   commit();
 });
 $("board").addEventListener("click", function(e){
@@ -303,8 +328,8 @@ $("board").addEventListener("click", function(e){
 });
 $("next").addEventListener("click", function(){
   if(!G.gm || movesLeft()) return;
-  var over = !!G.w;
-  var n = {r:G.r + 1, f:{pre:"", base:"", suf:""}, n:G.n, sq:G.sq + 1, gm:over ? "" : G.gm, gc:over ? G.gc + 1 : G.gc, b:over ? null : G.b, mv:0, w:"", s:G.s};
+  var over = !!G.w, qi = over ? G.qi + 1 : G.qi, gm = G.q[qi % G.q.length];
+  var n = {r:G.r + 1, f:{pre:"", base:"", suf:""}, n:G.n, sq:G.sq + 1, ch:G.ch, q:G.q, qi:qi, gm:gm, b:over ? newBoard(gm, qi) : G.b, mv:0, w:"", s:G.s};
   if(n.b && n.gm === "mem") n.b.show = [];
   G = n; keep(); say(); paint(); scheduleRobot();
 });
@@ -321,7 +346,19 @@ function paint(){
   $("both").hidden = !duo || bothMode || heard;
   $("status").textContent = soloMode ? "Practicing on your own" : !partner ? "No partner this round: you build every part." : bothMode ? "Playing both sides until " + partner + " is here" : heard ? partner + " is here!" : "Waiting for " + partner + "…";
   $("count").textContent = "Words built" + (duo ? " together" : "") + ": " + G.n;
-  $("play").hidden = done; $("done").hidden = !done;
+  var go = ready();
+  $("start").hidden = go; $("play").hidden = !go || done; $("done").hidden = !go || !done;
+  if(!go){
+    var picked = G.ch[me];
+    setHTML($("startPicks"), Object.keys(GAMES).map(function(k){
+      return '<button type="button" data-g="' + k + '"' + (picked ? " disabled" : "") + (picked === k ? ' aria-pressed="true"' : "") + '>' + GAMES[k].icon + " " + GAMES[k].name + (picked === k ? " ✓" : "") + '</button>';
+    }).join(""));
+    var sn = $("startNote");
+    sn.textContent = !picked ? (duo ? "You and " + partner + " each pick one. If you pick different games, you'll take turns playing both!" : "Pick one to play against 🤖.") :
+      partner && G.ch[partner] ? "Starting…" : "You picked " + GAMES[picked].name + ". Waiting for " + partner + " to pick…";
+    sn.className = "turn" + (picked ? "" : " me");
+    return;
+  }
 
   if(!done){
     var bt = builder();
@@ -347,18 +384,14 @@ function paint(){
   $("readIt").textContent = duo ? "Whisper-read it to " + partner + ": " + parts.join("") + "!" : "Whisper-read it: " + parts.join("") + "!";
   var gt = $("gameTurn"), p = players();
 
-  if(!G.gm){
-    var ch = chooser();
-    gt.textContent = duo ? (ch === me ? "You pick the game this time!" : bothMode ? ch + " picks the game (you're playing both sides)" : ch + " is picking the game…") : "Pick a game to play with 🤖!";
-    gt.className = "turn" + (canAct(ch) ? " me" : "");
-    setHTML($("picks"), Object.keys(GAMES).map(function(k){ return '<button type="button" data-g="' + k + '"' + (canAct(ch) ? "" : " disabled") + '>' + GAMES[k].icon + " " + GAMES[k].name + '</button>'; }).join(""));
-    $("picks").hidden = false; setHTML($("board"), ""); $("next").disabled = true;
-  } else {
-    $("picks").hidden = true;
+  {
     var mv = mover(), L = winLine() || [], act = movesLeft() && canAct(mv);
+    var upNext = G.q[(G.qi + 1) % G.q.length], whose = "";
+    if(G.q.length > 1){ var owner = players().filter(function(a){ return G.ch[a] === upNext; })[0]; whose = owner ? owner + "'s pick, " : ""; }
+    var nextLine = "Next word starts " + whose + GAMES[upNext].name + ".";
     gt.textContent = GAMES[G.gm].icon + " " + GAMES[G.gm].name + ": " + (
-      G.w === "draw" ? "It's a tie! Next word starts a new game." :
-      G.w ? G.w + " wins! 🎉 Next word starts a new game." :
+      G.w === "draw" ? "It's a tie! " + nextLine :
+      G.w ? G.w + " wins! 🎉 " + nextLine :
       G.mv >= 2 ? "Both moves done. Tap Next word!" :
       turnText(mv, G.gm === "mem" ? ": flip two cards!" : ": make one move!"));
     gt.className = "turn" + (act ? " me" : "");
