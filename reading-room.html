@@ -85,18 +85,20 @@ button:focus-visible{outline:4px solid var(--sun);outline-offset:2px}
     <div class="notes" id="wall"></div>
   </section>
 
-  <p class="small">We meet in your regular Zoom room. Can't come after you booked? Tell Monique so someone else can have the time.</p>
+  <p class="small">How to join: open your TimeBack page and press Join on the drop-in. Not listed there? Join from your regular Zoom room. Can't come after you booked? Tell Monique so someone else can have the time.</p>
 </main>
 <script>
 (function(){
 "use strict";
 /* ===== Coach settings: update every Friday ===== */
-var WEEK = "Week of Monday 9 November";
+var WEEK = "Weeks of 9 and 16 November";
 /* Open drop-in times, written in Central time (America/Chicago). Remove a line when it's booked. */
 var SLOTS = [
   "2026-11-10T10:00","2026-11-10T14:30","2026-11-10T15:00",
   "2026-11-11T11:30","2026-11-11T14:30","2026-11-11T15:00","2026-11-11T15:30",
-  "2026-11-12T08:30","2026-11-12T10:30","2026-11-12T12:00","2026-11-12T14:00","2026-11-12T14:30","2026-11-12T15:00","2026-11-12T15:30"
+  "2026-11-12T08:30","2026-11-12T10:30","2026-11-12T12:00","2026-11-12T14:00","2026-11-12T14:30","2026-11-12T15:00","2026-11-12T15:30",
+  /* Daily drop-ins from 16 Nov */
+  "2026-11-16T12:00","2026-11-17T14:30","2026-11-18T07:30","2026-11-19T09:00","2026-11-20T11:30"
 ];
 /* Wall of Wins: no names, ever. Update weekly. */
 var WINS = [
