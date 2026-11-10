@@ -7,8 +7,8 @@
 <title>Long Vowel Chart</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Baloo+2:wght@600;800&display=swap">
 <style>
-/* Long Vowel Chart: one long vowel sound per session, a box for each way to
-   spell it. The coach fills her chart on a shared screen; each student fills
+/* Long Vowel Chart: one long vowel sound per session. The group finds each way
+   to spell it from the words they think of. The coach fills her chart on a shared screen; each student fills
    their own. What a student types never leaves their laptop. */
 :root{--bg:#f4f2fb;--card:#ffffff;--ink:#231f33;--muted:#615b75;--line:#dcd6ee;--accent:#5b3fc4;--accentInk:#ffffff;--mark:#ffe08a;--markInk:#4a3500;--ok:#1f7a40;--okBg:#e2f4e8;--warn:#8a5a00;--warnBg:#fff3d1;--soft:#ece8f8;color-scheme:light}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#15131f;--card:#1f1c2c;--ink:#ece8f7;--muted:#aaa3c0;--line:#352f4a;--accent:#a08bff;--accentInk:#160f2b;--mark:#6b5310;--markInk:#ffe9a8;--ok:#8fe0a6;--okBg:#183a24;--warn:#f4d27a;--warnBg:#3a2f12;--soft:#2a2540;color-scheme:dark}}
@@ -43,6 +43,8 @@ mark{background:var(--mark);color:var(--markInk);border-radius:3px;padding:0}
 .add{display:flex;gap:6px}
 .add input{flex:1;min-width:0;border:2px solid var(--line);border-radius:12px;padding:6px 10px;background:var(--bg);color:var(--ink);font-size:22px}
 .add button{border:none;border-radius:12px;background:var(--accent);color:var(--accentInk);font-weight:700;font-size:22px;padding:0 14px}
+.delbox{margin-left:auto;border:none;background:none;color:var(--muted);font-size:22px;line-height:1;padding:2px 8px;border-radius:8px}
+.newbox{border-style:dashed;min-height:150px}
 .hint{font-size:15px;color:var(--warn);min-height:0}
 .hint:empty{display:none}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
@@ -102,48 +104,51 @@ var $ = function(id){ return document.getElementById(id); };
 function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
 function store(k, v){ try{ if(v === undefined) return JSON.parse(localStorage.getItem(k) || "null"); localStorage.setItem(k, JSON.stringify(v)); }catch(e){ return null; } }
 
-/* Each long vowel sound and the common ways to spell it. "other" catches the
-   rest (go, me, hi, baby, they, great...) and is never checked. */
+/* One long vowel sound per session. The boxes start EMPTY: the group finds the
+   spellings from the words they think of, and each student writes each new
+   spelling at the top of a box, then the words that use it. */
 var SOUNDS = {
-  a:{name:"Long a", mark:"ā", eg:"cake", pats:[["a_e","cake","🎂"],["ai","rain","🌧️"],["ay","play","🎈"],["eigh","eight","8️⃣"]]},
-  e:{name:"Long e", mark:"ē", eg:"tree", pats:[["ee","tree","🌳"],["ea","leaf","🍃"],["e_e","these","👉"],["y","happy","😊"],["ey","key","🔑"],["ie","chief","👑"]]},
-  i:{name:"Long i", mark:"ī", eg:"bike", pats:[["i_e","bike","🚲"],["igh","night","🌙"],["y","fly","🦋"],["ie","pie","🥧"]]},
-  o:{name:"Long o", mark:"ō", eg:"boat", pats:[["o_e","home","🏠"],["oa","boat","⛵"],["ow","snow","❄️"],["oe","toe","🦶"]]},
-  u:{name:"Long u", mark:"ū", eg:"cube", pats:[["u_e","cube","🧊"],["ue","glue","🧴"],["ew","new","🆕"]]}
+  a:{name:"Long a", mark:"ā"}, e:{name:"Long e", mark:"ē"}, i:{name:"Long i", mark:"ī"},
+  o:{name:"Long o", mark:"ō"}, u:{name:"Long u", mark:"ū"}
 };
 var ORDER = ["a","e","i","o","u"];
-function boxes(v){ return SOUNDS[v].pats.concat([["other","","✨"]]); }
 
-/* Which letters in the word make this spelling? Returns their positions, or null. */
-function find(word, pat){
-  if(pat === "other") return [];
-  if(pat.indexOf("_") > 0){
-    var m = new RegExp(pat[0] + "[^aeiouy]e").exec(word);
-    return m ? [m.index, m.index + 2] : null;
-  }
-  if(pat === "y") return word.length > 1 && /[^aeiou]y$/.test(word) ? [word.length - 1] : null;
-  var k = word.indexOf(pat);
-  if(k < 0) return null;
-  var out = []; for(var i = 0; i < pat.length; i++) out.push(k + i); return out;
-}
-function show(word, pat){
-  var at = find(word, pat) || [];
-  return word.split("").map(function(c, i){ return at.indexOf(i) >= 0 ? "<mark>" + esc(c) + "</mark>" : esc(c); }).join("");
-}
-function patLabel(p){ return p === "other" ? "Other ways" : p.replace("_", "_"); }
+/* Spellings: letters, with _ for a split spelling (a_e). "a-e" and "a e" become a_e. */
+function cleanSp(s){ return String(s || "").toLowerCase().replace(/[\s\-–]+/g, "_").replace(/[^a-z_]/g, "").replace(/_+/g, "_").replace(/^_|_$/g, "").slice(0, 6); }
 function clean(s){ return String(s || "").toLowerCase().replace(/[^a-z]/g, "").slice(0, 20); }
 
+/* Which letters in the word make this spelling? Returns their positions, or null. */
+function find(word, sp){
+  if(!sp) return null;
+  if(sp.indexOf("_") > 0){
+    var p = sp.split("_"), m = new RegExp("(" + p[0] + ")([^aeiouy]{1,2})(" + p[1] + ")").exec(word);
+    if(!m) return null;
+    var out = [], i;
+    for(i = 0; i < p[0].length; i++) out.push(m.index + i);
+    for(i = 0; i < p[1].length; i++) out.push(m.index + p[0].length + m[2].length + i);
+    return out;
+  }
+  if(sp === "y") return word.length > 1 && /[^aeiou]y$/.test(word) ? [word.length - 1] : null;
+  var k = word.indexOf(sp);
+  if(k < 0) return null;
+  var o = []; for(var j = 0; j < sp.length; j++) o.push(k + j); return o;
+}
+function show(word, sp){
+  var at = find(word, sp) || [];
+  return word.split("").map(function(c, i){ return at.indexOf(i) >= 0 ? "<mark>" + esc(c) + "</mark>" : esc(c); }).join("");
+}
+
 /* ---------- saved state (this browser only) ---------- */
-var KEY = COACH ? "lv-coach" : "lv-student";
+var KEY = COACH ? "lv-coach2" : "lv-student2";
 var S = store(KEY) || {};
 S.cur = S.cur || (COACH ? "a" : "");
 S.seen = S.seen || [];           // student: sounds unlocked so far
-S.words = S.words || {};         // {e:{ee:["tree"], ...}}
-S.key = S.key || {};             // student: the coach's words, for practice
+S.words = S.words || {};         // {e:[{sp:"ee", ws:["tree"]}, ...]}
+S.key = S.key || {};             // student: the coach's chart, for practice
 function save(){ store(KEY, S); }
-function list(v, p){ S.words[v] = S.words[v] || {}; S.words[v][p] = S.words[v][p] || []; return S.words[v][p]; }
+function chart(v){ if(!Array.isArray(S.words[v])) S.words[v] = []; return S.words[v]; }
 
-/* ---------- relay: the coach sends today's sound and her words ---------- */
+/* ---------- relay: the coach sends today's sound and her chart ---------- */
 var room = null, roomCode = "", card = null, lastCoach = 0, coachV = "";
 function coachRoom(){
   var code = ((T && T.store("tt-coach2")) || {}).code || "";
@@ -152,11 +157,7 @@ function coachRoom(){
   roomCode = code; room = code && T ? T.Room(code, {onStatus:paintStatus}) : null;
   paintStatus();
 }
-function coachSend(){
-  if(!room) return;
-  var w = {}; boxes(S.cur).forEach(function(b){ w[b[0]] = (S.words[S.cur] || {})[b[0]] || []; });
-  room.send("x", {g:"lv", v:S.cur, w:w}, false);
-}
+function coachSend(){ if(room) room.send("x", {g:"lv", v:S.cur, c:chart(S.cur)}, false); }
 function paintStatus(){
   var el = $("status");
   if(COACH){
@@ -170,7 +171,7 @@ function paintStatus(){
 }
 
 /* ---------- drawing ---------- */
-var mode = "chart";
+var mode = "chart", focusNext = null;
 function paintTabs(){
   var vs = COACH ? ORDER : ORDER.filter(function(v){ return S.seen.indexOf(v) >= 0; });
   $("tabs").innerHTML = vs.map(function(v){
@@ -187,29 +188,34 @@ function paint(){
   }
   $("chart").hidden = mode !== "chart"; $("practice").hidden = mode !== "practice";
   if(mode === "practice") return paintPractice();
-  var s = SOUNDS[S.cur];
-  $("sound").innerHTML = '<span class="v">' + s.mark + '</span><div><div class="n">' + s.name + '</div><div class="s">Every box is a way to spell this sound.</div></div>';
-  $("howto").textContent = COACH ? "Type each word the group thinks of into the box for its spelling." :
-    "When your group thinks of a word, type it in the box where it belongs. Your chart stays on your laptop.";
-  $("grid").innerHTML = boxes(S.cur).map(function(b){
-    var p = b[0], ws = list(S.cur, p);
-    return '<div class="box" data-p="' + p + '"><h2><span class="pat">' + esc(patLabel(p)) + '</span><span class="kw">' + b[2] + (b[1] ? " " + show(b[1], p) : "") + '</span></h2>' +
-      '<div class="chips">' + ws.map(function(w, i){
-        var off = !find(w, p);
-        return '<span class="chip' + (off ? " check" : "") + '">' + show(w, p) + '<button type="button" data-del="' + i + '" aria-label="Take out ' + esc(w) + '">×</button></span>';
+  var s = SOUNDS[S.cur], c = chart(S.cur);
+  $("sound").innerHTML = '<span class="v">' + s.mark + '</span><div><div class="n">' + s.name + '</div><div class="s">How many ways can we spell this sound? ' +
+    (c.length ? "We found " + c.length + " so far." : "Let's find out!") + '</div></div>';
+  $("howto").textContent = COACH ? "When the group finds a new spelling, write it in a new box. Then add each word that uses it." :
+    "When your group finds a new way to spell the sound, write the spelling in a new box. Then write each word that uses it. Your chart stays on your laptop.";
+  $("grid").innerHTML = c.map(function(b, bi){
+    var off = b.ws.filter(function(w){ return !find(w, b.sp); });
+    return '<div class="box" data-b="' + bi + '"><h2><span class="pat">' + esc(b.sp) + '</span>' +
+      '<button type="button" class="delbox" data-delbox="' + bi + '" aria-label="Take out the ' + esc(b.sp) + ' box">×</button></h2>' +
+      '<div class="chips">' + b.ws.map(function(w, i){
+        return '<span class="chip' + (find(w, b.sp) ? "" : " check") + '">' + show(w, b.sp) + '<button type="button" data-del="' + i + '" aria-label="Take out ' + esc(w) + '">×</button></span>';
       }).join("") + '</div>' +
-      '<div class="hint" aria-live="polite">' + (ws.some(function(w){ return !find(w, p); }) ? "Look again at the dashed word: is it spelled with " + esc(patLabel(p)) + "?" : "") + '</div>' +
-      '<form class="add"><input aria-label="Add a word spelled with ' + esc(patLabel(p)) + '" maxlength="20" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><button type="submit" aria-label="Add">+</button></form></div>';
-  }).join("");
+      '<div class="hint" aria-live="polite">' + (off.length ? "Look again at the dashed word: is the sound spelled " + esc(b.sp) + "?" : "") + '</div>' +
+      '<form class="add" data-add="' + bi + '"><input aria-label="Add a word spelled with ' + esc(b.sp) + '" placeholder="word" maxlength="20" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><button type="submit" aria-label="Add the word">+</button></form></div>';
+  }).join("") +
+    (c.length < 10 ? '<div class="box newbox"><h2><span class="kw">New spelling</span></h2><p class="muted" style="margin:0;font-size:15px">Found another way to spell ' + s.mark + '? Write just the spelling.' + (c.length ? "" : " For a split spelling, use a line: a_e") + '</p>' +
+      '<form class="add" id="newSp"><input id="newSpIn" aria-label="New spelling" placeholder="spelling" maxlength="8" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><button type="submit" aria-label="Make the box">+</button></form><div class="hint" id="newHint"></div></div>' : "");
   var n = practiceWords().length;
   $("tools").innerHTML = (COACH ? "" : '<button type="button" class="go" id="practiceBtn"' + (n ? "" : " disabled") + '>✏️ Practice writing' + (n ? " (" + n + ")" : "") + '</button>') +
     '<button type="button" class="btn" id="clearBtn">Clear this chart</button>';
+  if(focusNext){ var el = $("grid").querySelector(focusNext); if(el) el.focus(); focusNext = null; }
 }
+function changed(){ save(); paint(); if(COACH) coachSend(); }
 
 /* ---------- chart taps ---------- */
 $("tabs").addEventListener("click", function(e){
   var b = e.target.closest("button[data-v]"); if(!b) return;
-  S.cur = b.dataset.v; mode = "chart"; save(); paint(); if(COACH) coachSend();
+  S.cur = b.dataset.v; mode = "chart"; changed();
 });
 $("pick").addEventListener("click", function(e){
   var b = e.target.closest("button[data-v]"); if(!b) return;
@@ -217,30 +223,39 @@ $("pick").addEventListener("click", function(e){
 });
 $("grid").addEventListener("submit", function(e){
   e.preventDefault();
-  var box = e.target.closest(".box"), inp = box.querySelector("input"), w = clean(inp.value), p = box.dataset.p, ws = list(S.cur, p);
-  if(w && ws.indexOf(w) < 0) ws.push(w);
-  save(); paint(); if(COACH) coachSend();
-  var again = $("grid").querySelector('.box[data-p="' + p + '"] input'); if(again) again.focus();
+  var c = chart(S.cur), f = e.target;
+  if(f.id === "newSp"){
+    var sp = cleanSp($("newSpIn").value); if(!sp) return;
+    var at = c.map(function(b){ return b.sp; }).indexOf(sp);
+    if(at < 0){ c.push({sp:sp, ws:[]}); at = c.length - 1; }
+    focusNext = '.box[data-b="' + at + '"] input'; changed(); return;
+  }
+  var bi = +f.dataset.add, w = clean(f.querySelector("input").value), ws = c[bi] && c[bi].ws;
+  if(ws && w && ws.indexOf(w) < 0) ws.push(w);
+  focusNext = '.box[data-b="' + bi + '"] input'; changed();
 });
 $("grid").addEventListener("click", function(e){
-  var b = e.target.closest("button[data-del]"); if(!b) return;
-  list(S.cur, b.closest(".box").dataset.p).splice(+b.dataset.del, 1); save(); paint(); if(COACH) coachSend();
+  var c = chart(S.cur), b = e.target.closest("button[data-del]");
+  if(b){ c[+b.closest(".box").dataset.b].ws.splice(+b.dataset.del, 1); changed(); return; }
+  b = e.target.closest("button[data-delbox]"); if(!b) return;
+  var box = c[+b.dataset.delbox];
+  if(box.ws.length && b.dataset.sure !== "1"){ b.dataset.sure = "1"; b.textContent = "Tap again"; setTimeout(function(){ if(b.isConnected){ b.dataset.sure = ""; b.textContent = "×"; } }, 3000); return; }
+  c.splice(+b.dataset.delbox, 1); changed();
 });
 $("tools").addEventListener("click", function(e){
   var b = e.target.closest("button"); if(!b) return;
   if(b.id === "practiceBtn"){ startPractice(); return; }
   if(b.id === "clearBtn"){
     if(b.dataset.sure !== "1"){ b.dataset.sure = "1"; b.textContent = "Tap again to clear"; setTimeout(function(){ if(b.isConnected){ b.dataset.sure = ""; b.textContent = "Clear this chart"; } }, 3000); return; }
-    S.words[S.cur] = {}; save(); paint(); if(COACH) coachSend();
+    S.words[S.cur] = []; changed();
   }
 });
 
 /* ---------- practice writing (students) ---------- */
 /* Words come from the coach's chart when it arrived (spelled right), else from the student's own. */
 function practiceWords(){
-  var src = (S.key[S.cur] && Object.keys(S.key[S.cur]).some(function(p){ return (S.key[S.cur][p] || []).length; })) ? S.key[S.cur] : (S.words[S.cur] || {});
-  var out = [];
-  Object.keys(src).forEach(function(p){ (src[p] || []).forEach(function(w){ if(p === "other" || find(w, p)) out.push({w:w, p:p}); }); });
+  var k = S.key[S.cur], src = Array.isArray(k) && k.some(function(b){ return b.ws && b.ws.length; }) ? k : chart(S.cur), out = [];
+  src.forEach(function(b){ (b.ws || []).forEach(function(w){ if(find(w, b.sp)) out.push({w:w, sp:b.sp}); }); });
   return out;
 }
 var P = null;
@@ -267,9 +282,9 @@ function paintPractice(){
     return;
   }
   var ok = P.tried === it.w;
-  box.innerHTML = (ok ? '<div class="yes">✓ You spelled it!</div><div class="big">' + show(it.w, it.p) + '</div>' :
-      '<div class="result"><div><small>You wrote</small><span class="big">' + esc(P.tried) + '</span></div><div><small>Our chart</small><span class="big">' + show(it.w, it.p) + '</span></div></div>') +
-    '<p class="muted" style="margin:0">' + (it.p === "other" ? "This one is spelled another way." : "The long " + S.cur + " sound is spelled <b>" + esc(patLabel(it.p)) + "</b>.") + '</p>' +
+  box.innerHTML = (ok ? '<div class="yes">✓ You spelled it!</div><div class="big">' + show(it.w, it.sp) + '</div>' :
+      '<div class="result"><div><small>You wrote</small><span class="big">' + esc(P.tried) + '</span></div><div><small>Our chart</small><span class="big">' + show(it.w, it.sp) + '</span></div></div>') +
+    '<p class="muted" style="margin:0">Here the long ' + S.cur + ' sound is spelled <b>' + esc(it.sp) + '</b>.</p>' +
     '<div class="row" style="justify-content:center"><button type="button" class="btn" data-do="hear">🔊 Hear it</button><button type="button" class="go" data-do="next">Next word ▶</button></div>';
 }
 $("practice").addEventListener("click", function(e){
@@ -296,10 +311,15 @@ if(COACH){
   if(card){
     card.onX(function(m){
       if(!m || m.g !== "lv" || !SOUNDS[m.v]) return;
-      var changed = m.v !== coachV;      // follow the coach only when she changes the sound, so a student can look back at an old chart
-      coachV = m.v; lastCoach = Date.now(); unlock(m.v); S.key[m.v] = m.w || {};
-      if(changed && m.v !== S.cur){ S.cur = m.v; mode = "chart"; save(); paint(); }
-      else { save(); paintStatus(); if(mode === "chart"){ var pb = $("practiceBtn"), n = practiceWords().length; if(pb){ pb.disabled = !n; pb.textContent = "✏️ Practice writing" + (n ? " (" + n + ")" : ""); } } }
+      var moved = m.v !== coachV;      // follow the coach only when she changes the sound, so a student can look back at an old chart
+      coachV = m.v; lastCoach = Date.now(); unlock(m.v); S.key[m.v] = Array.isArray(m.c) ? m.c : [];
+      if(moved && m.v !== S.cur){ S.cur = m.v; mode = "chart"; save(); paint(); }
+      else {
+        save(); paintStatus();
+        if(moved) paintTabs();
+        var pb = $("practiceBtn"), n = practiceWords().length;
+        if(pb && mode === "chart"){ pb.disabled = !n; pb.textContent = "✏️ Practice writing" + (n ? " (" + n + ")" : ""); }
+      }
     });
     card.onChange(paintStatus);
   }
