@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Read in Scoops</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&family=Baloo+2:wght@700;800&display=swap">
+<style>
+/* Read in Scoops: phrasing. Grade 2 texts (Flesch-Kincaid 2.1-2.4). Silent unless tapped. No names. No timer, no score. Nothing saved. */
+:root{--bg:#f5f6fb;--card:#fff;--ink:#1f2333;--muted:#5d6275;--line:#dfe2ee;
+  --scoop:#2f6fd6;--scoop-soft:#e2ecfc;--nat:#2e8a5c;--nat-soft:#e0f3e8;--hi:#fff3b0;--say:#ffd8a8;--ok:#2e8a5c;--ok-soft:#e0f3e8;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;--body:"Lexend","Segoe UI",Arial,sans-serif}
+@media (prefers-color-scheme: dark){:root{--bg:#14161f;--card:#1e2130;--ink:#eceef6;--muted:#a6abc0;--line:#323648;
+  --scoop:#7fb0ff;--scoop-soft:#1f2b44;--nat:#7fd6a8;--nat-soft:#1c3329;--hi:#4a4220;--say:#5a3d1c;--ok:#7fd6a8;--ok-soft:#1c3329;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:20px/1.55 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 56px}
+[hidden]{display:none!important}
+main{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-size:2.4rem;margin:0;line-height:1.1}
+h2{font-family:var(--display);font-size:1.5rem;margin:0}
+p{margin:0}.small{font-size:.9rem;color:var(--muted)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{font:inherit;font-weight:700;font-size:1rem;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 16px;cursor:pointer}
+.tab[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--card)}
+.card{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.btn{font:inherit;font-weight:700;border-radius:999px;padding:10px 18px;cursor:pointer;border:2px solid var(--ink);background:var(--ink);color:var(--card)}
+.btn.ghost{background:none;color:var(--ink)}
+.btn.soft{border-color:var(--scoop);background:var(--scoop-soft);color:var(--scoop)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.line{font-size:1.9rem;line-height:2.4;font-weight:600}
+/* a scoop is an arc under one phrase */
+.ph{display:inline-block;position:relative;line-height:1.4;padding:0 8px 20px;margin:0 0 4px 0}
+.ph::after{content:"";position:absolute;left:3px;right:3px;bottom:4px;height:18px;border:4px solid var(--scoop);border-top:none;border-radius:0 0 50% 50%/0 0 100% 100%}
+.ph.light,.ph.plain{padding:0;margin:0}.ph.light::after,.ph.plain::after{display:none}
+.bar{color:var(--scoop);opacity:.55;font-weight:400;margin:0 6px 0 2px}
+.w{border-radius:6px;transition:background .15s}
+.saying{background:var(--say)}
+.story{font-size:1.45rem;line-height:2.3}
+.s{border-radius:10px;padding:4px 2px;transition:background .2s,opacity .2s}
+.s.now{background:var(--hi);box-shadow:0 0 0 4px var(--hi)}
+.s.done{opacity:.55}
+.story .ph{padding:0 5px 14px;margin:0}.story .ph::after{height:13px;border-width:3px;bottom:3px}
+.stories{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.st{font:inherit;font-weight:700;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:18px;padding:14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+.st span{font-size:2.2rem}
+.st[aria-pressed="true"]{border-color:var(--ink)}
+.view{display:flex;gap:6px;flex-wrap:wrap}
+.view .tab{font-size:.85rem;padding:4px 12px}
+.star{font:inherit;font-weight:700;border-radius:999px;padding:10px 16px;cursor:pointer;border:2px solid var(--ok);background:var(--ok-soft);color:var(--ok);position:relative}
+.spark{position:fixed;font-size:2.6rem;pointer-events:none;animation:up 0.9s ease-out forwards;z-index:5}
+@keyframes up{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(-70px) scale(1.5)}}
+/* make the scoops */
+.mk{font-size:1.8rem;font-weight:600;line-height:2.2;display:flex;flex-wrap:wrap;align-items:center;row-gap:4px}
+.gap{font:inherit;border:none;background:none;cursor:pointer;width:34px;height:52px;margin:0 1px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;position:relative;color:var(--line)}
+.gap::before{content:"";width:3px;height:30px;border-radius:2px;background:currentColor;opacity:.9}
+.gap:hover{background:var(--scoop-soft)}
+.gap.on{color:var(--scoop)}
+.gap.on::before{width:6px;height:42px}
+.gap.nat::after{content:"";position:absolute;bottom:0;width:12px;height:12px;border-radius:50%;background:var(--nat)}
+.gap.punct{width:22px}
+.mkw{padding:0 2px}
+.preview{font-size:1.5rem;line-height:2.2;font-weight:600}
+.note{border-radius:14px;padding:12px 14px;background:var(--nat-soft);color:var(--ink)}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--nat);vertical-align:middle}
+.howto{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.how{border-radius:18px;padding:14px;border:2px solid var(--line);background:var(--card)}
+.how b{display:block;margin-bottom:4px}
+button:focus-visible{outline:3px solid var(--scoop);outline-offset:2px}
+@media (max-width:480px){.line{font-size:1.45rem}.mk{font-size:1.35rem}.gap{width:28px}.story{font-size:1.25rem}.preview{font-size:1.2rem}}
+</style>
+</head>
+<body>
+<main>
+  <header style="display:flex;flex-direction:column;gap:6px">
+    <h1>🍦 Read in Scoops</h1>
+    <p>Good readers scoop words into little groups. It makes reading sound like talking.</p>
+  </header>
+  <div class="tabs" id="tabs" role="group" aria-label="Choose a game"></div>
+  <section id="pane" aria-live="polite"></section>
+</main>
+<script>
+(function(){
+"use strict";
+var DATA = {"LINES":["The little brown dog | ran across the yard.","My big sister | likes to read | at night.","A spider spins a web | in the corner | of the barn.","After lunch, | we went outside | to play.","The baby bird | opened its mouth | for a worm.","Giant whales swim | in the deep blue ocean.","On a hot day, | the snowman melted | into a puddle.","The bees flew | from flower | to flower.","My friend and I | built a fort | out of blankets.","The moon came up | over the dark hills.","A turtle carries its heavy shell | everywhere it goes.","When it rains, | the worms come up | out of the ground."],"STORIES":[{"id":"ice","title":"The Melting Ice","icon":"🧊","s":["Sam took a cold ice cube | out of the freezer | after lunch.","He put it on a plate outside, | in the hot afternoon sun.","\"What will happen to it?\" | asked his sister.","The ice cube got smaller, | and smaller, | and smaller...","Soon there was | a little puddle of water | on the plate.","\"It melted!\" | Sam yelled.","Heat from the sun | makes ice change | into water.","Can the water | ever change back | into ice?","Yes, it can, | if you put it back | in the freezer.","Science is so cool!"]},{"id":"octo","title":"The Clever Octopus","icon":"🐙","s":["An octopus lives | at the bottom of the sea.","It has eight long arms | and no bones at all.","It can squeeze its soft body | into a tiny crack.","When a big fish swims by, | it hides.","It can change its color | to match the rocks.","Then the fish | cannot see it.","If the fish gets too close, | the octopus shoots out | a cloud of dark ink.","The fish swims away, | and the octopus is safe.","It is smart | and very good at hiding."]},{"id":"frog","title":"From Egg to Frog","icon":"🐸","s":["A mother frog lays her eggs | in a quiet pond.","Each egg is small and round, | like a clear jelly bead.","After a few days, | tiny tadpoles hatch out.","A tadpole has a long tail | and swims like a fish.","It eats green plants | that grow in the water.","Little by little, | the tadpole grows two back legs.","Then it grows two front legs, | and its tail gets shorter | and shorter.","One day, | the young frog hops out | onto a rock.","Now it can live | in the water | and on land!"]},{"id":"squirrel","title":"Ready for Winter","icon":"🐿️","s":["In the fall, | the days get short | and the air gets cold.","A gray squirrel runs | up and down the oak tree.","She is looking for acorns | to eat in the winter.","She digs a little hole | and hides an acorn | in the dirt.","Then she digs another hole, | and another.","Squirrels hide | lots of nuts each fall, | but they do not find them all.","Some of the lost acorns | grow into new oak trees!","So a busy squirrel | helps the forest grow."]},{"id":"rain","title":"Where Rain Comes From","icon":"🌧️","s":["The sun warms the water | in lakes and seas.","Some of the water | turns into a gas | and floats up into the sky.","High up in the sky, | the air is very cold.","The gas cools down | and turns into tiny drops.","Lots of drops | come together | to make a cloud.","The drops bump | and join | and get bigger.","When they get too heavy, | they fall down as rain.","The rain fills the lakes, | the rivers, | and the seas again.","Then the sun warms the water, | and it all starts over!"]},{"id":"penguin","title":"The Penguin Dad","icon":"🐧","s":["Emperor penguins live | where it is very cold.","The mother penguin lays one egg | and goes to the sea | to find food.","The dad keeps the egg warm | on top of his feet.","He stands in the wind and snow | for a long, long time.","He does not eat anything | the whole time!","The dads huddle close together | to stay warm in the storm.","At last, | the chick hatches | from the egg.","Then the mother comes back | with food for the baby."]}]};
+var mode = "see", li = 0, mi = 0, breaks = {}, shown = false, story = null, si = 0, view = "scoops";
+var talkToken = 0;
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
+function curly(h){ var open = true; return h.replace(/&quot;/g, function(){ var q = open ? "“" : "”"; open = !open; return q; }); }
+function phrases(s){ return s.split("|").map(function(x){ return x.trim(); }); }
+function plainText(s){ return phrases(s).join(" "); }
+function shuffle(a){ a = a.slice(); for(var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)), x = a[i]; a[i] = a[j]; a[j] = x; } return a; }
+var LINES = shuffle(DATA.LINES), MAKES = shuffle(DATA.LINES);
+
+/* Speech: only when a button is tapped. Each chunk is spoken on its own with a pause after it,
+   and the chunk being spoken is lit up. */
+function stopTalk(){ talkToken++; try{ speechSynthesis.cancel(); }catch(e){} clearSaying(); }
+function clearSaying(){ Array.prototype.forEach.call(document.querySelectorAll(".saying"), function(e){ e.classList.remove("saying"); }); }
+function talk(chunks, els, gap){
+  stopTalk(); var my = talkToken, i = 0;
+  if(typeof speechSynthesis === "undefined") return;
+  (function next(){
+    if(my !== talkToken) return;
+    clearSaying();
+    if(i >= chunks.length) return;
+    if(els && els[i]) els[i].classList.add("saying");
+    var u = new SpeechSynthesisUtterance(chunks[i].replace(/"/g, "")); u.rate = 0.85; u.lang = "en-US";
+    var done = false, go = function(){ if(done) return; done = true; i++; setTimeout(next, gap); };
+    u.onend = go; u.onerror = go;
+    setTimeout(go, 600 + chunks[i].length * 140); /* fallback if onend never fires */
+    try{ speechSynthesis.speak(u); }catch(e){ go(); }
+  })();
+}
+function words(s){ return plainText(s).split(/\s+/); }
+
+/* One sentence drawn as scoops, light marks, or plain text. Each word gets its own span for the read-along light. */
+function drawLine(s, how){
+  var ps = phrases(s);
+  return ps.map(function(p, k){
+    var ws = p.split(/\s+/).map(function(w){ return '<span class="w">' + curly(esc(w)) + '</span>'; }).join(" ");
+    var cls = how === "scoops" ? "ph" : (how === "light" ? "ph light" : "ph plain");
+    var bar = how === "light" && k < ps.length - 1 ? '<span class="bar" aria-hidden="true">/</span>' : "";
+    return '<span class="' + cls + '">' + ws + '</span>' + bar;
+  }).join(" ");
+}
+
+function tabs(){
+  var T = [["see","1 · See the scoops"],["make","2 · Make the scoops"],["story","3 · Read a story"]];
+  $("tabs").innerHTML = T.map(function(x){ return '<button type="button" class="tab" data-m="' + x[0] + '" aria-pressed="' + (mode === x[0]) + '">' + x[1] + '</button>'; }).join("");
+  Array.prototype.forEach.call($("tabs").children, function(b){ b.addEventListener("click", function(){ stopTalk(); mode = b.getAttribute("data-m"); render(); }); });
+}
+function render(){ tabs(); if(mode === "see") see(); else if(mode === "make") make(); else storyPane(); }
+
+/* 1. See the scoops */
+function see(){
+  var s = LINES[li];
+  var h = '<div class="howto"><div class="how"><b>🍦 In scoops</b>Words in a group go together. Read each scoop smoothly, then take a tiny breath.</div>' +
+          '<div class="how"><b>🤖 Word by word</b>Robot reading. Each word stands alone. It is hard to understand.</div></div>';
+  h += '<div class="card"><p class="small">Sentence ' + (li + 1) + ' of ' + LINES.length + '</p>';
+  h += '<p class="line" id="ln">' + drawLine(s, "scoops") + '</p>';
+  h += '<div class="row"><button type="button" class="btn soft" id="inph">🔊 In scoops</button><button type="button" class="btn ghost" id="wbw">🔊 Word by word</button></div>';
+  h += '<p>Listen to both. Which one sounds like talking? Now read it out loud in scoops.</p>';
+  h += '<div class="row"><button type="button" class="btn ghost" id="back"' + (li === 0 ? " disabled" : "") + '>◀ Back</button><button type="button" class="btn" id="next">Next sentence ▶</button></div></div>';
+  $("pane").innerHTML = h;
+  $("inph").addEventListener("click", function(){ talk(phrases(s), document.querySelectorAll("#ln .ph"), 450); });
+  $("wbw").addEventListener("click", function(){ talk(words(s), document.querySelectorAll("#ln .w"), 380); });
+  $("next").addEventListener("click", function(){ stopTalk(); li = (li + 1) % LINES.length; see(); });
+  $("back").addEventListener("click", function(){ stopTalk(); if(li > 0){ li--; see(); } });
+}
+
+/* 2. Make the scoops: tap the gaps to put in a break. A soft check shows where many readers break. Never wrong. */
+function natBreaks(s){ var out = {}, n = 0; phrases(s).forEach(function(p, k, all){ n += p.split(/\s+/).length; if(k < all.length - 1) out[n - 1] = 1; }); return out; }
+function userPhrases(ws){ var out = [], cur = []; ws.forEach(function(w, i){ cur.push(w); if(breaks[i] || i === ws.length - 1){ out.push(cur.join(" ")); cur = []; } }); return out; }
+function make(){
+  var s = MAKES[mi], ws = words(s), nat = natBreaks(s), any = Object.keys(breaks).length > 0;
+  var h = '<div class="card"><p class="small">Sentence ' + (mi + 1) + ' of ' + MAKES.length + '</p>';
+  h += '<p>Tap between two words to show where one scoop ends and the next begins.</p>';
+  h += '<div class="mk" id="mk">';
+  ws.forEach(function(w, i){
+    h += '<span class="mkw">' + curly(esc(w)) + '</span>';
+    if(i < ws.length - 1){
+      var c = "gap" + (breaks[i] ? " on" : "") + (shown && nat[i] ? " nat" : "");
+      h += '<button type="button" class="' + c + '" data-g="' + i + '" aria-pressed="' + !!breaks[i] + '" aria-label="Break after ' + esc(w) + '"></button>';
+    }
+  });
+  h += '</div>';
+  if(any){
+    var up = userPhrases(ws);
+    h += '<p class="small">Your scoops:</p><p class="preview" id="pv">' + up.map(function(p){ return '<span class="ph">' + curly(esc(p)) + '</span>'; }).join(" ") + '</p>';
+    h += '<div class="row"><button type="button" class="btn soft" id="hearme">🔊 Hear your scoops</button></div>';
+    h += '<p>Now read it out loud in your scoops.</p>';
+  }
+  if(shown){
+    h += '<div class="note">A green dot <span class="dot"></span> shows where many readers take a tiny breath. Yours can be a little different. If it sounds like talking, it works.</div>';
+    h += '<p class="line" id="nl">' + drawLine(s, "scoops") + '</p><div class="row"><button type="button" class="btn ghost" id="hearnat">🔊 Hear these scoops</button></div>';
+  }
+  h += '<div class="row">' + (shown ? '' : '<button type="button" class="btn ghost" id="show">👀 Check it</button>') +
+       '<button type="button" class="btn ghost" id="clear"' + (any ? "" : " disabled") + '>Clear</button>' +
+       '<button type="button" class="btn" id="next">Next sentence ▶</button></div></div>';
+  $("pane").innerHTML = h;
+  Array.prototype.forEach.call(document.querySelectorAll("[data-g]"), function(b){ b.addEventListener("click", function(){
+    var g = +b.getAttribute("data-g"); if(breaks[g]) delete breaks[g]; else breaks[g] = 1; make(); }); });
+  var hm = $("hearme"); if(hm) hm.addEventListener("click", function(){ talk(userPhrases(ws), document.querySelectorAll("#pv .ph"), 450); });
+  var hn = $("hearnat"); if(hn) hn.addEventListener("click", function(){ talk(phrases(s), document.querySelectorAll("#nl .ph"), 450); });
+  var sh = $("show"); if(sh) sh.addEventListener("click", function(){ shown = true; make(); });
+  $("clear").addEventListener("click", function(){ stopTalk(); breaks = {}; shown = false; make(); });
+  $("next").addEventListener("click", function(){ stopTalk(); breaks = {}; shown = false; mi = (mi + 1) % MAKES.length; make(); });
+}
+
+/* 3. Read a story: one sentence lit at a time. Views go from scoops to light marks to plain. ⭐ is a cheer, not a count. */
+function storyPane(){
+  var h = '<div class="stories">' + DATA.STORIES.map(function(s){ return '<button type="button" class="st" data-s="' + s.id + '" aria-pressed="' + (!!story && story.id === s.id) + '"><span>' + s.icon + '</span>' + esc(s.title) + '</button>'; }).join("") + '</div>';
+  if(!story){ $("pane").innerHTML = h + '<p class="small">Pick a story.</p>'; wireStories(); return; }
+  var sents = story.s;
+  h += '<div class="card"><div class="row" style="justify-content:space-between"><h2>' + story.icon + ' ' + esc(story.title) + '</h2><div class="view" role="group" aria-label="How the scoops look">' +
+       [["scoops","Scoops"],["light","Light marks"],["plain","Plain"]].map(function(v){ return '<button type="button" class="tab" data-v="' + v[0] + '" aria-pressed="' + (view === v[0]) + '">' + v[1] + '</button>'; }).join("") + '</div></div>';
+  h += '<p class="story">' + sents.map(function(s, i){ return '<span class="s' + (i === si ? " now" : (i < si ? " done" : "")) + '" data-i="' + i + '">' + drawLine(s, view) + '</span>'; }).join(" ") + '</p>';
+  if(si < sents.length){
+    h += '<p class="small">Read the yellow sentence out loud in scoops.</p>';
+    h += '<div class="row"><button type="button" class="star" id="star">⭐ Read it in scoops</button><button type="button" class="btn ghost" id="hear">🔊 Hear it</button>' +
+         '<button type="button" class="btn ghost" id="prev"' + (si === 0 ? " disabled" : "") + '>◀ Back</button><button type="button" class="btn ghost" id="skip">Next ▶</button></div>';
+  } else {
+    h += '<p style="font-family:var(--display);font-size:1.5rem">🎉 You read the whole story!</p><div class="row"><button type="button" class="btn" id="re">Read it again</button>' +
+         (view !== "plain" ? '<button type="button" class="btn ghost" id="harder">Try it with ' + (view === "scoops" ? "light marks" : "no marks") + '</button>' : '') + '</div>';
+  }
+  h += '</div>';
+  $("pane").innerHTML = h; wireStories();
+  Array.prototype.forEach.call(document.querySelectorAll("[data-v]"), function(b){ b.addEventListener("click", function(){ stopTalk(); view = b.getAttribute("data-v"); storyPane(); }); });
+  var st = $("star"); if(st) st.addEventListener("click", function(){ spark(st); stopTalk(); si++; setTimeout(storyPane, 250); });
+  var hr = $("hear"); if(hr) hr.addEventListener("click", function(){ var el = document.querySelector('.s[data-i="' + si + '"]'); talk(phrases(sents[si]), el ? el.querySelectorAll(".ph") : null, 450); });
+  var pv = $("prev"); if(pv) pv.addEventListener("click", function(){ stopTalk(); if(si > 0){ si--; storyPane(); } });
+  var sk = $("skip"); if(sk) sk.addEventListener("click", function(){ stopTalk(); si++; storyPane(); });
+  var re = $("re"); if(re) re.addEventListener("click", function(){ si = 0; storyPane(); });
+  var hd = $("harder"); if(hd) hd.addEventListener("click", function(){ view = view === "scoops" ? "light" : "plain"; si = 0; storyPane(); });
+}
+function spark(el){ var r = el.getBoundingClientRect(), d = document.createElement("div"); d.className = "spark"; d.textContent = "⭐";
+  d.style.left = (r.left + r.width / 2 - 20) + "px"; d.style.top = (r.top - 10) + "px"; document.body.appendChild(d); setTimeout(function(){ d.remove(); }, 1000); }
+function wireStories(){ Array.prototype.forEach.call(document.querySelectorAll("[data-s]"), function(b){ b.addEventListener("click", function(){
+  stopTalk(); var id = b.getAttribute("data-s"); story = DATA.STORIES.filter(function(s){ return s.id === id; })[0]; si = 0; storyPane();
+  var c = document.querySelector(".card"); if(c) c.scrollIntoView({behavior:"smooth", block:"start"}); }); }); }
+
+render();
+})();
+</script>
+<script src="turn-timer.js?v=9" data-float></script>
+</body>
+</html>
