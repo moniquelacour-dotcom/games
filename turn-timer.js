@@ -37,6 +37,7 @@ function loadMqtt(cb){
   setTimeout(fin, 9000);
 }
 
+var roomCount = 0;   // each Room on a page needs its own relay id, or the relay drops one
 function Room(code, h){
   var self = {code:code, status:"connecting", closed:false}, sock = null, bc = null;
   var stateT = TOPIC + code, hiT = TOPIC + code + "/hi", xT = TOPIC + code + "/x";   // x = partner moves inside games
@@ -53,7 +54,7 @@ function Room(code, h){
     if(self.closed) return;
     if(!ok){ setStatus("blocked"); return; }
     try{
-      sock = mqtt.connect(RELAY, {clientId:"tt_" + me.slice(0, 14), clean:true, reconnectPeriod:3000, connectTimeout:7000, keepalive:30});
+      sock = mqtt.connect(RELAY, {clientId:"tt_" + me.slice(0, 12) + (++roomCount), clean:true, reconnectPeriod:3000, connectTimeout:7000, keepalive:30});
       sock.on("connect", function(){
         sock.subscribe([stateT, hiT, xT], {qos:0}, function(err){ setStatus(err ? "blocked" : "open"); if(!err && h.onOpen) h.onOpen(); });
       });

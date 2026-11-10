@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reading Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Baloo+2:wght@600;800&display=swap">
+<style>
+:root{--bg:#f6f1fb;--card:#ffffff;--ink:#241d30;--muted:#665d73;--line:#e3dbee;--accent:#5b3fc4;--accentInk:#fff;--soft:#efe9fb;--ok:#1f7a3c;--okSoft:#dff5e5;--bad:#b3261e;--badSoft:#fde3e1;--warn:#8a5a00;--warnSoft:#fff1c9;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#141020;--card:#1d1828;--ink:#efeaf7;--muted:#b3aac3;--line:#342b48;--accent:#9d86ff;--accentInk:#160f2b;--soft:#272038;--ok:#8fe0a6;--okSoft:#173822;--bad:#ff9b92;--badSoft:#3d1715;--warn:#f4d27a;--warnSoft:#3a2f12;color-scheme:dark}}
+:root[data-theme=dark]{--bg:#141020;--card:#1d1828;--ink:#efeaf7;--muted:#b3aac3;--line:#342b48;--accent:#9d86ff;--accentInk:#160f2b;--soft:#272038;--ok:#8fe0a6;--okSoft:#173822;--bad:#ff9b92;--badSoft:#3d1715;--warn:#f4d27a;--warnSoft:#3a2f12;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.45 "Atkinson Hyperlegible",system-ui,sans-serif}
+main{max-width:1180px;margin:0 auto;padding:16px}
+h1,h2,h3{font-family:"Baloo 2",system-ui,sans-serif;line-height:1.15;margin:0}
+h1{font-size:32px} h2{font-size:24px} h3{font-size:19px}
+button,select,input,textarea{font:inherit;color:inherit}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 14px;font-weight:700;cursor:pointer}
+.btn.main{background:var(--accent);border-color:var(--accent);color:var(--accentInk)}
+.btn.on{outline:3px solid var(--accent);outline-offset:1px}
+.btn.sm{padding:3px 10px;font-size:14px}
+.btn.danger{color:var(--bad)}
+select,input[type=text],input[type=number],textarea{border:1px solid var(--line);border-radius:10px;padding:5px 8px;background:var(--card);min-width:0}
+input[type=number]{width:70px}
+.muted{color:var(--muted)} .small{font-size:14px}
+.label{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.code{font:800 40px/1 "Baloo 2",system-ui,sans-serif;letter-spacing:.18em}
+.mono{font-family:ui-monospace,Consolas,monospace;font-size:14px;word-break:break-all;background:var(--soft);border-radius:10px;padding:6px 10px}
+.note{background:var(--soft);border-radius:12px;padding:8px 12px;font-size:15px}
+.warnbox{background:var(--warnSoft);color:var(--ink);border-radius:12px;padding:8px 12px;font-size:15px}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:6px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.av{font-size:24px;line-height:1}
+.lanes{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.lane{border:1px solid var(--line);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.skill{border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px;background:var(--soft)}
+.qed{display:flex;flex-direction:column;gap:6px;border-top:1px dashed var(--line);padding-top:6px}
+.qed .ans{display:grid;grid-template-columns:auto 1fr;gap:4px 6px;align-items:center}
+.ownq{font-size:14px;background:var(--card);border-radius:8px;padding:4px 8px;display:flex;gap:6px;justify-content:space-between;align-items:center}
+.pill{display:inline-block;border-radius:999px;padding:1px 9px;font-size:13px;font-weight:700;background:var(--soft)}
+.pill.ok{background:var(--okSoft);color:var(--ok)} .pill.warn{background:var(--warnSoft);color:var(--warn)}
+.help{border:2px solid var(--warn);background:var(--warnSoft);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:6px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--muted)} .dot.on{background:var(--ok)}
+/* student */
+.stu{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:14px;padding-bottom:70px}
+.stu-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.stu-me{font-size:40px;line-height:1}
+.big{font:800 30px/1.2 "Baloo 2",system-ui,sans-serif;text-align:center}
+.join{display:flex;flex-direction:column;gap:12px;align-items:center;padding:22px}
+.join input{font:800 34px "Baloo 2",system-ui,sans-serif;letter-spacing:.3em;text-transform:uppercase;width:200px;text-align:center}
+.avs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.avs button{font-size:40px;line-height:1;border:2px solid var(--line);background:var(--card);border-radius:16px;padding:8px 12px;cursor:pointer}
+.helpbtn{position:fixed;left:12px;bottom:12px;z-index:2147483601;font:800 18px "Baloo 2",system-ui,sans-serif;border:2px solid var(--warn);background:var(--warnSoft);color:var(--ink);border-radius:999px;padding:8px 16px;cursor:pointer}
+.toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:2147483602;max-width:min(560px,92vw);background:var(--accent);color:var(--accentInk);border-radius:16px;padding:10px 16px;font-size:19px;font-weight:700;display:flex;gap:12px;align-items:center;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.toast button{border:none;background:var(--accentInk);color:var(--accent);border-radius:999px;padding:2px 10px;font-weight:700;cursor:pointer}
+.modal{position:fixed;inset:0;z-index:2147483600;background:rgba(20,16,32,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.qbox{background:var(--card);border-radius:22px;padding:20px;width:min(560px,100%);display:flex;flex-direction:column;gap:12px;max-height:94vh;overflow:auto}
+.qtitle{font:800 20px "Baloo 2",system-ui,sans-serif;color:var(--muted);text-align:center}
+.qprompt{font:700 22px/1.35 "Atkinson Hyperlegible",system-ui,sans-serif;text-align:center}
+.qshow{font:800 40px/1.1 "Atkinson Hyperlegible",system-ui,sans-serif;text-align:center;letter-spacing:.06em}
+.qchoices{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qchoices button{font:800 28px/1.1 "Atkinson Hyperlegible",system-ui,sans-serif;border:3px solid var(--line);background:var(--card);border-radius:16px;padding:16px 8px;cursor:pointer}
+.qchoices button.right{background:var(--okSoft);border-color:var(--ok)}
+.qchoices button.wrong{background:var(--badSoft);border-color:var(--bad);opacity:.7}
+.qmsg{min-height:1.4em;text-align:center;font-size:20px;font-weight:700}
+.qrow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.say{font-size:22px;border:2px solid var(--line);background:var(--soft);border-radius:999px;padding:4px 14px;cursor:pointer}
+[hidden]{display:none!important}
+@media (max-width:520px){.qchoices button{font-size:22px} .code{font-size:32px}}
+</style>
+</head>
+<body>
+<main>
+  <!-- ================= COACH ================= -->
+  <div id="coach" hidden>
+    <div class="row" style="justify-content:space-between;margin-bottom:12px">
+      <h1>Reading Hub <span class="muted" style="font-size:18px">coach page</span></h1>
+      <a class="btn sm" href="turn-timer.html#coach" target="_blank" rel="noopener">Turn Timer coach page ↗</a>
+    </div>
+    <p class="note">🔒 Names, skills and scores stay in <b>this browser only</b>. Students see animals, never names. The page itself is on your public games site, so anyone with the link can open an empty copy, but not your data.</p>
+    <div id="noStudents" class="warnbox" hidden>Add your students and groups on the <a href="turn-timer.html#coach">Turn Timer coach page</a> first (same browser). The hub reads them from there.</div>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Today</h2>
+        <div class="row"><span class="label">Room</span><span class="code" id="cCode"></span><span class="dot" id="cDot"></span><span class="small muted" id="cStatus"></span></div>
+        <div class="row"><span class="mono" id="cLink"></span><button class="btn sm" id="cCopy">Copy student link</button></div>
+        <div class="row"><span class="label">Group</span><select id="cGroup"></select></div>
+        <div class="row">
+          <button class="btn main" id="mWarm">▶ Warm-up</button>
+          <button class="btn main" id="mGame">▶ Game</button>
+          <button class="btn" id="mIdle">⏸ Pause</button>
+        </div>
+        <div class="small muted" id="cMode"></div>
+        <div class="row"><span class="label">Warm-up</span><select id="cWarm"></select><button class="btn sm" id="cWarmNew">New puzzle</button></div>
+        <div class="small muted" id="cWarmProg"></div>
+        <div class="row"><span class="label">Game</span><select id="cGame"></select></div>
+      </section>
+
+      <section class="card">
+        <h2>Live <span class="small muted">(this session)</span></h2>
+        <div id="helpQ"></div>
+        <div style="overflow-x:auto"><table><thead><tr><th></th><th>Student</th><th>Skill</th><th>First try</th><th>Ledge</th></tr></thead><tbody id="liveRows"></tbody></table></div>
+      </section>
+    </div>
+
+    <section class="card" style="margin-top:16px">
+      <h2>Each student's lane and skill</h2>
+      <p class="small muted">Pick a lane, then a skill. Changes reach the student's game within a few seconds.</p>
+      <div class="row"><label class="small"><input type="checkbox" id="allKids"> Show all my students (not just this group)</label></div>
+      <div style="overflow-x:auto"><table><thead><tr><th></th><th>Student</th><th>Lane</th><th>Skill</th><th>Status</th></tr></thead><tbody id="asgRows"></tbody></table></div>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <h2>Lanes and skills</h2>
+      <p class="small muted">Add the skills for each lane. Each skill gets its questions from a built-in list, or from questions you write (4 answers, you mark the right one).</p>
+      <div class="lanes" id="lanes"></div>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <h2>Skill progress</h2>
+      <div class="warnbox">Your rule for when to check a skill is <b>not settled yet</b>. Change the numbers anytime.</div>
+      <div class="row small">
+        Check early at <input type="number" id="rPct" min="50" max="100">% first try,
+        <input type="number" id="rRow" min="1" max="5"> sessions in a row,
+        with at least <input type="number" id="rMin" min="1" max="60"> questions each.
+        Check anyway after <input type="number" id="rMax" min="1" max="20"> sessions.
+      </div>
+      <div id="progRows"></div>
+      <div class="row"><button class="btn" id="copyRes">Copy results</button><span class="small muted" id="copyMsg"></span></div>
+    </section>
+  </div>
+
+  <!-- ================= STUDENT ================= -->
+  <div id="student" class="stu" hidden>
+    <div class="stu-top"><span class="stu-me" id="sMe"></span><span class="pill" id="sRoom"></span><span class="small muted" id="sStatus"></span></div>
+    <div class="card" id="sJoin"></div>
+    <div class="card" id="sWait" hidden><div class="big">Hold on! Your coach is getting ready. 🎈</div></div>
+    <div class="card" id="sWarm" hidden></div>
+    <div id="sGame" hidden></div>
+  </div>
+</main>
+<button class="helpbtn" id="sHelp" hidden>🙋 I need help</button>
+<div class="modal" id="qModal" hidden><div class="qbox" id="qBox" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast" hidden><span id="toastMsg"></span><button id="toastX">OK</button></div>
+
+<script src="turn-timer.js?v=9"></script>
+<script src="hub-questions.js?v=1"></script>
+<script src="hub-warmups.js?v=1"></script>
+<script src="hub-climb.js?v=1"></script>
+<script>
+(function(){
+"use strict";
+var T = window.TurnTimer, Q = window.HubQ, W = window.HubWarm, G = window.HubGames || {};
+var $ = function(id){ return document.getElementById(id); };
+var esc = T.esc, store = T.store;
+var isCoach = /^#coach/i.test(location.hash);
+function today(){ var d = new Date(); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
+function nice(day){ var p = day.split("-"); return +p[2] + " " + ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+p[1] - 1]; }
+function uid(){ return Math.random().toString(36).slice(2, 9); }
+function roomOf(code){ return code + "H"; }   // the hub talks in its own room next to the Turn Timer room
+
+if(isCoach) coach(); else student();
+
+/* =================================================================== COACH */
+function coach(){
+  $("coach").hidden = false; document.title = "Reading Hub · coach";
+  var tt = store("tt-coach2") || {};
+  var students = tt.students || [], groups = tt.groups || [];
+  if(!students.length) $("noStudents").hidden = false;
+  var SETNAMES = Object.keys(Q.SETS);
+  var cfg = store("hub-coach1") || {};
+  if(!cfg.lanes){
+    cfg.lanes = {
+      acc:{name:"Accuracy", skills:SETNAMES.map(function(k){ return {id:k, name:Q.SETS[k].name + " vowel", set:k, own:[]}; })},
+      flu:{name:"Fluency", skills:[]},
+      com:{name:"Comprehension", skills:[]}
+    };
+  }
+  cfg.asg = cfg.asg || {}; cfg.stats = cfg.stats || {};
+  cfg.rule = cfg.rule || {pct:90, row:2, min:10, max:4};
+  cfg.warm = cfg.warm || {pick:"auto", cur:"ws", day:"", st:{}};
+  cfg.game = cfg.game || "climb"; cfg.mode = cfg.mode || "idle";
+  cfg.code = tt.code || cfg.code || T.newCode();
+  cfg.group = cfg.group || tt.cur || (groups[0] && groups[0].id) || "";
+  function save(){ store("hub-coach1", cfg); }
+  save();
+
+  var live = {}, helps = [], room = null;
+  function kidsInGroup(){
+    var g = groups.filter(function(x){ return x.id === cfg.group; })[0];
+    var ids = g ? g.ids : students.map(function(s){ return s.id; });
+    return students.filter(function(s){ return ids.indexOf(s.id) >= 0 && s.av; });
+  }
+  function byAv(av){ return kidsInGroup().filter(function(s){ return s.av === av; })[0] || students.filter(function(s){ return s.av === av; })[0]; }
+  function skillOf(sid){
+    var a = cfg.asg[sid]; if(!a || !cfg.lanes[a.lane]) return null;
+    return cfg.lanes[a.lane].skills.filter(function(s){ return s.id === a.skill; })[0] || null;
+  }
+  function warmState(){ var id = cfg.warm.cur; cfg.warm.st[id] = cfg.warm.st[id] || W.fresh(id); return cfg.warm.st[id]; }
+
+  /* ---- relay ---- */
+  $("cCode").textContent = cfg.code;
+  var link = location.origin + location.pathname + "#" + cfg.code;
+  $("cLink").textContent = link;
+  $("cCopy").onclick = function(){ try{ navigator.clipboard.writeText(link); $("cCopy").textContent = "Copied ✓"; setTimeout(function(){ $("cCopy").textContent = "Copy student link"; }, 1500); }catch(e){} };
+  room = T.Room(roomOf(cfg.code), {
+    onStatus:function(s){ $("cDot").className = "dot" + (s === "open" ? " on" : ""); $("cStatus").textContent = s === "open" ? "connected" : s === "blocked" ? "relay blocked: only tabs on this computer will hear you" : s + "…"; },
+    onOpen:function(){ broadcast(); },
+    onX:onMsg
+  });
+  function stateMsg(){
+    var asg = {};
+    kidsInGroup().forEach(function(s){
+      var sk = skillOf(s.id); if(!sk) return;
+      asg[s.av] = sk.set ? {s:sk.name, set:sk.set} : {s:sk.name, own:(sk.own || []).map(function(q){ return {p:q.p, s:q.s, c:q.c, r:q.r}; })};
+    });
+    return {g:"hub", t:"st", mode:cfg.mode, kids:kidsInGroup().map(function(s){ return s.av; }), warm:cfg.mode === "warm" ? warmState() : null, game:cfg.game, asg:asg};
+  }
+  function broadcast(){ if(room) room.send("x", stateMsg(), false); }
+  setInterval(broadcast, 2500);
+
+  function onMsg(m){
+    if(!m || m.g !== "hub" || !m.a) return;
+    var L = live[m.a] = live[m.a] || {r:0, n:0, ledge:null, seen:0};
+    L.seen = Date.now();
+    if(m.t === "hello") broadcast();
+    if(m.t === "pos") L.ledge = m.n;
+    if(m.t === "w" && cfg.mode === "warm"){
+      var ws = warmState();
+      if(W.apply(ws, m.act || {}, m.a)){
+        save(); broadcast();
+        renderToday();
+        if(W.isDone(ws)) setTimeout(function(){ if(W.isDone(ws)){ W.next(ws); save(); broadcast(); renderToday(); } }, 5000);
+      }
+    }
+    if(m.t === "ans"){
+      var s = byAv(m.a), sk = s && skillOf(s.id);
+      L.n++; if(m.ok) L.r++;
+      if(s && sk){
+        var day = today(), st = cfg.stats[s.id] = cfg.stats[s.id] || {}, k = st[sk.id] = st[sk.id] || {}, d = k[day] = k[day] || {r:0, n:0};
+        d.n++; if(m.ok) d.r++; save();
+      }
+    }
+    if(m.t === "help"){ helps = helps.filter(function(h){ return h.a !== m.a; }); helps.push({a:m.a, q:m.q, at:Date.now()}); renderHelp(); try{ navigator.vibrate && navigator.vibrate(80); }catch(e){} }
+    renderLive();
+  }
+
+  /* ---- Today ---- */
+  $("cGroup").innerHTML = (groups.length ? groups : [{id:"", name:"All my students"}]).map(function(g){ return '<option value="' + esc(g.id) + '">' + esc(g.name) + '</option>'; }).join("");
+  $("cGroup").value = cfg.group;
+  $("cGroup").onchange = function(){ cfg.group = this.value; save(); broadcast(); renderAll(); };
+  $("cWarm").innerHTML = '<option value="auto">Take turns (auto)</option>' + W.LIST.map(function(w){ return '<option value="' + w.id + '">' + w.icon + " " + esc(w.name) + '</option>'; }).join("");
+  $("cWarm").value = cfg.warm.pick;
+  $("cWarm").onchange = function(){ cfg.warm.pick = this.value; if(this.value !== "auto") cfg.warm.cur = this.value; save(); broadcast(); renderToday(); };
+  $("cWarmNew").onclick = function(){ W.next(warmState()); save(); broadcast(); renderToday(); };
+  $("cGame").innerHTML = Object.keys(G).map(function(k){ return '<option value="' + k + '">' + G[k].icon + " " + esc(G[k].name) + '</option>'; }).join("");
+  $("cGame").value = cfg.game;
+  $("cGame").onchange = function(){ cfg.game = this.value; save(); broadcast(); };
+  function setMode(m){
+    if(m === "warm" && cfg.warm.pick === "auto" && cfg.warm.day !== today()){
+      var ids = W.LIST.map(function(w){ return w.id; }), i = ids.indexOf(cfg.warm.cur);
+      cfg.warm.cur = cfg.warm.day ? ids[(i + 1) % ids.length] : (cfg.warm.cur || ids[0]); cfg.warm.day = today();
+    }
+    cfg.mode = m; save(); broadcast(); renderToday();
+  }
+  $("mWarm").onclick = function(){ setMode("warm"); };
+  $("mGame").onclick = function(){ setMode("game"); };
+  $("mIdle").onclick = function(){ setMode("idle"); };
+  function renderToday(){
+    ["mWarm","mGame","mIdle"].forEach(function(id){ $(id).classList.toggle("on", {mWarm:"warm", mGame:"game", mIdle:"idle"}[id] === cfg.mode); });
+    $("cMode").textContent = cfg.mode === "warm" ? "Students see the warm-up." : cfg.mode === "game" ? "Students are playing the game." : "Paused: students see “Hold on, your coach is getting ready.”";
+    var w = W.LIST.filter(function(x){ return x.id === cfg.warm.cur; })[0];
+    $("cWarmProg").textContent = (w ? w.icon + " " + w.name + " · " : "") + W.progress(warmState()) + (cfg.warm.pick === "auto" ? " · switches each new day" : "");
+  }
+
+  /* ---- Live ---- */
+  function renderLive(){
+    var now = Date.now();
+    $("liveRows").innerHTML = kidsInGroup().map(function(s){
+      var L = live[s.av] || {}, sk = skillOf(s.id), on = L.seen && now - L.seen < 15000;
+      return '<tr><td class="av">' + esc(s.av) + '</td><td>' + '<span class="dot' + (on ? " on" : "") + '"></span> ' + esc(s.name) + '</td><td class="small">' + (sk ? esc(sk.name) : '<span class="muted">none yet</span>') +
+        '</td><td>' + (L.n ? L.r + " of " + L.n + " <span class='muted small'>(" + Math.round(100 * L.r / L.n) + "%)</span>" : "–") + '</td><td>' + (L.ledge != null ? L.ledge : "–") + '</td></tr>';
+    }).join("") || '<tr><td colspan="5" class="muted">No students with an animal in this group yet.</td></tr>';
+  }
+  setInterval(renderLive, 5000);
+  var QUICK = ["I see you! I'm coming to you soon.", "Skip it for now and keep going. We'll look at it together.", "Great job asking! Try your best one, then keep going."];
+  function renderHelp(){
+    $("helpQ").innerHTML = helps.map(function(h, i){
+      var s = byAv(h.a), q = h.q || {};
+      return '<div class="help"><div><b>' + esc(h.a) + " " + esc(s ? s.name : "") + '</b> needs help</div>' +
+        (q.p ? '<div class="small">' + esc(q.p) + (q.s ? ' <b>' + esc(q.s) + '</b>' : "") + (q.say ? ' (word: <b>' + esc(q.say) + '</b>)' : "") + '<br>' + (q.c || []).map(esc).join(" · ") + '</div>' : "") +
+        '<div class="row">' + QUICK.map(function(t, j){ return '<button class="btn sm" data-h="' + i + '" data-q="' + j + '">' + esc(t.split(/[.!]/)[0]) + '</button>'; }).join("") + '</div>' +
+        '<div class="row"><input type="text" maxlength="120" placeholder="Or write a short note (no names)" data-hi="' + i + '"><button class="btn sm" data-hs="' + i + '">Send</button><button class="btn sm" data-hd="' + i + '">Done</button></div></div>';
+    }).join("");
+    $("helpQ").querySelectorAll("[data-q]").forEach(function(b){ b.onclick = function(){ reply(+b.dataset.h, QUICK[+b.dataset.q]); }; });
+    $("helpQ").querySelectorAll("[data-hs]").forEach(function(b){ b.onclick = function(){ var inp = $("helpQ").querySelector('[data-hi="' + b.dataset.hs + '"]'); if(inp.value.trim()) reply(+b.dataset.hs, inp.value.trim()); }; });
+    $("helpQ").querySelectorAll("[data-hd]").forEach(function(b){ b.onclick = function(){ helps.splice(+b.dataset.hd, 1); renderHelp(); }; });
+    document.title = helps.length ? "(" + helps.length + " 🙋) Reading Hub" : "Reading Hub · coach";
+  }
+  function reply(i, text){ var h = helps[i]; if(!h) return; room.send("x", {g:"hub", t:"reply", to:h.a, m:text}, false); helps.splice(i, 1); renderHelp(); }
+
+  /* ---- Assignments ---- */
+  $("allKids").onchange = renderAsg;
+  function laneOpts(sel){ return '<option value="">–</option>' + Object.keys(cfg.lanes).map(function(k){ return '<option value="' + k + '"' + (k === sel ? " selected" : "") + '>' + esc(cfg.lanes[k].name) + '</option>'; }).join(""); }
+  function skillOpts(lane, sel){ if(!cfg.lanes[lane]) return '<option value="">pick a lane first</option>'; return '<option value="">–</option>' + cfg.lanes[lane].skills.map(function(s){ return '<option value="' + esc(s.id) + '"' + (s.id === sel ? " selected" : "") + '>' + esc(s.name) + '</option>'; }).join(""); }
+  function renderAsg(){
+    var list = $("allKids").checked ? students : kidsInGroup();
+    $("asgRows").innerHTML = list.map(function(s){
+      var a = cfg.asg[s.id] || {};
+      return '<tr><td class="av">' + esc(s.av || "") + '</td><td>' + esc(s.name) + '</td><td><select data-lane="' + esc(s.id) + '">' + laneOpts(a.lane) + '</select></td><td><select data-skill="' + esc(s.id) + '">' + skillOpts(a.lane, a.skill) + '</select></td><td>' + statusPill(s.id) + '</td></tr>';
+    }).join("") || '<tr><td colspan="5" class="muted">No students yet.</td></tr>';
+    $("asgRows").querySelectorAll("[data-lane]").forEach(function(el){ el.onchange = function(){ cfg.asg[el.dataset.lane] = {lane:el.value, skill:""}; save(); broadcast(); renderAll(); }; });
+    $("asgRows").querySelectorAll("[data-skill]").forEach(function(el){ el.onchange = function(){ var a = cfg.asg[el.dataset.skill] = cfg.asg[el.dataset.skill] || {}; a.skill = el.value; save(); broadcast(); renderAll(); }; });
+  }
+
+  /* ---- Lanes and skills ---- */
+  var openQ = {};
+  function renderLanes(){
+    $("lanes").innerHTML = Object.keys(cfg.lanes).map(function(lk){
+      var L = cfg.lanes[lk];
+      return '<div class="lane"><h3>' + esc(L.name) + '</h3>' + L.skills.map(function(s, i){
+        var src = '<select data-src="' + lk + '|' + i + '"><option value="">My own questions</option>' + SETNAMES.map(function(k){ return '<option value="' + k + '"' + (s.set === k ? " selected" : "") + '>Built-in: ' + esc(Q.SETS[k].name) + ' vowel</option>'; }).join("") + '</select>';
+        var own = s.set ? "" : '<div class="qed">' + (s.own || []).map(function(q, j){
+            return '<div class="ownq"><span>' + esc(q.p) + (q.s ? " <b>" + esc(q.s) + "</b>" : "") + ' → <b>' + esc(q.c[q.r]) + '</b></span><button class="btn sm danger" data-qdel="' + lk + '|' + i + '|' + j + '">×</button></div>';
+          }).join("") + (openQ[lk + i] ? qForm(lk, i) : '<button class="btn sm" data-qopen="' + lk + '|' + i + '">+ Write a question</button>') + '<div class="small muted">' + (s.own || []).length + ' question' + ((s.own || []).length === 1 ? "" : "s") + (!(s.own || []).length ? ": students with this skill get no questions until you add some" : "") + '</div></div>';
+        return '<div class="skill"><div class="row"><input type="text" value="' + esc(s.name) + '" data-sname="' + lk + '|' + i + '" style="flex:1"><button class="btn sm danger" data-sdel="' + lk + '|' + i + '">Delete</button></div>' + src + own + '</div>';
+      }).join("") + '<div class="row"><input type="text" placeholder="New skill name" data-snew="' + lk + '" style="flex:1"><button class="btn sm" data-sadd="' + lk + '">Add skill</button></div></div>';
+    }).join("");
+    var lanes = $("lanes");
+    function at(v){ var p = v.split("|"); return {L:cfg.lanes[p[0]], i:+p[1], j:+p[2], lk:p[0]}; }
+    lanes.querySelectorAll("[data-sname]").forEach(function(el){ el.onchange = function(){ var x = at(el.dataset.sname); x.L.skills[x.i].name = el.value.trim() || "Skill"; save(); broadcast(); renderAsg(); renderProg(); }; });
+    lanes.querySelectorAll("[data-src]").forEach(function(el){ el.onchange = function(){ var x = at(el.dataset.src); x.L.skills[x.i].set = el.value; x.L.skills[x.i].own = x.L.skills[x.i].own || []; save(); broadcast(); renderLanes(); }; });
+    lanes.querySelectorAll("[data-sdel]").forEach(function(el){ el.onclick = function(){
+      var x = at(el.dataset.sdel);
+      if(el.dataset.sure !== "1"){ el.dataset.sure = "1"; el.textContent = "Tap again to delete"; return; }
+      var gone = x.L.skills.splice(x.i, 1)[0];
+      Object.keys(cfg.asg).forEach(function(k){ if(cfg.asg[k].skill === gone.id) cfg.asg[k].skill = ""; });
+      save(); broadcast(); renderAll();
+    }; });
+    lanes.querySelectorAll("[data-sadd]").forEach(function(el){ el.onclick = function(){
+      var inp = lanes.querySelector('[data-snew="' + el.dataset.sadd + '"]'), n = inp.value.trim(); if(!n) return;
+      cfg.lanes[el.dataset.sadd].skills.push({id:uid(), name:n, set:"", own:[]}); save(); renderAll();
+    }; });
+    lanes.querySelectorAll("[data-qopen]").forEach(function(el){ el.onclick = function(){ var x = at(el.dataset.qopen); openQ[x.lk + x.i] = true; renderLanes(); }; });
+    lanes.querySelectorAll("[data-qdel]").forEach(function(el){ el.onclick = function(){ var x = at(el.dataset.qdel); x.L.skills[x.i].own.splice(x.j, 1); save(); broadcast(); renderLanes(); }; });
+    lanes.querySelectorAll("[data-qsave]").forEach(function(el){ el.onclick = function(){
+      var x = at(el.dataset.qsave), f = el.closest(".qf"), p = f.querySelector(".qp").value.trim(), s = f.querySelector(".qs").value.trim();
+      var c = [].map.call(f.querySelectorAll(".qc"), function(i){ return i.value.trim(); }), r = [].map.call(f.querySelectorAll(".qr"), function(i){ return i.checked; }).indexOf(true);
+      var msg = f.querySelector(".qerr");
+      if(!p){ msg.textContent = "Write the question."; return; }
+      if(c.filter(Boolean).length < 2){ msg.textContent = "Write at least 2 answers (4 is best)."; return; }
+      if(r < 0 || !c[r]){ msg.textContent = "Tap the circle next to the right answer."; return; }
+      x.L.skills[x.i].own.push({p:p, s:s, c:c, r:r}); save(); broadcast(); renderLanes();
+    }; });
+    lanes.querySelectorAll("[data-qclose]").forEach(function(el){ el.onclick = function(){ var x = at(el.dataset.qclose); openQ[x.lk + x.i] = false; renderLanes(); }; });
+  }
+  function qForm(lk, i){
+    var k = lk + "|" + i;
+    return '<div class="qf qed"><input type="text" class="qp" placeholder="Question, e.g. Which word has the long a sound?"><input type="text" class="qs" placeholder="Big word to show (optional)">' +
+      '<div class="ans">' + [0,1,2,3].map(function(n){ return '<input type="radio" name="r' + lk + i + '" class="qr" aria-label="Right answer"><input type="text" class="qc" placeholder="Answer ' + (n + 1) + '">'; }).join("") + '</div>' +
+      '<div class="small muted">Tap the circle next to the right answer. Students see the answers in a mixed order.</div><div class="small qerr" style="color:var(--bad)"></div>' +
+      '<div class="row"><button class="btn sm main" data-qsave="' + k + '">Add question</button><button class="btn sm" data-qclose="' + k + '">Close</button></div></div>';
+  }
+
+  /* ---- Progress and the (unsettled) rule ---- */
+  ["rPct","rRow","rMin","rMax"].forEach(function(id){
+    var key = {rPct:"pct", rRow:"row", rMin:"min", rMax:"max"}[id];
+    $(id).value = cfg.rule[key];
+    $(id).onchange = function(){ var v = +this.value; if(v > 0){ cfg.rule[key] = v; save(); renderAll(); } };
+  });
+  function sessions(sid, skid){ var k = (cfg.stats[sid] || {})[skid] || {}; return Object.keys(k).sort().map(function(d){ return {d:d, r:k[d].r, n:k[d].n}; }); }
+  function status(sid){
+    var sk = skillOf(sid); if(!sk) return null;
+    var all = sessions(sid, sk.id).filter(function(x){ return x.n >= cfg.rule.min; }), rule = cfg.rule;
+    var last = all.slice(-rule.row), ready = last.length >= rule.row && last.every(function(x){ return 100 * x.r / x.n >= rule.pct; });
+    if(ready) return {c:"ok", t:"Ready for a check ✓"};
+    if(all.length >= rule.max) return {c:"warn", t:"Check anyway (" + all.length + " sessions)"};
+    return {c:"", t:all.length + " of " + rule.max + " sessions"};
+  }
+  function statusPill(sid){ var s = status(sid); return s ? '<span class="pill ' + s.c + '">' + esc(s.t) + '</span>' : ""; }
+  function renderProg(){
+    var list = $("allKids").checked ? students : kidsInGroup();
+    $("progRows").innerHTML = '<table><thead><tr><th></th><th>Student</th><th>Skill</th><th>Sessions (first try)</th><th>Status</th></tr></thead><tbody>' + list.map(function(s){
+      var sk = skillOf(s.id); if(!sk) return "";
+      var ss = sessions(s.id, sk.id);
+      return '<tr><td class="av">' + esc(s.av || "") + '</td><td>' + esc(s.name) + '</td><td class="small">' + esc(sk.name) + '</td><td class="small">' +
+        (ss.map(function(x){ return '<span class="pill">' + nice(x.d) + ": " + x.r + "/" + x.n + " (" + Math.round(100 * x.r / x.n) + "%)" + (x.n < cfg.rule.min ? " · few" : "") + '</span>'; }).join(" ") || '<span class="muted">no practice yet</span>') +
+        '</td><td>' + statusPill(s.id) + '</td></tr>';
+    }).join("") + '</tbody></table>';
+  }
+  $("copyRes").onclick = function(){
+    var lines = ["Reading Hub results, copied " + nice(today())];
+    students.forEach(function(s){
+      var st = cfg.stats[s.id]; if(!st) return;
+      Object.keys(st).forEach(function(skid){
+        var sk = null, lane = "";
+        Object.keys(cfg.lanes).forEach(function(lk){ cfg.lanes[lk].skills.forEach(function(x){ if(x.id === skid){ sk = x; lane = cfg.lanes[lk].name; } }); });
+        lines.push(s.name + " · " + lane + " › " + (sk ? sk.name : skid) + ": " + sessions(s.id, skid).map(function(x){ return nice(x.d) + " " + x.r + "/" + x.n; }).join(", "));
+      });
+    });
+    try{ navigator.clipboard.writeText(lines.join("\n")); $("copyMsg").textContent = "Copied. Paste it to Claude to add to your My Reading Roster page."; }catch(e){ $("copyMsg").textContent = "Could not copy."; }
+  };
+
+  function renderAll(){ renderToday(); renderLive(); renderHelp(); renderAsg(); renderLanes(); renderProg(); }
+  renderAll();
+  window.addEventListener("storage", function(e){ if(e.key === "tt-coach2"){ tt = store("tt-coach2") || {}; students = tt.students || []; groups = tt.groups || []; renderAll(); } });
+}
+
+/* ================================================================= STUDENT */
+function student(){
+  $("student").hidden = false;
+  var saved = store("hub-student1") || {code:"", av:""};
+  var hash = (location.hash || "").replace("#", "").toUpperCase();
+  if(/^[A-Z]{4}$/.test(hash) && hash !== saved.code) saved = {code:hash, av:""};
+  var room = null, st = null, lastSt = 0, mode = "", game = null, gameId = "", friends = {}, card = null, modalOpen = false;
+
+  function persist(){ store("hub-student1", saved); }
+  function send(t, o){ o = o || {}; o.g = "hub"; o.t = t; o.a = saved.av; if(room && saved.av) room.send("x", o, false); }
+
+  function showJoin(){
+    $("sJoin").hidden = false; ["sWait","sWarm","sGame"].forEach(function(id){ $(id).hidden = true; }); $("sHelp").hidden = true;
+    $("sJoin").innerHTML = '<div class="join"><div class="big">Join your reading group</div><div>Type your room code</div><input id="jCode" maxlength="4" autocomplete="off" spellcheck="false" value="' + esc(saved.code || "") + '"><button class="btn main" id="jGo">Go</button></div>';
+    $("jGo").onclick = function(){ var v = $("jCode").value.trim().toUpperCase(); if(/^[A-Z]{4}$/.test(v)){ saved = {code:v, av:""}; persist(); connect(); } };
+  }
+  function showPick(){
+    $("sJoin").hidden = false; ["sWait","sWarm","sGame"].forEach(function(id){ $(id).hidden = true; }); $("sHelp").hidden = true;
+    var kids = st ? st.kids : [];
+    $("sJoin").innerHTML = '<div class="join"><div class="big">Tap your animal</div>' + (kids.length ? '<div class="avs">' + kids.map(function(a){ return '<button type="button" data-a="' + esc(a) + '">' + esc(a) + '</button>'; }).join("") + '</div>' : '<div class="muted">Waiting for your coach to open the room…</div>') + '</div>';
+    $("sJoin").querySelectorAll("[data-a]").forEach(function(b){ b.onclick = function(){
+      saved.av = b.dataset.a; persist();
+      store("tt-join2", {code:saved.code, av:saved.av, at:Date.now()});   // so the turn timer card already knows you
+      if(!card && T.mountStudent){ try{ store("tt-collapsed", true); card = T.mountStudent(document.body, {float:true}); }catch(e){} }
+      send("hello"); render();
+    }; });
+  }
+  function connect(){
+    persist();
+    $("sRoom").textContent = "Room " + saved.code;
+    if(room) room.close();
+    room = T.Room(roomOf(saved.code), {
+      onStatus:function(s){ $("sStatus").textContent = s === "open" ? "" : s === "blocked" ? "Can't reach your coach. Tell your coach in Zoom chat." : "connecting…"; },
+      onOpen:function(){ send("hello"); },
+      onX:onMsg
+    });
+    render();
+  }
+  function onMsg(m){
+    if(!m || m.g !== "hub") return;
+    if(m.t === "st"){ st = m; lastSt = Date.now(); render(); }
+    else if(m.t === "pos" && m.a && m.a !== saved.av){ friends[m.a] = {n:m.n, at:Date.now()}; }
+    else if(m.t === "reply" && m.to === saved.av){ toast("💬 Your coach: " + m.m); }
+  }
+  function render(){
+    $("sMe").textContent = saved.av || "";
+    if(!saved.code) return showJoin();
+    if(!st) { $("sJoin").hidden = false; $("sJoin").innerHTML = '<div class="join"><div class="big">Connecting…</div><div class="muted">Your coach\'s page needs to be open.</div></div>'; return; }
+    if(!saved.av || st.kids.indexOf(saved.av) < 0) return showPick();
+    if(!card && T.mountStudent){ store("tt-join2", {code:saved.code, av:saved.av, at:Date.now()}); try{ store("tt-collapsed", true); card = T.mountStudent(document.body, {float:true}); }catch(e){} }
+    $("sJoin").hidden = true; $("sHelp").hidden = false;
+    var m = st.mode;
+    $("sWait").hidden = m !== "idle"; $("sWarm").hidden = m !== "warm"; $("sGame").hidden = m !== "game";
+    if(m === "warm") W.render($("sWarm"), st.warm, function(act){ send("w", {act:act}); }, saved.av);
+    if(m === "game"){ if(!game || gameId !== st.game) startGame(st.game); }
+    else if(game){ game.stop(); game = null; gameId = ""; }
+    mode = m;
+  }
+  setInterval(function(){ if(st && Date.now() - lastSt > 12000){ $("sStatus").textContent = "Waiting for your coach…"; } }, 4000);
+
+  /* ---- the game, and the question every game shares ---- */
+  function startGame(id){
+    if(game) game.stop();
+    var g = G[id] || G.climb; if(!g) return;
+    gameId = id;
+    game = g.start($("sGame"), {
+      me:saved.av,
+      load:function(){ return store("hub-g-" + id); },
+      save:function(v){ store("hub-g-" + id, v); },
+      pos:function(n){ send("pos", {n:n}); },
+      friends:function(){ var out = {}, now = Date.now(); Object.keys(friends).forEach(function(a){ if(now - friends[a].at < 15000 && st && st.kids.indexOf(a) >= 0) out[a] = friends[a].n; }); return out; },
+      modal:function(){ return modalOpen; },
+      ask:ask
+    });
+  }
+  function nextQ(){
+    var a = st && st.asg && st.asg[saved.av];
+    if(!a) return null;
+    if(a.set) return Q.make(a.set);
+    return Q.fromOwn(a.own);
+  }
+  var curQ = null;
+  function ask(title, cb){
+    var q = nextQ();
+    if(!q){ toast("Keep going! 🎉"); setTimeout(function(){ cb(null); }, 600); return; }
+    curQ = q; modalOpen = true;
+    var tries = 0, done = false, box = $("qBox");
+    box.innerHTML = '<div class="qtitle">' + esc(title) + '</div><div class="qprompt">' + esc(q.prompt) + '</div>' +
+      (q.show ? '<div class="qshow">' + esc(q.show) + '</div>' : "") +
+      '<div class="qrow">' + (q.say ? '<button class="say" id="qSay">🔊 Hear the word</button>' : '<button class="say" id="qRead">🔊 Read the question</button>') + '</div>' +
+      '<div class="qchoices">' + q.choices.map(function(c, i){ return '<button type="button" data-i="' + i + '">' + esc(c) + '</button>'; }).join("") + '</div>' +
+      '<div class="qmsg" id="qMsg" aria-live="polite"></div><div class="qrow" id="qAfter"></div>';
+    $("qModal").hidden = false;
+    if($("qSay")){ $("qSay").onclick = function(){ Q.speak(q.say); }; setTimeout(function(){ Q.speak(q.say); }, 250); }
+    if($("qRead")) $("qRead").onclick = function(){ Q.speak(q.prompt); };
+    box.querySelectorAll(".qchoices button").forEach(function(b){
+      b.onclick = function(){
+        if(done || b.classList.contains("wrong")) return;
+        var right = q.choices[+b.dataset.i] === q.ans; tries++;
+        if(tries === 1) send("ans", {ok:right});
+        if(right){ b.classList.add("right"); $("qMsg").textContent = tries === 1 ? "Yes! 🎉" : "You got it! 👍"; done = true; setTimeout(function(){ close(tries === 1); }, 900); return; }
+        b.classList.add("wrong");
+        if(tries === 1){ $("qMsg").textContent = "Not quite. Try again!"; return; }
+        done = true;
+        box.querySelectorAll(".qchoices button").forEach(function(x){ if(q.choices[+x.dataset.i] === q.ans) x.classList.add("right"); });
+        $("qMsg").textContent = "The answer is " + q.ans + ".";
+        $("qAfter").innerHTML = '<button class="btn main" id="qGo">Keep going</button>'; $("qGo").onclick = function(){ close(false); };
+      };
+    });
+    function close(v){ $("qModal").hidden = true; modalOpen = false; curQ = null; cb(v); }
+    ask.skip = function(){ if(!done){ done = true; close(null); } };
+  }
+  $("sHelp").onclick = function(){
+    var q = curQ;
+    send("help", {q:q ? {p:q.prompt, s:q.show || "", say:q.say || "", c:q.choices} : null});
+    toast("✋ Your coach got your message. Keep trying, or skip for now.");
+    if(modalOpen && !$("qSkip")){ var a = $("qAfter"); a.insertAdjacentHTML("beforeend", '<button class="btn" id="qSkip">Skip for now</button>'); $("qSkip").onclick = function(){ if(ask.skip) ask.skip(); }; }
+  };
+  function toast(t){ $("toastMsg").textContent = t; $("toast").hidden = false; clearTimeout(toast.t); toast.t = setTimeout(function(){ $("toast").hidden = true; }, 9000); }
+  $("toastX").onclick = function(){ $("toast").hidden = true; };
+
+  if(saved.code) connect(); else showJoin();
+}
+})();
+</script>
+</body>
+</html>
