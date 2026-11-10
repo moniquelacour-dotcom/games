@@ -168,6 +168,7 @@ var ACTS = {
   trail:  {name:"Fluency Trail",  url:"fluency-home.html",   icon:"🥾"},
   words:  {name:"Word Stage",     url:"word-stage.html",     icon:"🎭"},
   parts:  {name:"Word Parts (partners)", url:"word-parts.html", icon:"🧩"},
+  vowels: {name:"Long Vowel Chart", url:"long-vowels.html", icon:"🔤"},
   shared: {name:"Shared Reading", url:"turn-timer.html",     icon:"📖"}
 };
 function onPage(url){ var p = location.pathname.split("/").pop() || "index.html"; return p === url; }
