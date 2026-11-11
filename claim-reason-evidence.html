@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Claim, Reason, Evidence</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Layout: passage on top with three markers, chart fills in as she marks, question unlocks last */
+:root{
+  --bg:#f3f1ec; --panel:#ffffff; --ink:#23282b; --ink-soft:#5c6670; --line:#ddd8cf;
+  --accent:#2f5d50; --accent-soft:#e3ece8;
+  --c1:#d9683f; --c1-soft:#fae0d6; --c1-ink:#6e2d14;   /* claim */
+  --c2:#f0b429; --c2-soft:#fbecc9; --c2-ink:#5a4405;   /* reason */
+  --c3:#4e8ac4; --c3-soft:#dde9f5; --c3-ink:#1b3c5c;   /* evidence */
+  --good:#2f6b43; --good-soft:#dcebe1;
+  --display:'Fraunces',Georgia,'Times New Roman',serif;
+  --body:'Source Sans 3',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#171b1d; --panel:#21272a; --ink:#edeae3; --ink-soft:#a2aeb3; --line:#333b3f;
+  --accent:#7fc4b0; --accent-soft:#25332f;
+  --c1:#e08a66; --c1-soft:#4a2a1c; --c1-ink:#fae0d6;
+  --c2:#d6a02c; --c2-soft:#473714; --c2-ink:#fbecc9;
+  --c3:#78aeda; --c3-soft:#1e3449; --c3-ink:#dde9f5;
+  --good:#7cc496; --good-soft:#20342a;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#171b1d; --panel:#21272a; --ink:#edeae3; --ink-soft:#a2aeb3; --line:#333b3f;
+  --accent:#7fc4b0; --accent-soft:#25332f;
+  --c1:#e08a66; --c1-soft:#4a2a1c; --c1-ink:#fae0d6;
+  --c2:#d6a02c; --c2-soft:#473714; --c2-ink:#fbecc9;
+  --c3:#78aeda; --c3-soft:#1e3449; --c3-ink:#dde9f5;
+  --good:#7cc496; --good-soft:#20342a;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;margin:0}
+.wrap{max-width:740px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:22px 56px;display:flex;flex-direction:column;gap:16px}
+
+header h1{font-family:var(--display);font-weight:700;font-size:clamp(27px,6vw,38px);line-height:1.1;margin:0;text-wrap:balance}
+header p{margin:6px 0 0;color:var(--ink-soft);font-size:15px}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+.meta{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;margin:0 0 8px}
+.passage h2{font-family:var(--display);font-size:22px;margin:0 0 4px;font-weight:700}
+.byline{margin:0 0 12px;font-size:14px;color:var(--ink-soft);font-style:italic}
+.sent{display:inline;cursor:pointer;border-radius:4px;padding:1px 2px;transition:background .12s;-webkit-tap-highlight-color:transparent}
+.sent:hover{box-shadow:inset 0 -2px 0 var(--line)}
+.sent:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.sent.m1{background:var(--c1-soft);box-shadow:inset 0 -3px 0 var(--c1)}
+.sent.m2{background:var(--c2-soft);box-shadow:inset 0 -3px 0 var(--c2)}
+.sent.m3{background:var(--c3-soft);box-shadow:inset 0 -3px 0 var(--c3)}
+
+.pens{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:16px}
+.pen{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--line);background:transparent;color:var(--ink);font:inherit;font-weight:600;font-size:15px;padding:9px 14px;border-radius:999px;cursor:pointer}
+.pen .dot{width:13px;height:13px;border-radius:50%;flex:none}
+.pen[data-pen="1"] .dot{background:var(--c1)}
+.pen[data-pen="2"] .dot{background:var(--c2)}
+.pen[data-pen="3"] .dot{background:var(--c3)}
+.pen[aria-pressed="true"][data-pen="1"]{border-color:var(--c1);background:var(--c1-soft);color:var(--c1-ink)}
+.pen[aria-pressed="true"][data-pen="2"]{border-color:var(--c2);background:var(--c2-soft);color:var(--c2-ink)}
+.pen[aria-pressed="true"][data-pen="3"]{border-color:var(--c3);background:var(--c3-soft);color:var(--c3-ink)}
+.pen:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hint{font-size:14px;color:var(--ink-soft);margin:10px 0 0;min-height:1.6em}
+
+.chart{display:flex;flex-direction:column;gap:10px}
+.slot{border:1.5px dashed var(--line);border-radius:10px;padding:11px 13px;min-width:0}
+.slot.filled{border-style:solid}
+.slot .tag{font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;display:block;margin-bottom:4px}
+.slot.s1{border-color:var(--c1)} .slot.s1 .tag{color:var(--c1-ink)} .slot.s1.filled{background:var(--c1-soft)}
+.slot.s2{border-color:var(--c2)} .slot.s2 .tag{color:var(--c2-ink)} .slot.s2.filled{background:var(--c2-soft)}
+.slot.s3{border-color:var(--c3)} .slot.s3 .tag{color:var(--c3-ink)} .slot.s3.filled{background:var(--c3-soft)}
+.slot ul{margin:0;padding-left:18px}
+.slot li{font-size:15px;margin:3px 0}
+.slot .empty{font-size:15px;color:var(--ink-soft);font-style:italic}
+.indent{margin-left:18px}
+
+.q{font-family:var(--display);font-size:20px;font-weight:700;margin:0 0 12px;text-wrap:balance}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1.5px solid var(--line);background:transparent;color:var(--ink);font:inherit;font-size:16px;padding:12px 14px;border-radius:10px;cursor:pointer;min-width:0}
+.opt .ltr{font-weight:700;color:var(--ink-soft);flex:none}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{opacity:.5;cursor:not-allowed}
+.opt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.opt.picked{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.locked{font-size:14px;color:var(--ink-soft);margin:0 0 10px}
+.locked b{color:var(--ink)}
+
+.reveal{border-top:1px solid var(--line);margin-top:16px;padding-top:14px;display:flex;flex-direction:column;gap:12px}
+.reveal h3{font-family:var(--display);font-size:17px;margin:0;font-weight:700}
+.reveal p{margin:0;font-size:16px}
+label.say{font-size:14px;color:var(--ink-soft);font-weight:600;display:block;margin-bottom:6px}
+textarea{width:100%;min-height:74px;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;resize:vertical}
+textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+
+.nav{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{font:inherit;font-weight:700;font-size:16px;padding:11px 20px;border-radius:999px;border:1.5px solid var(--accent);background:var(--accent);color:var(--panel);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.count{margin-left:auto;font-size:14px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+footer{font-size:13px;color:var(--ink-soft);text-align:center}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Claim, Reason, Evidence</h1>
+    <p>Mark the passage first. The chart fills itself in. Then the question opens.</p>
+  </header>
+
+  <section class="card passage">
+    <p class="meta" id="pmeta"></p>
+    <h2 id="ptitle"></h2>
+    <p class="byline" id="pby"></p>
+    <div id="ptext"></div>
+    <div class="pens">
+      <button class="pen" data-pen="1" aria-pressed="false"><span class="dot"></span>Claim</button>
+      <button class="pen" data-pen="2" aria-pressed="false"><span class="dot"></span>Reason</button>
+      <button class="pen" data-pen="3" aria-pressed="false"><span class="dot"></span>Evidence</button>
+      <button class="btn ghost" id="clear" type="button">Clear</button>
+    </div>
+    <p class="hint" id="hint"></p>
+  </section>
+
+  <section class="card">
+    <p class="meta">Your chart</p>
+    <div class="chart" id="chart"></div>
+  </section>
+
+  <section class="card">
+    <p class="q" id="qtext"></p>
+    <p class="locked" id="locked"></p>
+    <div class="opts" id="opts"></div>
+    <div class="reveal" id="reveal" hidden></div>
+  </section>
+
+  <div class="nav">
+    <button class="btn ghost" id="back" type="button">Back</button>
+    <button class="btn" id="next" type="button">Next</button>
+    <span class="count" id="count"></span>
+  </div>
+
+  <footer>Nothing is timed and nothing is scored. The marks are the work.</footer>
+</div>
+
+<script>
+/* ---- CONTENT ----------------------------------------------------------
+   Swap these for any persuasive passage. Keep sentences short enough to tap.
+   claim / reasons / evidence hold the sentence numbers, counting from 0.  */
+const ITEMS = [
+  {
+    title: "Turn the Music On",
+    by: "An argument about animal shelters",
+    sentences: [
+      "Every animal shelter should play soft music in its kennels all day long.",
+      "Shelters are loud places, and the noise itself makes dogs harder to adopt.",
+      "A dog who has been barking for six hours does not look calm when a family walks past its door.",
+      "One county shelter measured the sound in its kennel hall at 100 decibels, about as loud as a lawn mower running beside you.",
+      "Staff there wore ear protection; the dogs had none.",
+      "Music also changes how the dogs behave, not just how loud the room is.",
+      "In one study, kennels that played slow classical music had dogs who spent more time lying down and less time barking.",
+      "The same dogs barked more when the music was switched off the following week.",
+      "Finally, music costs a shelter almost nothing.",
+      "A speaker and a playlist cost less than one bag of dog food a month.",
+      "Shelters already spend money on toys and blankets to keep dogs settled, and this does the same job for less."
+    ],
+    claim: [0],
+    reasons: [1, 5, 8],
+    evidence: [3, 4, 6, 7, 9, 10],
+    question: {
+      q: "Which of these is a REASON the author gives to support the claim, rather than evidence for a reason?",
+      options: [
+        "One county shelter measured 100 decibels in its kennel hall.",
+        "Music costs a shelter almost nothing.",
+        "A speaker and a playlist cost less than one bag of dog food a month.",
+        "The dogs barked more when the music was switched off."
+      ],
+      correct: 1,
+      because: "A reason is the author's own point. Evidence is the fact that backs it up. \"Music costs almost nothing\" is the point; the bag of dog food is the proof of it. Notice the reasons here all sit at the start of their paragraph, with the proof right after."
+    }
+  },
+  {
+    title: "Let Them Draw While They Listen",
+    by: "An argument about classrooms",
+    sentences: [
+      "Students should be allowed to draw in the margins while a teacher is talking.",
+      "Doodling does not pull attention away from listening; it holds attention in place.",
+      "In one experiment, people who doodled while listening to a dull phone message remembered 29 percent more of it than people who just sat still.",
+      "The researchers thought the small task stopped the listeners from drifting off into daydreams.",
+      "Drawing also gives some students a way to hold an idea they cannot yet write down.",
+      "A child who sketches a water cycle while hearing about it is building the same picture a diagram would build.",
+      "Teachers who allow it report that those sketches often turn up again, correctly, in the test.",
+      "The usual objection is that drawing looks rude.",
+      "But looking attentive and being attentive are not the same thing, and a classroom should care about the second one."
+    ],
+    claim: [0],
+    reasons: [1, 4],
+    evidence: [2, 3, 5, 6],
+    question: {
+      q: "Which choice is the strongest EVIDENCE for the reason that doodling holds attention in place?",
+      options: [
+        "Teachers report the sketches turn up again in the test.",
+        "A child who sketches a water cycle is building a diagram.",
+        "Doodlers remembered 29 percent more of a dull phone message.",
+        "Looking attentive and being attentive are not the same thing."
+      ],
+      correct: 2,
+      because: "Evidence is a fact or a measurement, and it has to belong to the reason you are backing. The 29 percent is a number about attention. The water cycle and the test both belong to the other reason, and the last choice is the author arguing, not proving."
+    }
+  },
+  {
+    title: "Give the Understudy One Night",
+    by: "An argument about school theatre",
+    sentences: [
+      "Every understudy in a school show should perform at least one real night in front of an audience.",
+      "An understudy who never goes on has not actually been trained.",
+      "Rehearsing a part in an empty hall and playing it to four hundred people are different skills, and only one of them is practised.",
+      "When a lead gets sick on closing night, the school finds this out the hard way.",
+      "A guaranteed night also changes how hard the understudy works all season.",
+      "Drama teachers who promise one performance say their understudies learn lines earlier and miss fewer rehearsals.",
+      "There is a fairness point too.",
+      "Understudies attend every rehearsal the leads attend, and sometimes more, since they often cover two parts.",
+      "Asking a student for three months of work with no performance at the end is not a fair trade."
+    ],
+    claim: [0],
+    reasons: [1, 4, 6],
+    evidence: [2, 3, 5, 7, 8],
+    question: {
+      q: "What is the author's CLAIM?",
+      options: [
+        "Understudies work harder than leads do.",
+        "Every understudy should perform at least one real night.",
+        "Leads often get sick on closing night.",
+        "Rehearsing and performing are different skills."
+      ],
+      correct: 1,
+      because: "The claim is what the author wants you to agree to, and it usually sits at the end of the first paragraph. Everything else in the passage exists to hold that one sentence up."
+    }
+  }
+];
+
+const PEN_NAME = { 1: "Claim", 2: "Reason", 3: "Evidence" };
+const PEN_HINT = {
+  1: "Tap the sentence the author wants you to agree with.",
+  2: "Tap the sentences that say why. Usually one near the start of each part.",
+  3: "Tap the facts, numbers or examples that prove a reason."
+};
+
+let at = 0;
+const marks = ITEMS.map(() => ({ 1: new Set(), 2: new Set(), 3: new Set() }));
+const picks = ITEMS.map(() => null);
+const says = ITEMS.map(() => "");
+let pen = null;
+
+const $ = id => document.getElementById(id);
+
+function render() {
+  const P = ITEMS[at], M = marks[at], Q = P.question;
+  const answered = picks[at] !== null;
+
+  $("pmeta").textContent = `Passage ${at + 1} of ${ITEMS.length}`;
+  $("ptitle").textContent = P.title;
+  $("pby").textContent = P.by;
+
+  const holder = $("ptext");
+  holder.replaceChildren();
+  P.sentences.forEach((s, i) => {
+    const el = document.createElement("span");
+    el.className = "sent";
+    for (const k of [1, 2, 3]) if (M[k].has(i)) el.classList.add("m" + k);
+    el.textContent = s;
+    el.tabIndex = 0;
+    el.setAttribute("role", "button");
+    el.addEventListener("click", () => mark(i));
+    el.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); mark(i); }
+    });
+    holder.append(el, document.createTextNode(" "));
+  });
+
+  document.querySelectorAll(".pen").forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.pen === pen)));
+  $("hint").textContent = pen ? PEN_HINT[pen] : "Pick a marker, then tap a sentence. Tap again to undo.";
+
+  const chart = $("chart");
+  chart.replaceChildren();
+  [1, 2, 3].forEach(k => {
+    const slot = document.createElement("div");
+    slot.className = `slot s${k}` + (M[k].size ? " filled" : "");
+    if (k > 1) slot.classList.add("indent");
+    const tag = document.createElement("span");
+    tag.className = "tag";
+    tag.textContent = PEN_NAME[k] + (k === 2 || k === 3 ? "s" : "");
+    slot.append(tag);
+    if (M[k].size) {
+      const ul = document.createElement("ul");
+      [...M[k]].sort((a, b) => a - b).forEach(i => {
+        const li = document.createElement("li");
+        li.textContent = P.sentences[i];
+        ul.append(li);
+      });
+      slot.append(ul);
+    } else {
+      const e = document.createElement("span");
+      e.className = "empty";
+      e.textContent = k === 1 ? "Nothing marked yet." : "Nothing marked yet.";
+      slot.append(e);
+    }
+    chart.append(slot);
+  });
+
+  $("qtext").textContent = Q.q;
+  const ready = M[1].size > 0 && M[2].size > 0 && M[3].size > 0;
+  const missing = [1, 2, 3].filter(k => !M[k].size).map(k => PEN_NAME[k].toLowerCase());
+  $("locked").innerHTML = answered ? ""
+    : ready ? "All three marked. <b>Now answer.</b>"
+    : `Still to mark: <b>${missing.join(", ")}</b>.`;
+
+  const box = $("opts");
+  box.replaceChildren();
+  Q.options.forEach((o, i) => {
+    const b = document.createElement("button");
+    b.className = "opt";
+    b.type = "button";
+    b.disabled = !ready && !answered;
+    if (answered && picks[at] === i) b.classList.add("picked");
+    if (answered && i === Q.correct) b.classList.add("right");
+    const l = document.createElement("span");
+    l.className = "ltr";
+    l.textContent = "ABCD"[i];
+    const t = document.createElement("span");
+    t.textContent = o;
+    b.append(l, t);
+    b.addEventListener("click", () => { if (picks[at] === null) { picks[at] = i; render(); } });
+    box.append(b);
+  });
+
+  const rev = $("reveal");
+  rev.replaceChildren();
+  rev.hidden = !answered;
+  if (answered) {
+    const h = document.createElement("h3");
+    h.textContent = picks[at] === Q.correct ? "That's it." : "Not that one — read the chart you built.";
+    const p = document.createElement("p");
+    p.textContent = Q.because;
+    const wrapS = document.createElement("div");
+    const lab = document.createElement("label");
+    lab.className = "say";
+    lab.setAttribute("for", "say" + at);
+    lab.textContent = "Say it your way — how did you know?";
+    const ta = document.createElement("textarea");
+    ta.id = "say" + at;
+    ta.value = says[at];
+    ta.placeholder = "I knew because…";
+    ta.addEventListener("input", e => { says[at] = e.target.value; });
+    wrapS.append(lab, ta);
+    rev.append(h, p, wrapS);
+  }
+
+  $("back").disabled = at === 0;
+  $("next").disabled = at === ITEMS.length - 1;
+  $("count").textContent = `${at + 1} of ${ITEMS.length}`;
+}
+
+function mark(i) {
+  if (!pen) { $("hint").textContent = "Pick a marker first — Claim, Reason or Evidence."; return; }
+  const set = marks[at][pen];
+  set.has(i) ? set.delete(i) : set.add(i);
+  render();
+}
+
+document.querySelectorAll(".pen").forEach(b =>
+  b.addEventListener("click", () => { pen = pen === b.dataset.pen ? null : b.dataset.pen; render(); }));
+$("clear").addEventListener("click", () => { [1, 2, 3].forEach(k => marks[at][k].clear()); render(); });
+$("back").addEventListener("click", () => { if (at > 0) { at--; pen = null; render(); window.scrollTo(0, 0); } });
+$("next").addEventListener("click", () => { if (at < ITEMS.length - 1) { at++; pen = null; render(); window.scrollTo(0, 0); } });
+
+render();
+</script>
+</body>
+</html>
