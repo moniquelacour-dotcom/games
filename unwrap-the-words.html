@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Unwrap the Words</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Unwrap the Words: modifiers, gerunds, word parts and Grade 9 reading-test skills. Right answers earn presents; tap a present to unwrap it.
+   No names. No timer. Nothing saved. One deliberate dark holiday look. */
+:root{--bg:#0f1a2b;--card:#17263d;--soft:#1f3150;--ink:#f3f1ea;--muted:#aab6c8;--line:#2d4263;
+  --red:#e2464d;--green:#3fae6a;--gold:#f2c14e;--ok:#7fe0a0;--okbg:#173a28;--bad:#ff9d94;--badbg:#3d1d1d;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top,#1b2d4d 0%,var(--bg) 60%);background-color:var(--bg);color:var(--ink);
+  font:18px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif;min-height:100vh}
+main{max-width:860px;margin:0 auto;padding-block:20px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+h1{font:800 clamp(30px,6vw,42px)/1.1 "Baloo 2",system-ui,sans-serif;margin:0;text-wrap:balance}
+h1 span{color:var(--gold)}
+p{margin:0}
+.muted{color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{font:700 17px "Atkinson Hyperlegible",sans-serif;border:2px solid var(--line);background:var(--soft);color:var(--ink);border-radius:12px;padding:10px 16px;cursor:pointer}
+.btn:hover{border-color:var(--gold)}
+.btn:focus-visible,.choice:focus-visible,.gift:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.btn.go{background:var(--green);border-color:var(--green);color:#06210f}
+.btn[aria-pressed="true"]{border-color:var(--gold);background:#3a3216}
+/* top strip: tree + bows */
+.strip{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
+.tree{font-size:15px;line-height:1;position:relative;width:92px;height:104px}
+.tree svg{width:92px;height:104px;display:block}
+.orn{position:absolute;font-size:16px;transform:translate(-50%,-50%)}
+.bows{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.bow{width:30px;height:30px;border-radius:50%;border:2px dashed var(--line);display:grid;place-items:center;font-size:18px}
+.bow.on{border:2px solid var(--gold);background:#3a3216}
+.tag{font:700 13px "Atkinson Hyperlegible",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
+/* question */
+.passage{background:var(--soft);border-left:5px solid var(--gold);border-radius:10px;padding:12px 14px;font-size:19px}
+.q{font:700 21px/1.35 "Atkinson Hyperlegible",sans-serif}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:10px}
+.choice{text-align:left;font:400 18px/1.35 "Atkinson Hyperlegible",sans-serif;border:2px solid var(--line);background:var(--soft);color:var(--ink);border-radius:12px;padding:12px 14px;cursor:pointer}
+.choice:hover:not(:disabled){border-color:var(--gold)}
+.choice.right{border-color:var(--ok);background:var(--okbg)}
+.choice.wrong{border-color:var(--bad);background:var(--badbg)}
+.choice:disabled{cursor:default}
+.why{border-radius:12px;padding:12px 14px;font-size:17px}
+.why.ok{background:var(--okbg);border:1px solid var(--ok)}
+.why.no{background:var(--badbg);border:1px solid var(--bad)}
+.why b{display:block;margin-bottom:2px}
+/* presents */
+.shelf{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;padding:8px 0}
+.gift{position:relative;width:110px;height:110px;border:none;background:none;cursor:pointer;padding:0}
+.gift .box{position:absolute;left:8px;right:8px;bottom:0;height:70px;background:var(--c);border-radius:6px}
+.gift .lid{position:absolute;left:2px;right:2px;bottom:66px;height:22px;background:var(--c);filter:brightness(1.15);border-radius:6px;transition:transform .6s cubic-bezier(.3,1.6,.5,1),opacity .6s}
+.gift .rv{position:absolute;left:50%;width:16px;margin-left:-8px;bottom:0;height:88px;background:var(--r)}
+.gift .rh{position:absolute;left:8px;right:8px;bottom:28px;height:14px;background:var(--r)}
+.gift .knot{position:absolute;left:50%;bottom:84px;transform:translateX(-50%);font-size:30px;transition:transform .6s,opacity .6s}
+.gift .prize{position:absolute;left:50%;bottom:40px;transform:translate(-50%,0) scale(.2);font-size:44px;opacity:0;transition:transform .6s .25s,opacity .4s .25s}
+.gift.wiggle{animation:wig 1.4s ease-in-out infinite}
+@keyframes wig{0%,80%,100%{transform:rotate(0)}85%{transform:rotate(-6deg)}90%{transform:rotate(6deg)}95%{transform:rotate(-3deg)}}
+.gift.open .lid{transform:translateY(-60px) rotate(-25deg);opacity:0}
+.gift.open .knot{transform:translate(-50%,-70px) rotate(40deg);opacity:0}
+.gift.open .prize{transform:translate(-50%,-34px) scale(1);opacity:1}
+.gift.small{transform:scale(.8)} .gift.big{transform:scale(1.15)}
+.burst{position:fixed;pointer-events:none;font-size:22px;z-index:9;animation:fly 1.1s ease-out forwards}
+@keyframes fly{to{transform:translate(var(--dx),var(--dy)) rotate(360deg);opacity:0}}
+.center{text-align:center;align-items:center}
+@media (prefers-reduced-motion:reduce){.gift.wiggle{animation:none}.gift .lid,.gift .knot,.gift .prize{transition:none}.burst{display:none}}
+</style>
+</head>
+<body>
+<main>
+  <header class="row" style="justify-content:space-between">
+    <h1>Unwrap the <span>Words</span></h1>
+  </header>
+
+  <section class="card strip" aria-label="Your tree and bows">
+    <div class="tree" id="tree" aria-hidden="true">
+      <svg viewBox="0 0 92 104"><polygon points="46,4 86,86 6,86" fill="#2f8f57"/><polygon points="46,4 74,58 18,58" fill="#3fae6a"/><rect x="39" y="86" width="14" height="16" fill="#8a5a34"/><text x="46" y="14" text-anchor="middle" font-size="16">⭐</text></svg>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+      <span class="tag">3 right answers = 1 present</span>
+      <div class="bows" id="bows"></div>
+      <span class="muted" id="treeMsg" style="font-size:15px"></span>
+    </div>
+  </section>
+
+  <section class="card" id="pick">
+    <span class="tag">Pick what to practice</span>
+    <div class="row" id="modes"></div>
+    <p class="muted" style="font-size:16px">Read each passage, then pick the best answer. A wrong answer shows why and comes back later. No timer.</p>
+    <div><button class="btn go" id="start">Start</button></div>
+  </section>
+
+  <section class="card" id="play" hidden>
+    <span class="tag" id="qTag"></span>
+    <div class="passage" id="passage" hidden></div>
+    <div class="q" id="q"></div>
+    <div class="choices" id="choices"></div>
+    <div class="why" id="why" hidden></div>
+    <div class="row"><button class="btn go" id="next" hidden>Next</button><button class="btn" id="change">Change practice</button></div>
+  </section>
+
+  <section class="card center" id="gifts" hidden>
+    <span class="tag">You earned a present!</span>
+    <p>Tap it to unwrap.</p>
+    <div class="shelf" id="shelf"></div>
+    <button class="btn go" id="back" hidden>Keep going</button>
+  </section>
+</main>
+<script>
+(function(){
+"use strict";
+/* t: pov | word. p: passage (optional). a: index of the right choice. why: shown after answering. */
+var Q = [
+ /* ---------- Fix the modifier (Freckle L.7.1.c) ---------- */
+ {t:"mod",p:"Running to catch the bus, my backpack fell open.",q:"What is wrong with this sentence?",c:["It sounds like the backpack was running","The verb is in the wrong tense","It needs another comma","Nothing is wrong"],a:0,why:"The opening phrase \"Running to catch the bus\" describes whoever comes right after the comma. Here that's the backpack, and a backpack can't run. This is a dangling modifier."},
+ {t:"mod",p:"Running to catch the bus, my backpack fell open.",q:"Which is the best way to fix it?",c:["Running to catch the bus, I felt my backpack fall open.","My backpack fell open, running to catch the bus.","Running to catch the bus, my backpack fell open quickly.","My backpack, running to catch the bus, fell open."],a:0,why:"Put the person who was running right after the comma. \"I\" was running, so \"I\" comes next."},
+ {t:"mod",p:"I saw a deer driving to school this morning.",q:"Which sentence fixes the modifier?",c:["Driving to school this morning, I saw a deer.","I saw a deer this morning driving to school.","A deer, driving to school, was seen by me.","I saw, driving to school, a deer this morning."],a:0,why:"The deer wasn't driving; I was. Move \"driving to school this morning\" so it sits right next to \"I\"."},
+ {t:"mod",p:"The girl walked the dog in a pink sweater.",q:"What does this sentence accidentally say?",c:["The dog was wearing the pink sweater","The girl was wearing the pink sweater","The sweater was walking","Nothing; it is correct"],a:0,why:"\"In a pink sweater\" sits next to \"the dog\", so it describes the dog. Fix: \"The girl in a pink sweater walked the dog.\" This is a misplaced modifier."},
+ {t:"mod",p:"After finishing the test, the teacher collected our papers.",q:"Which sentence fixes it?",c:["After we finished the test, the teacher collected our papers.","After finishing the test, our papers were collected.","The teacher, after finishing the test, collected our papers.","After finishing the test, the teacher collected our papers quickly."],a:0,why:"As written, it says the teacher finished the test. Name who really finished it: \"After we finished the test…\""},
+ {t:"mod",q:"Which sentence has NO modifier mistake?",c:["Covered in mud, the dog ran into the kitchen.","Hanging on the wall, Mom admired the painting.","To win the game, practice was needed every day.","Covered in mud, I watched the dog run into the kitchen."],a:0,why:"The dog was covered in mud, and \"the dog\" comes right after the comma. In the others, Mom isn't hanging on the wall, practice doesn't want to win, and I'm not the muddy one."},
+ {t:"mod",p:"To win the game, practice was needed every day.",q:"Which sentence fixes it?",c:["To win the game, the team needed to practice every day.","Practice was needed every day to win the game by it.","To win the game, every day practice was needed.","Practice, to win the game, was needed every day."],a:0,why:"Practice doesn't want to win; the team does. Put \"the team\" right after the comma."},
+ {t:"mod",q:"Which sentence says she ate MOST of the pizza?",c:["She almost ate the whole pizza.","She ate almost the whole pizza.","Almost she ate the whole pizza.","She ate the whole pizza almost."],a:1,why:"Words like almost, only and just change whatever they sit next to. \"Almost ate\" means she nearly ate it but didn't. \"Ate almost the whole pizza\" means she ate most of it."},
+ {t:"mod",q:"Which sentence means that no one else has ten minutes?",c:["We only have ten minutes.","Only we have ten minutes.","We have only ten minutes.","We have ten only minutes."],a:1,why:"\"Only\" describes the word right after it. \"Only we\" means just us and nobody else."},
+ {t:"mod",p:"Barking loudly, the mail carrier hurried away from the dog.",q:"Which sentence fixes it?",c:["The mail carrier hurried away from the loudly barking dog.","Barking loudly, the mail carrier hurried away.","The mail carrier, barking loudly, hurried away from the dog.","Hurrying away, the dog was barking loudly at the mail carrier."],a:0,why:"As written, the mail carrier is barking. Put the barking right next to the dog."},
+ {t:"mod",p:"Exhausted after the long hike, the couch looked perfect.",q:"What kind of mistake is this?",c:["A dangling modifier: the couch wasn't exhausted","A run-on sentence","A spelling mistake","A missing verb"],a:0,why:"The phrase describes someone tired, but no tired person is named. Fix: \"Exhausted after the long hike, I thought the couch looked perfect.\""},
+ /* ---------- Gerunds and other verbals ---------- */
+ {t:"ger",p:"Swimming is my favorite sport.",q:"Which word is a gerund?",c:["Swimming","is","favorite","sport"],a:0,why:"A gerund is an -ing verb used as a noun. \"Swimming\" names the sport, and it is the subject of the sentence."},
+ {t:"ger",p:"The swimming dog splashed everyone.",q:"Is \"swimming\" a gerund here?",c:["Yes, it's a gerund","No, it's a participle: it describes the dog","No, it's an infinitive","No, it's the main verb"],a:1,why:"Here \"swimming\" works like an adjective that tells which dog. An -ing word that describes a noun is a participle. A gerund acts as a noun."},
+ {t:"ger",q:"Which sentence uses a gerund?",c:["He is running late.","Running every morning keeps him strong.","The running water was cold.","He wants to run."],a:1,why:"\"Running every morning\" is the subject, a thing that keeps him strong, so it's a gerund. \"Is running\" is the verb. \"Running water\" is a participle. \"To run\" is an infinitive."},
+ {t:"ger",p:"She enjoys painting landscapes.",q:"What job does the gerund phrase \"painting landscapes\" do?",c:["It's the subject","It's the direct object: what she enjoys","It describes \"she\"","It's the main verb"],a:1,why:"Ask \"She enjoys what?\" The answer is \"painting landscapes\", so the gerund phrase is the direct object."},
+ {t:"ger",p:"She is good at drawing.",q:"What is \"drawing\" in this sentence?",c:["A gerund, the object of the preposition \"at\"","A participle describing \"she\"","An infinitive","The main verb"],a:0,why:"A noun comes after a preposition like at, by, for or after. \"Drawing\" is a gerund doing that noun job."},
+ {t:"ger",q:"Which sentence uses an infinitive?",c:["She wants to win.","Winning feels great.","The winning team cheered.","She is winning."],a:0,why:"An infinitive is \"to\" plus a verb: to win, to read, to go."},
+ {t:"ger",q:"Which is correct in formal writing?",c:["We were surprised by him leaving early.","We were surprised by his leaving early."],a:1,why:"Before a gerund, formal English uses the possessive (his, her, their, my), because the gerund is a noun: \"his leaving\" is like \"his departure\"."},
+ {t:"ger",q:"Pick the word that keeps the list parallel: \"I like hiking, swimming, and ___.\"",c:["to bike","biking","bike","I bike"],a:1,why:"Parallel structure keeps the same form in a list. Hiking and swimming are gerunds, so the last item should be one too: biking."},
+ /* ---------- Word parts (Freckle L.8.4.b, and auto- from her review) ---------- */
+ {t:"wp",q:"\"Auto\" means self. What is an autobiography?",c:["A life story written by the person it's about","A story about cars","A life story written by someone else","A book of maps"],a:0,why:"Auto = self, bio = life, graph = write. An autobiography is a life written by the self."},
+ {t:"wp",q:"Bio = life, graph = write. Which word means a life story written by someone else?",c:["autograph","biography","biology","paragraph"],a:1,why:"A biography is a written life. Without \"auto\", someone else wrote it."},
+ {t:"wp",q:"\"Chron\" means time. Events in chronological order are…",c:["in time order","in order of importance","in alphabetical order","in random order"],a:0,why:"Chron = time, as in chronic (lasting a long time) and chronicle (a record of events over time)."},
+ {t:"wp",q:"\"Bene\" means good. A benefactor is…",c:["someone who does good by giving help or money","someone who causes harm","a kind of factory","a person who is late"],a:0,why:"Bene = good, as in benefit and beneficial. A benefactor does good for someone."},
+ {t:"wp",q:"\"Mal\" means bad. If a machine malfunctions, it…",c:["works badly","works perfectly","is brand new","is very large"],a:0,why:"Mal = bad, as in malnourished and malicious."},
+ {t:"wp",q:"\"Dict\" means say, and \"contra\" means against. To contradict someone is to…",c:["say the opposite of what they said","agree with them","write them a letter","ignore them"],a:0,why:"Contra + dict = speak against. Dictionary, predict and dictate share \"dict\" too."},
+ {t:"wp",q:"\"Port\" means carry, and \"trans\" means across. To transport is to…",c:["carry something from one place to another","stay in one place","break something","build a port"],a:0,why:"Trans + port = carry across. Portable means able to be carried."},
+ {t:"wp",q:"\"-logy\" means the study of, and \"geo\" means earth. Geology is…",c:["the study of the earth","the study of life","a map of the world","a kind of rock"],a:0,why:"Geo = earth, -logy = study of. Biology is the study of life."},
+ {t:"wp",q:"\"Tele\" means far, and \"scope\" means look. A telescope is…",c:["a tool for seeing things far away","a tool for hearing","a small microscope","a phone"],a:0,why:"Tele + scope = look far. Telephone means far sound."},
+ /* ---------- Reading test: words and skills from her reviews ---------- */
+ {t:"rt",p:"A poster says: \"Real heroes buy only Victory Brand bread!\"",q:"This message is an example of…",c:["propaganda","an autobiography","a simile","a footnote"],a:0,why:"Propaganda is a message made to persuade people, often by being one-sided or misleading. Here it ties buying bread to being a hero."},
+ {t:"rt",q:"A long work of fiction, usually divided into chapters, is a…",c:["novel","poem","biography","speech"],a:0,why:"A novel is a long made-up story told in chapters."},
+ {t:"rt",q:"What is a legislature?",c:["The group that makes laws","The court that judges cases","The army","A kind of tax"],a:0,why:"Legislature comes from Latin for law. Congress is the U.S. legislature."},
+ {t:"rt",q:"When a president vetoes a bill, the president…",c:["rejects it","signs it into law","writes it","reads it aloud"],a:0,why:"Veto is Latin for \"I forbid\". A veto stops a bill from becoming law, unless the legislature overrides it."},
+ {t:"rt",q:"An amendment to a constitution is…",c:["a change or addition to it","the first page","a court case","a vote for president"],a:0,why:"To amend means to change or improve. The Bill of Rights is the first ten amendments."},
+ {t:"rt",q:"You're writing a formal essay for teens about getting more sleep. Which sentence should you take out?",c:["Most teens need 8 to 10 hours of sleep a night.","Grown-ups are totally clueless about sleep, lol.","Screens before bed can make it harder to fall asleep.","A regular bedtime helps the body rest."],a:1,why:"It's off-topic (it's about grown-ups, not teens) and too informal for an essay. Tone and register mean matching your words to the audience and purpose."},
+ {t:"rt",p:"When the two scouts came back with opposite reports about the river, Captain Reyes said nothing. She unrolled the map, studied it for a long minute, and sent out a third scout.",q:"What does her reaction show about her?",c:["She is careful and wants more evidence before deciding","She is angry at the scouts","She doesn't care about the river","She is afraid of the water"],a:0,why:"A reaction can be thoughts, feelings, actions or words. Her actions (studying the map, sending another scout) are the evidence. Add your thinking: she checks before she decides."},
+ {t:"rt",p:"The village built the tall stone wall to keep out floods, not enemies.",q:"Why did the village build the wall?",c:["To keep out enemies","To keep out floods","To look tall","To store stones"],a:1,why:"\"To keep out enemies\" copies words from the text but gets the meaning wrong. Always check that an answer that uses the text's words actually agrees with it."},
+ {t:"rt",p:"The story ends as the girl opens the letter. The author never tells us what it says.",q:"The ending creates…",c:["ambiguity","propaganda","a gerund","a simile"],a:0,why:"Ambiguity means something can be read in more than one way, or is left uncertain."},
+ {t:"rt",p:"\"That's nice,\" Dad said without looking up from his phone, when Jo told him she had won the science fair.",q:"Dad's response is best described as…",c:["dismissive","enthusiastic","anxious","admiring"],a:0,why:"Dismissive means treating something as unimportant. He doesn't look up and says very little."},
+ {t:"rt",p:"In the picture book, a fox wears a waistcoat, runs a bakery and argues with customers about prices.",q:"Which term describes this?",c:["Personification","Anthropomorphism","Hyperbole","Propaganda"],a:1,why:"Anthropomorphism is when an animal or object actually acts like a person all the way through. (The test word is anthropomorphism.)"},
+ {t:"rt",p:"The old house groaned as the wind pushed against its shutters.",q:"Which term describes \"the old house groaned\"?",c:["Personification","Anthropomorphism","Allusion","Ambiguity"],a:0,why:"Personification gives one human action to a thing, as a figure of speech. The house isn't really a character."},
+ {t:"rt",q:"The cold weather will ___ how fast the paint dries.",c:["affect","effect"],a:0,why:"Affect is usually the verb (the action). Effect is usually the noun (the result)."},
+ {t:"rt",q:"The new rule had a big ___ on the team.",c:["affect","effect"],a:1,why:"\"A big ___\" needs a noun. Effect is the result."},
+ {t:"rt",q:"Which word has the most negative connotation for someone who saves money?",c:["thrifty","careful","frugal","stingy"],a:3,why:"Connotation is the feeling a word carries. Stingy suggests selfish."},
+ {t:"rt",p:"Lena watched her brother slip the key into his pocket. She couldn't tell whether he meant to give it back or keep it.",q:"What point of view is this?",c:["First person","Second person","Third person limited","Third person omniscient"],a:2,why:"The narrator uses \"she\" and shares only Lena's thoughts, so the reader knows only what Lena knows. That is third person limited."},
+ {t:"rt",p:"Marco was sure the storm would pass by noon. Across town, his grandmother already knew it wouldn't, and she was quietly filling jugs with water.",q:"What point of view is this?",c:["First person","Second person","Third person limited","Third person omniscient"],a:3,why:"The narrator knows what two characters think, in two places. That is third person omniscient."},
+ {t:"rt",p:"I'm the most patient person in my family. That's why I only slammed the door twice when my sister borrowed my headphones.",q:"What does the author want the reader to notice?",c:["The narrator is truly patient","The narrator sees herself differently from how she acts","The sister is the narrator","It is in third person"],a:1,why:"Her words and her actions don't match. A narrator we can't fully trust is called an unreliable narrator."},
+ {t:"rt",p:"An article quotes a factory owner who says the new highway \"will only bring jobs.\" The writer then lists three family farms the highway will cut through.",q:"What is the author's point of view?",c:["The author fully agrees with the owner","The author thinks the highway has costs the owner leaves out","The author has no opinion","The author is the owner"],a:1,why:"What the author chose to include next shows the author's own point of view, which differs from the owner's."}
+];
+var MODES=[["mix","🎄 Mix"],["mod","🧩 Fix the modifier"],["ger","🏃 Gerunds"],["wp","🔤 Word parts"],["rt","📖 Reading test"]];
+var TAGS={mod:"Fix the modifier",ger:"Gerunds and verbals",wp:"Word parts",rt:"Reading test"};
+var PRIZES=["🔔","🍬","⛄","🧸","🦌","🎀","🍪","❄️","🕯️","🎈","🧦","🍭"];
+var WRAP=[["#e2464d","#f2c14e"],["#3fae6a","#e2464d"],["#3b6fd6","#f3f1ea"],["#a05bd6","#f2c14e"],["#f2c14e","#e2464d"]];
+var SPOTS=[[46,30],[36,46],[57,48],[28,64],[47,62],[66,66],[22,80],[40,78],[58,80],[72,82],[34,36],[60,36]];
+var mode="mix",queue=[],cur=null,answered=false,bows=0,opened=[],gifts=0;
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function fill(){ queue=shuffle(Q.filter(function(x){return mode==="mix"||x.t===mode;}).slice()); }
+function renderModes(){ $("modes").innerHTML=MODES.map(function(m){return '<button class="btn" data-m="'+m[0]+'" aria-pressed="'+(mode===m[0])+'">'+m[1]+'</button>';}).join(""); }
+$("modes").addEventListener("click",function(e){var b=e.target.closest("[data-m]");if(!b)return;mode=b.dataset.m;renderModes();});
+function renderBows(){ var h="";for(var i=0;i<3;i++)h+='<div class="bow'+(i<bows?' on':'')+'">'+(i<bows?'🎀':'')+'</div>';$("bows").innerHTML=h;
+  $("treeMsg").textContent=opened.length?("Your tree has "+opened.length+" ornament"+(opened.length===1?"":"s")+"."):"Unwrap presents to decorate your tree."; }
+function renderTree(){ var t=$("tree");Array.prototype.slice.call(t.querySelectorAll(".orn")).forEach(function(n){n.remove();});
+  opened.forEach(function(p,i){var s=SPOTS[i%SPOTS.length],d=document.createElement("span");d.className="orn";d.textContent=p;d.style.left=s[0]+"px";d.style.top=s[1]+"px";t.appendChild(d);}); }
+function show(id){["pick","play","gifts"].forEach(function(x){$(x).hidden=x!==id;});}
+function ask(){
+  if(!queue.length) fill();
+  cur=queue.shift(); answered=false;
+  $("qTag").textContent=TAGS[cur.t]||"";
+  $("passage").hidden=!cur.p; $("passage").textContent=cur.p||"";
+  $("q").textContent=cur.q;
+  var order=cur.c.length>2?shuffle(cur.c.map(function(_,i){return i;})):cur.c.map(function(_,i){return i;});
+  $("choices").innerHTML=order.map(function(i){return '<button class="choice" data-i="'+i+'">'+esc(cur.c[i])+'</button>';}).join("");
+  $("why").hidden=true; $("next").hidden=true;
+  show("play"); var f=$("choices").querySelector("button"); if(f) f.focus({preventScroll:true});
+}
+$("choices").addEventListener("click",function(e){
+  var b=e.target.closest("[data-i]"); if(!b||answered) return; answered=true;
+  var i=+b.dataset.i, ok=i===cur.a;
+  Array.prototype.slice.call($("choices").children).forEach(function(x){x.disabled=true;if(+x.dataset.i===cur.a)x.classList.add("right");});
+  if(!ok) b.classList.add("wrong");
+  $("why").className="why "+(ok?"ok":"no");
+  $("why").innerHTML="<b>"+(ok?"Yes!":"Not quite. The answer is: "+esc(cur.c[cur.a]))+"</b>"+esc(cur.why);
+  $("why").hidden=false;
+  if(ok){ bows++; renderBows(); }
+  else { queue.splice(Math.min(3,queue.length),0,cur); }
+  $("next").textContent=(ok&&bows>=3)?"🎁 Get your present":"Next";
+  $("next").hidden=false; $("next").focus({preventScroll:true});
+});
+$("next").addEventListener("click",function(){ if(bows>=3){ bows=0; renderBows(); giveGift(); } else ask(); });
+function giveGift(){
+  gifts++; var w=WRAP[(gifts-1)%WRAP.length], size=gifts%3===0?"big":(gifts%3===1?"small":"");
+  var prize=PRIZES[(gifts-1)%PRIZES.length];
+  $("shelf").innerHTML='<button class="gift wiggle '+size+'" id="gift" aria-label="Unwrap your present" style="--c:'+w[0]+';--r:'+w[1]+'"><span class="box"></span><span class="rv"></span><span class="rh"></span><span class="lid"></span><span class="knot">🎀</span><span class="prize">'+prize+'</span></button>';
+  $("back").hidden=true; show("gifts"); $("gift").focus({preventScroll:true});
+  $("gift").addEventListener("click",function(){
+    var g=$("gift"); if(g.classList.contains("open")) return;
+    g.classList.remove("wiggle"); g.classList.add("open"); g.setAttribute("aria-label","Unwrapped: "+prize);
+    burst(g); opened.push(prize); renderTree(); renderBows();
+    setTimeout(function(){ $("back").hidden=false; $("back").focus({preventScroll:true}); },700);
+  });
+}
+function burst(el){ var r=el.getBoundingClientRect(),bits=["✨","⭐","❄️","🎉"];
+  for(var i=0;i<14;i++){var s=document.createElement("span");s.className="burst";s.textContent=bits[i%bits.length];
+    s.style.left=(r.left+r.width/2)+"px";s.style.top=(r.top+r.height/3)+"px";
+    var a=Math.random()*Math.PI*2,d=70+Math.random()*90;s.style.setProperty("--dx",Math.cos(a)*d+"px");s.style.setProperty("--dy",Math.sin(a)*d-40+"px");
+    document.body.appendChild(s);setTimeout(function(n){return function(){n.remove();};}(s),1200);} }
+$("back").addEventListener("click",ask);
+$("start").addEventListener("click",function(){ fill(); ask(); });
+$("change").addEventListener("click",function(){ renderModes(); show("pick"); });
+renderModes(); renderBows();
+})();
+</script>
+</body>
+</html>
