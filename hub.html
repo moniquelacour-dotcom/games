@@ -7,12 +7,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Baloo+2:wght@600;800&display=swap">
 <style>
-:root{--bg:#f6f1fb;--card:#ffffff;--ink:#241d30;--muted:#665d73;--line:#e3dbee;--accent:#5b3fc4;--accentInk:#fff;--soft:#efe9fb;--ok:#1f7a3c;--okSoft:#dff5e5;--bad:#b3261e;--badSoft:#fde3e1;--warn:#8a5a00;--warnSoft:#fff1c9;color-scheme:light}
-@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#141020;--card:#1d1828;--ink:#efeaf7;--muted:#b3aac3;--line:#342b48;--accent:#9d86ff;--accentInk:#160f2b;--soft:#272038;--ok:#8fe0a6;--okSoft:#173822;--bad:#ff9b92;--badSoft:#3d1715;--warn:#f4d27a;--warnSoft:#3a2f12;color-scheme:dark}}
-:root[data-theme=dark]{--bg:#141020;--card:#1d1828;--ink:#efeaf7;--muted:#b3aac3;--line:#342b48;--accent:#9d86ff;--accentInk:#160f2b;--soft:#272038;--ok:#8fe0a6;--okSoft:#173822;--bad:#ff9b92;--badSoft:#3d1715;--warn:#f4d27a;--warnSoft:#3a2f12;color-scheme:dark}
+/* One dark game-lobby look for coach and students (single theme on purpose). */
+:root{--bg:#10131f;--card:#191d2d;--ink:#eef0f8;--muted:#a3a9c2;--line:#2c3248;--accent:#8fe36b;--accentInk:#0d1a08;--soft:#222842;--ok:#8fe0a6;--okSoft:#173822;--bad:#ff9b92;--badSoft:#3d1715;--warn:#f4d27a;--warnSoft:#3a2f12;--pull:#7fb6ff;--pullSoft:#18294a;color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.45 "Atkinson Hyperlegible",system-ui,sans-serif}
-main{max-width:1180px;margin:0 auto;padding:16px}
+main{max-width:1240px;margin:0 auto;padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 h1,h2,h3{font-family:"Baloo 2",system-ui,sans-serif;line-height:1.15;margin:0}
 h1{font-size:32px} h2{font-size:24px} h3{font-size:19px}
 button,select,input,textarea{font:inherit;color:inherit}
@@ -83,6 +82,49 @@ th{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05
 .qrow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 .say{font-size:22px;border:2px solid var(--line);background:var(--soft);border-radius:999px;padding:4px 14px;cursor:pointer}
 [hidden]{display:none!important}
+/* coach lobby */
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.top h1{font-size:30px;letter-spacing:.02em}
+.top h1 b{color:var(--accent)}
+.tag{font:700 12px "Atkinson Hyperlegible",sans-serif;letter-spacing:.08em;border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--muted);vertical-align:middle;margin-left:6px}
+.live{font:700 13px "Atkinson Hyperlegible",sans-serif;color:var(--muted);margin-left:8px;vertical-align:middle}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start;padding-bottom:110px}
+.side{display:flex;flex-direction:column;gap:16px;position:sticky;top:12px}
+.mainc{display:flex;flex-direction:column;gap:16px;min-width:0}
+.step{font:800 15px "Atkinson Hyperlegible",sans-serif;letter-spacing:.06em;text-transform:uppercase}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.gcard{position:relative;text-align:left;border:2px solid var(--line);background:var(--soft);border-radius:14px;padding:12px;cursor:pointer;display:flex;flex-direction:column;gap:4px;min-height:120px}
+.gcard .ic{font-size:28px;line-height:1}
+.gcard b{font:800 17px/1.15 "Baloo 2",system-ui,sans-serif;text-transform:uppercase}
+.gcard span{font-size:13px;color:var(--muted)}
+.gcard.picked{border-color:var(--accent)}
+.gcard.picked::after{content:"PICKED";position:absolute;top:8px;right:8px;font:800 10px "Atkinson Hyperlegible",sans-serif;letter-spacing:.08em;background:var(--accent);color:var(--accentInk);border-radius:6px;padding:2px 6px}
+.gcard.soon{cursor:default;opacity:.55;border-style:dashed}
+.bigcode{font:800 44px/1 "Baloo 2",system-ui,sans-serif;letter-spacing:.14em;color:var(--accent)}
+.flow{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:15px}
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(16,19,31,.96);border-top:1px solid var(--line);padding:10px max(16px,env(safe-area-inset-left,0px)) calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center}
+.dock .btn{padding:9px 16px}
+.btn.go{background:var(--accent);border-color:var(--accent);color:var(--accentInk)}
+.btn.pull{background:var(--pullSoft);border-color:var(--pull);color:var(--ink)}
+.pullbox{border:2px solid var(--pull);background:var(--pullSoft);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.pairline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.setall{display:flex;gap:6px;flex-wrap:wrap;align-items:center;background:var(--soft);border-radius:12px;padding:8px}
+.setall select,.setall input,#asgRows select,#asgRows input{max-width:190px}
+#asgRows input{width:70px}
+.now{font-size:13px}
+.now.pulled{color:var(--pull);font-weight:700}
+.now.help{color:var(--warn);font-weight:700}
+details.card>summary{cursor:pointer;list-style:none}
+details.card>summary::-webkit-details-marker{display:none}
+/* student: only the goal and the activity */
+.stu-head{display:flex;align-items:center;gap:12px}
+.stu-head .stu-goal{flex:1}
+.pullscreen{position:fixed;inset:0;z-index:2147483603;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center}
+.pullscreen .wave{font-size:84px;line-height:1}
+.pullscreen b{font:800 34px/1.2 "Baloo 2",system-ui,sans-serif}
+.pullscreen span{font-size:20px;color:var(--muted)}
+.pullscreen .with{font-size:44px}
+@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}.side{position:static;order:-1}}
 @media (max-width:520px){.qchoices button{font-size:22px} .code{font-size:32px}}
 </style>
 </head>
@@ -90,75 +132,80 @@ th{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05
 <main>
   <!-- ================= COACH ================= -->
   <div id="coach" hidden>
-    <div class="row" style="justify-content:space-between;margin-bottom:12px">
-      <h1>Reading Hub <span class="muted" style="font-size:18px">coach page</span></h1>
+    <div class="top">
+      <h1><b>READING</b> HUB <span class="tag">COACH</span><span class="live"><span class="dot" id="cDot"></span> <span id="cStatus"></span></span></h1>
       <a class="btn sm" href="turn-timer.html#coach" target="_blank" rel="noopener">Turn Timer coach page ↗</a>
     </div>
-    <p class="note">🔒 Names, skills and scores stay in <b>this browser only</b>. Students see animals, never names. The page itself is on your public games site, so anyone with the link can open an empty copy, but not your data.</p>
-    <div id="noStudents" class="warnbox" hidden>Add your students and groups on the <a href="turn-timer.html#coach">Turn Timer coach page</a> first (same browser). The hub reads them from there.</div>
-
-    <div class="grid">
-      <section class="card">
-        <h2>Today</h2>
-        <div class="row"><span class="label">Room</span><span class="code" id="cCode"></span><span class="dot" id="cDot"></span><span class="small muted" id="cStatus"></span></div>
-        <div class="row"><span class="mono" id="cLink"></span><button class="btn sm" id="cCopy">Copy student link</button></div>
-        <div class="row"><span class="label">Group</span><select id="cGroup"></select></div>
-        <div class="row">
-          <button class="btn main" id="mWarm">▶ Warm-up</button>
-          <button class="btn main" id="mGame">▶ Whole group</button>
-          <button class="btn main" id="mPairs">▶ Pairs</button>
-          <button class="btn" id="mIdle">⏸ Pause</button>
-        </div>
-        <div class="small muted" id="cMode"></div>
-        <div class="row"><span class="label">Warm-up</span><select id="cWarm"></select><button class="btn sm" id="cWarmNew">New puzzle</button></div>
-        <div class="small muted" id="cWarmProg"></div>
-        <div class="row"><span class="label">Game</span><select id="cGame"></select></div>
-        <div id="pairBox" class="note" hidden>
-          <div class="small"><b>Pairs:</b> tap one animal, then another, to put them together. Tap a pair to split it. Each pair plays in its own space and sees only each other.</div>
-          <div class="pairs" id="pairPick"></div>
-          <div class="row"><button class="btn sm" id="pairMix">Mix pairs</button><button class="btn sm" id="pairClear">Clear</button></div>
-        </div>
-      </section>
-
-      <section class="card">
-        <h2>Live <span class="small muted">(this session)</span></h2>
-        <div id="takenQ"></div>
-        <div id="helpQ"></div>
-        <div style="overflow-x:auto"><table><thead><tr><th></th><th>Student</th><th>Skill</th><th>First try</th><th>Ledge</th></tr></thead><tbody id="liveRows"></tbody></table></div>
-      </section>
-    </div>
-
-    <section class="card" style="margin-top:16px">
-      <h2>Each student's lane, goal and skill</h2>
-      <p class="small muted">Pick a lane, then a goal, then the one skill they work on now. Each student sees only their own goal and skill, sent to their device in a locked (scrambled) message. Changes reach them within a few seconds.</p>
-      <div class="row"><label class="small"><input type="checkbox" id="allKids"> Show all my students (not just this group)</label></div>
-      <div style="overflow-x:auto"><table><thead><tr><th></th><th>Student</th><th>Lane</th><th>Goal</th><th>Skill</th><th>Status</th></tr></thead><tbody id="asgRows"></tbody></table></div>
-    </section>
-
-    <section class="card" style="margin-top:16px">
-      <h2>Lanes, goals and skills</h2>
-      <p class="small muted">This list comes from the Lanes tab on your My Reading Roster: change goals and skills there, and Claude updates the hub. Here you choose where each skill's questions come from: a built-in list, or questions you write (4 answers, you mark the right one).</p>
-      <div class="lanes" id="lanes"></div>
-    </section>
-
-    <section class="card" style="margin-top:16px">
-      <h2>Skill progress</h2>
-      <div class="warnbox">Your rule for when to check a skill is <b>not settled yet</b>. Change the numbers anytime.</div>
-      <div class="row small">
-        Check early at <input type="number" id="rPct" min="50" max="100">% first try,
-        <input type="number" id="rRow" min="1" max="5"> sessions in a row,
-        with at least <input type="number" id="rMin" min="1" max="60"> questions each.
-        Check anyway after <input type="number" id="rMax" min="1" max="20"> sessions.
+    <div id="noStudents" class="warnbox" hidden style="margin-bottom:12px">Add your students and groups on the <a href="turn-timer.html#coach">Turn Timer coach page</a> first (same browser). The hub reads them from there.</div>
+    <div class="layout">
+      <div class="mainc">
+        <section class="card" id="liveCard">
+          <div class="row" style="justify-content:space-between"><span class="step">Right now</span><span class="small muted" id="cMode"></span></div>
+          <div id="takenQ"></div>
+          <div id="pairBox" class="pullbox" hidden></div>
+          <div id="helpQ"></div>
+          <div style="overflow-x:auto"><table><thead><tr><th></th><th>Student</th><th>Skill</th><th>First try</th><th>Ledge</th><th>Right now</th></tr></thead><tbody id="liveRows"></tbody></table></div>
+        </section>
+        <section class="card">
+          <span class="step">1 · Pick the warm-up</span>
+          <div class="cards" id="warmCards"></div>
+          <div class="row"><span class="small muted" id="cWarmProg"></span><button class="btn sm" id="cWarmNew">New puzzle</button></div>
+        </section>
+        <section class="card">
+          <span class="step">2 · Pick the game</span>
+          <div class="cards" id="gameCards"></div>
+        </section>
+        <section class="card">
+          <span class="step">3 · Pick each student's skill</span>
+          <p class="small muted" style="margin:0">Lane, then goal, then the one skill they work on now. Each student sees only their own goal and skill. Changes reach them in a few seconds, even in the middle of a game.</p>
+          <div class="setall"><span class="label">Set everyone</span><select id="saLane" aria-label="Lane for everyone"></select><select id="saGoal" aria-label="Goal for everyone"></select><select id="saSkill" aria-label="Skill for everyone"></select><button class="btn sm" id="saGo">Apply to all</button></div>
+          <label class="small"><input type="checkbox" id="allKids"> Show all my students (not just this group)</label>
+          <div style="overflow-x:auto"><table><thead><tr><th></th><th>Student</th><th>Grade</th><th>Lane</th><th>Goal</th><th>Skill</th><th>Check</th></tr></thead><tbody id="asgRows"></tbody></table></div>
+        </section>
+        <details class="card">
+          <summary><span class="step">Questions for each skill ▾</span></summary>
+          <p class="small muted">The lanes, goals and skills come from the Lanes tab on your My Reading Roster. Here you pick where each skill's questions come from: a built-in list, or questions you write (4 answers, you mark the right one).</p>
+          <div class="lanes" id="lanes"></div>
+        </details>
       </div>
-      <div id="progRows"></div>
-      <div class="row"><button class="btn" id="copyRes">Copy results</button><span class="small muted" id="copyMsg"></span></div>
-    </section>
+      <aside class="side">
+        <section class="card">
+          <span class="label">Room code</span>
+          <div class="bigcode" id="cCode"></div>
+          <div class="mono" id="cLink"></div>
+          <button class="btn sm" id="cCopy">Copy student link</button>
+          <div class="row"><span class="label">Group</span><select id="cGroup" aria-label="Group"></select></div>
+          <div class="small muted">Students open the link and tap their animal. They see only their own goal, skill and the activity.</div>
+        </section>
+        <section class="card">
+          <span class="label">How a session runs</span>
+          <ol class="flow"><li>Warm-up while everyone arrives</li><li>Pull the whole group or pairs to Zoom</li><li>Send them back and start the game</li></ol>
+          <div class="small muted">You can pull anyone out of the game, and send them back, at any time.</div>
+        </section>
+        <section class="card">
+          <span class="label">Skill check</span>
+          <div class="warnbox small">Your rule for when to check a skill is <b>not settled yet</b>.</div>
+          <div class="small">Check early at <input type="number" id="rPct" min="50" max="100">% first try, <input type="number" id="rRow" min="1" max="5"> sessions in a row, at least <input type="number" id="rMin" min="1" max="60"> questions each. Check anyway after <input type="number" id="rMax" min="1" max="20"> sessions.</div>
+          <details><summary class="small" style="cursor:pointer;font-weight:700">Progress by student</summary><div id="progRows" style="overflow-x:auto"></div></details>
+          <button class="btn sm" id="copyRes">Copy results</button><span class="small muted" id="copyMsg"></span>
+        </section>
+        <p class="small muted">🔒 Names, skills and scores stay in this browser only. Students see animals, never names.</p>
+      </aside>
+    </div>
+    <div class="dock" role="toolbar" aria-label="Session controls">
+      <button class="btn" id="mWarm">▶ Warm-up</button>
+      <button class="btn pull" id="mPullAll">👋 Pull whole group</button>
+      <button class="btn pull" id="mPullPairs">👋 Pull pairs</button>
+      <button class="btn" id="mSendBack" hidden>↩ Send everyone back</button>
+      <button class="btn go" id="mGame">🚀 Start the game</button>
+      <button class="btn" id="mIdle">⏸ Pause</button>
+    </div>
   </div>
 
   <!-- ================= STUDENT ================= -->
   <div id="student" class="stu" hidden>
-    <div class="stu-top"><span class="stu-me" id="sMe"></span><span class="pill" id="sRoom"></span><span class="small muted" id="sStatus"></span></div>
-    <div class="stu-goal" id="sGoal" hidden></div>
+    <div class="stu-head"><span class="stu-me" id="sMe"></span><div class="stu-goal" id="sGoal" hidden></div></div>
+    <div class="small muted" id="sStatus" style="text-align:center"></div>
     <div class="card" id="sJoin"></div>
     <div class="card" id="sWait" hidden><div class="big">Hold on! Your coach is getting ready. 🎈</div></div>
     <div class="card" id="sWarm" hidden></div>
@@ -166,6 +213,7 @@ th{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05
   </div>
 </main>
 <button class="helpbtn" id="sHelp" hidden>🙋 I need help</button>
+<div class="pullscreen" id="sPull" hidden><div class="wave">👋</div><b>Come to Zoom!</b><span>Your coach wants to work with you now. Your game waits right here.</span><div class="with" id="sPullWith"></div></div>
 <div class="modal" id="qModal" hidden><div class="qbox" id="qBox" role="dialog" aria-modal="true"></div></div>
 <div class="toast" id="toast" hidden><span id="toastMsg"></span><button id="toastX">OK</button></div>
 
@@ -262,6 +310,7 @@ function coach(){
   cfg.rule = cfg.rule || {pct:90, row:2, min:10, max:4};
   cfg.warm = cfg.warm || {pick:"auto", cur:"ws", day:"", st:{}};
   cfg.game = cfg.game || "climb"; cfg.mode = cfg.mode || "idle";
+  cfg.pull = cfg.pull || []; cfg.pullMode = cfg.pullMode || ""; cfg.grade = cfg.grade || {}; cfg.play = "group";
   cfg.code = tt.code || cfg.code || T.newCode();
   cfg.group = cfg.group || tt.cur || (groups[0] && groups[0].id) || "";
   function save(){ store("hub-coach1", cfg); }
@@ -301,7 +350,7 @@ function coach(){
   });
   function stateMsg(){
     return {g:"hub", t:"st", mode:cfg.mode, kids:kidsInGroup().map(function(s){ return s.av; }), warm:cfg.mode === "warm" ? warmState() : null, game:cfg.game,
-            play:cfg.play, pairs:cfg.play === "pairs" ? cfg.pairs : [], pk:cpk};
+            play:"group", pulled:cfg.pull, pairs:cfg.pullMode === "pairs" ? cfg.pairs : [], pk:cpk};
   }
   function keyFor(av){
     var pk = cfg.claims[av]; if(!pk || !ckp) return Promise.resolve(null);
@@ -367,13 +416,17 @@ function coach(){
   $("cGroup").innerHTML = (groups.length ? groups : [{id:"", name:"All my students"}]).map(function(g){ return '<option value="' + esc(g.id) + '">' + esc(g.name) + '</option>'; }).join("");
   $("cGroup").value = cfg.group;
   $("cGroup").onchange = function(){ cfg.group = this.value; save(); broadcast(); renderAll(); };
-  $("cWarm").innerHTML = '<option value="auto">Take turns (auto)</option>' + W.LIST.map(function(w){ return '<option value="' + w.id + '">' + w.icon + " " + esc(w.name) + '</option>'; }).join("");
-  $("cWarm").value = cfg.warm.pick;
-  $("cWarm").onchange = function(){ cfg.warm.pick = this.value; if(this.value !== "auto") cfg.warm.cur = this.value; save(); broadcast(); renderToday(); };
+  var WDESC = {ws:"Find the hidden words together. Tap the first letter, then the last.", ss:"Put the story strips in order, as a team."};
+  var GDESC = {climb:"3D climb up a real mountain. Miss a jump, answer a question to get back on. Every 5th ledge is a ⭐ checkpoint."};
+  function renderCards(){
+    var w = [{id:"auto", icon:"🔁", name:"Take turns", d:"A different warm-up each day. Each one picks up where the team stopped."}].concat(W.LIST.map(function(x){ return {id:x.id, icon:x.icon, name:x.name, d:WDESC[x.id] || ""}; }));
+    $("warmCards").innerHTML = w.map(function(x){ return '<button type="button" class="gcard' + (cfg.warm.pick === x.id ? " picked" : "") + '" data-w="' + x.id + '"><span class="ic">' + x.icon + '</span><b>' + esc(x.name) + '</b><span>' + esc(x.d) + '</span></button>'; }).join("");
+    $("gameCards").innerHTML = Object.keys(G).map(function(k){ return '<button type="button" class="gcard' + (cfg.game === k ? " picked" : "") + '" data-g="' + k + '"><span class="ic">' + G[k].icon + '</span><b>' + esc(G[k].name) + '</b><span>' + esc(GDESC[k] || "") + '</span></button>'; }).join("") +
+      '<div class="gcard soon"><span class="ic">➕</span><b>More games</b><span>New games show up here as they are built.</span></div>';
+    $("warmCards").querySelectorAll("[data-w]").forEach(function(b){ b.onclick = function(){ cfg.warm.pick = b.dataset.w; if(b.dataset.w !== "auto") cfg.warm.cur = b.dataset.w; save(); broadcast(); renderCards(); renderToday(); }; });
+    $("gameCards").querySelectorAll("[data-g]").forEach(function(b){ b.onclick = function(){ cfg.game = b.dataset.g; save(); broadcast(); renderCards(); renderToday(); }; });
+  }
   $("cWarmNew").onclick = function(){ W.next(warmState()); save(); broadcast(); renderToday(); };
-  $("cGame").innerHTML = Object.keys(G).map(function(k){ return '<option value="' + k + '">' + G[k].icon + " " + esc(G[k].name) + '</option>'; }).join("");
-  $("cGame").value = cfg.game;
-  $("cGame").onchange = function(){ cfg.game = this.value; save(); broadcast(); };
   function setMode(m){
     if(m === "warm" && cfg.warm.pick === "auto" && cfg.warm.day !== today()){
       var ids = W.LIST.map(function(w){ return w.id; }), i = ids.indexOf(cfg.warm.cur);
@@ -382,48 +435,72 @@ function coach(){
     cfg.mode = m; save(); broadcast(); renderToday();
   }
   $("mWarm").onclick = function(){ setMode("warm"); };
-  $("mGame").onclick = function(){ cfg.play = "group"; setMode("game"); renderPairs(); };
-  $("mPairs").onclick = function(){ cfg.play = "pairs"; if(!cfg.pairs.length) mixPairs(); setMode("game"); renderPairs(); };
+  $("mGame").onclick = function(){ cfg.pull = []; cfg.pullMode = ""; setMode("game"); renderPairs(); renderLive(); };
+  $("mIdle").onclick = function(){ setMode("idle"); };
+
+  /* ---- Pull to Zoom: the whole group, or pairs. Pulled students see "Come to Zoom"; their game waits. ---- */
+  function groupAvs(){ return kidsInGroup().map(function(s){ return s.av; }); }
+  function setPull(list, modeName){ cfg.pull = list; cfg.pullMode = modeName; save(); broadcast(); renderToday(); renderPairs(); renderLive(); }
+  $("mPullAll").onclick = function(){ setPull(groupAvs(), "all"); };
+  $("mPullPairs").onclick = function(){ if(!cfg.pairs.length) mixPairs(); setPull([], "pairs"); };
+  $("mSendBack").onclick = function(){ setPull([], cfg.pullMode === "pairs" ? "pairs" : ""); };
   var pairSel = "";
   function inPair(av){ for(var i = 0; i < cfg.pairs.length; i++) if(cfg.pairs[i].indexOf(av) >= 0) return i; return -1; }
   function mixPairs(){
-    var avs = kidsInGroup().map(function(s){ return s.av; });
+    var avs = groupAvs();
     for(var i = avs.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)), t = avs[i]; avs[i] = avs[j]; avs[j] = t; }
     cfg.pairs = []; for(var k = 0; k < avs.length; k += 2) cfg.pairs.push(avs.slice(k, k + 2));
     if(cfg.pairs.length > 1 && cfg.pairs[cfg.pairs.length - 1].length === 1) cfg.pairs[cfg.pairs.length - 2].push(cfg.pairs.pop()[0]);   // the odd one out makes a three
     save(); broadcast();
   }
+  function isPulled(av){ return cfg.pull.indexOf(av) >= 0; }
   function renderPairs(){
-    $("pairBox").hidden = cfg.play !== "pairs";
-    if(cfg.play !== "pairs") return;
-    var avs = kidsInGroup().map(function(s){ return s.av; });
-    cfg.pairs = cfg.pairs.map(function(p){ return p.filter(function(a){ return avs.indexOf(a) >= 0; }); }).filter(function(p){ return p.length; });
+    var box = $("pairBox");
+    if(cfg.pullMode === "all" && cfg.pull.length){
+      box.hidden = false;
+      box.innerHTML = '<b>👋 The whole group is with you on Zoom.</b><div class="small">Their screens say “Come to Zoom”. Their game waits.</div><div class="row"><button class="btn go sm" id="pbBack">↩ Send everyone back</button></div>';
+      $("pbBack").onclick = function(){ setPull([], ""); };
+      return;
+    }
+    if(cfg.pullMode !== "pairs"){ box.hidden = true; box.innerHTML = ""; return; }
+    box.hidden = false;
+    var avs = groupAvs();
+    cfg.pairs = cfg.pairs.map(function(p){ return p.filter(function(a){ return avs.indexOf(a) >= 0; }); }).filter(function(p){ return p.length > 1; });
     var solo = avs.filter(function(a){ return inPair(a) < 0; });
-    $("pairPick").innerHTML = (cfg.pairs.map(function(p){ return '<span class="pairgrp">' + p.map(function(a){ return '<button type="button" class="' + (pairSel === a ? "sel" : "") + '" data-a="' + esc(a) + '">' + esc(a) + '</button>'; }).join("") + '</span>'; }).join("") +
-      solo.map(function(a){ return '<button type="button" class="' + (pairSel === a ? "sel" : "") + '" data-a="' + esc(a) + '">' + esc(a) + '</button>'; }).join("")) || '<span class="small muted">No animals in this group yet.</span>';
-    $("pairPick").querySelectorAll("[data-a]").forEach(function(b){ b.onclick = function(){
-      var a = b.dataset.a, i = inPair(a);
-      if(!pairSel){
-        if(i >= 0 && cfg.pairs[i].length > 1){ cfg.pairs.splice(i, 1); save(); broadcast(); renderPairs(); return; }   // tap a pair to split it
-        pairSel = a; renderPairs(); return;
-      }
+    var btn = function(a){ return '<button type="button" class="' + (pairSel === a ? "sel" : "") + '" data-a="' + esc(a) + '" aria-label="' + esc(a) + '">' + esc(a) + '</button>'; };
+    box.innerHTML = '<div class="row" style="justify-content:space-between"><b>👋 Pairs</b><span class="row"><button class="btn sm" id="pbMix">Mix pairs</button><button class="btn sm" id="pbDone">Close pairs</button></span></div>' +
+      '<div class="small">Tap one animal, then another, to make a pair. Tap “Pull” to bring a pair to Zoom, and “Send back” when you’re done.</div>' +
+      cfg.pairs.map(function(p, i){
+        var on = p.every(isPulled);
+        return '<div class="pairline"><span class="pairs pairgrp">' + p.map(btn).join("") + '</span>' + (on ? '<span class="now pulled">with you on Zoom</span><button class="btn go sm" data-back="' + i + '">↩ Send back</button>' : '<button class="btn pull sm" data-pull="' + i + '">👋 Pull</button>') + '</div>';
+      }).join("") +
+      (solo.length ? '<div class="pairline"><span class="small muted">Not in a pair:</span><span class="pairs">' + solo.map(btn).join("") + '</span></div>' : "");
+    box.querySelectorAll("[data-a]").forEach(function(b){ b.onclick = function(){
+      var a = b.dataset.a;
+      if(!pairSel){ pairSel = a; renderPairs(); return; }
       if(pairSel === a){ pairSel = ""; renderPairs(); return; }
-      var si = inPair(pairSel); if(si >= 0) cfg.pairs[si].splice(cfg.pairs[si].indexOf(pairSel), 1);
-      cfg.pairs = cfg.pairs.filter(function(p){ return p.length > 1; });
-      i = inPair(a);
+      [pairSel].forEach(function(x){ var si = inPair(x); if(si >= 0) cfg.pairs[si].splice(cfg.pairs[si].indexOf(x), 1); });
+      cfg.pairs = cfg.pairs.filter(function(p){ return p.length; });
+      var i = inPair(a);
       if(i >= 0) cfg.pairs[i].push(pairSel); else cfg.pairs.push([a, pairSel]);
       pairSel = ""; save(); broadcast(); renderPairs();
     }; });
+    box.querySelectorAll("[data-pull]").forEach(function(b){ b.onclick = function(){ var p = cfg.pairs[+b.dataset.pull] || []; setPull(cfg.pull.concat(p.filter(function(a){ return !isPulled(a); })), "pairs"); }; });
+    box.querySelectorAll("[data-back]").forEach(function(b){ b.onclick = function(){ var p = cfg.pairs[+b.dataset.back] || []; setPull(cfg.pull.filter(function(a){ return p.indexOf(a) < 0; }), "pairs"); }; });
+    $("pbMix").onclick = function(){ mixPairs(); renderPairs(); };
+    $("pbDone").onclick = function(){ setPull([], ""); };
   }
-  $("pairMix").onclick = function(){ mixPairs(); renderPairs(); };
-  $("pairClear").onclick = function(){ cfg.pairs = []; pairSel = ""; save(); broadcast(); renderPairs(); };
-  $("mIdle").onclick = function(){ setMode("idle"); };
+  function liveVis(){ $("liveCard").hidden = cfg.mode === "idle" && !cfg.pull.length && !helps.length && !Object.keys(taken).length && cfg.pullMode !== "pairs"; }
   function renderToday(){
-    $("mWarm").classList.toggle("on", cfg.mode === "warm"); $("mIdle").classList.toggle("on", cfg.mode === "idle");
-    $("mGame").classList.toggle("on", cfg.mode === "game" && cfg.play !== "pairs"); $("mPairs").classList.toggle("on", cfg.mode === "game" && cfg.play === "pairs");
-    $("cMode").textContent = cfg.mode === "warm" ? "Students see the warm-up." : cfg.mode === "game" ? (cfg.play === "pairs" ? "Pairs: each pair plays in its own space and sees only each other." : "Whole group: everyone plays together and sees each other's animals.") : "Paused: students see “Hold on, your coach is getting ready.”";
+    $("mWarm").classList.toggle("on", cfg.mode === "warm"); $("mIdle").classList.toggle("on", cfg.mode === "idle"); $("mGame").classList.toggle("on", cfg.mode === "game");
+    $("mPullAll").classList.toggle("on", cfg.pullMode === "all" && cfg.pull.length > 0); $("mPullPairs").classList.toggle("on", cfg.pullMode === "pairs");
+    $("mSendBack").hidden = !cfg.pull.length;
+    liveVis();
+    var gname = G[cfg.game] ? G[cfg.game].name : "the game";
+    $("mGame").textContent = cfg.mode === "game" ? "🚀 " + gname + " is on" : "🚀 Start " + gname;
+    $("cMode").textContent = (cfg.mode === "warm" ? "Warm-up is on." : cfg.mode === "game" ? gname + " is on." : "Paused: students see “Hold on, your coach is getting ready.”") + (cfg.pull.length ? " " + cfg.pull.length + " with you on Zoom." : "");
     var w = W.LIST.filter(function(x){ return x.id === cfg.warm.cur; })[0];
-    $("cWarmProg").textContent = (w ? w.icon + " " + w.name + " · " : "") + W.progress(warmState()) + (cfg.warm.pick === "auto" ? " · switches each new day" : "");
+    $("cWarmProg").textContent = (w ? "Today: " + w.icon + " " + w.name + " · " : "") + W.progress(warmState()) + (cfg.warm.pick === "auto" ? " · switches each new day" : "");
   }
 
   /* ---- Live ---- */
@@ -431,9 +508,12 @@ function coach(){
     var now = Date.now();
     $("liveRows").innerHTML = kidsInGroup().map(function(s){
       var L = live[s.av] || {}, sk = skillOf(s.id), on = L.seen && now - L.seen < 15000;
+      var helpOn = helps.some(function(x){ return x.a === s.av; });
+      var nowTxt = !on ? '<span class="now muted">not here yet</span>' : cfg.pull.indexOf(s.av) >= 0 ? '<span class="now pulled">👋 with you on Zoom</span>' : helpOn ? '<span class="now help">🙋 needs help</span>' :
+        '<span class="now">' + (cfg.mode === "warm" ? "warm-up" : cfg.mode === "game" ? (G[cfg.game] ? G[cfg.game].name : "game") : "waiting") + '</span>';
       return '<tr><td class="av">' + esc(s.av) + '</td><td>' + '<span class="dot' + (on ? " on" : "") + '"></span> ' + esc(s.name) + '</td><td class="small">' + (sk ? esc(sk.name) : '<span class="muted">none yet</span>') +
-        '</td><td>' + (L.n ? L.r + " of " + L.n + " <span class='muted small'>(" + Math.round(100 * L.r / L.n) + "%)</span>" : "–") + '</td><td>' + (L.ledge != null ? L.ledge : "–") + '</td></tr>';
-    }).join("") || '<tr><td colspan="5" class="muted">No students with an animal in this group yet.</td></tr>';
+        '</td><td>' + (L.n ? L.r + " of " + L.n + " <span class='muted small'>(" + Math.round(100 * L.r / L.n) + "%)</span>" : "–") + '</td><td>' + (L.ledge != null ? L.ledge : "–") + '</td><td>' + nowTxt + '</td></tr>';
+    }).join("") || '<tr><td colspan="6" class="muted">No students with an animal in this group yet.</td></tr>';
   }
   setInterval(renderLive, 5000);
   var QUICK = ["I see you! I'm coming to you soon.", "Skip it for now and keep going. We'll look at it together.", "Great job asking! Try your best one, then keep going."];
@@ -448,6 +528,7 @@ function coach(){
     $("helpQ").querySelectorAll("[data-q]").forEach(function(b){ b.onclick = function(){ reply(+b.dataset.h, QUICK[+b.dataset.q]); }; });
     $("helpQ").querySelectorAll("[data-hs]").forEach(function(b){ b.onclick = function(){ var inp = $("helpQ").querySelector('[data-hi="' + b.dataset.hs + '"]'); if(inp.value.trim()) reply(+b.dataset.hs, inp.value.trim()); }; });
     $("helpQ").querySelectorAll("[data-hd]").forEach(function(b){ b.onclick = function(){ helps.splice(+b.dataset.hd, 1); renderHelp(); }; });
+    liveVis();
     document.title = helps.length ? "(" + helps.length + " 🙋) Reading Hub" : "Reading Hub · coach";
   }
   function reply(i, text){
@@ -475,14 +556,29 @@ function coach(){
     var list = $("allKids").checked ? students : kidsInGroup();
     $("asgRows").innerHTML = list.map(function(s){
       var a = cfg.asg[s.id] || {};
-      return '<tr><td class="av">' + esc(s.av || "") + '</td><td>' + esc(s.name) + '</td><td><select data-lane="' + esc(s.id) + '" aria-label="Lane for ' + esc(s.name) + '">' + laneOpts(a.lane) + '</select></td>' +
+      return '<tr><td class="av">' + esc(s.av || "") + '</td><td>' + esc(s.name) + '</td><td><input type="text" data-grade="' + esc(s.id) + '" value="' + esc(cfg.grade[s.id] || "") + '" placeholder="e.g. G2" aria-label="Grade for ' + esc(s.name) + '"></td><td><select data-lane="' + esc(s.id) + '" aria-label="Lane for ' + esc(s.name) + '">' + laneOpts(a.lane) + '</select></td>' +
         '<td><select data-goal="' + esc(s.id) + '" aria-label="Goal for ' + esc(s.name) + '" style="max-width:240px">' + goalOpts(a.lane, a.goal) + '</select></td>' +
         '<td><select data-skill="' + esc(s.id) + '" aria-label="Skill for ' + esc(s.name) + '" style="max-width:240px">' + skillOpts(a.lane, a.goal, a.skill) + '</select></td><td>' + statusPill(s.id) + '</td></tr>';
-    }).join("") || '<tr><td colspan="6" class="muted">No students yet.</td></tr>';
+    }).join("") || '<tr><td colspan="7" class="muted">No students yet.</td></tr>';
+    $("asgRows").querySelectorAll("[data-grade]").forEach(function(el){ el.onchange = function(){ cfg.grade[el.dataset.grade] = el.value.trim(); save(); }; });
+    renderSetAll();
     $("asgRows").querySelectorAll("[data-lane]").forEach(function(el){ el.onchange = function(){ cfg.asg[el.dataset.lane] = {lane:el.value, goal:"", skill:""}; save(); broadcast(); renderAll(); }; });
     $("asgRows").querySelectorAll("[data-goal]").forEach(function(el){ el.onchange = function(){ var a = cfg.asg[el.dataset.goal] = cfg.asg[el.dataset.goal] || {}; a.goal = el.value; a.skill = ""; save(); broadcast(); renderAll(); }; });
     $("asgRows").querySelectorAll("[data-skill]").forEach(function(el){ el.onchange = function(){ var a = cfg.asg[el.dataset.skill] = cfg.asg[el.dataset.skill] || {}; a.skill = el.value; save(); broadcast(); renderAll(); }; });
   }
+
+  var sa = {lane:"", goal:"", skill:""};
+  function renderSetAll(){
+    $("saLane").innerHTML = laneOpts(sa.lane); $("saGoal").innerHTML = goalOpts(sa.lane, sa.goal); $("saSkill").innerHTML = skillOpts(sa.lane, sa.goal, sa.skill);
+  }
+  $("saLane").onchange = function(){ sa = {lane:this.value, goal:"", skill:""}; renderSetAll(); };
+  $("saGoal").onchange = function(){ sa.goal = this.value; sa.skill = ""; renderSetAll(); };
+  $("saSkill").onchange = function(){ sa.skill = this.value; };
+  $("saGo").onclick = function(){
+    if(!sa.lane) return;
+    ($("allKids").checked ? students : kidsInGroup()).forEach(function(s){ cfg.asg[s.id] = {lane:sa.lane, goal:sa.goal, skill:sa.skill}; });
+    save(); broadcast(); renderAll();
+  };
 
   /* ---- Lanes > goals > skills ---- */
   var openQ = {};
@@ -585,7 +681,7 @@ function coach(){
     try{ navigator.clipboard.writeText(lines.join("\n")); $("copyMsg").textContent = "Copied. Paste it to Claude to add to your My Reading Roster page."; }catch(e){ $("copyMsg").textContent = "Could not copy."; }
   };
 
-  function renderAll(){ renderToday(); renderPairs(); renderLive(); renderHelp(); renderTaken(); renderAsg(); renderLanes(); renderProg(); }
+  function renderAll(){ renderCards(); renderToday(); renderPairs(); renderLive(); renderHelp(); renderTaken(); renderAsg(); renderLanes(); renderProg(); }
   renderAll();
   window.addEventListener("storage", function(e){ if(e.key === "tt-coach2"){ tt = store("tt-coach2") || {}; students = tt.students || []; groups = tt.groups || []; renderAll(); } });
 }
@@ -620,13 +716,11 @@ function student(){
     $("sJoin").querySelectorAll("[data-a]").forEach(function(b){ b.onclick = function(){
       saved.av = b.dataset.a; persist();
       store("tt-join2", {code:saved.code, av:saved.av, at:Date.now()});   // so the turn timer card already knows you
-      if(!card && T.mountStudent){ try{ store("tt-collapsed", true); card = T.mountStudent(document.body, {float:true}); }catch(e){} }
       mine = null; lastMe = 0; hello(); render();
     }; });
   }
   function connect(){
     persist();
-    $("sRoom").textContent = "Room " + saved.code;
     if(room) room.close();
     room = T.Room(roomOf(saved.code), {
       onStatus:function(s){ $("sStatus").textContent = s === "open" ? "" : s === "blocked" ? "Can't reach your coach. Tell your coach in Zoom chat." : "connecting…"; },
@@ -638,7 +732,7 @@ function student(){
   function onMsg(m){
     if(!m || m.g !== "hub") return;
     if(m.t === "st"){
-      st = m; lastSt = Date.now();
+      st = m; lastSt = Date.now(); $("sStatus").textContent = "";
       if(kp && m.pk && m.pk !== cPk){ cPk = m.pk; cKey = derive(kp.privateKey, m.pk); mine = null; hello(); }
       else if(saved.av && Date.now() - lastMe > 8000 && Date.now() - lastHello > 5000) hello();
       render();
@@ -649,6 +743,15 @@ function student(){
     else if(m.t === "taken" && m.a === saved.av && m.pk === myPk){
       saved.av = ""; persist(); mine = null; render();
       toast("That animal is already in the room. Tap your own animal. If it's yours, tell your coach.");
+    }
+  }
+  function renderPull(){
+    var on = !!(st && saved.av && (st.pulled || []).indexOf(saved.av) >= 0);
+    $("sPull").hidden = !on;
+    if(on){
+      var mine = (st.pairs || []).filter(function(p){ return p.indexOf(saved.av) >= 0; })[0] || [];
+      var others = mine.filter(function(a){ return a !== saved.av; });
+      $("sPullWith").textContent = others.length ? "With " + others.join(" ") : "";
     }
   }
   function renderGoal(){
@@ -662,7 +765,7 @@ function student(){
     if(!saved.code) return showJoin();
     if(!st) { $("sJoin").hidden = false; $("sJoin").innerHTML = '<div class="join"><div class="big">Connecting…</div><div class="muted">Your coach\'s page needs to be open.</div></div>'; return; }
     if(!saved.av || st.kids.indexOf(saved.av) < 0) return showPick();
-    if(!card && T.mountStudent){ store("tt-join2", {code:saved.code, av:saved.av, at:Date.now()}); try{ store("tt-collapsed", true); card = T.mountStudent(document.body, {float:true}); }catch(e){} }
+    renderPull();
     $("sJoin").hidden = true; $("sHelp").hidden = false;
     var m = st.mode;
     $("sWait").hidden = m !== "idle"; $("sWarm").hidden = m !== "warm"; $("sGame").hidden = m !== "game";
