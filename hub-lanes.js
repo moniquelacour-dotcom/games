@@ -98,11 +98,6 @@ window.HubLanes = [
     "name": "I can make my reading sound like talking",
     "skills": [
      {
-      "id": "flu-signs",
-      "name": "I can read the signs",
-      "set": "signs"
-     },
-     {
       "id": "flu-scoops",
       "name": "I can read in scoops",
       "set": "scoops"
