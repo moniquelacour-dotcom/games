@@ -224,7 +224,9 @@ function coach(){
   /* Lane > goal > skill. The goals and skills are the coach's own list (from her Roster); these are only the starting copy. */
   var DEFAULT = {
     acc:{name:"Accuracy", goals:[
-      {id:"acc-bme", name:"I can read the beginning, middle and end of words", skills:[sk("acc-beg", "I can read the beginning of a word"), sk("acc-mid", "I can read the middle of a word"), sk("acc-end", "I can read the end of a word")]},
+      {id:"acc-beg", name:"I can read the beginning of words", skills:[]},
+      {id:"acc-mid", name:"I can read the middle of words", skills:[]},
+      {id:"acc-end", name:"I can read the end of words", skills:[]},
       {id:"acc-parts", name:"I can read word parts", skills:[sk("acc-pre", "I can read prefixes"), sk("acc-suf", "I can read suffixes"), sk("acc-base", "I can find the base word"), sk("acc-chunk", "I can chunk a long word"), sk("acc-endings", "I can add endings like -y and -ing (change the base word first)")]},
       {id:"acc-g1", name:"I can read long vowels", skills:Object.keys(Q.SETS).map(function(k){ return sk(k, Q.SETS[k].name + " vowel", k); })},
       {id:"acc-reread", name:"I can reread the sentence", skills:[]},
