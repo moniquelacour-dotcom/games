@@ -137,11 +137,7 @@ th{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05
 
     <section class="card" style="margin-top:16px">
       <h2>Lanes, goals and skills</h2>
-      <p class="small muted">Each lane has goals; each goal has skills. Your master list lives on your My Reading Roster page: copy it there with "Copy for the hub" and paste it here. Each skill gets its questions from a built-in list, or from questions you write (4 answers, you mark the right one).</p>
-      <details><summary class="small" style="cursor:pointer;font-weight:700">Paste your list from the Roster</summary>
-        <div class="row" style="margin-top:6px"><textarea id="impText" rows="3" style="flex:1;min-width:0" placeholder="Paste here"></textarea><button class="btn sm main" id="impGo">Add to the hub</button></div>
-        <div class="small muted" id="impMsg">Adds new lanes, goals and skills by name. Nothing here is deleted, and questions you wrote stay.</div>
-      </details>
+      <p class="small muted">This list comes from the Lanes tab on your My Reading Roster: change goals and skills there, and Claude updates the hub. Here you choose where each skill's questions come from: a built-in list, or questions you write (4 answers, you mark the right one).</p>
       <div class="lanes" id="lanes"></div>
     </section>
 
@@ -175,6 +171,7 @@ th{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05
 
 <script src="turn-timer.js?v=9"></script>
 <script src="hub-questions.js?v=2"></script>
+<script src="hub-lanes.js?v=1"></script>
 <script src="hub-warmups.js?v=1"></script>
 <script src="hub-climb.js?v=1"></script>
 <script>
@@ -220,31 +217,48 @@ function coach(){
   var students = tt.students || [], groups = tt.groups || [];
   if(!students.length) $("noStudents").hidden = false;
   var BUILT = Q.LIST;   // built-in question sets: long vowels, punctuation, phrasing
-  function sk(id, name, set){ return {id:id, name:name, set:set || "", own:[]}; }
-  /* Lane > goal > skill. The goals and skills are the coach's own list (from her Roster); these are only the starting copy. */
-  var DEFAULT = {
-    acc:{name:"Accuracy", goals:[
-      {id:"acc-beg", name:"I can read the beginning of words", skills:[]},
-      {id:"acc-mid", name:"I can read the middle of words", skills:[]},
-      {id:"acc-end", name:"I can read the end of words", skills:[]},
-      {id:"acc-parts", name:"I can read word parts", skills:[sk("acc-pre", "I can read prefixes"), sk("acc-suf", "I can read suffixes"), sk("acc-base", "I can find the base word"), sk("acc-chunk", "I can chunk a long word"), sk("acc-endings", "I can add endings like -y and -ing (change the base word first)")]},
-      {id:"acc-g1", name:"I can read long vowels", skills:Object.keys(Q.SETS).map(function(k){ return sk(k, Q.SETS[k].name + " vowel", k); })},
-      {id:"acc-reread", name:"I can reread the sentence", skills:[]},
-      {id:"acc-heart", name:"I can read heart words", skills:[]}]},
-    flu:{name:"Fluency", goals:[
-      {id:"flu-talk", name:"I can make my reading sound like talking", skills:[sk("flu-signs", "I can read the signs", "signs"), sk("flu-scoops", "I can read in scoops", "scoops"), sk("flu-expr", "I can read with expression"), sk("flu-speed", "I can read at my goal speed")]}]},
-    com:{name:"Comprehension", goals:[]}
-  };
   var cfg = store("hub-coach1") || {};
-  if(!cfg.lanes) cfg.lanes = JSON.parse(JSON.stringify(DEFAULT));
-  Object.keys(cfg.lanes).forEach(function(lk){   // move an older lane > skill list under one goal
-    var L = cfg.lanes[lk];
-    if(!L.goals){ L.goals = L.skills && L.skills.length ? [{id:lk + "-g1", name:"Goal not named yet", skills:L.skills}] : []; delete L.skills; }
-    if(!L.goals.length && DEFAULT[lk] && DEFAULT[lk].goals.length) L.goals = JSON.parse(JSON.stringify(DEFAULT[lk].goals));
+  cfg.lanes = cfg.lanes || {};
+  Object.keys(cfg.lanes).forEach(function(lk){   // an older lane > skill list
+    var L = cfg.lanes[lk]; if(!L.goals){ L.goals = L.skills && L.skills.length ? [{id:lk + "-g1", name:"Goal not named yet", skills:L.skills}] : []; delete L.skills; }
   });
   cfg.asg = cfg.asg || {}; cfg.stats = cfg.stats || {};
   cfg.play = cfg.play || "group"; cfg.pairs = cfg.pairs || [];
-  Object.keys(cfg.asg).forEach(function(sid){ var a = cfg.asg[sid]; if(a.skill && !a.goal){ var f = findSkill(a.skill); if(f) a.goal = f.goal.id; } });
+  /* The lanes, goals and skills follow hub-lanes.js (copied from her Roster). What she set up here is kept:
+     which questions a skill uses, the questions she wrote, assignments and progress (matched by id, then name). */
+  (function follow(list){
+    if(!list || !list.length) return;
+    var low = function(s){ return String(s || "").trim().toLowerCase(); };
+    var oldSkills = [];
+    Object.keys(cfg.lanes).forEach(function(lk){ cfg.lanes[lk].goals.forEach(function(g){ g.skills.forEach(function(s){ oldSkills.push({lk:lk, s:s}); }); }); });
+    var used = {}, next = {};
+    list.forEach(function(L){
+      next[L.key] = {name:L.name, goals:L.goals.map(function(g){
+        return {id:g.id, name:g.name, skills:g.skills.map(function(s){
+          var hit = oldSkills.filter(function(o){ return o.s.id === s.id; })[0] || oldSkills.filter(function(o){ return o.lk === L.key && low(o.s.name) === low(s.name) && !used[o.s.id]; })[0];
+          var o = hit ? hit.s : {own:[]};
+          if(hit) used[hit.s.id] = s.id;
+          return {id:s.id, name:s.name, set:o.set || s.set || "", own:o.own || []};
+        })};
+      })};
+    });
+    /* a skill dropped from the list but holding her own questions stays, so nothing she wrote is lost */
+    oldSkills.forEach(function(o){
+      if(used[o.s.id] || !(o.s.own && o.s.own.length) || !next[o.lk]) return;
+      var g = next[o.lk].goals.filter(function(x){ return x.id === "_kept"; })[0];
+      if(!g){ g = {id:"_kept", name:"Not on your Roster list (your questions kept)", skills:[]}; next[o.lk].goals.push(g); }
+      g.skills.push(o.s); used[o.s.id] = o.s.id;
+    });
+    /* progress and assignments move to the new ids */
+    Object.keys(cfg.stats).forEach(function(sid){ var st = cfg.stats[sid]; Object.keys(st).forEach(function(k){ if(used[k] && used[k] !== k){ st[used[k]] = st[k]; delete st[k]; } }); });
+    cfg.lanes = next;
+    Object.keys(cfg.asg).forEach(function(sid){
+      var a = cfg.asg[sid]; if(a.skill && used[a.skill]) a.skill = used[a.skill];
+      var f0 = a.skill ? findSkill(a.skill) : null;
+      if(f0){ a.lane = f0.lane; a.goal = f0.goal.id; }
+      else { a.skill = ""; if(!goalById(a.lane, a.goal)) a.goal = ""; if(!cfg.lanes[a.lane]) a.lane = ""; }
+    });
+  })(window.HubLanes);
   cfg.rule = cfg.rule || {pct:90, row:2, min:10, max:4};
   cfg.warm = cfg.warm || {pick:"auto", cur:"ws", day:"", st:{}};
   cfg.game = cfg.game || "climb"; cfg.mode = cfg.mode || "idle";
@@ -477,17 +491,16 @@ function coach(){
       var L = cfg.lanes[lk];
       return '<div class="lane"><h3>' + esc(L.name) + '</h3>' + L.goals.map(function(g, gi){
         var gp = lk + "|" + gi;
-        return '<div class="goal"><div class="row"><span class="label">Goal</span><input type="text" value="' + esc(g.name) + '" data-gname="' + gp + '" style="flex:1" aria-label="Goal name"><button class="btn sm danger" data-gdel="' + gp + '">Delete</button></div>' +
+        return '<div class="goal"><div class="row"><span class="label">Goal</span><b>' + esc(g.name) + '</b></div>' + (g.skills.length ? "" : '<div class="small muted">No skills yet. Add them on your Roster\'s Lanes tab.</div>') +
           g.skills.map(function(s, i){
             var p = gp + "|" + i;
             var src = '<select data-src="' + p + '" aria-label="Where the questions come from"><option value="">My own questions</option>' + BUILT.map(function(b){ return '<option value="' + b.id + '"' + (s.set === b.id ? " selected" : "") + '>Built-in: ' + esc(b.name) + '</option>'; }).join("") + '</select>';
             var own = s.set ? "" : '<div class="qed">' + (s.own || []).map(function(q, j){
                 return '<div class="ownq"><span>' + esc(q.p) + (q.s ? " <b>" + esc(q.s) + "</b>" : "") + ' → <b>' + esc(q.c[q.r]) + '</b></span><button class="btn sm danger" data-qdel="' + p + '|' + j + '">×</button></div>';
               }).join("") + (openQ[p] ? qForm(p) : '<button class="btn sm" data-qopen="' + p + '">+ Write a question</button>') + '<div class="small muted">' + (s.own || []).length + ' question' + ((s.own || []).length === 1 ? "" : "s") + (!(s.own || []).length ? ": students with this skill get no questions until you add some" : "") + '</div></div>';
-            return '<div class="skill"><div class="row"><input type="text" value="' + esc(s.name) + '" data-sname="' + p + '" style="flex:1" aria-label="Skill name"><button class="btn sm danger" data-sdel="' + p + '">Delete</button></div>' + src + own + '</div>';
-          }).join("") +
-          '<div class="row"><input type="text" placeholder="New skill, e.g. I can …" data-snew="' + gp + '" style="flex:1" aria-label="New skill"><button class="btn sm" data-sadd="' + gp + '">Add skill</button></div></div>';
-      }).join("") + '<div class="row"><input type="text" placeholder="New goal, e.g. I can …" data-gnew="' + lk + '" style="flex:1" aria-label="New goal"><button class="btn sm" data-gadd="' + lk + '">Add goal</button></div></div>';
+            return '<div class="skill"><div><b>' + esc(s.name) + '</b></div>' + src + own + '</div>';
+          }).join("") + '</div>';
+      }).join("") + (L.goals.length ? "" : '<div class="small muted">No goals yet. Add them on your Roster\'s Lanes tab.</div>') + '</div>';
     }).join("");
     var lanes = $("lanes");
     function at(v){ var p = v.split("|"), L = cfg.lanes[p[0]], g = L && L.goals[+p[1]]; return {lk:p[0], L:L, gi:+p[1], g:g, i:+p[2], s:g && g.skills[+p[2]], j:+p[3]}; }
@@ -533,33 +546,6 @@ function coach(){
       '<div class="small muted">Tap the circle next to the right answer. Students see the answers in a mixed order.</div><div class="small qerr" style="color:var(--bad)"></div>' +
       '<div class="row"><button class="btn sm main" data-qsave="' + k + '">Add question</button><button class="btn sm" data-qclose="' + k + '">Close</button></div></div>';
   }
-
-  /* ---- Paste the master list from the Roster. Adds by name; never deletes. ---- */
-  $("impGo").onclick = function(){
-    var data; try{ data = JSON.parse($("impText").value); }catch(e){ $("impMsg").textContent = "That didn't look like the list from the Roster. On the Roster's Lanes tab, tap “Copy for the hub”, then paste here."; return; }
-    var lanesIn = data && data.lanes; if(!Array.isArray(lanesIn)){ $("impMsg").textContent = "No lanes found in what you pasted."; return; }
-    var added = 0, low = function(s){ return String(s || "").trim().toLowerCase(); };
-    lanesIn.forEach(function(li){
-      var lk = Object.keys(cfg.lanes).filter(function(k){ return low(cfg.lanes[k].name) === low(li.name); })[0];
-      if(!lk){ lk = uid(); cfg.lanes[lk] = {name:String(li.name || "Lane"), goals:[]}; added++; }
-      (li.goals || []).forEach(function(gi){
-        var names = (gi.skills || []).map(function(sn){ return typeof sn === "string" ? sn : sn.name; });
-        var g = cfg.lanes[lk].goals.filter(function(x){ return low(x.name) === low(gi.name); })[0];
-        if(!g){   // a goal renamed on the Roster: same skills, new name
-          g = cfg.lanes[lk].goals.filter(function(x){ return names.length && x.skills.some(function(s){ return names.some(function(n){ return low(n) === low(s.name); }); }); })[0];
-          if(g){ g.name = String(gi.name); added++; }
-        }
-        if(!g){ g = {id:uid(), name:String(gi.name || "Goal"), skills:[]}; cfg.lanes[lk].goals.push(g); added++; }
-        names.forEach(function(n){
-          if(g.skills.some(function(x){ return low(x.name) === low(n); })) return;
-          var b = BUILT.filter(function(x){ return low(x.name) === low(n); })[0];   // a name that matches a built-in set uses it
-          g.skills.push({id:uid(), name:String(n), set:b ? b.id : "", own:[]}); added++;
-        });
-      });
-    });
-    save(); broadcast(); renderAll();
-    $("impText").value = ""; $("impMsg").textContent = added ? "Added " + added + " new " + (added === 1 ? "item" : "items") + " (lanes, goals or skills). Nothing was deleted." : "Everything in the list was already here.";
-  };
 
   /* ---- Progress and the (unsettled) rule ---- */
   ["rPct","rRow","rMin","rMax"].forEach(function(id){
