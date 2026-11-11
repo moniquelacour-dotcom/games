@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Print What It Says</title>
+<meta name="description" content="The printer builds exactly what the sentence says. Put the words where you actually mean them.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#128424;</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{
+  --bg:#F4F1EC; --bg2:#E8E3DA; --card:#FFFFFF; --panel:#FBFAF8;
+  --ink:#1E1B22; --ink2:#55505E; --ink3:#8C8695;
+  --rule:#DAD4CA; --rule2:#C3BBAE;
+  --hot:#C8481F; --hot-s:#FBE6DD;
+  --good:#1F7A52; --good-s:#DFF0E7;
+  --warn:#8E6212; --warn-s:#FAEFD6;
+  --b:"Figtree",system-ui,-apple-system,sans-serif;
+  --m:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141317; --bg2:#1C1A21; --card:#1F1D25; --panel:#262430;
+  --ink:#F2EFF5; --ink2:#BDB7C6; --ink3:#8E8899;
+  --rule:#36333F; --rule2:#4A4557;
+  --hot:#FF8A5C; --hot-s:#3A1D12;
+  --good:#5FC793; --good-s:#122E22;
+  --warn:#E5B454; --warn-s:#33280F;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#141317; --bg2:#1C1A21; --card:#1F1D25; --panel:#262430;
+  --ink:#F2EFF5; --ink2:#BDB7C6; --ink3:#8E8899;
+  --rule:#36333F; --rule2:#4A4557;
+  --hot:#FF8A5C; --hot-s:#3A1D12;
+  --good:#5FC793; --good-s:#122E22;
+  --warn:#E5B454; --warn-s:#33280F;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--b);font-size:17px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  background-image:linear-gradient(180deg,var(--bg2),transparent 320px)}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+:focus-visible{outline:3px solid var(--hot);outline-offset:3px;border-radius:10px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.wrap{max-width:780px;margin:0 auto;padding:22px 16px 80px}
+
+header{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.brand{flex:1 1 250px;min-width:0}
+.kick{font-family:var(--m);font-weight:700;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--hot)}
+h1{font-size:clamp(28px,6.5vw,40px);font-weight:800;letter-spacing:-.02em;line-height:1.05;margin-top:2px}
+.sub{color:var(--ink2);margin-top:6px;font-size:16px;max-width:46ch}
+.topbtns{display:flex;gap:8px;flex-wrap:wrap}
+.tb{border:2px solid var(--rule2);border-radius:999px;padding:8px 15px;font-weight:700;font-size:14px;background:var(--card)}
+.tb:hover{border-color:var(--hot);color:var(--hot)}
+.tb.on{background:var(--hot);border-color:var(--hot);color:#fff}
+
+.card{background:var(--card);border:2px solid var(--rule);border-radius:18px;padding:clamp(16px,4vw,24px);margin-bottom:16px}
+
+.rulebox{background:var(--panel);border:2px dashed var(--rule2);border-radius:14px;padding:14px 16px;margin-bottom:16px}
+.rulebox p{font-size:15.5px;color:var(--ink2)}
+.rulebox p+p{margin-top:7px}
+.rulebox b{color:var(--ink)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(102px,1fr));gap:10px}
+.otile{background:var(--card);border:2px solid var(--rule);border-radius:14px;padding:12px 6px;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:5px;transition:transform .1s,border-color .1s}
+.otile:hover{transform:translateY(-2px);border-color:var(--hot)}
+.otile .n{font-family:var(--m);font-size:11px;letter-spacing:.1em;color:var(--ink3);font-weight:700}
+.otile .em{font-size:30px;line-height:1}
+.otile .st{font-size:12.5px;font-weight:700;color:var(--ink3)}
+.otile.done{border-color:var(--good);background:var(--good-s)}
+.otile.done .st{color:var(--good)}
+
+.ordno{font-family:var(--m);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);font-weight:700}
+.sent{font-size:clamp(20px,4.4vw,26px);line-height:1.45;font-weight:600;margin:10px 0 4px;letter-spacing:-.01em}
+.step{font-family:var(--m);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--hot);font-weight:700;margin-bottom:6px}
+.ask{font-size:17px;color:var(--ink2);margin-bottom:14px}
+.ask b{color:var(--ink)}
+
+.big{display:inline-flex;align-items:center;gap:9px;background:var(--hot);color:#fff;border-radius:999px;
+  padding:13px 24px;font-weight:800;font-size:17px}
+.big:hover{filter:brightness(1.08)}
+.big.ghost{background:none;color:var(--ink2);border:2px solid var(--rule2);padding:11px 22px;font-weight:700;font-size:16px}
+.big.ghost:hover{color:var(--hot);border-color:var(--hot)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+
+.readout{background:#111014;color:#F0ECE4;border-radius:14px;padding:16px 18px;margin-top:14px;
+  font-family:var(--m);font-size:15px;line-height:1.6;border:2px solid #2A2730}
+.readout .lbl{color:#FF8A5C;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;display:block;margin-bottom:7px}
+
+.choice{display:block;width:100%;text-align:left;background:var(--panel);border:2px solid var(--rule);
+  border-radius:14px;padding:14px 16px;margin-top:10px;font-size:16.5px;font-weight:600;line-height:1.4}
+.choice:hover{border-color:var(--hot);background:var(--hot-s)}
+.choice small{display:block;font-weight:500;color:var(--ink3);font-size:14px;margin-top:3px}
+
+.builder{background:var(--panel);border:2px solid var(--rule);border-radius:14px;padding:16px;margin-top:14px}
+.line{display:flex;flex-wrap:wrap;align-items:center;gap:3px;font-size:clamp(18px,3.8vw,22px);font-weight:600;line-height:2.1}
+.w{padding:1px 2px}
+.chip{background:var(--warn-s);border:2px solid var(--warn);color:var(--ink);border-radius:10px;
+  padding:3px 11px;font-weight:700;font-size:inherit}
+.chip:hover{filter:brightness(.97)}
+.slot{width:22px;height:36px;border:2px dashed var(--hot);border-radius:8px;background:var(--hot-s);padding:0;flex:0 0 auto}
+.slot:hover{background:var(--hot);border-style:solid}
+.hint{font-size:14.5px;color:var(--ink3);margin-top:12px}
+.holding{background:var(--hot-s);border-left:4px solid var(--hot);padding:9px 12px;border-radius:0 10px 10px 0;
+  font-size:15px;color:var(--ink2);margin-top:12px}
+
+.flash{border-radius:12px;padding:13px 15px;margin-top:14px;font-size:15.5px;line-height:1.55}
+.flash.no{background:var(--warn-s);border:2px solid var(--warn)}
+.flash.yes{background:var(--good-s);border:2px solid var(--good)}
+
+.swatches{display:flex;flex-wrap:wrap;gap:9px;margin-top:10px}
+.sw{width:46px;height:46px;border-radius:12px;border:3px solid var(--rule2)}
+.sw.on{border-color:var(--ink);transform:scale(1.07)}
+.pickrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.pb{border:2px solid var(--rule);border-radius:999px;padding:8px 14px;font-weight:700;font-size:14.5px;background:var(--card)}
+.pb:hover{border-color:var(--hot)} .pb.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.animals{display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:8px;margin-top:10px}
+.an{border:2px solid var(--rule);border-radius:12px;padding:8px 2px;font-size:25px;background:var(--card);line-height:1.1}
+.an small{display:block;font-size:10px;color:var(--ink3);font-weight:700}
+.an:hover{border-color:var(--hot)} .an.on{border-color:var(--ink);background:var(--panel)}
+.lab{font-weight:800;font-size:14px;margin-top:20px;letter-spacing:-.01em}
+input[type=text]{width:100%;margin-top:10px;padding:12px 14px;border:2px solid var(--rule2);border-radius:12px;
+  background:var(--card);color:var(--ink);font:inherit;font-weight:600}
+input[type=text]:focus{outline:none;border-color:var(--hot)}
+
+.plate{display:flex;align-items:center;justify-content:center;border-radius:14px;height:92px;margin-top:12px;
+  border:2px solid var(--rule2);font-size:44px;position:relative;overflow:hidden}
+.fx{position:absolute;inset:0;pointer-events:none}
+.fx.glossy{background:linear-gradient(135deg,rgba(255,255,255,.34),transparent 48%)}
+.fx.silk{background:repeating-linear-gradient(115deg,rgba(255,255,255,.18) 0 5px,transparent 5px 11px)}
+.fx.glow{box-shadow:inset 0 0 36px rgba(198,255,110,.55)}
+.fx.clear{background:rgba(255,255,255,.25)}
+.fx.shift{background:linear-gradient(120deg,rgba(255,110,196,.33),rgba(110,200,255,.33) 55%,rgba(182,255,110,.33))}
+
+.shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:12px;margin-top:4px}
+.sh{border:2px solid var(--rule);border-radius:14px;overflow:hidden;background:var(--card)}
+.sh .pl{height:74px;display:flex;align-items:center;justify-content:center;font-size:34px;position:relative}
+.sh .nm{padding:8px 9px;font-size:13.5px;font-weight:700;line-height:1.25}
+.sh .fin{display:block;font-weight:500;color:var(--ink3);font-size:11px;margin-top:2px}
+.sh.empty{border-style:dashed;background:none}
+.sh.empty .pl{color:var(--ink3);font-size:12px;font-weight:700;font-family:var(--m)}
+
+.bar{height:9px;background:var(--rule);border-radius:999px;overflow:hidden;margin-top:12px}
+.bar i{display:block;height:100%;background:var(--hot);border-radius:999px;transition:width .3s}
+.count{font-family:var(--m);font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.08em;margin-top:7px}
+
+footer{margin-top:28px;border-top:2px solid var(--rule);padding-top:16px;color:var(--ink3);font-size:14px;text-align:center}
+.danger{color:var(--ink3);font-size:13px;font-weight:700;border:2px solid var(--rule);border-radius:999px;padding:6px 13px;margin-top:10px}
+.danger:hover{color:var(--hot);border-color:var(--hot)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <p class="kick">Print shop</p>
+      <h1>Print What It Says</h1>
+      <p class="sub">The printer has no imagination. It builds the sentence exactly as written, so every phrase has to sit next to the thing it is actually about.</p>
+    </div>
+    <div class="topbtns">
+      <button class="tb" id="tabOrders">Orders</button>
+      <button class="tb" id="tabShelf">My print shelf</button>
+    </div>
+  </header>
+  <main id="main" aria-live="polite"></main>
+  <footer>
+    <p>Your prints save on <b>your own computer</b>. Same link, same shelf.</p>
+    <button class="danger" id="reset">Clear my shop</button>
+  </footer>
+</div>
+
+<script>
+const ORDERS=[
+{id:1,kind:"move",
+ base:["She","served","sandwiches","to the children"],
+ mod:"on paper plates",start:4,good:[3],about:"the sandwiches",
+ literal:"A tray of children, each one standing on its own paper plate. No sandwiches anywhere in the file."},
+{id:2,kind:"move",
+ base:["He","returned","the shirt","to the store"],
+ mod:"with a torn sleeve",start:4,good:[3],about:"the shirt",
+ literal:"One retail building. A torn sleeve hangs off the north wall. The shirt printed perfectly fine."},
+{id:3,kind:"move",
+ base:["The painting","was hung","in the hallway"],
+ mod:"that my aunt made",start:3,good:[1],about:"the painting",
+ literal:"A hallway, hand-built by your aunt. She had nothing to do with the painting. She made the corridor."},
+{id:4,kind:"dangle",
+ sentence:"After finishing the assignment, the TV was turned on.",
+ phrase:"finishing the assignment",
+ doers:["the TV","the assignment","Jonah","the living room"],right:2,
+ literal:"A television set sitting at a desk, filling in a worksheet. It then reaches over and switches itself on.",
+ fixes:["After finishing the assignment, Jonah turned on the TV.","After Jonah finished the assignment, he turned on the TV."]},
+{id:5,kind:"dangle",
+ sentence:"Having studied all night, the test seemed easy.",
+ phrase:"studying all night",
+ doers:["the test","Marcus","the night","the desk"],right:1,
+ literal:"A test that stayed up until four in the morning revising. For itself. It now reports that it finds itself easy.",
+ fixes:["Having studied all night, Marcus found the test easy.","Because Marcus had studied all night, the test seemed easy."]},
+{id:6,kind:"move",
+ base:["The waiter","brought","a steak","to the man"],
+ mod:"covered in gravy",start:4,good:[3],about:"the steak",
+ literal:"One man, covered head to foot in gravy. The steak is immaculate. The waiter is unharmed."},
+{id:7,kind:"dangle",
+ sentence:"While walking to school, the rain started to fall.",
+ phrase:"walking to school",
+ doers:["the rain","the school","Priya","the sidewalk"],right:2,
+ literal:"Rain. Walking to school. On legs. Carrying a backpack.",
+ fixes:["While walking to school, Priya felt the rain start to fall.","While Priya was walking to school, the rain started to fall."]},
+{id:8,kind:"move",
+ base:["The museum","displayed","a sword","for the visitors"],
+ mod:"from the Bronze Age",start:4,good:[3],about:"the sword",
+ literal:"A room of visitors who have each been alive since roughly 2000 BC. The sword is brand new."},
+{id:9,kind:"dangle",
+ sentence:"At the age of nine, my family moved to Texas.",
+ phrase:"being nine years old",
+ doers:["my family","the moving truck","I","Texas"],right:2,
+ literal:"An entire family, parents and grandparents included, every one of them exactly nine years old, loading a truck.",
+ fixes:["At the age of nine, I moved to Texas with my family.","When I was nine, my family moved to Texas."]},
+{id:10,kind:"move",
+ base:["I","ate","two bites","of the cake"],
+ mod:"only",start:1,good:[2],about:"two bites",attach:"fwd",
+ literal:"A person whose single action toward that cake was eating two bites of it. Did not look at it. Did not smell it. Two bites, and nothing else, ever."},
+{id:11,kind:"dangle",
+ sentence:"To earn a spot on the team, hours of practice are required.",
+ phrase:"trying to earn a spot on the team",
+ doers:["hours of practice","the team","the coach","you"],right:3,
+ literal:"Several hours of practice, standing in line at tryouts, hoping to make the squad.",
+ fixes:["To earn a spot on the team, you have to practice for hours.","If you want a spot on the team, hours of practice are required."]},
+{id:12,kind:"dangle",
+ sentence:"Hoping for a better score, the test was taken again.",
+ phrase:"hoping for a better score",
+ doers:["the test","the score","Tessa","the pencil"],right:2,
+ literal:"A test, quietly full of hope, sitting down to take itself for a second time.",
+ fixes:["Hoping for a better score, Tessa took the test again.","Because Tessa hoped for a better score, she took the test again."]}
+];
+
+const ANIMALS=[["\u{1F98A}","Fox"],["\u{1F989}","Owl"],["\u{1F419}","Octopus"],["\u{1F98E}","Gecko"],
+["\u{1F43A}","Wolf"],["\u{1F409}","Dragon"],["\u{1F422}","Turtle"],["\u{1F987}","Bat"],
+["\u{1F438}","Frog"],["\u{1F98C}","Stag"],["\u{1F40B}","Whale"],["\u{1F994}","Hedgehog"],
+["\u{1F985}","Eagle"],["\u{1F996}","T-Rex"],["\u{1F9AD}","Seal"],["\u{1F41D}","Bee"],
+["\u{1F9A9}","Flamingo"],["\u{1F40E}","Horse"]];
+const FILAMENT=[["#1E1B22","Matte black"],["#EFE7D8","Bone white"],["#E0582A","Signal orange"],["#0F6670","Deep teal"],
+["#6B3FA0","Ultraviolet"],["#A7D22B","Acid lime"],["#D98A8A","Rose"],["#7FB6DE","Glacier"]];
+const FINISH=[["matte","Matte"],["glossy","Glossy"],["silk","Silk"],["glow","Glow in the dark"],["clear","Translucent"],["shift","Color shift"]];
+
+const KEY="printwhatitsays.v1";
+const blank=()=>({shelf:{}});
+let S=blank();
+try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(blank(),JSON.parse(r));}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+
+const M=document.getElementById("main");
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const byId=i=>ORDERS.find(o=>o.id===i);
+const doneCount=()=>Object.keys(S.shelf).length;
+const pad=n=>String(n).padStart(2,"0");
+
+let view="orders", cur=null, st=null;
+
+function go(v,id){view=v;if(id)cur=byId(id);render();window.scrollTo({top:0,behavior:"smooth"});}
+
+function viewOrders(){
+  const n=doneCount();
+  M.innerHTML=`
+  <div class="rulebox">
+    <p><b>Every order goes through three steps.</b></p>
+    <p>1 &middot; Print it as written, and look at what came out.</p>
+    <p>2 &middot; Ask one question: <b>is the thing the phrase is about actually in the sentence?</b></p>
+    <p>3 &middot; Repair it &mdash; move the phrase, or put the missing word in.</p>
+  </div>
+  <div class="card">
+    <div class="step">The queue</div>
+    <p class="ask">Twelve orders. Each one you finish prints an animal for your shelf.</p>
+    <div class="bar"><i style="width:${Math.round(n/ORDERS.length*100)}%"></i></div>
+    <p class="count">${n} OF ${ORDERS.length} PRINTED</p>
+  </div>
+  <div class="grid">${ORDERS.map(o=>{
+    const d=S.shelf[o.id];
+    return `<button class="otile ${d?"done":""}" data-o="${o.id}">
+      <span class="n">#${pad(o.id)}</span>
+      <span class="em">${d?d.animal:"\u{1F4C4}"}</span>
+      <span class="st">${d?"Printed":"Open"}</span></button>`;
+  }).join("")}</div>`;
+  M.querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>startOrder(+b.dataset.o));
+}
+
+function viewShelf(){
+  const n=doneCount();
+  const slots=ORDERS.map(o=>{
+    const d=S.shelf[o.id];
+    return d
+      ? `<div class="sh"><div class="pl" style="background:${d.color}"><span class="fx ${d.finish}"></span>${d.animal}</div>
+         <div class="nm">${esc(d.name)}<span class="fin">${esc(d.colorName)} &middot; ${esc(d.finishName)}</span></div></div>`
+      : `<div class="sh empty"><div class="pl">EMPTY</div><div class="nm" style="color:var(--ink3);font-weight:500">Order #${pad(o.id)}</div></div>`;
+  });
+  M.innerHTML=`<div class="card">
+    <div class="step">My print shelf</div>
+    <p class="ask">${n?`<b>${n}</b> print${n===1?"":"s"} on the shelf. Every one of them is a sentence you repaired.`:"Nothing on the shelf yet. Finish an order and design your first print."}</p>
+  </div>
+  <div class="shelf">${slots.join("")}</div>`;
+}
+
+function startOrder(id){
+  const o=byId(id);
+  st={phase:"predict",held:false,pos:o.kind==="move"?o.start:0,msg:null,fix:null,an:0,col:0,fin:0,name:""};
+  go("order",id);
+}
+
+function sentenceFromParts(o,pos){
+  const out=[];
+  for(let i=0;i<=o.base.length;i++){
+    if(i===pos)out.push(o.mod);
+    if(i<o.base.length)out.push(o.base[i]);
+  }
+  return out.join(" ")+".";
+}
+
+function viewOrder(){
+  const o=cur;
+  let h=`<div class="card"><p class="ordno">Order #${pad(o.id)}</p>`;
+  const asWritten=o.kind==="move"?sentenceFromParts(o,o.start):o.sentence;
+
+  if(st.phase==="predict"){
+    h+=`<p class="sent">${esc(asWritten)}</p>
+      <div class="step" style="margin-top:18px">Step 1</div>
+      <p class="ask">Read it out loud. <b>What is the printer going to make?</b> Say it before you press the button.</p>
+      <div class="row"><button class="big" id="doprint">Print it as written</button>
+      <button class="big ghost" id="back">Back to the queue</button></div>`;
+  }
+
+  if(st.phase==="diagnose"){
+    h+=`<p class="sent">${esc(asWritten)}</p>
+      <div class="readout"><span class="lbl">Print complete</span>${esc(o.literal)}</div>
+      <div class="step" style="margin-top:20px">Step 2</div>
+      <p class="ask">That is not what they ordered. One question sorts out which repair it needs: <b>is the thing this phrase is about actually in the sentence?</b></p>
+      <button class="choice" data-dx="move">Yes. It is in there, just standing in the wrong place.
+        <small>Then it is a misplaced modifier, and you move the phrase next to it.</small></button>
+      <button class="choice" data-dx="dangle">No. It is not in the sentence at all.
+        <small>Then it is a dangling modifier, and you have to put it in yourself.</small></button>`;
+    if(st.msg)h+=`<div class="flash no">${st.msg}</div>`;
+  }
+
+  if(st.phase==="move"){
+    h+=`<div class="step">Step 3 &middot; Move it</div>
+      <p class="ask">Tap the phrase to pick it up, then tap the gap where it belongs.</p>
+      <div class="builder"><div class="line" id="line"></div>
+      ${st.held
+        ? `<div class="holding">Holding <b>${esc(o.mod)}</b>. Tap a gap to drop it in. You can always pick it up and move it again.</div>`
+        : `<p class="hint">A modifier grabs whatever sits next to it. Read the sentence back and check what it is grabbing right now.</p>`}
+      </div>`;
+    if(st.msg)h+=`<div class="flash no">${st.msg}</div>`;
+  }
+
+  if(st.phase==="doer"){
+    h+=`<p class="sent">${esc(o.sentence)}</p>
+      <div class="step" style="margin-top:18px">Step 3 &middot; Put the doer in</div>
+      <p class="ask">Who or what was actually <b>${esc(o.phrase)}</b>?</p>
+      ${o.doers.map((d,i)=>`<button class="choice" data-dr="${i}">${esc(d)}</button>`).join("")}`;
+    if(st.msg)h+=`<div class="flash no">${st.msg}</div>`;
+  }
+
+  if(st.phase==="repair"){
+    h+=`<div class="flash yes"><b>${esc(o.doers[o.right])}</b> &mdash; and notice that was nowhere in the sentence. That is what dangling means.</div>
+      <div class="step" style="margin-top:20px">Pick your repair</div>
+      <p class="ask">Both of these are correct. There are two ways to fix a dangler, and you choose which one prints.</p>
+      <button class="choice" data-fx="0">${esc(o.fixes[0])}<small>Put the doer straight after the comma.</small></button>
+      <button class="choice" data-fx="1">${esc(o.fixes[1])}<small>Turn the phrase into a full clause with its own subject.</small></button>`;
+  }
+
+  if(st.phase==="design"){
+    const fixed=o.kind==="move"?sentenceFromParts(o,st.pos):o.fixes[st.fix];
+    const col=FILAMENT[st.col],an=ANIMALS[st.an],fin=FINISH[st.fin];
+    h+=`<div class="flash yes"><b>Order complete.</b> The printer now reads it the way you meant it.</div>
+      <p class="sent" style="margin-top:14px">${esc(fixed)}</p>
+      <div class="step" style="margin-top:22px">Your print</div>
+      <p class="ask">You earned a print. Design it.</p>
+      <div class="plate" style="background:${col[0]}"><span class="fx ${fin[0]}"></span>${an[0]}</div>
+      <p class="lab">Animal</p>
+      <div class="animals">${ANIMALS.map((a,i)=>`<button class="an ${i===st.an?"on":""}" data-an="${i}">${a[0]}<small>${a[1]}</small></button>`).join("")}</div>
+      <p class="lab">Filament</p>
+      <div class="swatches">${FILAMENT.map((f,i)=>`<button class="sw ${i===st.col?"on":""}" data-col="${i}" style="background:${f[0]}" title="${f[1]}" aria-label="${f[1]}"></button>`).join("")}</div>
+      <p class="lab">Finish</p>
+      <div class="pickrow">${FINISH.map((f,i)=>`<button class="pb ${i===st.fin?"on":""}" data-fin="${i}">${f[1]}</button>`).join("")}</div>
+      <p class="lab">Name it</p>
+      <input type="text" id="nm" maxlength="34" placeholder="e.g. Deep Teal Fox No. 3" value="${esc(st.name)}">
+      <div class="row"><button class="big" id="send">Send to shelf</button></div>`;
+  }
+
+  h+=`</div>`;
+  M.innerHTML=h;
+  wire();
+}
+
+function wire(){
+  const o=cur, g=id=>document.getElementById(id);
+  if(g("back"))g("back").onclick=()=>go("orders");
+  if(g("doprint"))g("doprint").onclick=()=>{st.phase="diagnose";st.msg=null;render();};
+
+  M.querySelectorAll("[data-dx]").forEach(b=>b.onclick=()=>{
+    const pick=b.dataset.dx;
+    if(pick===o.kind){st.msg=null;st.phase=(o.kind==="move")?"move":"doer";}
+    else if(pick==="move"){st.msg="Look again. Read the opening phrase and ask <b>who is doing it</b>, then hunt for that word in the rest of the sentence. It is not in there, which is the whole problem.";}
+    else{st.msg="Look again. The thing this phrase is about <i>is</i> in this sentence. Find it, and you will see the phrase is just standing somewhere else.";}
+    render();
+  });
+
+  M.querySelectorAll("[data-dr]").forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.dr;
+    if(i===o.right){st.msg=null;st.phase="repair";}
+    else st.msg=`Could <b>${esc(o.doers[i])}</b> really be ${esc(o.phrase)}? Picture it, then try again.`;
+    render();
+  });
+
+  M.querySelectorAll("[data-fx]").forEach(b=>b.onclick=()=>{st.fix=+b.dataset.fx;st.phase="design";render();});
+
+  if(g("line"))drawLine();
+
+  M.querySelectorAll("[data-an]").forEach(b=>b.onclick=()=>{keepName();st.an=+b.dataset.an;render();});
+  M.querySelectorAll("[data-col]").forEach(b=>b.onclick=()=>{keepName();st.col=+b.dataset.col;render();});
+  M.querySelectorAll("[data-fin]").forEach(b=>b.onclick=()=>{keepName();st.fin=+b.dataset.fin;render();});
+  if(g("nm"))g("nm").oninput=e=>{st.name=e.target.value;};
+  if(g("send"))g("send").onclick=()=>{
+    keepName();
+    const col=FILAMENT[st.col],an=ANIMALS[st.an],fin=FINISH[st.fin];
+    S.shelf[o.id]={animal:an[0],color:col[0],colorName:col[1],finish:fin[0],finishName:fin[1],
+                   name:(st.name.trim()||(col[1]+" "+an[1]))};
+    save();go("shelf");
+  };
+}
+function keepName(){const n=document.getElementById("nm");if(n)st.name=n.value;}
+
+function drawLine(){
+  const o=cur,L=document.getElementById("line");
+  let h="";
+  for(let i=0;i<=o.base.length;i++){
+    if(st.held&&i>0)h+=`<button class="slot" data-slot="${i}" aria-label="Put the phrase here"></button>`;
+    if(!st.held&&st.pos===i)h+=`<button class="chip" data-chip="1">${esc(o.mod)}</button>`;
+    if(i<o.base.length)h+=`<span class="w">${esc(o.base[i])}</span>`;
+  }
+  h+=`<span class="w">.</span>`;
+  L.innerHTML=h;
+  L.querySelectorAll("[data-chip]").forEach(b=>b.onclick=()=>{st.held=true;st.msg=null;render();});
+  L.querySelectorAll("[data-slot]").forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.slot;
+    st.held=false;st.pos=i;
+    if(o.good.indexOf(i)>-1){st.msg=null;st.phase="design";}
+    else{
+      const fwd=o.attach==="fwd";
+      const neighbour=fwd?o.base[i]:o.base[i-1];
+      const where=fwd?"whatever comes right after it":"the words right in front of it";
+      const now=neighbour?`<b>${esc(neighbour)}</b>`:"nothing at all &mdash; it is stranded on the end of the sentence";
+      st.msg=`Read it back: <b>${esc(sentenceFromParts(o,i))}</b><br><br>The printer attaches <b>${esc(o.mod)}</b> to ${where}, and right now that is ${now}. It needs to be about <b>${esc(o.about)}</b>. Pick it up and go again.`;
+    }
+    render();
+  });
+}
+
+function render(){
+  document.getElementById("tabOrders").classList.toggle("on",view==="orders");
+  document.getElementById("tabShelf").classList.toggle("on",view==="shelf");
+  if(view==="orders")viewOrders();
+  else if(view==="shelf")viewShelf();
+  else viewOrder();
+}
+
+document.getElementById("tabOrders").onclick=()=>go("orders");
+document.getElementById("tabShelf").onclick=()=>go("shelf");
+let armed=false;
+document.getElementById("reset").onclick=function(){
+  if(!armed){armed=true;this.textContent="Tap again to clear everything";setTimeout(()=>{armed=false;this.textContent="Clear my shop";},4000);return;}
+  S=blank();save();armed=false;this.textContent="Clear my shop";go("orders");
+};
+render();
+</script>
+</body>
+</html>
