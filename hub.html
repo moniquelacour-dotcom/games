@@ -257,6 +257,10 @@ function seal(key, obj){ var iv = crypto.getRandomValues(new Uint8Array(12)); re
 function unseal(key, m){ if(!key || !m.iv || !m.ct) return Promise.resolve(null); return SUB.decrypt({name:"AES-GCM", iv:unb64(m.iv)}, key, unb64(m.ct)).then(function(pt){ return JSON.parse(new TextDecoder().decode(pt)); }).catch(function(){ return null; }); }
 
 if(isCoach) coach(); else student();
+/* Pasting the other link into a tab that already has the hub open changes only the part after "#",
+   which browsers don't reload. Reload so the coach link opens the coach page and a student link the student page. */
+var startHash = location.hash;
+window.addEventListener("hashchange", function(){ if(location.hash !== startHash) location.reload(); });
 
 /* =================================================================== COACH */
 function coach(){
