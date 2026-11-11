@@ -223,10 +223,14 @@ function coach(){
   function sk(id, name, set){ return {id:id, name:name, set:set || "", own:[]}; }
   /* Lane > goal > skill. The goals and skills are the coach's own list (from her Roster); these are only the starting copy. */
   var DEFAULT = {
-    acc:{name:"Accuracy", goals:[{id:"acc-g1", name:"Goal not named yet", skills:Object.keys(Q.SETS).map(function(k){ return sk(k, Q.SETS[k].name + " vowel", k); })}]},
+    acc:{name:"Accuracy", goals:[
+      {id:"acc-bme", name:"I can read the beginning, middle and end of words", skills:[sk("acc-beg", "I can read the beginning of a word"), sk("acc-mid", "I can read the middle of a word"), sk("acc-end", "I can read the end of a word")]},
+      {id:"acc-parts", name:"I can read word parts", skills:[sk("acc-pre", "I can read prefixes"), sk("acc-suf", "I can read suffixes"), sk("acc-base", "I can find the base word"), sk("acc-chunk", "I can chunk a long word"), sk("acc-endings", "I can add endings like -y and -ing (change the base word first)")]},
+      {id:"acc-g1", name:"I can read long vowels", skills:Object.keys(Q.SETS).map(function(k){ return sk(k, Q.SETS[k].name + " vowel", k); })},
+      {id:"acc-reread", name:"I can reread the sentence", skills:[]},
+      {id:"acc-heart", name:"I can read heart words", skills:[]}]},
     flu:{name:"Fluency", goals:[
-      {id:"flu-talk", name:"I can make my reading sound like talking", skills:[sk("flu-signs", "I can read the signs", "signs"), sk("flu-scoops", "I can read in scoops", "scoops"), sk("flu-expr", "I can read with expression"), sk("flu-speed", "I can read at my goal speed")]},
-      {id:"flu-heart", name:"I can read heart words", skills:[]}]},
+      {id:"flu-talk", name:"I can make my reading sound like talking", skills:[sk("flu-signs", "I can read the signs", "signs"), sk("flu-scoops", "I can read in scoops", "scoops"), sk("flu-expr", "I can read with expression"), sk("flu-speed", "I can read at my goal speed")]}]},
     com:{name:"Comprehension", goals:[]}
   };
   var cfg = store("hub-coach1") || {};
@@ -537,9 +541,18 @@ function coach(){
       var lk = Object.keys(cfg.lanes).filter(function(k){ return low(cfg.lanes[k].name) === low(li.name); })[0];
       if(!lk){ lk = uid(); cfg.lanes[lk] = {name:String(li.name || "Lane"), goals:[]}; added++; }
       (li.goals || []).forEach(function(gi){
+        var names = (gi.skills || []).map(function(sn){ return typeof sn === "string" ? sn : sn.name; });
         var g = cfg.lanes[lk].goals.filter(function(x){ return low(x.name) === low(gi.name); })[0];
+        if(!g){   // a goal renamed on the Roster: same skills, new name
+          g = cfg.lanes[lk].goals.filter(function(x){ return names.length && x.skills.some(function(s){ return names.some(function(n){ return low(n) === low(s.name); }); }); })[0];
+          if(g){ g.name = String(gi.name); added++; }
+        }
         if(!g){ g = {id:uid(), name:String(gi.name || "Goal"), skills:[]}; cfg.lanes[lk].goals.push(g); added++; }
-        (gi.skills || []).forEach(function(sn){ var n = typeof sn === "string" ? sn : sn.name; if(!g.skills.some(function(x){ return low(x.name) === low(n); })){ g.skills.push({id:uid(), name:String(n), set:"", own:[]}); added++; } });
+        names.forEach(function(n){
+          if(g.skills.some(function(x){ return low(x.name) === low(n); })) return;
+          var b = BUILT.filter(function(x){ return low(x.name) === low(n); })[0];   // a name that matches a built-in set uses it
+          g.skills.push({id:uid(), name:String(n), set:b ? b.id : "", own:[]}); added++;
+        });
       });
     });
     save(); broadcast(); renderAll();
