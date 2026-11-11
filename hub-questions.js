@@ -60,6 +60,7 @@ function blanks(n){ var s = []; for(var i = 0; i < n; i++) s.push("_"); return s
 var FIN_OUT = ["ol", "i", "o", "e"], AMBIG = ["ie", "y", "ey", "ea"];
 var KINDS = ["says", "odd", "finish", "hear"];
 function make(setId, kind){
+  if(GEN[setId]) return GEN[setId].make();
   var set = SETS[setId]; if(!set) return null;
   var ws = words(set), canHear = typeof speechSynthesis !== "undefined";
   kind = kind || pick(KINDS);
@@ -94,6 +95,32 @@ function make(setId, kind){
   q.kind = kind; q.set = setId;
   return q;
 }
+
+/* Fluency sets. The sentences come from Read the Signs and Read in Scoops (Grade 2 level). */
+var FLU = {"PICKS":[{"t":"The orange cat is sleeping on the warm, fuzzy rug","a":"."},{"t":"Where did you put my red hat","a":"?"},{"t":"Watch out, the puppy is running right at us","a":"!"},{"t":"We had pancakes for breakfast today","a":"."},{"t":"Could you please help me carry this heavy box","a":"?"},{"t":"Wow, that is the biggest fish I have ever seen","a":"!"},{"t":"Frogs can jump very far","a":"."},{"t":"What time does the yellow school bus come","a":"?"},{"t":"Hooray, our team finally won the big game","a":"!"},{"t":"The sun goes down behind the hills at night","a":"."},{"t":"Is it going to rain again this afternoon","a":"?"},{"t":"Ouch, I stubbed my toe on the bottom step","a":"!"},{"t":"My sister likes to draw horses","a":"."},{"t":"How many legs does a garden spider have","a":"?"},{"t":"Yay, it is finally snowing outside","a":"!"},{"t":"Bees make honey in their hives","a":"."},{"t":"Did you feed the fish today","a":"?"},{"t":"Oh no, the milk spilled all over the table","a":"!"}],"LINES":["The little brown dog | ran across the yard.","My big sister | likes to read | at night.","A spider spins a web | in the corner | of the barn.","After lunch, | we went outside | to play.","The baby bird | opened its mouth | for a worm.","Giant whales swim | in the deep blue ocean.","On a hot day, | the snowman melted | into a puddle.","The bees flew | from flower | to flower.","My friend and I | built a fort | out of blankets.","The moon came up | over the dark hills.","A turtle carries its heavy shell | everywhere it goes.","When it rains, | the worms come up | out of the ground."]};
+var SIGNS = {".":". period","?":"? question mark","!":"! exclamation mark"};
+function makeSigns(){
+  var p = pick(FLU.PICKS);
+  return {prompt:"Which sign goes at the end?", show:p.t + " ___", choices:shuffle([SIGNS["."], SIGNS["?"], SIGNS["!"]]), ans:SIGNS[p.a], kind:"signs", set:"signs"};
+}
+var GLUE = ["the","a","an","my","his","her","its","our","their","of","to","in","on","at","for","from","and","into","out","up","over","with"];
+function joinBreaks(ws, br){ var out = []; ws.forEach(function(w, i){ out.push(w); if(i < ws.length - 1 && br[i]) out.push("/"); }); return out.join(" "); }
+function makeScoops(){
+  var line = pick(FLU.LINES), ps = line.split("|").map(function(x){ return x.trim(); }), ws = ps.join(" ").split(/\s+/), nat = {}, n = 0;
+  ps.forEach(function(p, k){ n += p.split(/\s+/).length; if(k < ps.length - 1) nat[n - 1] = 1; });
+  var right = joinBreaks(ws, nat), robot = ws.join(" / "), wrong = [], tries = 0;
+  var bad = []; for(var i = 0; i < ws.length - 1; i++) if(!nat[i]) bad.push(i);
+  var glue = bad.filter(function(i){ return GLUE.indexOf(ws[i].toLowerCase().replace(/[^a-z]/g, "")) >= 0; });
+  while(wrong.length < 2 && tries++ < 40){
+    var br = {}, k = Object.keys(nat).length || 1, pool = shuffle(glue.length ? glue.concat(bad) : bad);
+    pool.slice(0, k).forEach(function(i){ br[i] = 1; });
+    var s = joinBreaks(ws, br);
+    if(s !== right && s !== robot && wrong.indexOf(s) < 0 && Object.keys(br).length) wrong.push(s);
+  }
+  return {prompt:"Which one is read in scoops, like talking?", choices:shuffle([right, robot].concat(wrong)), ans:right, kind:"scoops", set:"scoops"};
+}
+var GEN = {signs:{name:"Read the signs (punctuation)", make:makeSigns}, scoops:{name:"Read in scoops (phrasing)", make:makeScoops}};
+var LIST = Object.keys(SETS).map(function(k){ return {id:k, name:SETS[k].name + " vowel"}; }).concat(Object.keys(GEN).map(function(k){ return {id:k, name:GEN[k].name}; }));
 /* A coach-written question: {p, c:[4], r:index} */
 function fromOwn(list){
   if(!list || !list.length) return null;
@@ -103,5 +130,5 @@ function fromOwn(list){
 function speak(w){
   try{ speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(w); u.rate = 0.8; u.lang = "en-US"; speechSynthesis.speak(u); }catch(e){}
 }
-window.HubQ = {SETS:SETS, make:make, fromOwn:fromOwn, speak:speak, shuffle:shuffle};
+window.HubQ = {SETS:SETS, LIST:LIST, make:make, fromOwn:fromOwn, speak:speak, shuffle:shuffle};
 })();

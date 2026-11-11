@@ -38,6 +38,16 @@ th{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05
 .av{font-size:24px;line-height:1}
 .lanes{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
 .lane{border:1px solid var(--line);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.goal{border:2px solid var(--line);border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.goal>.row input{font-weight:700}
+.pairs{display:flex;flex-wrap:wrap;gap:8px}
+.pairs button{font-size:28px;line-height:1;border:2px solid var(--line);background:var(--card);border-radius:14px;padding:6px 10px;cursor:pointer}
+.pairs button.sel{border-color:var(--accent);outline:3px solid var(--accent)}
+.pairgrp{display:flex;gap:4px;align-items:center;background:var(--soft);border-radius:14px;padding:4px 8px}
+.stu-goal{background:var(--card);border:2px solid var(--accent);border-radius:16px;padding:10px 14px;display:flex;flex-direction:column;gap:2px}
+.stu-goal b{font:800 20px/1.25 "Baloo 2",system-ui,sans-serif}
+.stu-goal span{font-size:16px}
+.taken{border:2px solid var(--bad);background:var(--badSoft);border-radius:12px;padding:8px 10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .skill{border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px;background:var(--soft)}
 .qed{display:flex;flex-direction:column;gap:6px;border-top:1px dashed var(--line);padding-top:6px}
 .qed .ans{display:grid;grid-template-columns:auto 1fr;gap:4px 6px;align-items:center}
@@ -65,6 +75,8 @@ th{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05
 .qshow{font:800 40px/1.1 "Atkinson Hyperlegible",system-ui,sans-serif;text-align:center;letter-spacing:.06em}
 .qchoices{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .qchoices button{font:800 28px/1.1 "Atkinson Hyperlegible",system-ui,sans-serif;border:3px solid var(--line);background:var(--card);border-radius:16px;padding:16px 8px;cursor:pointer}
+.qchoices.long{grid-template-columns:1fr}
+.qchoices.long button{font-size:21px;line-height:1.35;text-align:left;padding:12px 14px}
 .qchoices button.right{background:var(--okSoft);border-color:var(--ok)}
 .qchoices button.wrong{background:var(--badSoft);border-color:var(--bad);opacity:.7}
 .qmsg{min-height:1.4em;text-align:center;font-size:20px;font-weight:700}
@@ -93,32 +105,43 @@ th{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05
         <div class="row"><span class="label">Group</span><select id="cGroup"></select></div>
         <div class="row">
           <button class="btn main" id="mWarm">▶ Warm-up</button>
-          <button class="btn main" id="mGame">▶ Game</button>
+          <button class="btn main" id="mGame">▶ Whole group</button>
+          <button class="btn main" id="mPairs">▶ Pairs</button>
           <button class="btn" id="mIdle">⏸ Pause</button>
         </div>
         <div class="small muted" id="cMode"></div>
         <div class="row"><span class="label">Warm-up</span><select id="cWarm"></select><button class="btn sm" id="cWarmNew">New puzzle</button></div>
         <div class="small muted" id="cWarmProg"></div>
         <div class="row"><span class="label">Game</span><select id="cGame"></select></div>
+        <div id="pairBox" class="note" hidden>
+          <div class="small"><b>Pairs:</b> tap one animal, then another, to put them together. Tap a pair to split it. Each pair plays in its own space and sees only each other.</div>
+          <div class="pairs" id="pairPick"></div>
+          <div class="row"><button class="btn sm" id="pairMix">Mix pairs</button><button class="btn sm" id="pairClear">Clear</button></div>
+        </div>
       </section>
 
       <section class="card">
         <h2>Live <span class="small muted">(this session)</span></h2>
+        <div id="takenQ"></div>
         <div id="helpQ"></div>
         <div style="overflow-x:auto"><table><thead><tr><th></th><th>Student</th><th>Skill</th><th>First try</th><th>Ledge</th></tr></thead><tbody id="liveRows"></tbody></table></div>
       </section>
     </div>
 
     <section class="card" style="margin-top:16px">
-      <h2>Each student's lane and skill</h2>
-      <p class="small muted">Pick a lane, then a skill. Changes reach the student's game within a few seconds.</p>
+      <h2>Each student's lane, goal and skill</h2>
+      <p class="small muted">Pick a lane, then a goal, then the one skill they work on now. Each student sees only their own goal and skill, sent to their device in a locked (scrambled) message. Changes reach them within a few seconds.</p>
       <div class="row"><label class="small"><input type="checkbox" id="allKids"> Show all my students (not just this group)</label></div>
-      <div style="overflow-x:auto"><table><thead><tr><th></th><th>Student</th><th>Lane</th><th>Skill</th><th>Status</th></tr></thead><tbody id="asgRows"></tbody></table></div>
+      <div style="overflow-x:auto"><table><thead><tr><th></th><th>Student</th><th>Lane</th><th>Goal</th><th>Skill</th><th>Status</th></tr></thead><tbody id="asgRows"></tbody></table></div>
     </section>
 
     <section class="card" style="margin-top:16px">
-      <h2>Lanes and skills</h2>
-      <p class="small muted">Add the skills for each lane. Each skill gets its questions from a built-in list, or from questions you write (4 answers, you mark the right one).</p>
+      <h2>Lanes, goals and skills</h2>
+      <p class="small muted">Each lane has goals; each goal has skills. Your master list lives on your My Reading Roster page: copy it there with "Copy for the hub" and paste it here. Each skill gets its questions from a built-in list, or from questions you write (4 answers, you mark the right one).</p>
+      <details><summary class="small" style="cursor:pointer;font-weight:700">Paste your list from the Roster</summary>
+        <div class="row" style="margin-top:6px"><textarea id="impText" rows="3" style="flex:1;min-width:0" placeholder="Paste here"></textarea><button class="btn sm main" id="impGo">Add to the hub</button></div>
+        <div class="small muted" id="impMsg">Adds new lanes, goals and skills by name. Nothing here is deleted, and questions you wrote stay.</div>
+      </details>
       <div class="lanes" id="lanes"></div>
     </section>
 
@@ -139,6 +162,7 @@ th{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05
   <!-- ================= STUDENT ================= -->
   <div id="student" class="stu" hidden>
     <div class="stu-top"><span class="stu-me" id="sMe"></span><span class="pill" id="sRoom"></span><span class="small muted" id="sStatus"></span></div>
+    <div class="stu-goal" id="sGoal" hidden></div>
     <div class="card" id="sJoin"></div>
     <div class="card" id="sWait" hidden><div class="big">Hold on! Your coach is getting ready. 🎈</div></div>
     <div class="card" id="sWarm" hidden></div>
@@ -150,7 +174,7 @@ th{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05
 <div class="toast" id="toast" hidden><span id="toastMsg"></span><button id="toastX">OK</button></div>
 
 <script src="turn-timer.js?v=9"></script>
-<script src="hub-questions.js?v=1"></script>
+<script src="hub-questions.js?v=2"></script>
 <script src="hub-warmups.js?v=1"></script>
 <script src="hub-climb.js?v=1"></script>
 <script>
@@ -165,6 +189,28 @@ function nice(day){ var p = day.split("-"); return +p[2] + " " + ["Jan","Feb","M
 function uid(){ return Math.random().toString(36).slice(2, 9); }
 function roomOf(code){ return code + "H"; }   // the hub talks in its own room next to the Turn Timer room
 
+/* Locked messages. Each student's device and the coach page agree on a secret key over the public relay
+   (ECDH key exchange), then that student's goal, skill, questions, answers and help travel scrambled (AES-GCM).
+   Anyone else listening, other students included, sees only scrambled data. */
+var SUB = window.crypto && crypto.subtle;
+function b64(buf){ var s = "", a = new Uint8Array(buf); for(var i = 0; i < a.length; i++) s += String.fromCharCode(a[i]); return btoa(s); }
+function unb64(s){ var b = atob(s), a = new Uint8Array(b.length); for(var i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; }
+var EC = {name:"ECDH", namedCurve:"P-256"};
+function loadKeys(name){
+  var j = store(name);
+  if(j && j.priv && j.pub) return Promise.all([SUB.importKey("jwk", j.priv, EC, true, ["deriveKey"]), SUB.importKey("jwk", j.pub, EC, true, [])]).then(function(k){ return {privateKey:k[0], publicKey:k[1]}; }).catch(function(){ return newKeys(name); });
+  return newKeys(name);
+}
+function newKeys(name){
+  return SUB.generateKey(EC, true, ["deriveKey"]).then(function(kp){
+    return Promise.all([SUB.exportKey("jwk", kp.privateKey), SUB.exportKey("jwk", kp.publicKey)]).then(function(j){ store(name, {priv:j[0], pub:j[1]}); return kp; });
+  });
+}
+function pubOf(kp){ return SUB.exportKey("raw", kp.publicKey).then(b64); }
+function derive(priv, pub){ return SUB.importKey("raw", unb64(pub), EC, false, []).then(function(p){ return SUB.deriveKey({name:"ECDH", public:p}, priv, {name:"AES-GCM", length:256}, false, ["encrypt","decrypt"]); }); }
+function seal(key, obj){ var iv = crypto.getRandomValues(new Uint8Array(12)); return SUB.encrypt({name:"AES-GCM", iv:iv}, key, new TextEncoder().encode(JSON.stringify(obj))).then(function(ct){ return {iv:b64(iv), ct:b64(ct)}; }); }
+function unseal(key, m){ if(!key || !m.iv || !m.ct) return Promise.resolve(null); return SUB.decrypt({name:"AES-GCM", iv:unb64(m.iv)}, key, unb64(m.ct)).then(function(pt){ return JSON.parse(new TextDecoder().decode(pt)); }).catch(function(){ return null; }); }
+
 if(isCoach) coach(); else student();
 
 /* =================================================================== COACH */
@@ -173,16 +219,26 @@ function coach(){
   var tt = store("tt-coach2") || {};
   var students = tt.students || [], groups = tt.groups || [];
   if(!students.length) $("noStudents").hidden = false;
-  var SETNAMES = Object.keys(Q.SETS);
+  var BUILT = Q.LIST;   // built-in question sets: long vowels, punctuation, phrasing
+  function sk(id, name, set){ return {id:id, name:name, set:set || "", own:[]}; }
+  /* Lane > goal > skill. The goals and skills are the coach's own list (from her Roster); these are only the starting copy. */
+  var DEFAULT = {
+    acc:{name:"Accuracy", goals:[{id:"acc-g1", name:"Goal not named yet", skills:Object.keys(Q.SETS).map(function(k){ return sk(k, Q.SETS[k].name + " vowel", k); })}]},
+    flu:{name:"Fluency", goals:[
+      {id:"flu-talk", name:"I can make my reading sound like talking", skills:[sk("flu-signs", "I can read the signs", "signs"), sk("flu-scoops", "I can read in scoops", "scoops"), sk("flu-expr", "I can read with expression"), sk("flu-speed", "I can read at my goal speed")]},
+      {id:"flu-heart", name:"I can read heart words", skills:[]}]},
+    com:{name:"Comprehension", goals:[]}
+  };
   var cfg = store("hub-coach1") || {};
-  if(!cfg.lanes){
-    cfg.lanes = {
-      acc:{name:"Accuracy", skills:SETNAMES.map(function(k){ return {id:k, name:Q.SETS[k].name + " vowel", set:k, own:[]}; })},
-      flu:{name:"Fluency", skills:[]},
-      com:{name:"Comprehension", skills:[]}
-    };
-  }
+  if(!cfg.lanes) cfg.lanes = JSON.parse(JSON.stringify(DEFAULT));
+  Object.keys(cfg.lanes).forEach(function(lk){   // move an older lane > skill list under one goal
+    var L = cfg.lanes[lk];
+    if(!L.goals){ L.goals = L.skills && L.skills.length ? [{id:lk + "-g1", name:"Goal not named yet", skills:L.skills}] : []; delete L.skills; }
+    if(!L.goals.length && DEFAULT[lk] && DEFAULT[lk].goals.length) L.goals = JSON.parse(JSON.stringify(DEFAULT[lk].goals));
+  });
   cfg.asg = cfg.asg || {}; cfg.stats = cfg.stats || {};
+  cfg.play = cfg.play || "group"; cfg.pairs = cfg.pairs || [];
+  Object.keys(cfg.asg).forEach(function(sid){ var a = cfg.asg[sid]; if(a.skill && !a.goal){ var f = findSkill(a.skill); if(f) a.goal = f.goal.id; } });
   cfg.rule = cfg.rule || {pct:90, row:2, min:10, max:4};
   cfg.warm = cfg.warm || {pick:"auto", cur:"ws", day:"", st:{}};
   cfg.game = cfg.game || "climb"; cfg.mode = cfg.mode || "idle";
@@ -191,17 +247,26 @@ function coach(){
   function save(){ store("hub-coach1", cfg); }
   save();
 
-  var live = {}, helps = [], room = null;
+  var live = {}, helps = [], room = null, ckp = null, cpk = "", keys = {}, taken = {};
+  cfg.claims = cfg.claims || {};
+  if(SUB) loadKeys("hub-ckey1").then(function(kp){ ckp = kp; return pubOf(kp); }).then(function(p){ cpk = p; broadcast(); });
   function kidsInGroup(){
     var g = groups.filter(function(x){ return x.id === cfg.group; })[0];
     var ids = g ? g.ids : students.map(function(s){ return s.id; });
     return students.filter(function(s){ return ids.indexOf(s.id) >= 0 && s.av; });
   }
   function byAv(av){ return kidsInGroup().filter(function(s){ return s.av === av; })[0] || students.filter(function(s){ return s.av === av; })[0]; }
-  function skillOf(sid){
-    var a = cfg.asg[sid]; if(!a || !cfg.lanes[a.lane]) return null;
-    return cfg.lanes[a.lane].skills.filter(function(s){ return s.id === a.skill; })[0] || null;
+  function findSkill(id){
+    var out = null;
+    Object.keys(cfg.lanes).forEach(function(lk){ cfg.lanes[lk].goals.forEach(function(g){ g.skills.forEach(function(s){ if(s.id === id) out = {lane:lk, goal:g, skill:s}; }); }); });
+    return out;
   }
+  function goalById(lk, gid){ var L = cfg.lanes[lk]; return L ? L.goals.filter(function(g){ return g.id === gid; })[0] || null : null; }
+  function skillOf(sid){
+    var a = cfg.asg[sid]; if(!a || !a.skill) return null;
+    var f = findSkill(a.skill); return f ? f.skill : null;
+  }
+  function goalOf(sid){ var a = cfg.asg[sid]; return a ? goalById(a.lane, a.goal) : null; }
   function warmState(){ var id = cfg.warm.cur; cfg.warm.st[id] = cfg.warm.st[id] || W.fresh(id); return cfg.warm.st[id]; }
 
   /* ---- relay ---- */
@@ -215,21 +280,48 @@ function coach(){
     onX:onMsg
   });
   function stateMsg(){
-    var asg = {};
-    kidsInGroup().forEach(function(s){
-      var sk = skillOf(s.id); if(!sk) return;
-      asg[s.av] = sk.set ? {s:sk.name, set:sk.set} : {s:sk.name, own:(sk.own || []).map(function(q){ return {p:q.p, s:q.s, c:q.c, r:q.r}; })};
-    });
-    return {g:"hub", t:"st", mode:cfg.mode, kids:kidsInGroup().map(function(s){ return s.av; }), warm:cfg.mode === "warm" ? warmState() : null, game:cfg.game, asg:asg};
+    return {g:"hub", t:"st", mode:cfg.mode, kids:kidsInGroup().map(function(s){ return s.av; }), warm:cfg.mode === "warm" ? warmState() : null, game:cfg.game,
+            play:cfg.play, pairs:cfg.play === "pairs" ? cfg.pairs : [], pk:cpk};
   }
-  function broadcast(){ if(room) room.send("x", stateMsg(), false); }
+  function keyFor(av){
+    var pk = cfg.claims[av]; if(!pk || !ckp) return Promise.resolve(null);
+    if(keys[av] && keys[av].pk === pk) return keys[av].k;
+    var k = derive(ckp.privateKey, pk); keys[av] = {pk:pk, k:k}; return k;
+  }
+  function mineFor(s){
+    var sk = skillOf(s.id), g = goalOf(s.id), out = {goal:g ? g.name : "", skill:sk ? sk.name : ""};
+    if(sk){ if(sk.set) out.set = sk.set; else out.own = (sk.own || []).map(function(q){ return {p:q.p, s:q.s, c:q.c, r:q.r}; }); }
+    return out;
+  }
+  function sendMine(s){
+    keyFor(s.av).then(function(k){ if(!k) return; return seal(k, mineFor(s)).then(function(x){ room.send("x", {g:"hub", t:"me", a:s.av, iv:x.iv, ct:x.ct}, false); }); }).catch(function(){});
+  }
+  function broadcast(){
+    if(!room) return;
+    room.send("x", stateMsg(), false);
+    kidsInGroup().forEach(function(s){ if(cfg.claims[s.av]) sendMine(s); });
+  }
   setInterval(broadcast, 2500);
 
   function onMsg(m){
     if(!m || m.g !== "hub" || !m.a) return;
+    if(m.t === "hello"){
+      if(!m.pk) return;
+      if(!cfg.claims[m.a]){ cfg.claims[m.a] = m.pk; save(); }
+      if(cfg.claims[m.a] === m.pk){ delete taken[m.a]; var s0 = byAv(m.a); if(s0) sendMine(s0); room.send("x", stateMsg(), false); }
+      else { taken[m.a] = Date.now(); room.send("x", {g:"hub", t:"taken", a:m.a, pk:m.pk}, false); renderTaken(); }
+      var L0 = live[m.a] = live[m.a] || {r:0, n:0, ledge:null, seen:0}; if(cfg.claims[m.a] === m.pk) L0.seen = Date.now();
+      return;
+    }
+    if(m.t === "ans" || m.t === "help"){
+      keyFor(m.a).then(function(k){ return unseal(k, m); }).then(function(o){ if(o){ o.t = m.t; o.a = m.a; o.g = "hub"; handle(o); } });
+      return;
+    }
+    handle(m);
+  }
+  function handle(m){
     var L = live[m.a] = live[m.a] || {r:0, n:0, ledge:null, seen:0};
     L.seen = Date.now();
-    if(m.t === "hello") broadcast();
     if(m.t === "pos") L.ledge = m.n;
     if(m.t === "w" && cfg.mode === "warm"){
       var ws = warmState();
@@ -270,11 +362,46 @@ function coach(){
     cfg.mode = m; save(); broadcast(); renderToday();
   }
   $("mWarm").onclick = function(){ setMode("warm"); };
-  $("mGame").onclick = function(){ setMode("game"); };
+  $("mGame").onclick = function(){ cfg.play = "group"; setMode("game"); renderPairs(); };
+  $("mPairs").onclick = function(){ cfg.play = "pairs"; if(!cfg.pairs.length) mixPairs(); setMode("game"); renderPairs(); };
+  var pairSel = "";
+  function inPair(av){ for(var i = 0; i < cfg.pairs.length; i++) if(cfg.pairs[i].indexOf(av) >= 0) return i; return -1; }
+  function mixPairs(){
+    var avs = kidsInGroup().map(function(s){ return s.av; });
+    for(var i = avs.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)), t = avs[i]; avs[i] = avs[j]; avs[j] = t; }
+    cfg.pairs = []; for(var k = 0; k < avs.length; k += 2) cfg.pairs.push(avs.slice(k, k + 2));
+    if(cfg.pairs.length > 1 && cfg.pairs[cfg.pairs.length - 1].length === 1) cfg.pairs[cfg.pairs.length - 2].push(cfg.pairs.pop()[0]);   // the odd one out makes a three
+    save(); broadcast();
+  }
+  function renderPairs(){
+    $("pairBox").hidden = cfg.play !== "pairs";
+    if(cfg.play !== "pairs") return;
+    var avs = kidsInGroup().map(function(s){ return s.av; });
+    cfg.pairs = cfg.pairs.map(function(p){ return p.filter(function(a){ return avs.indexOf(a) >= 0; }); }).filter(function(p){ return p.length; });
+    var solo = avs.filter(function(a){ return inPair(a) < 0; });
+    $("pairPick").innerHTML = (cfg.pairs.map(function(p){ return '<span class="pairgrp">' + p.map(function(a){ return '<button type="button" class="' + (pairSel === a ? "sel" : "") + '" data-a="' + esc(a) + '">' + esc(a) + '</button>'; }).join("") + '</span>'; }).join("") +
+      solo.map(function(a){ return '<button type="button" class="' + (pairSel === a ? "sel" : "") + '" data-a="' + esc(a) + '">' + esc(a) + '</button>'; }).join("")) || '<span class="small muted">No animals in this group yet.</span>';
+    $("pairPick").querySelectorAll("[data-a]").forEach(function(b){ b.onclick = function(){
+      var a = b.dataset.a, i = inPair(a);
+      if(!pairSel){
+        if(i >= 0 && cfg.pairs[i].length > 1){ cfg.pairs.splice(i, 1); save(); broadcast(); renderPairs(); return; }   // tap a pair to split it
+        pairSel = a; renderPairs(); return;
+      }
+      if(pairSel === a){ pairSel = ""; renderPairs(); return; }
+      var si = inPair(pairSel); if(si >= 0) cfg.pairs[si].splice(cfg.pairs[si].indexOf(pairSel), 1);
+      cfg.pairs = cfg.pairs.filter(function(p){ return p.length > 1; });
+      i = inPair(a);
+      if(i >= 0) cfg.pairs[i].push(pairSel); else cfg.pairs.push([a, pairSel]);
+      pairSel = ""; save(); broadcast(); renderPairs();
+    }; });
+  }
+  $("pairMix").onclick = function(){ mixPairs(); renderPairs(); };
+  $("pairClear").onclick = function(){ cfg.pairs = []; pairSel = ""; save(); broadcast(); renderPairs(); };
   $("mIdle").onclick = function(){ setMode("idle"); };
   function renderToday(){
-    ["mWarm","mGame","mIdle"].forEach(function(id){ $(id).classList.toggle("on", {mWarm:"warm", mGame:"game", mIdle:"idle"}[id] === cfg.mode); });
-    $("cMode").textContent = cfg.mode === "warm" ? "Students see the warm-up." : cfg.mode === "game" ? "Students are playing the game." : "Paused: students see “Hold on, your coach is getting ready.”";
+    $("mWarm").classList.toggle("on", cfg.mode === "warm"); $("mIdle").classList.toggle("on", cfg.mode === "idle");
+    $("mGame").classList.toggle("on", cfg.mode === "game" && cfg.play !== "pairs"); $("mPairs").classList.toggle("on", cfg.mode === "game" && cfg.play === "pairs");
+    $("cMode").textContent = cfg.mode === "warm" ? "Students see the warm-up." : cfg.mode === "game" ? (cfg.play === "pairs" ? "Pairs: each pair plays in its own space and sees only each other." : "Whole group: everyone plays together and sees each other's animals.") : "Paused: students see “Hold on, your coach is getting ready.”";
     var w = W.LIST.filter(function(x){ return x.id === cfg.warm.cur; })[0];
     $("cWarmProg").textContent = (w ? w.icon + " " + w.name + " · " : "") + W.progress(warmState()) + (cfg.warm.pick === "auto" ? " · switches each new day" : "");
   }
@@ -303,52 +430,85 @@ function coach(){
     $("helpQ").querySelectorAll("[data-hd]").forEach(function(b){ b.onclick = function(){ helps.splice(+b.dataset.hd, 1); renderHelp(); }; });
     document.title = helps.length ? "(" + helps.length + " 🙋) Reading Hub" : "Reading Hub · coach";
   }
-  function reply(i, text){ var h = helps[i]; if(!h) return; room.send("x", {g:"hub", t:"reply", to:h.a, m:text}, false); helps.splice(i, 1); renderHelp(); }
+  function reply(i, text){
+    var h = helps[i]; if(!h) return;
+    keyFor(h.a).then(function(k){ if(k) return seal(k, {m:text}).then(function(x){ room.send("x", {g:"hub", t:"reply", a:h.a, iv:x.iv, ct:x.ct}, false); }); });
+    helps.splice(i, 1); renderHelp();
+  }
+  function renderTaken(){
+    var now = Date.now();
+    $("takenQ").innerHTML = Object.keys(taken).filter(function(a){ return now - taken[a] < 120000; }).map(function(a){
+      var s = byAv(a);
+      return '<div class="taken"><span class="av">' + esc(a) + '</span><span class="small">A second device tried to join as ' + esc(s ? s.name : "this animal") + '. It was kept out.</span><button class="btn sm" data-free="' + esc(a) + '">Free ' + esc(a) + ' for a new device</button><button class="btn sm" data-tk="' + esc(a) + '">OK</button></div>';
+    }).join("");
+    $("takenQ").querySelectorAll("[data-free]").forEach(function(b){ b.onclick = function(){ var a = b.dataset.free; delete cfg.claims[a]; delete keys[a]; delete taken[a]; save(); renderTaken(); }; });
+    $("takenQ").querySelectorAll("[data-tk]").forEach(function(b){ b.onclick = function(){ delete taken[b.dataset.tk]; renderTaken(); }; });
+  }
 
-  /* ---- Assignments ---- */
+  /* ---- Assignments: lane > goal > skill ---- */
   $("allKids").onchange = renderAsg;
-  function laneOpts(sel){ return '<option value="">–</option>' + Object.keys(cfg.lanes).map(function(k){ return '<option value="' + k + '"' + (k === sel ? " selected" : "") + '>' + esc(cfg.lanes[k].name) + '</option>'; }).join(""); }
-  function skillOpts(lane, sel){ if(!cfg.lanes[lane]) return '<option value="">pick a lane first</option>'; return '<option value="">–</option>' + cfg.lanes[lane].skills.map(function(s){ return '<option value="' + esc(s.id) + '"' + (s.id === sel ? " selected" : "") + '>' + esc(s.name) + '</option>'; }).join(""); }
+  function opt(v, label, sel){ return '<option value="' + esc(v) + '"' + (v === sel ? " selected" : "") + '>' + esc(label) + '</option>'; }
+  function laneOpts(sel){ return opt("", "–", sel) + Object.keys(cfg.lanes).map(function(k){ return opt(k, cfg.lanes[k].name, sel); }).join(""); }
+  function goalOpts(lane, sel){ var L = cfg.lanes[lane]; if(!L) return opt("", "pick a lane first", ""); if(!L.goals.length) return opt("", "no goals yet", ""); return opt("", "–", sel) + L.goals.map(function(g){ return opt(g.id, g.name, sel); }).join(""); }
+  function skillOpts(lane, gid, sel){ var g = goalById(lane, gid); if(!g) return opt("", "pick a goal first", ""); if(!g.skills.length) return opt("", "no skills yet", ""); return opt("", "–", sel) + g.skills.map(function(s){ return opt(s.id, s.name, sel); }).join(""); }
   function renderAsg(){
     var list = $("allKids").checked ? students : kidsInGroup();
     $("asgRows").innerHTML = list.map(function(s){
       var a = cfg.asg[s.id] || {};
-      return '<tr><td class="av">' + esc(s.av || "") + '</td><td>' + esc(s.name) + '</td><td><select data-lane="' + esc(s.id) + '">' + laneOpts(a.lane) + '</select></td><td><select data-skill="' + esc(s.id) + '">' + skillOpts(a.lane, a.skill) + '</select></td><td>' + statusPill(s.id) + '</td></tr>';
-    }).join("") || '<tr><td colspan="5" class="muted">No students yet.</td></tr>';
-    $("asgRows").querySelectorAll("[data-lane]").forEach(function(el){ el.onchange = function(){ cfg.asg[el.dataset.lane] = {lane:el.value, skill:""}; save(); broadcast(); renderAll(); }; });
+      return '<tr><td class="av">' + esc(s.av || "") + '</td><td>' + esc(s.name) + '</td><td><select data-lane="' + esc(s.id) + '" aria-label="Lane for ' + esc(s.name) + '">' + laneOpts(a.lane) + '</select></td>' +
+        '<td><select data-goal="' + esc(s.id) + '" aria-label="Goal for ' + esc(s.name) + '" style="max-width:240px">' + goalOpts(a.lane, a.goal) + '</select></td>' +
+        '<td><select data-skill="' + esc(s.id) + '" aria-label="Skill for ' + esc(s.name) + '" style="max-width:240px">' + skillOpts(a.lane, a.goal, a.skill) + '</select></td><td>' + statusPill(s.id) + '</td></tr>';
+    }).join("") || '<tr><td colspan="6" class="muted">No students yet.</td></tr>';
+    $("asgRows").querySelectorAll("[data-lane]").forEach(function(el){ el.onchange = function(){ cfg.asg[el.dataset.lane] = {lane:el.value, goal:"", skill:""}; save(); broadcast(); renderAll(); }; });
+    $("asgRows").querySelectorAll("[data-goal]").forEach(function(el){ el.onchange = function(){ var a = cfg.asg[el.dataset.goal] = cfg.asg[el.dataset.goal] || {}; a.goal = el.value; a.skill = ""; save(); broadcast(); renderAll(); }; });
     $("asgRows").querySelectorAll("[data-skill]").forEach(function(el){ el.onchange = function(){ var a = cfg.asg[el.dataset.skill] = cfg.asg[el.dataset.skill] || {}; a.skill = el.value; save(); broadcast(); renderAll(); }; });
   }
 
-  /* ---- Lanes and skills ---- */
+  /* ---- Lanes > goals > skills ---- */
   var openQ = {};
   function renderLanes(){
     $("lanes").innerHTML = Object.keys(cfg.lanes).map(function(lk){
       var L = cfg.lanes[lk];
-      return '<div class="lane"><h3>' + esc(L.name) + '</h3>' + L.skills.map(function(s, i){
-        var src = '<select data-src="' + lk + '|' + i + '"><option value="">My own questions</option>' + SETNAMES.map(function(k){ return '<option value="' + k + '"' + (s.set === k ? " selected" : "") + '>Built-in: ' + esc(Q.SETS[k].name) + ' vowel</option>'; }).join("") + '</select>';
-        var own = s.set ? "" : '<div class="qed">' + (s.own || []).map(function(q, j){
-            return '<div class="ownq"><span>' + esc(q.p) + (q.s ? " <b>" + esc(q.s) + "</b>" : "") + ' → <b>' + esc(q.c[q.r]) + '</b></span><button class="btn sm danger" data-qdel="' + lk + '|' + i + '|' + j + '">×</button></div>';
-          }).join("") + (openQ[lk + i] ? qForm(lk, i) : '<button class="btn sm" data-qopen="' + lk + '|' + i + '">+ Write a question</button>') + '<div class="small muted">' + (s.own || []).length + ' question' + ((s.own || []).length === 1 ? "" : "s") + (!(s.own || []).length ? ": students with this skill get no questions until you add some" : "") + '</div></div>';
-        return '<div class="skill"><div class="row"><input type="text" value="' + esc(s.name) + '" data-sname="' + lk + '|' + i + '" style="flex:1"><button class="btn sm danger" data-sdel="' + lk + '|' + i + '">Delete</button></div>' + src + own + '</div>';
-      }).join("") + '<div class="row"><input type="text" placeholder="New skill name" data-snew="' + lk + '" style="flex:1"><button class="btn sm" data-sadd="' + lk + '">Add skill</button></div></div>';
+      return '<div class="lane"><h3>' + esc(L.name) + '</h3>' + L.goals.map(function(g, gi){
+        var gp = lk + "|" + gi;
+        return '<div class="goal"><div class="row"><span class="label">Goal</span><input type="text" value="' + esc(g.name) + '" data-gname="' + gp + '" style="flex:1" aria-label="Goal name"><button class="btn sm danger" data-gdel="' + gp + '">Delete</button></div>' +
+          g.skills.map(function(s, i){
+            var p = gp + "|" + i;
+            var src = '<select data-src="' + p + '" aria-label="Where the questions come from"><option value="">My own questions</option>' + BUILT.map(function(b){ return '<option value="' + b.id + '"' + (s.set === b.id ? " selected" : "") + '>Built-in: ' + esc(b.name) + '</option>'; }).join("") + '</select>';
+            var own = s.set ? "" : '<div class="qed">' + (s.own || []).map(function(q, j){
+                return '<div class="ownq"><span>' + esc(q.p) + (q.s ? " <b>" + esc(q.s) + "</b>" : "") + ' → <b>' + esc(q.c[q.r]) + '</b></span><button class="btn sm danger" data-qdel="' + p + '|' + j + '">×</button></div>';
+              }).join("") + (openQ[p] ? qForm(p) : '<button class="btn sm" data-qopen="' + p + '">+ Write a question</button>') + '<div class="small muted">' + (s.own || []).length + ' question' + ((s.own || []).length === 1 ? "" : "s") + (!(s.own || []).length ? ": students with this skill get no questions until you add some" : "") + '</div></div>';
+            return '<div class="skill"><div class="row"><input type="text" value="' + esc(s.name) + '" data-sname="' + p + '" style="flex:1" aria-label="Skill name"><button class="btn sm danger" data-sdel="' + p + '">Delete</button></div>' + src + own + '</div>';
+          }).join("") +
+          '<div class="row"><input type="text" placeholder="New skill, e.g. I can …" data-snew="' + gp + '" style="flex:1" aria-label="New skill"><button class="btn sm" data-sadd="' + gp + '">Add skill</button></div></div>';
+      }).join("") + '<div class="row"><input type="text" placeholder="New goal, e.g. I can …" data-gnew="' + lk + '" style="flex:1" aria-label="New goal"><button class="btn sm" data-gadd="' + lk + '">Add goal</button></div></div>';
     }).join("");
     var lanes = $("lanes");
-    function at(v){ var p = v.split("|"); return {L:cfg.lanes[p[0]], i:+p[1], j:+p[2], lk:p[0]}; }
-    lanes.querySelectorAll("[data-sname]").forEach(function(el){ el.onchange = function(){ var x = at(el.dataset.sname); x.L.skills[x.i].name = el.value.trim() || "Skill"; save(); broadcast(); renderAsg(); renderProg(); }; });
-    lanes.querySelectorAll("[data-src]").forEach(function(el){ el.onchange = function(){ var x = at(el.dataset.src); x.L.skills[x.i].set = el.value; x.L.skills[x.i].own = x.L.skills[x.i].own || []; save(); broadcast(); renderLanes(); }; });
+    function at(v){ var p = v.split("|"), L = cfg.lanes[p[0]], g = L && L.goals[+p[1]]; return {lk:p[0], L:L, gi:+p[1], g:g, i:+p[2], s:g && g.skills[+p[2]], j:+p[3]}; }
+    function sure(el){ if(el.dataset.sure !== "1"){ el.dataset.sure = "1"; el.textContent = "Tap again to delete"; return false; } return true; }
+    lanes.querySelectorAll("[data-gname]").forEach(function(el){ el.onchange = function(){ var x = at(el.dataset.gname); x.g.name = el.value.trim() || "Goal"; save(); broadcast(); renderAsg(); renderProg(); }; });
+    lanes.querySelectorAll("[data-gdel]").forEach(function(el){ el.onclick = function(){
+      if(!sure(el)) return; var x = at(el.dataset.gdel), gone = x.L.goals.splice(x.gi, 1)[0];
+      Object.keys(cfg.asg).forEach(function(k){ if(cfg.asg[k].goal === gone.id){ cfg.asg[k].goal = ""; cfg.asg[k].skill = ""; } });
+      save(); broadcast(); renderAll();
+    }; });
+    lanes.querySelectorAll("[data-gadd]").forEach(function(el){ el.onclick = function(){
+      var inp = lanes.querySelector('[data-gnew="' + el.dataset.gadd + '"]'), n = inp.value.trim(); if(!n) return;
+      cfg.lanes[el.dataset.gadd].goals.push({id:uid(), name:n, skills:[]}); save(); renderAll();
+    }; });
+    lanes.querySelectorAll("[data-sname]").forEach(function(el){ el.onchange = function(){ var x = at(el.dataset.sname); x.s.name = el.value.trim() || "Skill"; save(); broadcast(); renderAsg(); renderProg(); }; });
+    lanes.querySelectorAll("[data-src]").forEach(function(el){ el.onchange = function(){ var x = at(el.dataset.src); x.s.set = el.value; x.s.own = x.s.own || []; save(); broadcast(); renderLanes(); }; });
     lanes.querySelectorAll("[data-sdel]").forEach(function(el){ el.onclick = function(){
-      var x = at(el.dataset.sdel);
-      if(el.dataset.sure !== "1"){ el.dataset.sure = "1"; el.textContent = "Tap again to delete"; return; }
-      var gone = x.L.skills.splice(x.i, 1)[0];
+      if(!sure(el)) return; var x = at(el.dataset.sdel), gone = x.g.skills.splice(x.i, 1)[0];
       Object.keys(cfg.asg).forEach(function(k){ if(cfg.asg[k].skill === gone.id) cfg.asg[k].skill = ""; });
       save(); broadcast(); renderAll();
     }; });
     lanes.querySelectorAll("[data-sadd]").forEach(function(el){ el.onclick = function(){
       var inp = lanes.querySelector('[data-snew="' + el.dataset.sadd + '"]'), n = inp.value.trim(); if(!n) return;
-      cfg.lanes[el.dataset.sadd].skills.push({id:uid(), name:n, set:"", own:[]}); save(); renderAll();
+      at(el.dataset.sadd).g.skills.push({id:uid(), name:n, set:"", own:[]}); save(); renderAll();
     }; });
-    lanes.querySelectorAll("[data-qopen]").forEach(function(el){ el.onclick = function(){ var x = at(el.dataset.qopen); openQ[x.lk + x.i] = true; renderLanes(); }; });
-    lanes.querySelectorAll("[data-qdel]").forEach(function(el){ el.onclick = function(){ var x = at(el.dataset.qdel); x.L.skills[x.i].own.splice(x.j, 1); save(); broadcast(); renderLanes(); }; });
+    lanes.querySelectorAll("[data-qopen]").forEach(function(el){ el.onclick = function(){ openQ[el.dataset.qopen] = true; renderLanes(); }; });
+    lanes.querySelectorAll("[data-qdel]").forEach(function(el){ el.onclick = function(){ var x = at(el.dataset.qdel); x.s.own.splice(x.j, 1); save(); broadcast(); renderLanes(); }; });
     lanes.querySelectorAll("[data-qsave]").forEach(function(el){ el.onclick = function(){
       var x = at(el.dataset.qsave), f = el.closest(".qf"), p = f.querySelector(".qp").value.trim(), s = f.querySelector(".qs").value.trim();
       var c = [].map.call(f.querySelectorAll(".qc"), function(i){ return i.value.trim(); }), r = [].map.call(f.querySelectorAll(".qr"), function(i){ return i.checked; }).indexOf(true);
@@ -356,17 +516,35 @@ function coach(){
       if(!p){ msg.textContent = "Write the question."; return; }
       if(c.filter(Boolean).length < 2){ msg.textContent = "Write at least 2 answers (4 is best)."; return; }
       if(r < 0 || !c[r]){ msg.textContent = "Tap the circle next to the right answer."; return; }
-      x.L.skills[x.i].own.push({p:p, s:s, c:c, r:r}); save(); broadcast(); renderLanes();
+      x.s.own = x.s.own || []; x.s.own.push({p:p, s:s, c:c, r:r}); save(); broadcast(); renderLanes();
     }; });
-    lanes.querySelectorAll("[data-qclose]").forEach(function(el){ el.onclick = function(){ var x = at(el.dataset.qclose); openQ[x.lk + x.i] = false; renderLanes(); }; });
+    lanes.querySelectorAll("[data-qclose]").forEach(function(el){ el.onclick = function(){ openQ[el.dataset.qclose] = false; renderLanes(); }; });
   }
-  function qForm(lk, i){
-    var k = lk + "|" + i;
+  function qForm(k){
+    var nm = "r" + k.replace(/\W/g, "_");
     return '<div class="qf qed"><input type="text" class="qp" placeholder="Question, e.g. Which word has the long a sound?"><input type="text" class="qs" placeholder="Big word to show (optional)">' +
-      '<div class="ans">' + [0,1,2,3].map(function(n){ return '<input type="radio" name="r' + lk + i + '" class="qr" aria-label="Right answer"><input type="text" class="qc" placeholder="Answer ' + (n + 1) + '">'; }).join("") + '</div>' +
+      '<div class="ans">' + [0,1,2,3].map(function(n){ return '<input type="radio" name="' + nm + '" class="qr" aria-label="Right answer"><input type="text" class="qc" placeholder="Answer ' + (n + 1) + '">'; }).join("") + '</div>' +
       '<div class="small muted">Tap the circle next to the right answer. Students see the answers in a mixed order.</div><div class="small qerr" style="color:var(--bad)"></div>' +
       '<div class="row"><button class="btn sm main" data-qsave="' + k + '">Add question</button><button class="btn sm" data-qclose="' + k + '">Close</button></div></div>';
   }
+
+  /* ---- Paste the master list from the Roster. Adds by name; never deletes. ---- */
+  $("impGo").onclick = function(){
+    var data; try{ data = JSON.parse($("impText").value); }catch(e){ $("impMsg").textContent = "That didn't look like the list from the Roster. On the Roster's Lanes tab, tap “Copy for the hub”, then paste here."; return; }
+    var lanesIn = data && data.lanes; if(!Array.isArray(lanesIn)){ $("impMsg").textContent = "No lanes found in what you pasted."; return; }
+    var added = 0, low = function(s){ return String(s || "").trim().toLowerCase(); };
+    lanesIn.forEach(function(li){
+      var lk = Object.keys(cfg.lanes).filter(function(k){ return low(cfg.lanes[k].name) === low(li.name); })[0];
+      if(!lk){ lk = uid(); cfg.lanes[lk] = {name:String(li.name || "Lane"), goals:[]}; added++; }
+      (li.goals || []).forEach(function(gi){
+        var g = cfg.lanes[lk].goals.filter(function(x){ return low(x.name) === low(gi.name); })[0];
+        if(!g){ g = {id:uid(), name:String(gi.name || "Goal"), skills:[]}; cfg.lanes[lk].goals.push(g); added++; }
+        (gi.skills || []).forEach(function(sn){ var n = typeof sn === "string" ? sn : sn.name; if(!g.skills.some(function(x){ return low(x.name) === low(n); })){ g.skills.push({id:uid(), name:String(n), set:"", own:[]}); added++; } });
+      });
+    });
+    save(); broadcast(); renderAll();
+    $("impText").value = ""; $("impMsg").textContent = added ? "Added " + added + " new " + (added === 1 ? "item" : "items") + " (lanes, goals or skills). Nothing was deleted." : "Everything in the list was already here.";
+  };
 
   /* ---- Progress and the (unsettled) rule ---- */
   ["rPct","rRow","rMin","rMax"].forEach(function(id){
@@ -399,15 +577,14 @@ function coach(){
     students.forEach(function(s){
       var st = cfg.stats[s.id]; if(!st) return;
       Object.keys(st).forEach(function(skid){
-        var sk = null, lane = "";
-        Object.keys(cfg.lanes).forEach(function(lk){ cfg.lanes[lk].skills.forEach(function(x){ if(x.id === skid){ sk = x; lane = cfg.lanes[lk].name; } }); });
+        var fs0 = findSkill(skid), sk = fs0 && fs0.skill, lane = fs0 ? cfg.lanes[fs0.lane].name + " › " + fs0.goal.name : "";
         lines.push(s.name + " · " + lane + " › " + (sk ? sk.name : skid) + ": " + sessions(s.id, skid).map(function(x){ return nice(x.d) + " " + x.r + "/" + x.n; }).join(", "));
       });
     });
     try{ navigator.clipboard.writeText(lines.join("\n")); $("copyMsg").textContent = "Copied. Paste it to Claude to add to your My Reading Roster page."; }catch(e){ $("copyMsg").textContent = "Could not copy."; }
   };
 
-  function renderAll(){ renderToday(); renderLive(); renderHelp(); renderAsg(); renderLanes(); renderProg(); }
+  function renderAll(){ renderToday(); renderPairs(); renderLive(); renderHelp(); renderTaken(); renderAsg(); renderLanes(); renderProg(); }
   renderAll();
   window.addEventListener("storage", function(e){ if(e.key === "tt-coach2"){ tt = store("tt-coach2") || {}; students = tt.students || []; groups = tt.groups || []; renderAll(); } });
 }
@@ -419,6 +596,13 @@ function student(){
   var hash = (location.hash || "").replace("#", "").toUpperCase();
   if(/^[A-Z]{4}$/.test(hash) && hash !== saved.code) saved = {code:hash, av:""};
   var room = null, st = null, lastSt = 0, mode = "", game = null, gameId = "", friends = {}, card = null, modalOpen = false;
+  var kp = null, myPk = "", cKey = null, cPk = "", mine = null, lastMe = 0, lastHello = 0;
+  if(SUB) loadKeys("hub-skey1").then(function(k){ kp = k; return pubOf(k); }).then(function(p){ myPk = p; hello(); });
+  function hello(){ if(!myPk || !saved.av || !room) return; lastHello = Date.now(); send("hello", {pk:myPk}); }
+  function sendLocked(t, obj){
+    if(!cKey || !saved.av) return;
+    cKey.then(function(k){ return seal(k, obj); }).then(function(x){ send(t, {iv:x.iv, ct:x.ct}); }).catch(function(){});
+  }
 
   function persist(){ store("hub-student1", saved); }
   function send(t, o){ o = o || {}; o.g = "hub"; o.t = t; o.a = saved.av; if(room && saved.av) room.send("x", o, false); }
@@ -436,7 +620,7 @@ function student(){
       saved.av = b.dataset.a; persist();
       store("tt-join2", {code:saved.code, av:saved.av, at:Date.now()});   // so the turn timer card already knows you
       if(!card && T.mountStudent){ try{ store("tt-collapsed", true); card = T.mountStudent(document.body, {float:true}); }catch(e){} }
-      send("hello"); render();
+      mine = null; lastMe = 0; hello(); render();
     }; });
   }
   function connect(){
@@ -445,19 +629,35 @@ function student(){
     if(room) room.close();
     room = T.Room(roomOf(saved.code), {
       onStatus:function(s){ $("sStatus").textContent = s === "open" ? "" : s === "blocked" ? "Can't reach your coach. Tell your coach in Zoom chat." : "connecting…"; },
-      onOpen:function(){ send("hello"); },
+      onOpen:function(){ hello(); },
       onX:onMsg
     });
     render();
   }
   function onMsg(m){
     if(!m || m.g !== "hub") return;
-    if(m.t === "st"){ st = m; lastSt = Date.now(); render(); }
+    if(m.t === "st"){
+      st = m; lastSt = Date.now();
+      if(kp && m.pk && m.pk !== cPk){ cPk = m.pk; cKey = derive(kp.privateKey, m.pk); mine = null; hello(); }
+      else if(saved.av && Date.now() - lastMe > 8000 && Date.now() - lastHello > 5000) hello();
+      render();
+    }
     else if(m.t === "pos" && m.a && m.a !== saved.av){ friends[m.a] = {n:m.n, at:Date.now()}; }
-    else if(m.t === "reply" && m.to === saved.av){ toast("💬 Your coach: " + m.m); }
+    else if(m.t === "me" && m.a === saved.av && cKey){ cKey.then(function(k){ return unseal(k, m); }).then(function(o){ if(o){ mine = o; lastMe = Date.now(); renderGoal(); } }); }
+    else if(m.t === "reply" && m.a === saved.av && cKey){ cKey.then(function(k){ return unseal(k, m); }).then(function(o){ if(o) toast("💬 Your coach: " + o.m); }); }
+    else if(m.t === "taken" && m.a === saved.av && m.pk === myPk){
+      saved.av = ""; persist(); mine = null; render();
+      toast("That animal is already in the room. Tap your own animal. If it's yours, tell your coach.");
+    }
+  }
+  function renderGoal(){
+    var show = !!(mine && saved.av && (mine.goal || mine.skill));
+    $("sGoal").hidden = !show;
+    if(show) $("sGoal").innerHTML = (mine.goal ? '<b>🎯 My goal: ' + esc(mine.goal) + '</b>' : "") + (mine.skill ? '<span>Today\'s skill: ' + esc(mine.skill) + '</span>' : "");
   }
   function render(){
     $("sMe").textContent = saved.av || "";
+    renderGoal();
     if(!saved.code) return showJoin();
     if(!st) { $("sJoin").hidden = false; $("sJoin").innerHTML = '<div class="join"><div class="big">Connecting…</div><div class="muted">Your coach\'s page needs to be open.</div></div>'; return; }
     if(!saved.av || st.kids.indexOf(saved.av) < 0) return showPick();
@@ -482,14 +682,19 @@ function student(){
       load:function(){ return store("hub-g-" + id); },
       save:function(v){ store("hub-g-" + id, v); },
       pos:function(n){ send("pos", {n:n}); },
-      friends:function(){ var out = {}, now = Date.now(); Object.keys(friends).forEach(function(a){ if(now - friends[a].at < 15000 && st && st.kids.indexOf(a) >= 0) out[a] = friends[a].n; }); return out; },
+      friends:function(){
+        var out = {}, now = Date.now(), ok = function(a){ return st && st.kids.indexOf(a) >= 0; };
+        if(st && st.play === "pairs"){ var mineP = (st.pairs || []).filter(function(p){ return p.indexOf(saved.av) >= 0; })[0] || []; ok = function(a){ return mineP.indexOf(a) >= 0; }; }
+        Object.keys(friends).forEach(function(a){ if(now - friends[a].at < 15000 && ok(a)) out[a] = friends[a].n; });
+        return out;
+      },
       modal:function(){ return modalOpen; },
       ask:ask
     });
   }
   function nextQ(){
-    var a = st && st.asg && st.asg[saved.av];
-    if(!a) return null;
+    var a = mine;
+    if(!a || (!a.set && !(a.own && a.own.length))) return null;
     if(a.set) return Q.make(a.set);
     return Q.fromOwn(a.own);
   }
@@ -502,7 +707,7 @@ function student(){
     box.innerHTML = '<div class="qtitle">' + esc(title) + '</div><div class="qprompt">' + esc(q.prompt) + '</div>' +
       (q.show ? '<div class="qshow">' + esc(q.show) + '</div>' : "") +
       '<div class="qrow">' + (q.say ? '<button class="say" id="qSay">🔊 Hear the word</button>' : '<button class="say" id="qRead">🔊 Read the question</button>') + '</div>' +
-      '<div class="qchoices">' + q.choices.map(function(c, i){ return '<button type="button" data-i="' + i + '">' + esc(c) + '</button>'; }).join("") + '</div>' +
+      '<div class="qchoices' + (q.choices.some(function(x){ return String(x).length > 16; }) ? " long" : "") + '">' + q.choices.map(function(c, i){ return '<button type="button" data-i="' + i + '">' + esc(c) + '</button>'; }).join("") + '</div>' +
       '<div class="qmsg" id="qMsg" aria-live="polite"></div><div class="qrow" id="qAfter"></div>';
     $("qModal").hidden = false;
     if($("qSay")){ $("qSay").onclick = function(){ Q.speak(q.say); }; setTimeout(function(){ Q.speak(q.say); }, 250); }
@@ -511,7 +716,7 @@ function student(){
       b.onclick = function(){
         if(done || b.classList.contains("wrong")) return;
         var right = q.choices[+b.dataset.i] === q.ans; tries++;
-        if(tries === 1) send("ans", {ok:right});
+        if(tries === 1) sendLocked("ans", {ok:right});
         if(right){ b.classList.add("right"); $("qMsg").textContent = tries === 1 ? "Yes! 🎉" : "You got it! 👍"; done = true; setTimeout(function(){ close(tries === 1); }, 900); return; }
         b.classList.add("wrong");
         if(tries === 1){ $("qMsg").textContent = "Not quite. Try again!"; return; }
@@ -526,7 +731,7 @@ function student(){
   }
   $("sHelp").onclick = function(){
     var q = curQ;
-    send("help", {q:q ? {p:q.prompt, s:q.show || "", say:q.say || "", c:q.choices} : null});
+    sendLocked("help", {q:q ? {p:q.prompt, s:q.show || "", say:q.say || "", c:q.choices} : null});
     toast("✋ Your coach got your message. Keep trying, or skip for now.");
     if(modalOpen && !$("qSkip")){ var a = $("qAfter"); a.insertAdjacentHTML("beforeend", '<button class="btn" id="qSkip">Skip for now</button>'); $("qSkip").onclick = function(){ if(ask.skip) ask.skip(); }; }
   };
