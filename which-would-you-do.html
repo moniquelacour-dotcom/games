@@ -1178,17 +1178,29 @@ var S = {story:null, i:0, pick:null, why:"", log:[], houses:{}, stage:"title", b
 
 function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-/* Progress lives in sessionStorage, so every fresh open starts at the menu,
-   but an accidental reload mid-game does not lose the story.
-   Only the text-size preference is remembered across opens. */
+/* Progress is kept in localStorage, so you can come back another day and
+   carry on. Opening the page still lands on the menu — the saved game is
+   OFFERED as a Carry on card and never resumed automatically. */
 function save(){
-  try{ sessionStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
+  try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
   try{ localStorage.setItem(PREFKEY, JSON.stringify({big:S.big})); }catch(e){}
+}
+/* Is there a saved game, and which story was it? */
+function savedGame(){
+  try{
+    var r = localStorage.getItem(KEY);
+    if(!r) return null;
+    var o = JSON.parse(r);
+    if(!o || !o.story) return null;
+    for(var i=0;i<STORIES.length;i++){ if(STORIES[i].id === o.story) return {o:o, st:STORIES[i]}; }
+  }catch(e){}
+  return null;
 }
 (function load(){
   try{ localStorage.removeItem("wwyd.v3"); }catch(e){}
   try{ var p = localStorage.getItem(PREFKEY); if(p){ var q = JSON.parse(p); if(typeof q.big === "boolean") S.big = q.big; } }catch(e){}
-  try{ var r = sessionStorage.getItem(KEY); if(r){ var o = JSON.parse(r); for(var k in o){ if(k in S) S[k] = o[k]; } } }catch(e){}
+  try{ var sv = sessionStorage.getItem(KEY); if(sv && !localStorage.getItem(KEY)) localStorage.setItem(KEY, sv); }catch(e){}
+  try{ var r = localStorage.getItem(KEY); if(r){ var o = JSON.parse(r); for(var k in o){ if(k in S) S[k] = o[k]; } } }catch(e){}
 })();
 
 /* night sky behind everything */
@@ -1213,6 +1225,22 @@ function show(which){
 /* ---------- the menu ---------- */
 function drawMenu(){
   var h = "", order = ["door","map","tourney","years","favour","quick"];
+  /* a saved game is offered first, never auto-started */
+  var sv = savedGame();
+  if(sv){
+    var done = (sv.o.stage === "house" || sv.o.stage === "back");
+    h += '<button class="mcard" id="resumeBtn" style="border-color:var(--gold)">'
+       + art(sv.st.art)
+       + '<div class="mbody">'
+       +   '<div class="myr" style="background:rgba(232,189,92,.16);border-color:var(--gold);color:var(--gold)">Carry on</div>'
+       +   '<div class="mttl">' + esc(sv.st.t) + '</div>'
+       +   '<div class="mlen">' + (done ? "Finished — back to the sorting"
+              : "Chapter " + ((sv.o.i || 0) + 1) + " of " + sv.st.ch.length) + '</div>'
+       +   '<div class="mtx">' + (done ? "You reached the end of this one."
+              : "You stopped part way through. Pick up where you left off.") + '</div>'
+       + '</div></button>';
+    h += '<div class="count" style="margin-top:10px">Or start a new story</div>';
+  }
   var list = STORIES.slice().sort(function(x,y){
     var a = order.indexOf(x.id), b = order.indexOf(y.id);
     return (a<0?99:a) - (b<0?99:b);
@@ -1226,7 +1254,16 @@ function drawMenu(){
        + '<div class="mtx">'+esc(st.tx)+'</div></div></button>';
   });
   $("menu").innerHTML = h;
-  Array.prototype.forEach.call($("menu").children, function(b){
+  var rb = $("resumeBtn");
+  if(rb) rb.onclick = function(){
+    var v = savedGame(); if(!v) return;
+    for(var k in v.o){ if(k in S) S[k] = v.o[k]; }
+    if(S.stage === "what") drawWhat();
+    else if(S.stage === "house") drawHouse();
+    else if(S.stage === "back") drawBack();
+    else { S.stage = "scene"; drawScene(); }
+  };
+  Array.prototype.forEach.call($("menu").querySelectorAll(".mcard[data-s]"), function(b){
     b.onclick = function(){
       S.story = b.dataset.s; S.i = 0; S.pick = null; S.why = "";
       S.log = []; S.houses = {}; S.stage = "scene"; save(); drawScene();
@@ -1394,11 +1431,5 @@ $("tReset").onclick = function(){ reset(); };
 document.body.style.fontSize = S.big ? "21px" : "18px";
 $("tBig").textContent = S.big ? "Normal text" : "Bigger text";
 drawMenu();
-if(S.story && story()){
-  if(S.stage === "scene") drawScene();
-  else if(S.stage === "what") drawWhat();
-  else if(S.stage === "house") drawHouse();
-  else if(S.stage === "back") drawBack();
-}
 </script>
 </body></html>
