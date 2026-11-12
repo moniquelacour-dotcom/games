@@ -119,6 +119,9 @@ details.card>summary::-webkit-details-marker{display:none}
 /* student: only the goal and the activity */
 .stu-head{display:flex;align-items:center;gap:12px}
 .stu-head .stu-goal{flex:1}
+.svbox{position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:78px;z-index:60;width:min(420px,calc(100vw - 24px));height:min(720px,calc(100vh - 110px));background:var(--card);border:2px solid var(--accent);border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:6px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.svbox iframe{flex:1;width:100%;border:0;border-radius:10px;background:var(--bg)}
+.watchnote{text-align:center;font-size:13px;color:var(--muted);border:1px dashed var(--line);border-radius:10px;padding:4px 8px;margin-bottom:6px}
 .pullscreen{position:fixed;inset:0;z-index:2147483603;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center}
 .pullscreen .wave{font-size:84px;line-height:1}
 .pullscreen b{font:800 34px/1.2 "Baloo 2",system-ui,sans-serif}
@@ -178,6 +181,11 @@ details.card>summary::-webkit-details-marker{display:none}
           <div class="small muted">Students open the link and tap their animal. They see only their own goal, skill and the activity.</div>
         </section>
         <section class="card">
+          <span class="label">Student view</span>
+          <div class="row"><select id="svAv" aria-label="Which student to watch"></select><button class="btn sm" id="svOpen">👀 Show</button></div>
+          <div class="small muted">See exactly what that student's screen shows right now. It only watches: it never takes their animal or sends answers.</div>
+        </section>
+        <section class="card">
           <span class="label">How a session runs</span>
           <ol class="flow"><li>Warm-up while everyone arrives</li><li>Pull the whole group or pairs to Zoom</li><li>Send them back and start the game</li></ol>
           <div class="small muted">You can pull anyone out of the game, and send them back, at any time.</div>
@@ -192,6 +200,7 @@ details.card>summary::-webkit-details-marker{display:none}
         <p class="small muted">🔒 Names, skills and scores stay in this browser only. Students see animals, never names.</p>
       </aside>
     </div>
+    <div class="svbox" id="svBox" hidden><div class="row" style="justify-content:space-between"><b id="svTitle"></b><button class="btn sm" id="svClose">Close</button></div><iframe id="svFrame" title="Student view"></iframe></div>
     <div class="dock" role="toolbar" aria-label="Session controls">
       <button class="btn" id="mWarm">▶ Warm-up</button>
       <button class="btn pull" id="mPullAll">👋 Pull whole group</button>
@@ -373,6 +382,7 @@ function coach(){
     if(!room) return;
     room.send("x", stateMsg(), false);
     kidsInGroup().forEach(function(s){ if(cfg.claims[s.av]) sendMine(s); });
+    svPost();
   }
   setInterval(broadcast, 2500);
 
@@ -444,7 +454,11 @@ function coach(){
 
   /* ---- Pull to Zoom: the whole group, or pairs. Pulled students see "Come to Zoom"; their game waits. ---- */
   function groupAvs(){ return kidsInGroup().map(function(s){ return s.av; }); }
-  function setPull(list, modeName){ cfg.pull = list; cfg.pullMode = modeName; save(); broadcast(); renderToday(); renderPairs(); renderLive(); }
+  function setPull(list, modeName){
+    cfg.pull = list; cfg.pullMode = modeName; save(); broadcast(); renderToday(); renderPairs(); renderLive();
+    /* the result shows at the top of the page; bring it into view so she sees the pull happened */
+    if(list.length || modeName === "pairs"){ try{ $("liveCard").scrollIntoView({behavior:"smooth", block:"start"}); }catch(e){} }
+  }
   $("mPullAll").onclick = function(){ setPull(groupAvs(), "all"); };
   $("mPullPairs").onclick = function(){ if(!cfg.pairs.length) mixPairs(); setPull([], "pairs"); };
   $("mSendBack").onclick = function(){ setPull([], cfg.pullMode === "pairs" ? "pairs" : ""); };
@@ -502,7 +516,9 @@ function coach(){
     liveVis();
     var gname = G[cfg.game] ? G[cfg.game].name : "the game";
     $("mGame").textContent = cfg.mode === "game" ? "🚀 " + gname + " is on" : "🚀 Start " + gname;
-    $("cMode").textContent = (cfg.mode === "warm" ? "Warm-up is on." : cfg.mode === "game" ? gname + " is on." : "Paused: students see “Hold on, your coach is getting ready.”") + (cfg.pull.length ? " " + cfg.pull.length + " with you on Zoom." : "");
+    var noSk = kidsInGroup().filter(function(s){ return !skillOf(s.id); }).length;
+    $("cMode").textContent = (cfg.mode === "warm" ? "Warm-up is on." : cfg.mode === "game" ? gname + " is on." : "Paused: students see “Hold on, your coach is getting ready.”") + (cfg.pull.length ? " " + cfg.pull.length + " with you on Zoom." : "") +
+      (cfg.mode === "game" && noSk ? " " + noSk + (noSk === 1 ? " student has" : " students have") + " no skill picked yet, so they get no questions (step 3)." : "");
     var w = W.LIST.filter(function(x){ return x.id === cfg.warm.cur; })[0];
     $("cWarmProg").textContent = (w ? "Today: " + w.icon + " " + w.name + " · " : "") + W.progress(warmState()) + (cfg.warm.pick === "auto" ? " · switches each new day" : "");
   }
@@ -685,7 +701,29 @@ function coach(){
     try{ navigator.clipboard.writeText(lines.join("\n")); $("copyMsg").textContent = "Copied. Paste it to Claude to add to your My Reading Roster page."; }catch(e){ $("copyMsg").textContent = "Could not copy."; }
   };
 
-  function renderAll(){ renderCards(); renderToday(); renderPairs(); renderLive(); renderHelp(); renderTaken(); renderAsg(); renderLanes(); renderProg(); }
+  /* ---- Student view: a watch-only copy of one student's screen, inside her coach page ---- */
+  var svAv = "";
+  function renderSv(){
+    var kids = kidsInGroup();
+    $("svAv").innerHTML = kids.map(function(s){ return '<option value="' + esc(s.av) + '">' + esc(s.av + " " + s.name) + '</option>'; }).join("") || '<option value="">No students yet</option>';
+    if(svAv && kids.some(function(s){ return s.av === svAv; })) $("svAv").value = svAv;
+  }
+  function svPost(){
+    if(!$("svBox") || $("svBox").hidden || !svAv) return;
+    var s = byAv(svAv);
+    try{ $("svFrame").contentWindow.postMessage({hubWatch:{mine:s ? mineFor(s) : null}}, location.origin); }catch(e){}
+  }
+  $("svOpen").onclick = function(){
+    svAv = $("svAv").value; if(!svAv) return;
+    var nobc = /[?&]nobc/.test(location.search) ? "&nobc" : "", s = byAv(svAv);
+    $("svFrame").src = location.pathname + "?watch=1" + nobc + "&av=" + encodeURIComponent(svAv) + "#" + cfg.code;
+    $("svTitle").textContent = "👀 What " + svAv + (s ? " " + s.name : "") + " sees";
+    $("svBox").hidden = false;
+    setTimeout(svPost, 1200); setTimeout(svPost, 3000);
+  };
+  $("svClose").onclick = function(){ $("svBox").hidden = true; $("svFrame").src = "about:blank"; };
+
+  function renderAll(){ renderSv(); renderCards(); renderToday(); renderPairs(); renderLive(); renderHelp(); renderTaken(); renderAsg(); renderLanes(); renderProg(); }
   renderAll();
   window.addEventListener("storage", function(e){ if(e.key === "tt-coach2"){ tt = store("tt-coach2") || {}; students = tt.students || []; groups = tt.groups || []; renderAll(); } });
 }
@@ -696,17 +734,26 @@ function student(){
   var saved = store("hub-student1") || {code:"", av:""};
   var hash = (location.hash || "").replace("#", "").toUpperCase();
   if(/^[A-Z]{4}$/.test(hash) && hash !== saved.code) saved = {code:hash, av:""};
+  /* Watch mode: the coach page's Student view. It listens only: never claims the animal, never sends,
+     and never touches the real student's saved place. The coach page hands it the student's goal and skill. */
+  var WATCH = /[?&]watch=1/.test(location.search);
+  if(WATCH){
+    saved = {code:hash, av:decodeURIComponent((location.search.match(/[?&]av=([^&]*)/) || [])[1] || "")};
+    var wn = document.createElement("div"); wn.className = "watchnote"; wn.textContent = "Student view: what " + saved.av + " sees. Nothing you tap here is sent.";
+    $("student").insertBefore(wn, $("student").firstChild);
+    window.addEventListener("message", function(e){ if(e.origin !== location.origin || !e.data || !e.data.hubWatch) return; mine = e.data.hubWatch.mine; renderGoal(); });
+  }
   var room = null, st = null, lastSt = 0, mode = "", game = null, gameId = "", friends = {}, card = null, modalOpen = false;
   var kp = null, myPk = "", cKey = null, cPk = "", mine = null, lastMe = 0, lastHello = 0;
-  if(SUB) loadKeys("hub-skey1").then(function(k){ kp = k; return pubOf(k); }).then(function(p){ myPk = p; hello(); });
-  function hello(){ if(!myPk || !saved.av || !room) return; lastHello = Date.now(); send("hello", {pk:myPk}); }
+  if(SUB && !WATCH) loadKeys("hub-skey1").then(function(k){ kp = k; return pubOf(k); }).then(function(p){ myPk = p; hello(); });
+  function hello(){ if(WATCH) return; if(!myPk || !saved.av || !room) return; lastHello = Date.now(); send("hello", {pk:myPk}); }
   function sendLocked(t, obj){
     if(!cKey || !saved.av) return;
     cKey.then(function(k){ return seal(k, obj); }).then(function(x){ send(t, {iv:x.iv, ct:x.ct}); }).catch(function(){});
   }
 
-  function persist(){ store("hub-student1", saved); }
-  function send(t, o){ o = o || {}; o.g = "hub"; o.t = t; o.a = saved.av; if(room && saved.av) room.send("x", o, false); }
+  function persist(){ if(!WATCH) store("hub-student1", saved); }
+  function send(t, o){ if(WATCH) return; o = o || {}; o.g = "hub"; o.t = t; o.a = saved.av; if(room && saved.av) room.send("x", o, false); }
 
   function showJoin(){
     $("sJoin").hidden = false; ["sWait","sWarm","sGame"].forEach(function(id){ $(id).hidden = true; }); $("sHelp").hidden = true;
@@ -719,7 +766,7 @@ function student(){
     $("sJoin").innerHTML = '<div class="join"><div class="big">Tap your animal</div>' + (kids.length ? '<div class="avs">' + kids.map(function(a){ return '<button type="button" data-a="' + esc(a) + '">' + esc(a) + '</button>'; }).join("") + '</div>' : '<div class="muted">Waiting for your coach to open the room…</div>') + '</div>';
     $("sJoin").querySelectorAll("[data-a]").forEach(function(b){ b.onclick = function(){
       saved.av = b.dataset.a; persist();
-      store("tt-join2", {code:saved.code, av:saved.av, at:Date.now()});   // so the turn timer card already knows you
+      if(!WATCH) store("tt-join2", {code:saved.code, av:saved.av, at:Date.now()});   // so the turn timer card already knows you
       mine = null; lastMe = 0; hello(); render();
     }; });
   }
@@ -787,8 +834,8 @@ function student(){
     gameId = id;
     game = g.start($("sGame"), {
       me:saved.av,
-      load:function(){ return store("hub-g-" + id); },
-      save:function(v){ store("hub-g-" + id, v); },
+      load:function(){ return store((WATCH ? "hub-gw-" : "hub-g-") + id); },
+      save:function(v){ store((WATCH ? "hub-gw-" : "hub-g-") + id, v); },
       pos:function(n){ send("pos", {n:n}); },
       friends:function(){
         var out = {}, now = Date.now(), ok = function(a){ return st && st.kids.indexOf(a) >= 0; };
