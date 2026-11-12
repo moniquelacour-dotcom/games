@@ -1,0 +1,1182 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style></head><body>
+<title>Night Course</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;1,6..96,500&family=Cabin:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+
+<style>
+  :root {
+    --night:   #1E1A17;
+    --rail:    #2B2521;
+    --rail-hi: #3A322C;
+    --sand:    #D9C39A;
+    --sand-dk: #B9A078;
+    --chalk:   #F4EFE6;
+    --chalk-dim: #A79D8E;
+    --gold:    #EFB43C;
+    --ribbon:  #C0392B;
+    --sage:    #86A06C;
+
+    --display: "Bodoni Moda", "Didot", Georgia, serif;
+    --body:    "Cabin", "Avenir Next", system-ui, sans-serif;
+    --mono:    "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--night);
+    color: var(--chalk);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .shell {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 28px 20px 64px;
+  }
+
+  /* ---- masthead ---- */
+
+  .masthead { text-align: center; margin-bottom: 22px; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 0 0 10px;
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(2.1rem, 6.5vw, 3.4rem);
+    line-height: 1.02;
+    margin: 0;
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+
+  h1 em {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--gold);
+  }
+
+  .standfirst {
+    max-width: 46ch;
+    margin: 12px auto 0;
+    color: var(--chalk-dim);
+    font-size: 0.98rem;
+  }
+
+  /* ---- arena ---- */
+
+  .arena-wrap {
+    position: relative;
+    margin: 26px 0 0;
+    border-radius: 3px;
+    overflow: hidden;
+    background: #17130F;
+    box-shadow: 0 0 0 1px var(--rail-hi), 0 26px 60px -30px rgba(0,0,0,0.9);
+  }
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 900 / 420;
+    touch-action: manipulation;
+  }
+
+  /* readouts sit on the canvas */
+  .hud {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 14px 16px;
+  }
+
+  .hud-row { display: flex; gap: 18px; align-items: flex-start; }
+  .hud-row.bottom { justify-content: space-between; align-items: flex-end; }
+
+  .stat { text-align: left; }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--chalk-dim);
+    display: block;
+  }
+
+  .stat-value {
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: 1.35rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--chalk);
+    line-height: 1.1;
+  }
+
+  .stat-value.fault { color: var(--ribbon); }
+  .stat-value.good  { color: var(--sage); }
+
+  .fence-callout {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--gold);
+    opacity: 0;
+    transition: opacity 220ms ease;
+  }
+  .fence-callout.show { opacity: 1; }
+
+  /* ---- overlay cards on the arena ---- */
+
+  .overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgba(23,19,15,0.88);
+    padding: 20px;
+    text-align: center;
+  }
+  .overlay[hidden] { display: none; }
+
+  .overlay-inner { max-width: 32ch; }
+
+  .overlay h2 {
+    font-family: var(--display);
+    font-size: clamp(1.5rem, 4.4vw, 2.1rem);
+    margin: 0 0 6px;
+    text-wrap: balance;
+  }
+
+  .overlay p { margin: 0 0 16px; color: var(--chalk-dim); font-size: 0.95rem; }
+
+  .ribbon-line {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 0 0 14px;
+  }
+
+  /* ---- buttons ---- */
+
+  button {
+    font-family: var(--body);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--night);
+    background: var(--gold);
+    border: 0;
+    padding: 11px 22px;
+    border-radius: 2px;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    transition: background 140ms ease, transform 80ms ease;
+  }
+  button:hover { background: #F6C55F; }
+  button:active { transform: translateY(1px); }
+  button:focus-visible { outline: 2px solid var(--chalk); outline-offset: 3px; }
+
+  button.ghost {
+    background: transparent;
+    color: var(--chalk);
+    box-shadow: inset 0 0 0 1px var(--rail-hi);
+  }
+  button.ghost:hover { background: var(--rail); }
+
+  .jump-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 18px;
+    font-size: 1.1rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-family: var(--mono);
+    font-weight: 600;
+  }
+
+  .key-hint {
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--chalk-dim);
+    margin: 10px 0 0;
+  }
+  .key-hint kbd {
+    font-family: var(--mono);
+    background: var(--rail);
+    box-shadow: inset 0 0 0 1px var(--rail-hi);
+    padding: 2px 7px;
+    border-radius: 2px;
+    color: var(--chalk);
+  }
+
+  /* ---- pickers ---- */
+
+  .picker { margin-top: 34px; }
+
+  .picker h3 {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--chalk-dim);
+    font-weight: 400;
+    margin: 0 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rail-hi);
+  }
+
+  .horses {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+  }
+
+  .horse-card {
+    background: var(--rail);
+    box-shadow: inset 0 0 0 1px var(--rail-hi);
+    padding: 13px 14px;
+    border-radius: 2px;
+    cursor: pointer;
+    text-align: left;
+    color: var(--chalk);
+    font-weight: 400;
+    font-size: 0.9rem;
+    display: flex;
+    gap: 11px;
+    align-items: flex-start;
+    transition: box-shadow 140ms ease, background 140ms ease;
+  }
+  .horse-card:hover { background: var(--rail-hi); }
+  .horse-card[aria-pressed="true"] {
+    box-shadow: inset 0 0 0 2px var(--gold);
+    background: var(--rail-hi);
+  }
+
+  .notes-warn {
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border-left: 2px solid var(--gold);
+    padding-left: 9px;
+    margin: 0 0 16px;
+  }
+
+  .picker-hint {
+    font-size: 0.82rem;
+    color: var(--chalk-dim);
+    margin: -6px 0 12px;
+    font-style: italic;
+  }
+
+  .horse-col { display: flex; flex-direction: column; min-width: 0; flex: 1 1 auto; }
+
+  .horse-name-input {
+    font-family: var(--display);
+    font-size: 1.02rem;
+    font-weight: 400;
+    color: var(--chalk);
+    background: transparent;
+    border: 0;
+    border-bottom: 1px dashed var(--rail-hi);
+    padding: 0 0 3px;
+    margin-bottom: 5px;
+    width: 100%;
+    min-width: 0;
+    border-radius: 0;
+  }
+  .horse-name-input::placeholder {
+    color: var(--chalk-dim);
+    font-style: italic;
+    font-size: 0.86rem;
+    font-family: var(--body);
+    opacity: 0.85;
+  }
+  .horse-name-input:focus {
+    outline: none;
+    border-bottom-color: var(--gold);
+  }
+  .horse-card[aria-pressed="true"] .horse-name-input { border-bottom-color: var(--gold); }
+
+  .fence-callout.good { color: #8FCB7A; }
+  .fence-callout.bad  { color: #E4796B; }
+
+  .swatch {
+    width: 20px; height: 20px; border-radius: 50%;
+    flex: 0 0 auto; margin-top: 2px;
+    box-shadow: inset 0 -4px 6px -2px rgba(0,0,0,0.45);
+  }
+
+  .horse-name {
+    font-family: var(--display);
+    font-size: 1.08rem;
+    font-weight: 700;
+    display: block;
+    line-height: 1.2;
+  }
+  .horse-note { color: var(--chalk-dim); font-size: 0.8rem; display: block; margin-top: 2px; }
+  .horse-pb {
+    font-family: var(--mono); font-size: 0.72rem; color: var(--gold);
+    display: block; margin-top: 5px; font-variant-numeric: tabular-nums;
+  }
+
+  .rounds { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  /* ---- coach notes ---- */
+
+  .notes { margin-top: 40px; }
+
+  .notes-toggle {
+    background: transparent;
+    color: var(--chalk-dim);
+    box-shadow: inset 0 0 0 1px var(--rail-hi);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 9px 16px;
+    font-weight: 400;
+  }
+  .notes-toggle:hover { color: var(--chalk); background: var(--rail); }
+
+  .notes-body {
+    margin-top: 16px;
+    background: var(--rail);
+    box-shadow: inset 0 0 0 1px var(--rail-hi);
+    padding: 22px 24px;
+    border-radius: 2px;
+  }
+  .notes-body[hidden] { display: none !important; }
+
+  .notes-body h4 {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 400;
+    margin: 22px 0 8px;
+  }
+  .notes-body h4:first-child { margin-top: 0; }
+
+  .notes-body p, .notes-body li { font-size: 0.92rem; color: var(--chalk); }
+  .notes-body p { margin: 0 0 10px; max-width: 62ch; }
+  .notes-body ul { margin: 0 0 10px; padding-left: 20px; }
+  .notes-body li { margin-bottom: 7px; max-width: 60ch; }
+  .notes-body em { color: var(--chalk-dim); font-style: italic; }
+
+  .clock {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--gold);
+    background: rgba(239,180,60,0.1);
+    padding: 1px 7px;
+    border-radius: 2px;
+    margin-right: 7px;
+  }
+
+  footer {
+    margin-top: 44px;
+    padding-top: 18px;
+    border-top: 1px solid var(--rail-hi);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--chalk-dim);
+    text-align: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: 0.01ms !important; }
+  }
+</style>
+
+<div class="shell">
+
+  <header class="masthead">
+    <p class="eyebrow">Under the lights</p>
+    <h1>The <em>Night Course</em></h1>
+    <p class="standfirst">The horse runs on its own. Press the space bar just before each jump and try to get round all eight without knocking a rail down. No clock, no score. Name your five horses first.</p>
+  </header>
+
+  <div class="arena-wrap">
+    <canvas id="arena" width="900" height="420" aria-label="Show jumping arena"></canvas>
+
+    <div class="hud" id="hud" hidden>
+      <div class="hud-row bottom">
+        <span class="fence-callout" id="fenceName"></span>
+      </div>
+    </div>
+
+    <div class="overlay" id="startCard">
+      <div class="overlay-inner">
+        <h2 id="startTitle">Name a horse to start</h2>
+        <p id="startCopy">Jumper round — the clock is running. Time down the fence and press jump.</p>
+        <button id="startBtn">Enter the ring</button>
+      </div>
+    </div>
+
+    <div class="overlay" id="resultCard" hidden>
+      <div class="overlay-inner">
+        <p class="ribbon-line" id="ribbon">Champion</p>
+        <h2 id="resultTitle">Clear round</h2>
+        <p id="resultCopy">Nothing touched. That is a clear round.</p>
+        <button id="againBtn">Ride it again</button>
+        <button class="ghost" id="backBtn">Change horse</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="jump-btn" id="jumpBtn">Jump</button>
+  <p class="key-hint">Press <kbd>Space</kbd> just before each jump — not when you are on top of it</p>
+
+  <section class="picker">
+    <h3>Your horses</h3>
+    <p class="picker-hint">Five stalls, no names yet. Type a name on each one.</p>
+    <div class="horses" id="horses"></div>
+  </section>
+
+
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var cv  = document.getElementById("arena");
+  var ctx = cv.getContext("2d");
+  var W = 900, H = 420;
+  var GROUND = 330;
+
+  var HORSES = [
+    { id:"s1", stall:1, name:"", coat:"#DCD8D2", mane:"#B4AEA6", points:"#8E877E",
+      speed:266, note:"Quick, and less forgiving. The tightest window to time.", window:0.80 },
+    { id:"s2", stall:2, name:"", coat:"#C9A063", mane:"#2A211A", points:"#2A211A",
+      speed:258, note:"Fast, and keen. Loves the jump.", window:0.90 },
+    { id:"s3", stall:3, name:"", coat:"#8B5A2B", mane:"#4A2E16", points:"#4A2E16",
+      speed:216, note:"Slow and forgiving. Easiest place to start.", window:1.25 },
+    { id:"s4", stall:4, name:"", coat:"#C79A54", mane:"#F0E6D2", points:"#6E5433",
+      speed:240, note:"Steady. Does nothing surprising.", window:1.00 },
+    { id:"s5", stall:5, name:"", coat:"#A87B3F", mane:"#E8DAC0", points:"#5C4326",
+      speed:246, note:"Steady, a shade quicker.", window:1.00 }
+  ];
+  HORSES.forEach(function (h) { h.name = readName(h.id); });
+
+  var FENCES = [
+    { name:"Poles",    h:50, w:22, gap:380, look:"poles",
+      wing:"#F1EADC", rail:"#F6F1E7", trim:"#C0392B" },
+    { name:"Flowers",  h:54, w:24, gap:380, look:"flowers",
+      wing:"#EBD9E6", rail:"#FBF6EE", trim:"#8E4A7B" },
+    { name:"Hedge",    h:57, w:27, gap:380, look:"hedge",
+      wing:"#DCE5D1", rail:"#EDE6D6", trim:"#4C6141" },
+    { name:"Gate",     h:61, w:23, gap:380, look:"gate",
+      wing:"#EFE6D4", rail:"#D9C8A6", trim:"#7A5B33" },
+    { name:"Stripes",  h:59, w:22, gap:250, look:"stripes",
+      wing:"#E2E9F1", rail:"#FFFFFF", trim:"#2F6E8F" },
+    { name:"Water",    h:55, w:34, gap:380, look:"water",
+      wing:"#DAE6EC", rail:"#F2F4F0", trim:"#3E7C9A" },
+    { name:"Wall",     h:67, w:24, gap:380, look:"wall",
+      wing:"#F0DCD6", rail:"#EFE4D2", trim:"#B04A3C" },
+    { name:"Big oxer", h:73, w:38, gap:380, look:"oxer",
+      wing:"#F7E9C6", rail:"#FFFBF0", trim:"#C8992F" }
+  ];
+
+  var IDEAL_TAKEOFF = 88;      // px in front of the fence
+  var GRAVITY = 1500;
+  var JUMP_V  = 560;
+
+  var state = {
+    horse: HORSES[0],
+    round: "jumper",
+    screen: "start",
+    t: 0,
+    faults: 0,
+    fences: [],
+    idx: 0,
+    horseX: 0,
+    horseY: GROUND,
+    vy: 0,
+    air: false,
+    takeoffAt: null,
+    takeoffs: [],
+    spots: [],
+    stumble: 0,
+    legPhase: 0,
+    lastFrame: 0,
+    finishX: 0,
+    shake: 0,
+    flash: "",
+    flashGood: true,
+    flashT: 0
+  };
+
+  /* ---------- persistence ---------- */
+
+  function pbKey(h, r) { return "nightcourse.pb." + h + "." + r; }
+  function nameKey(h) { return "nightcourse.name." + h; }
+  function readName(h) {
+    try { return window.localStorage.getItem(nameKey(h)) || ""; } catch (e) { return ""; }
+  }
+  function writeName(h, v) {
+    try { window.localStorage.setItem(nameKey(h), v); } catch (e) { /* no-op */ }
+  }
+
+  function readPB(h, r) {
+    try {
+      var v = window.localStorage.getItem(pbKey(h, r));
+      return v ? JSON.parse(v) : null;
+    } catch (e) { return null; }
+  }
+
+  function writePB(h, r, rec) {
+    try { window.localStorage.setItem(pbKey(h, r), JSON.stringify(rec)); } catch (e) { /* no-op */ }
+  }
+
+  function betterThan(rec, prev, round) {
+    if (!prev) return true;
+    if (round === "jumper") {
+      if (rec.faults !== prev.faults) return rec.faults < prev.faults;
+      return rec.time < prev.time;
+    }
+    return rec.style > prev.style;
+  }
+
+  /* ---------- course ---------- */
+
+  function buildCourse() {
+    var x = 620;
+    state.fences = FENCES.map(function (f, i) {
+      var fence = { x: x, h: f.h, w: f.w, name: f.name, look: f.look,
+                    wing: f.wing, rail: f.rail, trim: f.trim,
+                    down: false, resolved: false, tilt: 0 };
+      x += f.gap + Math.round(Math.random() * 60);
+      return fence;
+    });
+    state.finishX = x + 260;
+  }
+
+  function resetRide() {
+    buildCourse();
+    state.t = 0;
+    state.faults = 0;
+    state.idx = 0;
+    state.horseX = 0;
+    state.horseY = GROUND;
+    state.vy = 0;
+    state.air = false;
+    state.takeoffAt = null;
+    state.takeoffs = [];
+    state.spots = [];
+    state.shake = 0;
+    state.stumble = 0;
+    state.flash = "";
+    state.flashT = 0;
+  }
+
+  /* ---------- input ---------- */
+
+  function jump() {
+    if (state.screen !== "riding" || state.air) return;
+    state.air = true;
+    state.vy = -JUMP_V;
+    var next = state.fences[state.idx];
+    if (next) {
+      var d = next.x - state.horseX;
+      state.takeoffAt = d;
+      state.spots.push(d);
+      state.takeoffs.push(state.t);
+    }
+  }
+
+  document.addEventListener("keydown", function (e) {
+    if (e.code === "Space" || e.key === " ") {
+      e.preventDefault();
+      if (state.screen === "start") startRide();
+      else if (state.screen === "result") startRide();
+      else jump();
+    }
+  });
+
+  document.getElementById("jumpBtn").addEventListener("click", function () {
+    if (state.screen === "riding") jump();
+    else startRide();
+  });
+
+  /* ---------- loop ---------- */
+
+  function step(ts) {
+    if (!state.lastFrame) state.lastFrame = ts;
+    var dt = Math.min((ts - state.lastFrame) / 1000, 0.05);
+    state.lastFrame = ts;
+
+    if (state.screen === "riding") update(dt);
+    draw();
+    window.requestAnimationFrame(step);
+  }
+
+  function update(dt) {
+    state.t += dt;
+    if (state.stumble > 0) state.stumble = Math.max(0, state.stumble - dt);
+    state.horseX += state.horse.speed * (state.stumble > 0 ? 0.42 : 1) * dt;
+    state.legPhase += dt * (state.air ? 3 : 13);
+    if (state.shake > 0) state.shake = Math.max(0, state.shake - dt * 4);
+
+    if (state.air) {
+      state.vy += GRAVITY * dt;
+      state.horseY += state.vy * dt;
+      if (state.horseY >= GROUND) {
+        state.horseY = GROUND;
+        state.vy = 0;
+        state.air = false;
+      }
+    }
+
+    // resolve fences the horse has reached
+    var f = state.fences[state.idx];
+    if (f && !f.resolved && state.horseX >= f.x) {
+      f.resolved = true;
+      var clearance = GROUND - state.horseY;
+      if (clearance < f.h - 6) {
+        f.down = true;
+        state.shake = 1;
+        state.stumble = 0.7;
+        state.flash = "Rail down";
+        state.flashGood = false;
+      } else {
+        state.flash = "Clear!";
+        state.flashGood = true;
+      }
+      state.flashT = 0.9;
+      state.idx++;
+    }
+
+    // rails that came down keep falling
+    state.fences.forEach(function (fence) {
+      if (fence.down && fence.tilt < 1) fence.tilt = Math.min(1, fence.tilt + dt * 3.4);
+    });
+
+    if (state.horseX >= state.finishX) finish();
+
+    // the only readout: what just happened, or what is coming
+    var callout = document.getElementById("fenceName");
+    if (state.flashT > 0) {
+      state.flashT = Math.max(0, state.flashT - dt);
+      callout.textContent = state.flash;
+      callout.className = "fence-callout show " + (state.flashGood ? "good" : "bad");
+    } else {
+      var nf = state.fences[state.idx];
+      if (nf && nf.x - state.horseX < 340) {
+        callout.textContent = nf.name;
+        callout.className = "fence-callout show";
+      } else {
+        callout.className = "fence-callout";
+      }
+    }
+  }
+
+  /* ---------- scoring ---------- */
+
+  function finish() {
+    state.screen = "result";
+    document.getElementById("hud").hidden = true;
+
+    var rails = state.fences.filter(function (f) { return f.down; }).length;
+    var who   = state.horse.name || "Your horse";
+    var ribbon, title, copy;
+
+    if (rails === 0) {
+      ribbon = "Clear round";
+      title  = "All eight!";
+      copy   = who + " jumped everything and never touched a rail. That is a clear round.";
+    } else if (rails === 1) {
+      ribbon = "One rail";
+      title  = "Nearly clear";
+      copy   = "Only the " + railName() + " came down. Everything else stayed up.";
+    } else if (rails <= 3) {
+      ribbon = "A few rails";
+      title  = "Good round";
+      copy   = "Rails come down when the jump is too early or too late. Wait until the fence is close, then press.";
+    } else {
+      ribbon = "Round finished";
+      title  = "Round finished";
+      copy   = "Try the slowest horse — there is more time to get each jump right.";
+    }
+
+    document.getElementById("ribbon").textContent = ribbon;
+    document.getElementById("resultTitle").textContent = title;
+    document.getElementById("resultCopy").textContent = copy;
+
+    document.getElementById("resultCard").hidden = false;
+    document.getElementById("jumpBtn").textContent = "Ride it again";
+  }
+
+  function railName() {
+    var f = state.fences.filter(function (x) { return x.down; })[0];
+    return f ? f.name.replace(/^\d+ · /, "").toLowerCase() : "fence";
+  }
+
+  /* ---------- drawing ---------- */
+
+  function draw() {
+    var cam = Math.max(0, state.horseX - 230);
+    var jitter = state.shake > 0 ? (Math.random() - 0.5) * state.shake * 5 : 0;
+
+    ctx.save();
+    ctx.translate(0, jitter);
+
+    // night sky
+    var sky = ctx.createLinearGradient(0, 0, 0, GROUND);
+    sky.addColorStop(0, "#100D0B");
+    sky.addColorStop(1, "#2A2117");
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, -20, W, GROUND + 20);
+
+    drawLights();
+    drawFarRail(cam);
+
+    // arena floor
+    var floor = ctx.createLinearGradient(0, GROUND, 0, H);
+    floor.addColorStop(0, "#D9C39A");
+    floor.addColorStop(1, "#9C8560");
+    ctx.fillStyle = floor;
+    ctx.fillRect(0, GROUND, W, H - GROUND);
+
+    drawHarrowLines(cam);
+    drawStartFinish(cam);
+
+    state.fences.forEach(function (f) { drawFence(f, cam); });
+    drawHorse(cam);
+
+    ctx.restore();
+  }
+
+  function drawLights() {
+    [140, 450, 760].forEach(function (x) {
+      var g = ctx.createRadialGradient(x, 30, 4, x, 30, 190);
+      g.addColorStop(0, "rgba(239,180,60,0.30)");
+      g.addColorStop(1, "rgba(239,180,60,0)");
+      ctx.fillStyle = g;
+      ctx.fillRect(x - 190, -60, 380, 260);
+
+      ctx.fillStyle = "#3A322C";
+      ctx.fillRect(x - 26, 12, 52, 9);
+      ctx.fillStyle = "#EFB43C";
+      ctx.fillRect(x - 22, 15, 44, 3);
+      ctx.fillStyle = "#241C18";
+      ctx.fillRect(x - 2, 21, 4, 26);
+    });
+  }
+
+  function drawFarRail(cam) {
+    ctx.strokeStyle = "#4A4038";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(0, GROUND - 4);
+    ctx.lineTo(W, GROUND - 4);
+    ctx.stroke();
+
+    ctx.fillStyle = "#3A322C";
+    var off = -(cam * 0.35) % 120;
+    for (var x = off; x < W + 120; x += 120) {
+      ctx.fillRect(x, GROUND - 34, 6, 31);
+    }
+    ctx.strokeStyle = "#5A4E44";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, GROUND - 26);
+    ctx.lineTo(W, GROUND - 26);
+    ctx.stroke();
+  }
+
+  function drawHarrowLines(cam) {
+    ctx.strokeStyle = "rgba(120,98,66,0.32)";
+    ctx.lineWidth = 1;
+    var off = -cam % 46;
+    for (var x = off; x < W + 46; x += 46) {
+      ctx.beginPath();
+      ctx.moveTo(x, GROUND + 8);
+      ctx.lineTo(x - 30, H);
+      ctx.stroke();
+    }
+  }
+
+  function drawStartFinish(cam) {
+    [{ x: 220, label: "START" }, { x: state.finishX, label: "FINISH" }].forEach(function (m) {
+      var sx = m.x - cam;
+      if (sx < -80 || sx > W + 80) return;
+      ctx.strokeStyle = "rgba(244,239,230,0.35)";
+      ctx.setLineDash([6, 7]);
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(sx, GROUND - 78);
+      ctx.lineTo(sx, GROUND);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = "rgba(244,239,230,0.6)";
+      ctx.font = "600 10px 'IBM Plex Mono', monospace";
+      ctx.save();
+      ctx.translate(sx + 5, GROUND - 62);
+      ctx.fillText(m.label, 0, 0);
+      ctx.restore();
+    });
+  }
+
+  function drawFence(f, cam) {
+    var sx = f.x - cam;
+    if (sx < -160 || sx > W + 160) return;
+
+    var top = GROUND - f.h;
+    var hw  = f.w;
+
+    // ground furniture in front of the obstacle
+    if (f.look === "water") {
+      ctx.fillStyle = "rgba(62,124,154,0.85)";
+      ctx.fillRect(sx - hw - 12, GROUND - 4, hw * 2 + 24, 7);
+      ctx.fillStyle = "rgba(255,255,255,0.30)";
+      ctx.fillRect(sx - hw - 6, GROUND - 3, hw + 4, 2);
+    }
+    if (f.look === "flowers") {
+      for (var fi = 0; fi < 9; fi++) {
+        var fx = sx - hw + fi * ((hw * 2) / 8);
+        ctx.fillStyle = "#3C5B39";
+        ctx.fillRect(fx - 1, GROUND - 13, 2, 13);
+        ctx.fillStyle = fi % 3 === 0 ? "#D9738F" : (fi % 3 === 1 ? "#E8B84B" : "#B07BC4");
+        ctx.beginPath();
+        ctx.arc(fx, GROUND - 15, 3.4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // wings
+    ctx.fillStyle = f.wing;
+    ctx.fillRect(sx - hw - 5, top - 7, 7, f.h + 7);
+    ctx.fillRect(sx + hw - 2, top - 7, 7, f.h + 7);
+    ctx.fillStyle = "rgba(0,0,0,0.22)";
+    ctx.fillRect(sx - hw - 5, top - 7, 7, 4);
+    ctx.fillRect(sx + hw - 2, top - 7, 7, 4);
+
+    // body of the obstacle
+    if (f.look === "hedge") {
+      ctx.fillStyle = "#3F5637";
+      ctx.fillRect(sx - hw, GROUND - f.h * 0.78, hw * 2, f.h * 0.78);
+      for (var i = 0; i < 26; i++) {
+        ctx.fillStyle = i % 2 ? "#5A7A4C" : "#435C3A";
+        var bx = sx - hw + (i * (hw * 2)) / 26;
+        ctx.fillRect(bx, GROUND - f.h * 0.78 - 4, 2.4, 8);
+      }
+    }
+
+    if (f.look === "wall") {
+      var rows = Math.floor(f.h / 14);
+      for (var r = 0; r < rows; r++) {
+        for (var c = 0; c < 3; c++) {
+          ctx.fillStyle = (r + c) % 2 ? "#B04A3C" : "#9C4034";
+          ctx.fillRect(sx - hw + c * ((hw * 2) / 3) + (r % 2 ? 5 : 0),
+                       GROUND - 14 - r * 14, (hw * 2) / 3 - 3, 12);
+        }
+      }
+      ctx.fillStyle = "#E3D8C4";
+      ctx.fillRect(sx - hw - 2, GROUND - 14 - rows * 14, hw * 2 + 4, 5);
+    }
+
+    if (f.look === "gate") {
+      ctx.fillStyle = f.rail;
+      ctx.fillRect(sx - hw, top + 6, hw * 2, f.h - 6);
+      ctx.strokeStyle = f.trim;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(sx - hw, GROUND);
+      ctx.lineTo(sx + hw, top + 6);
+      ctx.moveTo(sx + hw, GROUND);
+      ctx.lineTo(sx - hw, top + 6);
+      ctx.stroke();
+      ctx.strokeRect(sx - hw, top + 6, hw * 2, f.h - 6);
+    }
+
+    // rails
+    var poles;
+    if (f.look === "oxer")        poles = 3;
+    else if (f.look === "gate")   poles = 1;
+    else if (f.look === "hedge")  poles = 1;
+    else if (f.look === "wall")   poles = 0;
+    else                          poles = 2;
+
+    for (var p = 0; p < poles; p++) {
+      var py = top + p * (f.h / (poles + 0.8));
+      var isTop = p === 0;
+      ctx.save();
+      if (f.down && isTop) {
+        ctx.translate(sx, py + 3);
+        ctx.rotate(f.tilt * 1.25);
+        ctx.translate(-sx, -(py + 3));
+        ctx.globalAlpha = 1 - f.tilt * 0.25;
+      }
+
+      if (f.look === "stripes") {
+        var seg = (hw * 2) / 8;
+        for (var k = 0; k < 8; k++) {
+          ctx.fillStyle = k % 2 ? f.trim : f.rail;
+          ctx.fillRect(sx - hw + k * seg, py, seg + 0.5, 6);
+        }
+      } else if (f.look === "oxer") {
+        ctx.fillStyle = isTop ? f.rail : "#E8DCC0";
+        ctx.fillRect(sx - hw, py, hw * 2, 6);
+        ctx.fillStyle = f.trim;
+        ctx.fillRect(sx - hw, py, 11, 6);
+        ctx.fillRect(sx + hw - 11, py, 11, 6);
+        ctx.fillRect(sx - 5, py, 10, 6);
+      } else {
+        ctx.fillStyle = isTop ? f.rail : "#DCD2BE";
+        ctx.fillRect(sx - hw, py, hw * 2, 6);
+        ctx.fillStyle = f.trim;
+        ctx.fillRect(sx - hw, py, 10, 6);
+        ctx.fillRect(sx + hw - 10, py, 10, 6);
+      }
+      ctx.restore();
+    }
+  }
+
+  function drawHorse(cam) {
+    var h = state.horse;
+    var x = state.horseX - cam;
+    var y = state.horseY;
+    var tuck = state.air ? 1 : 0;
+    var swing = Math.sin(state.legPhase);
+    var swing2 = Math.sin(state.legPhase + Math.PI * 0.7);
+
+    ctx.save();
+    ctx.translate(x, y);
+
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.22)";
+    var sh = 1 - Math.min(1, (GROUND - y) / 130);
+    ctx.beginPath();
+    ctx.ellipse(0, GROUND - y + 2, 34 * sh + 8, 5 * sh + 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // legs
+    ctx.strokeStyle = h.points;
+    ctx.lineWidth = 5;
+    ctx.lineCap = "round";
+    function leg(px, dir, s) {
+      var knee = 22 - tuck * 9;
+      var hoof = 40 - tuck * 26;
+      ctx.beginPath();
+      ctx.moveTo(px, -26);
+      ctx.lineTo(px + dir * (4 + s * 7 * (1 - tuck)), -26 + knee);
+      ctx.lineTo(px + dir * (2 + s * 13 * (1 - tuck)) + tuck * dir * 12, -26 + hoof);
+      ctx.stroke();
+    }
+    leg(-17, -1, swing);
+    leg(-13, -1, swing2 * 0.6);
+    leg(15, 1, swing2);
+    leg(19, 1, swing * 0.6);
+
+    // body
+    ctx.fillStyle = h.coat;
+    ctx.beginPath();
+    ctx.ellipse(0, -34, 31, 17, tuck * -0.12, 0, Math.PI * 2);
+    ctx.fill();
+
+    // neck + head
+    ctx.beginPath();
+    ctx.moveTo(20, -42);
+    ctx.quadraticCurveTo(38, -52 - tuck * 5, 43, -62 - tuck * 4);
+    ctx.lineTo(52, -60 - tuck * 4);
+    ctx.quadraticCurveTo(56, -56, 54, -48);
+    ctx.lineTo(46, -46);
+    ctx.quadraticCurveTo(34, -40, 24, -30);
+    ctx.closePath();
+    ctx.fill();
+
+    // ears
+    ctx.beginPath();
+    ctx.moveTo(45, -63 - tuck * 4);
+    ctx.lineTo(47, -71 - tuck * 4);
+    ctx.lineTo(50, -63 - tuck * 4);
+    ctx.closePath();
+    ctx.fill();
+
+    // eye
+    ctx.fillStyle = "#1A1512";
+    ctx.beginPath();
+    ctx.arc(49, -57 - tuck * 4, 1.7, 0, Math.PI * 2);
+    ctx.fill();
+
+    // mane
+    ctx.strokeStyle = h.mane;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(24, -44);
+    ctx.quadraticCurveTo(36, -56 - tuck * 5, 45, -64 - tuck * 4);
+    ctx.stroke();
+
+    // tail
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.moveTo(-29, -40);
+    ctx.quadraticCurveTo(-44, -36 + swing * 3, -46, -20 + swing * 4);
+    ctx.stroke();
+
+    // rider: saddle, jacket, helmet, arms forward over the neck
+    ctx.fillStyle = "#2C2A33";
+    ctx.beginPath();
+    ctx.ellipse(-2, -48, 12, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#3B4A62";              // hunt coat
+    ctx.beginPath();
+    ctx.moveTo(-8, -50);
+    ctx.quadraticCurveTo(-2, -66 - tuck * 4, 10, -66 - tuck * 5);
+    ctx.quadraticCurveTo(14, -58, 6, -50);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.strokeStyle = "#3B4A62";            // arm to the hands
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(8, -63 - tuck * 4);
+    ctx.lineTo(28, -56 - tuck * 4);
+    ctx.stroke();
+
+    ctx.strokeStyle = "#1F1B18";            // boot
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.moveTo(-4, -52);
+    ctx.lineTo(-2, -38);
+    ctx.stroke();
+
+    ctx.fillStyle = "#15120F";              // helmet
+    ctx.beginPath();
+    ctx.arc(9, -70 - tuck * 5, 6.5, Math.PI, Math.PI * 2);
+    ctx.fill();
+    ctx.fillRect(2.5, -70 - tuck * 5, 13, 2.5);
+
+    ctx.restore();
+  }
+
+  /* ---------- ui ---------- */
+
+  function renderHorses() {
+    var wrap = document.getElementById("horses");
+    wrap.textContent = "";
+    HORSES.forEach(function (h) {
+      var card = document.createElement("div");
+      card.className = "horse-card";
+      card.setAttribute("role", "button");
+      card.setAttribute("tabindex", "0");
+      card.setAttribute("aria-pressed", h.id === state.horse.id ? "true" : "false");
+
+      var sw = document.createElement("span");
+      sw.className = "swatch";
+      sw.style.background = h.coat;
+      card.appendChild(sw);
+
+      var txt = document.createElement("span");
+      txt.className = "horse-col";
+
+      var inp = document.createElement("input");
+      inp.className = "horse-name-input";
+      inp.type = "text";
+      inp.maxLength = 14;
+      inp.value = h.name;
+      inp.placeholder = "Stall " + h.stall + " — name her";
+      inp.setAttribute("aria-label", "Name for the horse in stall " + h.stall);
+      inp.addEventListener("click", function (e) { e.stopPropagation(); });
+      inp.addEventListener("keydown", function (e) {
+        e.stopPropagation();
+        if (e.key === "Enter") { inp.blur(); }
+      });
+      inp.addEventListener("input", function () {
+        h.name = inp.value;
+        writeName(h.id, inp.value);
+        if (h.id === state.horse.id && state.screen === "start") {
+          document.getElementById("startTitle").textContent = h.name
+            ? h.name + " is ready"
+            : "Stall " + h.stall + " — name her first";
+        }
+      });
+      txt.appendChild(inp);
+
+      var nt = document.createElement("span");
+      nt.className = "horse-note";
+      nt.textContent = h.note;
+      txt.appendChild(nt);
+
+
+
+      card.appendChild(txt);
+
+      function pick() {
+        state.horse = h;
+        renderHorses();
+        showStartCard();
+      }
+      card.addEventListener("click", pick);
+      card.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); }
+      });
+      wrap.appendChild(card);
+    });
+  }
+
+  function showStartCard() {
+    state.screen = "start";
+    document.getElementById("hud").hidden = true;
+    document.getElementById("resultCard").hidden = true;
+    document.getElementById("startCard").hidden = false;
+    document.getElementById("startTitle").textContent = state.horse.name
+      ? state.horse.name + " is ready"
+      : "Stall " + state.horse.stall + " — name her first";
+    document.getElementById("startCopy").textContent =
+      "The horse runs on its own. Press the space bar just before each jump.";
+    document.getElementById("jumpBtn").textContent = "Enter the ring";
+    resetRide();
+  }
+
+  function startRide() {
+    resetRide();
+    state.screen = "riding";
+    document.getElementById("startCard").hidden = true;
+    document.getElementById("resultCard").hidden = true;
+    document.getElementById("hud").hidden = false;
+    document.getElementById("jumpBtn").textContent = "Jump";
+  }
+
+  document.getElementById("startBtn").addEventListener("click", startRide);
+  document.getElementById("againBtn").addEventListener("click", startRide);
+  document.getElementById("backBtn").addEventListener("click", showStartCard);
+
+
+  renderHorses();
+  showStartCard();
+  window.requestAnimationFrame(step);
+})();
+</script>
+
+</body></html>
