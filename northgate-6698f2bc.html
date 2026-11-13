@@ -635,6 +635,14 @@ const PLACES = [
   { id: "school",  name: "Northgate School",  tag: "Math, language, computers", x: 2160, y: 1740, w: 420, h: 280, wall: "#f6ead2", roof: "#b5643a", head: "#8a4524" },
   { id: "skydive", name: "Skydive Northgate", tag: "Indoor wind tunnel. Really.", x: 2800, y: 1740, w: 380, h: 280, wall: "#e4f0f6", roof: "#2f8fb0", head: "#1e6b86" },
 
+  /* ---- asked for on the celebration call ---- */
+  { id: "mall",   name: "Northgate Mall",   tag: "Shops, food court, cinema",     x: 600,  y: 845,  w: 350, h: 200, wall: "#f6eef8", roof: "#8a5ac9", head: "#5f3a96" },
+  { id: "thrill", name: "Thrill Park",      tag: "Four rides. Hold on.",          x: 1240, y: 845,  w: 300, h: 200, wall: "#fff0d6", roof: "#e0683a", head: "#a8421e" },
+  { id: "dinner", name: "The Gilded Fork",  tag: "Candlelight, steak, dress up",  x: 2490, y: 300,  w: 290, h: 195, wall: "#3a2f44", roof: "#b58f3a", head: "#8a6a18" },
+  { id: "bounce", name: "Bounce Northgate", tag: "Trampolines and a foam pit",    x: 2490, y: 865,  w: 290, h: 195, wall: "#eafff2", roof: "#2fb07a", head: "#1e7d56" },
+  { id: "chapel", name: "Northgate Chapel", tag: "Quiet, candles, a big window",  x: 3165, y: 300,  w: 300, h: 210, wall: "#f4f0e4", roof: "#7a8aa6", head: "#4f5f7a" },
+  { id: "splash", name: "Splash Cove",      tag: "Slides, wave pool, lazy river", x: 3030, y: 1280, w: 440, h: 350, wall: "#e4f6fb", roof: "#2fa8c9", head: "#1e7d97" },
+
   /* ---- out east, off the blocks. No walls, no doors you can shut. ---- */
   { id: "beach",  name: "Sandpiper Beach", tag: "The ocean, and a pier",        x: 3500, y: 1180, w: 480, h: 470, nature: "beach",    head: "#1f6f97" },
   { id: "peak",   name: "Eagle Point",     tag: "The mountain and the lookout",  x: 3500, y: 250,  w: 470, h: 430, nature: "mountain", head: "#4a5f3a" },
@@ -1809,6 +1817,530 @@ ROOMS.skydive = {
   exit: { x: 530, y: 620, w: 100, h: 40 }
 };
 
+/* ====================================================================
+   THE CELEBRATION-CALL ROOMS
+   Six places the squad asked for on the Friday call: the mall, a theme
+   park, a fancy restaurant, a trampoline park, a chapel and a water park.
+   ==================================================================== */
+
+/* ---------------------------- NORTHGATE MALL ----------------------------
+   One long concourse. Shops down one side, food court and cinema down the
+   other, fountain in the middle. The cinema is the public one. */
+function mall() { if (!S.mall) S.mall = { films: 0, visits: 0, coins: 0 }; return S.mall; }
+ROOMS.mall = {
+  name: "Northgate Mall", tag: "Shops, food court, cinema", head: "#5f3a96",
+  w: 1320, h: 760, floor: "#f4eef8", floorAlt: "#ebe3f2", wall: "#8a5ac9",
+  spawn: { x: 660, y: 660 },
+  zones: [
+    { x: 60,  y: 40,  w: 560, h: 240, c: "#e4d4f0", label: "THE SHOPS" },
+    { x: 700, y: 40,  w: 560, h: 240, c: "#f6e0c8", label: "FOOD COURT" },
+    { x: 60,  y: 330, w: 520, h: 250, c: "#d4c4e8", label: "THE CINEMA" },
+    { x: 660, y: 330, w: 600, h: 250, c: "#cfe4f0", label: "THE FOUNTAIN" }
+  ],
+  props: [
+    {
+      id: "malltoys", kind: "shelf", color: "#e0538f", x: 90, y: 80, w: 220, h: 130,
+      caption: "Toy shop $18",
+      info() { return { title: S.pets.length ? "Buy a toy for your animals" : "Buy a toy",
+        chips: [{ t: "$18.00", cls: "cost" }, { t: "15 min", cls: "time" }, { t: "+Happy", cls: "good" }],
+        why: afford(18) ? "" : "Toys are $18." }; },
+      use() {
+        if (!afford(18)) { toast("Not enough for a toy."); return; }
+        pay(18); advance(15); mall().visits++;
+        if (S.pets.length) { S.pets.forEach(pt => { pt.happy = clamp(pt.happy + 18, 0, 100); });
+          toast("A squeaky one. " + S.pets[0].name + " has not put it down.", "win"); }
+        else { S.needs.fun = clamp(S.needs.fun + 10, 0, 100); toast("You will have something to put it on soon enough."); }
+        completeGoal("mallDay"); sfxGood(); save();
+      }
+    },
+    {
+      id: "mallgift", kind: "shelf", color: "#8a5ac9", x: 350, y: 80, w: 230, h: 130,
+      caption: "Gift shop $30",
+      info() { return { title: "Buy a present for somebody",
+        chips: [{ t: "$30.00", cls: "cost" }, { t: "20 min", cls: "time" }, { t: "+16 Fun", cls: "good" }],
+        why: afford(30) ? "" : "A present is $30." }; },
+      use() {
+        if (!afford(30)) { toast("Not enough for a present."); return; }
+        pay(30); advance(20); S.needs.fun = clamp(S.needs.fun + 16, 0, 100);
+        mall().visits++; completeGoal("mallDay");
+        toast("Wrapped, with a ribbon on it. You are not telling anyone who it is for.", "win"); sfxGood(); save();
+      }
+    },
+    {
+      id: "mallfood", kind: "counter", color: "#d1762f", x: 730, y: 80, w: 240, h: 130,
+      caption: "Food court $12",
+      info() { return foodPropInfo("Eat at the food court",
+        [{ t: "$12.00", cls: "cost" }, { t: "30 min", cls: "time" }, { t: "+34 Full", cls: "good" }],
+        afford(12) ? "" : "Lunch is $12."); },
+      use() {
+        if (!afford(12)) { toast("Not enough for lunch."); return; }
+        pay(12); eat(34, 10); advance(30); mall().visits++; completeGoal("mallDay");
+        toast("Noodles from the place with the queue. Worth the queue."); save();
+      }
+    },
+    {
+      id: "mallshake", kind: "counter", color: "#e86fa8", x: 1010, y: 80, w: 220, h: 130,
+      caption: "Shake bar $7",
+      info() { return foodPropInfo("Get a milkshake",
+        [{ t: "$7.00", cls: "cost" }, { t: "10 min", cls: "time" }, { t: "+12 Full", cls: "good" }],
+        afford(7) ? "" : "A shake is $7."); },
+      use() {
+        if (!afford(7)) { toast("Not enough for a shake."); return; }
+        pay(7); eat(12, 8); advance(10);
+        toast("So thick the straw stood up on its own."); save();
+      }
+    },
+    {
+      id: "cinema", kind: "bigscreen", color: "#3a2f52", x: 100, y: 370, w: 440, h: 110,
+      caption: "The cinema $14",
+      info() {
+        const f = mall().films;
+        return { title: f === 0 ? "See a film on the big screen" : "See another film",
+          chips: [{ t: "$14.00", cls: "cost" }, { t: "2 hr", cls: "time" }, { t: "+32 Fun", cls: "good" }],
+          why: afford(14) ? "" : "A ticket is $14." };
+      },
+      use() {
+        if (!afford(14)) { toast("Not enough for a ticket."); return; }
+        pay(14); const k = mall(); k.films++;
+        S.needs.fun = clamp(S.needs.fun + 32, 0, 100);
+        S.needs.energy = clamp(S.needs.energy - 5, 0, 100);
+        advance(120); completeGoal("bigScreen"); completeGoal("mallDay");
+        toast(k.films === 1 ? "The whole screen is the size of your house. You forgot to eat the popcorn."
+          : "Back row this time. Better seats.", "win");
+        sfxGood(); checkGoals(); save();
+      }
+    },
+    {
+      id: "fountain", kind: "water", water: true, walkable: true,
+      x: 760, y: 370, w: 400, h: 180,
+      opts: { shallow: "#bfe8f5", mid: "#5fbcdd", deep: "#2f85ad", rim: "#d8cfe4", radius: 40 }
+    },
+    {
+      id: "wish", kind: "shelf", color: "#ffd166", x: 690, y: 590, w: 200, h: 80,
+      caption: "Throw a coin in",
+      info() { return { title: "Throw a coin in the fountain and wish",
+        chips: [{ t: "$1.00", cls: "cost" }, { t: "5 min", cls: "time" }, { t: "+8 Fun", cls: "good" }],
+        why: afford(1) ? "" : "You need a dollar." }; },
+      use() {
+        if (!afford(1)) { toast("Not even a dollar on you."); return; }
+        pay(1); const k = mall(); k.coins++; advance(5);
+        S.needs.fun = clamp(S.needs.fun + 8, 0, 100);
+        toast(k.coins >= 5 ? "That is five wishes now. One of them had better count." : "It went in with a plop. You are not telling anyone what you wished.");
+        save();
+      }
+    },
+    jobProp({
+      id: "malljob", kind: "counter", place: "mall", x: 960, y: 590, w: 240, h: 110, color: "#5f3a96",
+      caption: "Food court jobs", title: "Work a shift in the food court",
+      pay: 85, mins: 120, energy: 16, fun: 4,
+      done: "Two hours of noodles and trays. Your arms ache. +$85.00"
+    })
+  ],
+  exit: { x: 610, y: 700, w: 100, h: 40 }
+};
+
+/* ------------------------------ THRILL PARK ------------------------------
+   "Can we get like a Disneyland?" — four rides, and a goal for doing all
+   four. The coaster costs the most and is worth the most. */
+function thrill() { if (!S.thrill) S.thrill = { rides: {} }; return S.thrill; }
+function rodeAll() { const r = thrill().rides; return r.coaster && r.drop && r.cups && r.carousel; }
+function ride(id, goalId, cost, mins, fun, energy, line) {
+  if (!afford(cost)) { toast("Not enough for that ride yet."); return; }
+  pay(cost); const k = thrill(); k.rides[id] = true;
+  S.needs.fun = clamp(S.needs.fun + fun, 0, 100);
+  S.needs.energy = clamp(S.needs.energy - energy, 0, 100);
+  advance(mins);
+  if (goalId) completeGoal(goalId);
+  if (rodeAll()) completeGoal("allFourRides");
+  toast(line, "win"); sfxGood(); checkGoals(); save();
+}
+ROOMS.thrill = {
+  name: "Thrill Park", tag: "Four rides. Hold on.", head: "#a8421e",
+  w: 1340, h: 800, floor: "#f7e7c8", floorAlt: "#efdfc0", wall: "#e0683a",
+  ground: "#7fae63", outdoor: true,
+  spawn: { x: 670, y: 700 },
+  zones: [
+    { x: 60,  y: 40,  w: 600, h: 290, c: "#f0b48a", label: "THE BIG COASTER" },
+    { x: 700, y: 40,  w: 580, h: 290, c: "#c8d8ef", label: "THE DROP TOWER" },
+    { x: 60,  y: 380, w: 600, h: 240, c: "#f4c8dd", label: "THE TEACUPS" },
+    { x: 700, y: 380, w: 580, h: 240, c: "#efe0a8", label: "THE CAROUSEL" }
+  ],
+  props: [
+    {
+      id: "coaster", kind: "shelf", color: "#d14a2f", x: 150, y: 110, w: 420, h: 150,
+      caption: "The big coaster $20",
+      info() { return { title: thrill().rides.coaster ? "Ride the coaster again" : "Ride the big coaster",
+        chips: [{ t: "$20.00", cls: "cost" }, { t: "25 min", cls: "time" }, { t: "+36 Fun", cls: "good" }],
+        why: afford(20) ? "" : "The coaster is $20." }; },
+      use() { ride("coaster", "coaster", 20, 25, 36, 12,
+        "Three loops and a tunnel. You screamed on the first one and laughed on the other two."); }
+    },
+    {
+      id: "drop", kind: "shelf", color: "#3f6f9c", x: 820, y: 110, w: 340, h: 150,
+      caption: "Drop tower $15",
+      info() { return { title: "Go up the drop tower",
+        chips: [{ t: "$15.00", cls: "cost" }, { t: "15 min", cls: "time" }, { t: "+30 Fun", cls: "good" }],
+        why: afford(15) ? "" : "The tower is $15." }; },
+      use() { ride("drop", null, 15, 15, 30, 10,
+        "Up very slowly. You could see the whole town. Then it did not go slowly at all."); }
+    },
+    {
+      id: "cups", kind: "shelf", color: "#c9548f", x: 180, y: 440, w: 360, h: 130,
+      caption: "Teacups $8",
+      info() { return { title: "Spin in the teacups",
+        chips: [{ t: "$8.00", cls: "cost" }, { t: "15 min", cls: "time" }, { t: "+20 Fun", cls: "good" }],
+        why: afford(8) ? "" : "The teacups are $8." }; },
+      use() { ride("cups", null, 8, 15, 20, 6,
+        "You spun the wheel in the middle as hard as you could. Regret came later."); }
+    },
+    {
+      id: "carousel", kind: "shelf", color: "#d1a63a", x: 820, y: 440, w: 360, h: 130,
+      caption: "Carousel $6",
+      info() { return { title: "Ride the carousel",
+        chips: [{ t: "$6.00", cls: "cost" }, { t: "10 min", cls: "time" }, { t: "+14 Fun", cls: "good" }],
+        why: afford(6) ? "" : "The carousel is $6." }; },
+      use() { ride("carousel", null, 6, 10, 14, 2,
+        "You got the horse with the gold mane. Obviously you got the horse with the gold mane."); }
+    },
+    {
+      id: "floss", kind: "counter", color: "#e86fa8", x: 150, y: 650, w: 220, h: 100,
+      caption: "Candy floss $5",
+      info() { return foodPropInfo("Get candy floss",
+        [{ t: "$5.00", cls: "cost" }, { t: "10 min", cls: "time" }, { t: "+10 Full", cls: "good" }],
+        afford(5) ? "" : "Candy floss is $5."); },
+      use() {
+        if (!afford(5)) { toast("Not enough for candy floss."); return; }
+        pay(5); eat(10, 10); advance(10);
+        toast("Bigger than your head. Sticky to the elbow."); save();
+      }
+    },
+    jobProp({
+      id: "thrilljob", kind: "counter", place: "thrill", x: 880, y: 650, w: 250, h: 110, color: "#a8421e",
+      caption: "Ride operator booth", title: "Work the ride gates",
+      pay: 95, mins: 120, energy: 15, fun: 10,
+      need() { return !!thrill().rides.coaster; },
+      needWhy: "They will not let you run a ride you have never been on.",
+      done: "Two hours of checking harnesses and shouting KEEP YOUR ARMS IN. +$95.00"
+    })
+  ],
+  exit: { x: 620, y: 740, w: 100, h: 40 }
+};
+
+/* ---------------------------- THE GILDED FORK ----------------------------
+   The fancy restaurant. You can walk in dressed how you like, but there is
+   a goal for turning up in the full outfit, which was the actual idea. */
+function fork() { if (!S.fork) S.fork = { dinners: 0 }; return S.fork; }
+function dressedFancy() {
+  return (S.outfit.hat === "beret") && (S.outfit.chain === "boa") &&
+         (S.outfit.top === "velvet" || S.outfit.top === "gown");
+}
+ROOMS.dinner = {
+  name: "The Gilded Fork", tag: "Candlelight, steak, dress up", head: "#8a6a18",
+  w: 1120, h: 660, floor: "#3f3449", floorAlt: "#392f42", wall: "#b58f3a",
+  spawn: { x: 560, y: 560 },
+  zones: [
+    { x: 60,  y: 40,  w: 500, h: 250, c: "#5a4a66", label: "THE DINING ROOM" },
+    { x: 620, y: 40,  w: 440, h: 250, c: "#4a3f56", label: "THE DRESSING ROOM" },
+    { x: 60,  y: 340, w: 500, h: 170, c: "#6a5a4a", label: "THE KITCHEN" }
+  ],
+  props: [
+    {
+      id: "table", kind: "counter", color: "#b58f3a", x: 110, y: 80, w: 400, h: 150,
+      caption: "Candlelit table $65",
+      info() {
+        const f = fork().dinners;
+        return { title: dressedFancy() ? "Dinner, and you look the part" : "Order the steak",
+          chips: [{ t: "$65.00", cls: "cost" }, { t: "1 hr 30", cls: "time" }, { t: "+45 Full", cls: "good" }, { t: "+30 Fun", cls: "good" }],
+          why: afford(65) ? (dressedFancy() ? "" : "They will seat you anyway, but the beret, the boa and a jacket or gown is the full thing.") : "Dinner here is $65." };
+      },
+      use() {
+        if (!afford(65)) { toast("Dinner here is $65. Go and earn it first."); return; }
+        pay(65); const k = fork(); k.dinners++;
+        eat(45, 0); S.needs.fun = clamp(S.needs.fun + 30, 0, 100);
+        advance(90);
+        if (dressedFancy()) { completeGoal("dressedUp");
+          toast("Steak by candlelight, in the beret and the boa. The whole room looked.", "win"); }
+        else toast("The steak came on a hot plate and they put a cloth over your arm. Very fancy.", "win");
+        sfxGood(); checkGoals(); save();
+      }
+    },
+    {
+      id: "pudding", kind: "counter", color: "#8a5a34", x: 110, y: 380, w: 400, h: 110,
+      caption: "Pudding trolley $18",
+      info() { return foodPropInfo("Something off the pudding trolley",
+        [{ t: "$18.00", cls: "cost" }, { t: "30 min", cls: "time" }, { t: "+20 Full", cls: "good" }],
+        afford(18) ? "" : "Pudding is $18."); },
+      use() {
+        if (!afford(18)) { toast("Not enough for pudding."); return; }
+        pay(18); eat(20, 6); S.needs.fun = clamp(S.needs.fun + 10, 0, 100); advance(30);
+        toast("They wheeled the whole trolley over. You took a long time choosing."); save();
+      }
+    },
+    /* the four clothes racks get pushed in below, once WEAR exists */
+    jobProp({
+      id: "forkjob", kind: "counter", place: "dinner", x: 660, y: 380, w: 300, h: 120, color: "#8a6a18",
+      caption: "Waiter station", title: "Wait tables for the evening",
+      pay: 130, mins: 150, energy: 20, fun: 6,
+      done: "Two and a half hours carrying three plates on one arm. +$130.00"
+    })
+  ],
+  exit: { x: 510, y: 600, w: 100, h: 40 }
+};
+
+/* --------------------------- BOUNCE NORTHGATE ---------------------------
+   Trampolines, a foam pit and a dodgeball court. Dunking needs a few
+   bounces first, which is the only gate in here. */
+function bounce() { if (!S.bounce) S.bounce = { jumps: 0, dunks: 0 }; return S.bounce; }
+ROOMS.bounce = {
+  name: "Bounce Northgate", tag: "Trampolines and a foam pit", head: "#1e7d56",
+  w: 1180, h: 720, floor: "#e4f6ec", floorAlt: "#dbeee3", wall: "#2fb07a",
+  spawn: { x: 590, y: 620 },
+  zones: [
+    { x: 60,  y: 40,  w: 520, h: 270, c: "#8fdcb4", label: "THE TRAMPOLINES" },
+    { x: 630, y: 40,  w: 480, h: 270, c: "#f0c48a", label: "THE FOAM PIT" },
+    { x: 60,  y: 360, w: 520, h: 210, c: "#c4dcef", label: "DODGEBALL" },
+    { x: 630, y: 360, w: 480, h: 210, c: "#e4d4f0", label: "THE DUNK LANE" }
+  ],
+  props: [
+    {
+      id: "tramps", kind: "shelf", color: "#2fb07a", x: 120, y: 80, w: 400, h: 170,
+      caption: "Open jump $12",
+      info() { return { title: bounce().jumps === 0 ? "Get on the trampolines" : "Another hour of jumping",
+        chips: [{ t: "$12.00", cls: "cost" }, { t: "1 hr", cls: "time" }, { t: "+28 Fun", cls: "good" }],
+        why: afford(12) ? "" : "An hour is $12." }; },
+      use() {
+        if (!afford(12)) { toast("An hour on the trampolines is $12."); return; }
+        pay(12); const k = bounce(); k.jumps++;
+        S.needs.fun = clamp(S.needs.fun + 28, 0, 100);
+        S.needs.energy = clamp(S.needs.energy - 18, 0, 100);
+        advance(60);
+        toast(k.jumps === 1 ? "You went from one trampoline to the next without touching the floor once."
+          : "Higher this time. Your legs are going to know about it tomorrow.", "win");
+        sfxGood(); save();
+      }
+    },
+    {
+      id: "foam", kind: "shelf", color: "#e0a04a", x: 700, y: 80, w: 340, h: 170,
+      caption: "The foam pit",
+      info() { return { title: "Jump into the foam pit",
+        chips: [{ t: "included", cls: "earn" }, { t: "20 min", cls: "time" }, { t: "+22 Fun", cls: "good" }],
+        why: bounce().jumps ? "" : "Pay for a jump session first." }; },
+      use() {
+        if (!bounce().jumps) { toast("Get an hour on the trampolines first."); return; }
+        S.needs.fun = clamp(S.needs.fun + 22, 0, 100);
+        S.needs.energy = clamp(S.needs.energy - 8, 0, 100);
+        advance(20); completeGoal("foamPit");
+        toast("You went in feet first and it took a full minute to climb out.", "win");
+        sfxGood(); checkGoals(); save();
+      }
+    },
+    {
+      id: "dodge", kind: "shelf", color: "#3f8fd1", x: 120, y: 400, w: 400, h: 130,
+      caption: "Dodgeball court",
+      info() { return { title: "Play a dodgeball game",
+        chips: [{ t: "included", cls: "earn" }, { t: "30 min", cls: "time" }, { t: "+24 Fun", cls: "good" }],
+        why: bounce().jumps ? "" : "Pay for a jump session first." }; },
+      use() {
+        if (!bounce().jumps) { toast("Get an hour on the trampolines first."); return; }
+        S.needs.fun = clamp(S.needs.fun + 24, 0, 100);
+        S.needs.energy = clamp(S.needs.energy - 14, 0, 100);
+        advance(30);
+        toast("Last one standing. You caught the final ball off the wall."); sfxGood(); save();
+      }
+    },
+    {
+      id: "dunk", kind: "shelf", color: "#8a5ac9", x: 700, y: 400, w: 340, h: 130,
+      caption: "The dunk lane",
+      info() {
+        const k = bounce();
+        return { title: k.dunks ? "Dunk again" : "Bounce off the trampoline and dunk",
+          chips: [{ t: "included", cls: "earn" }, { t: "25 min", cls: "time" }, { t: "+26 Fun", cls: "good" }],
+          why: k.jumps >= 2 ? "" : "You need two jump sessions behind you before they open the dunk lane." };
+      },
+      use() {
+        const k = bounce();
+        if (k.jumps < 2) { toast("Two jump sessions first. They are strict about it."); return; }
+        k.dunks++;
+        S.needs.fun = clamp(S.needs.fun + 26, 0, 100);
+        S.needs.energy = clamp(S.needs.energy - 16, 0, 100);
+        advance(25); completeGoal("dunk");
+        toast(k.dunks === 1 ? "Two bounces, both hands on the ball, and it went in. Somebody filmed it."
+          : "Off the side wall this time.", "win");
+        sfxGood(); checkGoals(); save();
+      }
+    },
+    jobProp({
+      id: "bouncejob", kind: "counter", place: "bounce", x: 400, y: 600, w: 260, h: 100, color: "#1e7d56",
+      caption: "Court monitor desk", title: "Monitor the courts",
+      pay: 80, mins: 120, energy: 12, fun: 6,
+      done: "Two hours of ONE AT A TIME ON THE PIT PLEASE. +$80.00"
+    })
+  ],
+  exit: { x: 540, y: 660, w: 100, h: 40 }
+};
+
+/* --------------------------- NORTHGATE CHAPEL ---------------------------
+   Dottie's. The quiet building. Nothing here costs much and nothing here
+   is a race: it is the one room in Northgate that gives energy back. */
+function chapel() { if (!S.chapel) S.chapel = { candles: 0, sat: 0 }; return S.chapel; }
+ROOMS.chapel = {
+  name: "Northgate Chapel", tag: "Quiet, candles, a big window", head: "#4f5f7a",
+  w: 1000, h: 640, floor: "#e8e2d2", floorAlt: "#e0d9c8", wall: "#7a8aa6",
+  spawn: { x: 500, y: 550 },
+  zones: [
+    { x: 60,  y: 40,  w: 880, h: 200, c: "#cfd8e8", label: "THE BIG WINDOW" },
+    { x: 60,  y: 290, w: 520, h: 200, c: "#ded6c2", label: "THE PEWS" },
+    { x: 640, y: 290, w: 300, h: 200, c: "#efe0b8", label: "CANDLES" }
+  ],
+  props: [
+    {
+      id: "window", kind: "shelf", color: "#6f86b5", x: 300, y: 80, w: 400, h: 130,
+      caption: "The window",
+      info() { return { title: "Stand and look up at the window",
+        chips: [{ t: "free", cls: "earn" }, { t: "10 min", cls: "time" }, { t: "+10 Fun", cls: "good" }], why: "" }; },
+      use() { S.needs.fun = clamp(S.needs.fun + 10, 0, 100); advance(10);
+        toast("The sun came through it and put colours all over the floor."); }
+    },
+    {
+      id: "pews", kind: "couch", color: "#8a6a4a", x: 120, y: 330, w: 400, h: 120,
+      caption: "The pews",
+      info() { return { title: "Sit down where it is quiet",
+        chips: [{ t: "free", cls: "earn" }, { t: "30 min", cls: "time" }, { t: "+22 Energy", cls: "good" }], why: "" }; },
+      use() {
+        const k = chapel(); k.sat++;
+        S.needs.energy = clamp(S.needs.energy + 22, 0, 100);
+        S.needs.fun = clamp(S.needs.fun + 4, 0, 100);
+        advance(30);
+        toast(k.sat === 1 ? "Nobody asked you anything for half an hour. It was lovely."
+          : "You sat near the back again. Same half hour, same quiet.");
+        save();
+      }
+    },
+    {
+      id: "candles", kind: "shelf", color: "#ffd166", x: 680, y: 330, w: 220, h: 120,
+      caption: "Light a candle $2",
+      info() { return { title: "Light a candle for somebody",
+        chips: [{ t: "$2.00", cls: "cost" }, { t: "10 min", cls: "time" }],
+        why: afford(2) ? "" : "A candle is $2." }; },
+      use() {
+        if (!afford(2)) { toast("A candle is $2."); return; }
+        pay(2); const k = chapel(); k.candles++; advance(10);
+        completeGoal("litCandle");
+        toast(k.candles === 1 ? "You put it at the end of the row and watched it for a minute."
+          : "There are " + k.candles + " of yours in that row now.", "win");
+        sfxGood(); checkGoals(); save();
+      }
+    },
+    jobProp({
+      id: "chapeljob", kind: "counter", place: "chapel", x: 380, y: 540, w: 260, h: 90, color: "#4f5f7a",
+      caption: "Help out", title: "Help set up for the weekend",
+      pay: 45, mins: 90, energy: 8, fun: 10,
+      done: "Chairs out, candles replaced, flowers in water. +$45.00"
+    })
+  ],
+  exit: { x: 450, y: 590, w: 100, h: 40 }
+};
+
+/* ------------------------------ SPLASH COVE ------------------------------
+   The water park. The big slide, a wave pool and a lazy river you have to
+   float all the way round. */
+function splash() { if (!S.splash) S.splash = { slides: 0, river: 0, band: false }; return S.splash; }
+function hasBand() { if (!splash().band) { toast("Get a wristband at the kiosk first."); return false; } return true; }
+ROOMS.splash = {
+  name: "Splash Cove", tag: "Slides, wave pool, lazy river", head: "#1e7d97",
+  w: 1420, h: 840, floor: "#dff0f6", floorAlt: "#d5e8f0", wall: "#2fa8c9",
+  ground: "#8fc9a8", outdoor: true,
+  spawn: { x: 710, y: 740,  },
+  zones: [
+    { x: 60,  y: 40,  w: 620, h: 300, c: "#a8dcef", label: "THE BIG SLIDE" },
+    { x: 740, y: 40,  w: 620, h: 300, c: "#7fc9e4", label: "THE WAVE POOL" },
+    { x: 60,  y: 400, w: 1300, h: 230, c: "#9fd4e8", label: "THE LAZY RIVER" }
+  ],
+  props: [
+    {
+      id: "band", kind: "counter", color: "#1e7d97", x: 560, y: 690, w: 280, h: 110,
+      caption: "Wristband kiosk $16",
+      info() { return { title: splash().band ? "You already have a wristband on" : "Get a wristband for the day",
+        chips: [{ t: "$16.00", cls: "cost" }, { t: "10 min", cls: "time" }],
+        why: afford(16) ? "" : "A wristband is $16." }; },
+      use() {
+        if (splash().band) { toast("It is already on your wrist."); return; }
+        if (!afford(16)) { toast("A wristband is $16."); return; }
+        pay(16); splash().band = true; advance(10);
+        toast("Green band, snapped on tight. Everything inside is included now.", "win"); sfxGood(); save();
+      }
+    },
+    {
+      id: "slide", kind: "board", color: "#2fa8c9", x: 150, y: 90, w: 440, h: 120,
+      caption: "The big slide",
+      info() {
+        const k = splash();
+        return { title: k.slides === 0 ? "Climb up and go down the big slide" : "Go down the big slide again",
+          chips: [{ t: "wristband", cls: "" }, { t: "20 min", cls: "time" }, { t: "+30 Fun", cls: "good" }],
+          why: k.band ? "" : "You need a wristband." };
+      },
+      use() {
+        if (!hasBand()) return;
+        const k = splash(); k.slides++;
+        S.needs.fun = clamp(S.needs.fun + 30, 0, 100);
+        S.needs.energy = clamp(S.needs.energy - 10, 0, 100);
+        S.needs.clean = 100;
+        advance(20); completeGoal("bigSlide");
+        toast(k.slides === 1 ? "The stairs took longer than the slide. The slide took four seconds."
+          : "Arms crossed this time. Faster.", "win");
+        sfxGood(); checkGoals(); save();
+      }
+    },
+    { id: "waves", kind: "water", water: true, walkable: true, x: 760, y: 70, w: 580, h: 250,
+      opts: { shallow: "#a8ecf2", mid: "#3aa8d1", deep: "#14507f", rim: "#cfe4d8", radius: 50 } },
+    {
+      id: "wavebtn", kind: "shelf", color: "#3aa8d1", x: 980, y: 340, w: 200, h: 70,
+      caption: "Wave pool",
+      info() { return { title: "Swim when the waves come on",
+        chips: [{ t: "wristband", cls: "" }, { t: "40 min", cls: "time" }, { t: "+26 Fun", cls: "good" }],
+        why: splash().band ? "" : "You need a wristband." }; },
+      use() {
+        if (!hasBand()) return;
+        S.needs.fun = clamp(S.needs.fun + 26, 0, 100);
+        S.needs.energy = clamp(S.needs.energy - 14, 0, 100);
+        S.needs.clean = 100; advance(40);
+        toast("A horn goes, and then the whole pool stands up at you."); sfxGood(); save();
+      }
+    },
+    { id: "river", kind: "water", water: true, walkable: true, x: 80, y: 430, w: 1260, h: 180,
+      opts: { shallow: "#bfe8f5", mid: "#5fbcdd", deep: "#2f85ad", rim: "#cfe4d8", radius: 60 } },
+    {
+      id: "riverbtn", kind: "shelf", color: "#5fbcdd", x: 90, y: 690, w: 240, h: 100,
+      caption: "Grab a ring",
+      info() {
+        const k = splash();
+        return { title: k.river ? "Float round again" : "Float the whole lazy river",
+          chips: [{ t: "wristband", cls: "" }, { t: "45 min", cls: "time" }, { t: "+20 Fun", cls: "good" }, { t: "+10 Energy", cls: "good" }],
+          why: k.band ? "" : "You need a wristband." };
+      },
+      use() {
+        if (!hasBand()) return;
+        const k = splash(); k.river++;
+        S.needs.fun = clamp(S.needs.fun + 20, 0, 100);
+        S.needs.energy = clamp(S.needs.energy + 10, 0, 100);
+        S.needs.clean = 100; advance(45); completeGoal("lazyRiver");
+        toast(k.river === 1 ? "All the way round without once putting a foot down."
+          : "Round again. You nearly fell asleep in the ring.", "win");
+        sfxGood(); checkGoals(); save();
+      }
+    },
+    jobProp({
+      id: "splashjob", kind: "station", place: "splash", x: 1060, y: 690, w: 260, h: 110, color: "#1e7d97",
+      caption: "Lifeguard chair", title: "Work a lifeguard shift",
+      pay: 115, mins: 150, energy: 16, fun: 6,
+      need() { return splash().slides > 0; },
+      needWhy: "They want you to have been down the slide before you watch it.",
+      done: "Two and a half hours on the chair. You blew the whistle twice. +$115.00"
+    })
+  ],
+  exit: { x: 660, y: 780, w: 100, h: 40 }
+};
+
 /* ---------------------------- NORTHGATE ZOO ---------------------------- */
 ROOMS.zoo = {
   name: "Northgate Zoo", tag: "Otters, dolphins, lions", head: "#3f6b33",
@@ -1909,6 +2441,43 @@ ROOMS.beach = {
   props: [
     { id: "ocean", kind: "water", water: true, walkable: true, x: 60, y: 40, w: 1120, h: 350,
       opts: { shallow: "#9fe3ef", mid: "#3aa8d1", deep: "#14507f", rim: "#efdfb4", radius: 30 } },
+    /* Snorkelling, asked for on the celebration call, with the nurse sharks. */
+    { id: "snorkel", kind: "shelf", color: "#1f6f97", x: 820, y: 460, w: 230, h: 110,
+      caption: "Snorkel hire $14",
+      info() {
+        if (!S.snork) S.snork = { trips: 0, gear: false };
+        return { title: S.snork.gear ? "You have the mask and fins already" : "Hire a mask and fins",
+          chips: [{ t: "$14.00", cls: "cost" }, { t: "10 min", cls: "time" }],
+          why: afford(14) ? "" : "The hire is $14." };
+      },
+      use() {
+        if (!S.snork) S.snork = { trips: 0, gear: false };
+        if (S.snork.gear) { toast("Mask on your forehead, fins in your hand. Get in the water."); return; }
+        if (!afford(14)) { toast("Snorkel hire is $14."); return; }
+        pay(14); S.snork.gear = true; advance(10);
+        toast("Mask, snorkel, fins. They made you spit in the mask so it would not fog.", "win"); sfxGood(); save();
+      } },
+    { id: "sharks", kind: "board", color: "#3aa8d1", x: 820, y: 20, w: 300, h: 70,
+      caption: "Out to the sharks",
+      info() {
+        if (!S.snork) S.snork = { trips: 0, gear: false };
+        return { title: S.snork.trips ? "Swim out to the nurse sharks again" : "Swim out and look for the nurse sharks",
+          chips: [{ t: "1 hr", cls: "time" }, { t: "+34 Fun", cls: "good" }],
+          why: S.snork.gear ? "" : "Hire a mask and fins from the hut first." };
+      },
+      use() {
+        if (!S.snork) S.snork = { trips: 0, gear: false };
+        if (!S.snork.gear) { toast("You need a mask and fins first."); return; }
+        S.snork.trips++;
+        S.needs.fun = clamp(S.needs.fun + 34, 0, 100);
+        S.needs.energy = clamp(S.needs.energy - 14, 0, 100);
+        S.needs.clean = 100;
+        advance(60); completeGoal("nurseSharks");
+        toast(S.snork.trips === 1
+          ? "Four of them, lying still on the sand under you. Nurse sharks. They did not care about you at all."
+          : "A turtle this time, going past like it had somewhere to be.", "win");
+        sfxGood(); checkGoals(); save();
+      } },
     { id: "pier", kind: "board", x: 500, y: 20, w: 240, h: 60, caption: "The pier",
       info() { return { title: "Walk out to the end of the pier", chips: [{ t: "free", cls: "earn" }, { t: "20 min", cls: "time" }, { t: "+12 Fun", cls: "good" }], why: "" }; },
       use() { S.needs.fun = clamp(S.needs.fun + 12, 0, 100); advance(20); toast("You could see the whole town from out there."); } },
@@ -2092,6 +2661,46 @@ const HOME_PLOTS = [
     }
   },
   {
+    id: "music", name: "Music Room", price: 650,
+    sec: { x: 20, y: 660, w: 200, h: 330, floor: "#8a6a9c", floorAlt: "#815f93", label: "MUSIC ROOM" },
+    props() {
+      return [
+        simpleProp({
+          id: "piano", kind: "shelf", color: "#2b2f3e", x: 40, y: 700, w: 160, h: 90,
+          caption: "Upright piano", title: "Sit down and play the piano",
+          chips: [{ t: "40 min", cls: "time" }, { t: "+20 Fun", cls: "good" }, { t: "+6 Energy", cls: "good" }],
+          use() {
+            S.needs.fun = clamp(S.needs.fun + 20, 0, 100);
+            S.needs.energy = clamp(S.needs.energy + 6, 0, 100);
+            advance(40); completeGoal("musicRoom");
+            toast("You got the whole left hand right for the first time."); sfxGood(); checkGoals(); save();
+          }
+        }),
+        simpleProp({
+          id: "drums", kind: "shelf", color: "#c9544a", x: 40, y: 810, w: 160, h: 80,
+          caption: "Drum kit", title: "Get on the drums",
+          chips: [{ t: "30 min", cls: "time" }, { t: "+24 Fun", cls: "good" }],
+          use() {
+            S.needs.fun = clamp(S.needs.fun + 24, 0, 100);
+            S.needs.energy = clamp(S.needs.energy - 8, 0, 100);
+            advance(30); completeGoal("musicRoom");
+            toast("Loud. Very loud. Nobody in this house is asleep now."); sfxGood(); checkGoals(); save();
+          }
+        }),
+        simpleProp({
+          id: "mic", kind: "shelf", color: "#ffd166", x: 40, y: 910, w: 160, h: 60,
+          caption: "Mic and amp", title: "Sing something",
+          chips: [{ t: "25 min", cls: "time" }, { t: "+18 Fun", cls: "good" }],
+          use() {
+            S.needs.fun = clamp(S.needs.fun + 18, 0, 100);
+            advance(25); completeGoal("musicRoom");
+            toast("You did the big note at the end and you got it."); sfxGood(); checkGoals(); save();
+          }
+        })
+      ];
+    }
+  },
+  {
     id: "trophy", name: "Trophy Hall", price: 500,
     sec: { x: 690, y: 660, w: 240, h: 330, floor: "#e2d3ac", floorAlt: "#dacaa1", label: "TROPHY HALL" },
     props() {
@@ -2211,7 +2820,13 @@ const WEAR = [
   { id: "leo_pink",  slot: "top", name: "Dance leotard",   price: 60,  c: "#e0538f", style: "leo", local: true },
   { id: "leo_teal",  slot: "top", name: "Sparkle leotard", price: 130, c: "#3ad1c0", style: "leo", local: true },
   { id: "acro_suit", slot: "top", name: "Acrobat suit",    price: 240, c: "#b07fd1", style: "leo", local: true },
-  { id: "gi",        slot: "top", name: "Jujitsu gi",      price: 70,  c: "#f4f6f8", style: "gi",  local: true }
+  { id: "gi",        slot: "top", name: "Jujitsu gi",      price: 70,  c: "#f4f6f8", style: "gi",  local: true },
+
+  /* Dress-up for The Gilded Fork. Sold at the restaurant, not at Threads. */
+  { id: "beret",     slot: "hat",   name: "Black beret",     price: 45,  c: "#2b2f3e", style: "beanie", local: true },
+  { id: "boa",       slot: "chain", name: "Feather boa",     price: 120, c: "#e86fa8", style: "chain",  local: true },
+  { id: "velvet",    slot: "top",   name: "Velvet jacket",   price: 180, c: "#7a2f4a", style: "hoodie", local: true },
+  { id: "gown",      slot: "top",   name: "Long gown",       price: 220, c: "#2f4f8a", style: "leo",    local: true }
 ];
 function wearById(id) { return WEAR.find(w => w.id === id) || null; }
 function worn(slot) { return wearById(S.outfit[slot]); }
@@ -2306,6 +2921,15 @@ function shopRack(id, itemId, x, y, w, h) {
     use() { wearItem(item); }
   };
 }
+
+/* The Gilded Fork is defined further up the file, before WEAR exists, so its
+   dressing-room racks are added here instead of inside the room. */
+ROOMS.dinner.props.push(
+  shopRack("fancy1", "beret",  660, 70,  100, 100),
+  shopRack("fancy2", "boa",    790, 70,  100, 100),
+  shopRack("fancy3", "velvet", 920, 70,  100, 100),
+  shopRack("fancy4", "gown",   790, 190, 100, 100)
+);
 
 /* ======================= SPOTLIGHT STUDIO =======================
    Rehearsing is free and makes you better. The two shows are paid
@@ -2502,7 +3126,21 @@ const GOALS = [
   { id: "seaLegs",      text: "Go out on the harbour boat at Harborside", reward: 60 },
   { id: "harvest",      text: "Pick strawberries in Greenfield",       reward: 80 },
   { id: "oldLibrary",   text: "Find a book in the Old Town library",   reward: 60 },
-  { id: "towerTop",     text: "Go up the tower in Summit City",        reward: 80 }
+  { id: "towerTop",     text: "Go up the tower in Summit City",        reward: 80 },
+
+  /* the celebration-call list */
+  { id: "mallDay",      text: "Spend an afternoon at Northgate Mall",  reward: 60 },
+  { id: "bigScreen",    text: "See a film at the mall cinema",         reward: 60 },
+  { id: "coaster",      text: "Ride the big coaster at Thrill Park",   reward: 100 },
+  { id: "allFourRides", text: "Ride all four rides at Thrill Park",    reward: 300 },
+  { id: "dressedUp",    text: "Eat at The Gilded Fork in a full outfit", reward: 200 },
+  { id: "foamPit",      text: "Jump into the foam pit at Bounce",      reward: 60 },
+  { id: "dunk",         text: "Dunk off a trampoline",                 reward: 120 },
+  { id: "bigSlide",     text: "Go down the big slide at Splash Cove",  reward: 80 },
+  { id: "lazyRiver",    text: "Float the whole lazy river",            reward: 60 },
+  { id: "litCandle",    text: "Light a candle at Northgate Chapel",    reward: 40 },
+  { id: "musicRoom",    text: "Build a music room in your house",      reward: 150 },
+  { id: "nurseSharks",  text: "Snorkel with the nurse sharks",         reward: 150 }
 ];
 function completeGoal(id) {
   if (S.goals[id]) return;
@@ -4934,6 +5572,13 @@ function showBoutResult(won, pay, before, after) {
    Northgate. The coach calls one challenge; the race is who finishes it. */
 const CHALLENGES = [
   { id: "roll",      pic: "\uD83C\uDF63",        label: "Nu's special",      mins: "2 min",  line: "Buy today's half-price roll from Nu at Sprouts.", at: "sprouts" },
+  { id: "candle",    pic: "\uD83D\uDD6F\uFE0F", label: "Light a candle",    mins: "3 min",  line: "Light a candle at Northgate Chapel.", at: "chapel" },
+  { id: "film",      pic: "\uD83C\uDFAC",        label: "See a film",        mins: "3 min",  line: "Watch something at the mall cinema.", at: "mall" },
+  { id: "coaster",   pic: "\uD83C\uDFA2",        label: "The big coaster",   mins: "4 min",  line: "Ride the big coaster at Thrill Park.", at: "thrill" },
+  { id: "foam",      pic: "\uD83E\uDD38",        label: "Into the foam",     mins: "4 min",  line: "Jump into the foam pit at Bounce Northgate.", at: "bounce" },
+  { id: "slide",     pic: "\uD83C\uDF0A",        label: "The big slide",     mins: "4 min",  line: "Go down the big slide at Splash Cove.", at: "splash" },
+  { id: "snorkel",   pic: "\uD83E\uDD3F",        label: "Nurse sharks",      mins: "6 min",  line: "Hire a snorkel at the beach and swim out to the sharks.", at: "beach" },
+  { id: "fancy",     pic: "\uD83E\uDD69",        label: "Dinner, dressed up", mins: "8 min", line: "Buy the beret, the boa and a jacket or gown, then eat at The Gilded Fork.", at: "dinner" },
   { id: "falls",     pic: "\uD83D\uDCA7",        label: "Under the falls",   mins: "4 min",  line: "Drive out to Cedar Falls and stand right under the water.", at: "falls" },
   { id: "skydive",   pic: "\uD83E\uDE82",        label: "Wind tunnel",       mins: "4 min",  line: "Fly in the tunnel at Skydive Northgate.", at: "skydive" },
   { id: "belt",      pic: "\uD83E\uDD4B",        label: "Win a match",       mins: "5 min",  line: "Go to the dojo and beat somebody at jujitsu.", at: "dojo" },
