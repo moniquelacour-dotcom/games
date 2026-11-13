@@ -1,5 +1,5 @@
 /* The Reading Hub's lanes, goals and skills, copied from Monique's private My Reading Roster (Lanes tab).
-   Only the list: no student names, no scores. Updated 2026-11-11. */
+   Only the list: no student names, no scores. Updated 2026-11-12. */
 window.HubLanes = [
  {
   "key": "acc",
@@ -13,7 +13,13 @@ window.HubLanes = [
    {
     "id": "acc-mid",
     "name": "I can read the middle of words",
-    "skills": []
+    "skills": [
+     {
+      "id": "mid-rimes",
+      "name": "I can find the rime (word families)",
+      "set": "mid-rimes"
+     }
+    ]
    },
    {
     "id": "acc-end",
@@ -104,7 +110,8 @@ window.HubLanes = [
      },
      {
       "id": "flu-expr",
-      "name": "I can read with expression"
+      "name": "I can read with expression",
+      "set": "signs"
      },
      {
       "id": "flu-speed",
@@ -117,6 +124,18 @@ window.HubLanes = [
  {
   "key": "com",
   "name": "Comprehension",
-  "goals": []
+  "goals": [
+   {
+    "id": "com-char",
+    "name": "I can tell what a character is like",
+    "skills": [
+     {
+      "id": "com-g3-char",
+      "name": "What they do, say, think and feel (Grade 3)",
+      "set": "g3-char"
+     }
+    ]
+   }
+  ]
  }
 ];

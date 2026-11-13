@@ -147,7 +147,7 @@ details.card>summary::-webkit-details-marker{display:none}
           <div id="takenQ"></div>
           <div id="pairBox" class="pullbox" hidden></div>
           <div id="helpQ"></div>
-          <div style="overflow-x:auto"><table><thead><tr><th></th><th>Student</th><th>Skill</th><th>First try</th><th>Ledge</th><th>Right now</th></tr></thead><tbody id="liveRows"></tbody></table></div>
+          <div style="overflow-x:auto"><table><thead><tr><th></th><th>Student</th><th>Skill</th><th>First try</th><th>Ledge</th><th>Right now</th><th></th></tr></thead><tbody id="liveRows"></tbody></table></div>
         </section>
         <section class="card">
           <span class="step">1 · Pick the warm-up</span>
@@ -162,7 +162,9 @@ details.card>summary::-webkit-details-marker{display:none}
           <span class="step">3 · Pick each student's skill</span>
           <p class="small muted" style="margin:0">Lane, then goal, then the one skill they work on now. Each student sees only their own goal and skill. Changes reach them in a few seconds, even in the middle of a game.</p>
           <div class="setall"><span class="label">Set everyone</span><select id="saLane" aria-label="Lane for everyone"></select><select id="saGoal" aria-label="Goal for everyone"></select><select id="saSkill" aria-label="Skill for everyone"></select><button class="btn sm" id="saGo">Apply to all</button></div>
+          <label class="small"><input type="checkbox" id="hereOnly" checked> Only students who joined today</label>
           <label class="small"><input type="checkbox" id="allKids"> Show all my students (not just this group)</label>
+          <div class="small muted" id="asgNote"></div>
           <div style="overflow-x:auto"><table><thead><tr><th></th><th>Student</th><th>Grade</th><th>Lane</th><th>Goal</th><th>Skill</th><th>Check</th></tr></thead><tbody id="asgRows"></tbody></table></div>
         </section>
         <details class="card">
@@ -187,7 +189,7 @@ details.card>summary::-webkit-details-marker{display:none}
         </section>
         <section class="card">
           <span class="label">How a session runs</span>
-          <ol class="flow"><li>Warm-up while everyone arrives</li><li>Pull the whole group or pairs to Zoom</li><li>Send them back and start the game</li></ol>
+          <ol class="flow"><li>Warm-up while everyone arrives</li><li>Pull the whole group, pairs, or one student to Zoom</li><li>Send them back and start the game</li></ol>
           <div class="small muted">You can pull anyone out of the game, and send them back, at any time.</div>
         </section>
         <section class="card">
@@ -228,9 +230,10 @@ details.card>summary::-webkit-details-marker{display:none}
 
 <script src="turn-timer.js?v=9"></script>
 <script src="hub-questions.js?v=2"></script>
-<script src="hub-lanes.js?v=2"></script>
+<script src="hub-mark.js?v=2"></script>
+<script src="hub-lanes.js?v=3"></script>
 <script src="hub-warmups.js?v=1"></script>
-<script src="hub-climb.js?v=1"></script>
+<script src="hub-climb.js?v=4"></script>
 <script>
 (function(){
 "use strict";
@@ -277,7 +280,7 @@ function coach(){
   var tt = store("tt-coach2") || {};
   var students = tt.students || [], groups = tt.groups || [];
   if(!students.length) $("noStudents").hidden = false;
-  var BUILT = Q.LIST;   // built-in question sets: long vowels, punctuation, phrasing
+  var BUILT = Q.LIST.concat(window.HubMark ? HubMark.LIST : []);   // built-in sets: long vowels, punctuation, phrasing, highlighters
   var cfg = store("hub-coach1") || {};
   cfg.lanes = cfg.lanes || {};
   Object.keys(cfg.lanes).forEach(function(lk){   // an older lane > skill list
@@ -532,8 +535,12 @@ function coach(){
       var nowTxt = !on ? '<span class="now muted">not here yet</span>' : cfg.pull.indexOf(s.av) >= 0 ? '<span class="now pulled">👋 with you on Zoom</span>' : helpOn ? '<span class="now help">🙋 needs help</span>' :
         '<span class="now">' + (cfg.mode === "warm" ? "warm-up" : cfg.mode === "game" ? (G[cfg.game] ? G[cfg.game].name : "game") : "waiting") + '</span>';
       return '<tr><td class="av">' + esc(s.av) + '</td><td>' + '<span class="dot' + (on ? " on" : "") + '"></span> ' + esc(s.name) + '</td><td class="small">' + (sk ? esc(sk.name) : '<span class="muted">none yet</span>') +
-        '</td><td>' + (L.n ? L.r + " of " + L.n + " <span class='muted small'>(" + Math.round(100 * L.r / L.n) + "%)</span>" : "–") + '</td><td>' + (L.ledge != null ? L.ledge : "–") + '</td><td>' + nowTxt + '</td></tr>';
-    }).join("") || '<tr><td colspan="6" class="muted">No students with an animal in this group yet.</td></tr>';
+        '</td><td>' + (L.n ? L.r + " of " + L.n + " <span class='muted small'>(" + Math.round(100 * L.r / L.n) + "%)</span>" : "–") + '</td><td>' + (L.ledge != null ? L.ledge : "–") + '</td><td>' + nowTxt + '</td><td>' +
+        (cfg.pull.indexOf(s.av) >= 0 ? '<button class="btn go sm" data-oneback="' + esc(s.av) + '">↩ Send back</button>' : on ? '<button class="btn pull sm" data-one="' + esc(s.av) + '">👋 Pull</button>' : "") + '</td></tr>';
+    }).join("") || '<tr><td colspan="7" class="muted">No students with an animal in this group yet.</td></tr>';
+    /* pull ONE student (e.g. a 1:1 check) while the others keep playing */
+    $("liveRows").querySelectorAll("[data-one]").forEach(function(b){ b.onclick = function(){ setPull(cfg.pull.concat([b.dataset.one]), cfg.pullMode === "pairs" ? "pairs" : (cfg.pullMode || "one")); }; });
+    $("liveRows").querySelectorAll("[data-oneback]").forEach(function(b){ b.onclick = function(){ var a = b.dataset.oneback; setPull(cfg.pull.filter(function(x){ return x !== a; }), cfg.pullMode); }; });
   }
   setInterval(renderLive, 5000);
   var QUICK = ["I see you! I'm coming to you soon.", "Skip it for now and keep going. We'll look at it together.", "Great job asking! Try your best one, then keep going."];
@@ -567,16 +574,35 @@ function coach(){
   }
 
   /* ---- Assignments: lane > goal > skill ---- */
-  $("allKids").onchange = renderAsg;
+  $("allKids").onchange = renderAsg; $("hereOnly").onchange = renderAsg;
+  /* Like Meg's hub: set each student as they join. "Joined today" = their device checked in since this page opened. */
+  var joined = {};
+  function isHere(s){ var L = live[s.av]; return !!(L && L.seen && Date.now() - L.seen < 15000); }
+  function asgList(){
+    var base = $("allKids").checked ? students : kidsInGroup();
+    base.forEach(function(s){ if(isHere(s)) joined[s.id] = 1; });
+    var j = base.filter(function(s){ return joined[s.id]; });
+    if($("hereOnly").checked){
+      $("asgNote").textContent = j.length ? "Showing the " + j.length + " who joined today. Set everyone changes only them." : "No one has joined yet. Everyone is shown until someone joins.";
+      if(j.length) return j;
+    } else $("asgNote").textContent = "";
+    return base.slice().sort(function(a, b){ return (joined[b.id] ? 1 : 0) - (joined[a.id] ? 1 : 0); });
+  }
+  var lastJoinKey = "";
+  setInterval(function(){
+    (($("allKids").checked ? students : kidsInGroup())).forEach(function(s){ if(isHere(s)) joined[s.id] = 1; });
+    var k = Object.keys(joined).sort().join(",");
+    if(k !== lastJoinKey && !(document.activeElement && document.activeElement.closest && document.activeElement.closest("#asgRows"))){ lastJoinKey = k; renderAsg(); }
+  }, 3000);
   function opt(v, label, sel){ return '<option value="' + esc(v) + '"' + (v === sel ? " selected" : "") + '>' + esc(label) + '</option>'; }
   function laneOpts(sel){ return opt("", "–", sel) + Object.keys(cfg.lanes).map(function(k){ return opt(k, cfg.lanes[k].name, sel); }).join(""); }
   function goalOpts(lane, sel){ var L = cfg.lanes[lane]; if(!L) return opt("", "pick a lane first", ""); if(!L.goals.length) return opt("", "no goals yet", ""); return opt("", "–", sel) + L.goals.map(function(g){ return opt(g.id, g.name, sel); }).join(""); }
   function skillOpts(lane, gid, sel){ var g = goalById(lane, gid); if(!g) return opt("", "pick a goal first", ""); if(!g.skills.length) return opt("", "no skills yet", ""); return opt("", "–", sel) + g.skills.map(function(s){ return opt(s.id, s.name, sel); }).join(""); }
   function renderAsg(){
-    var list = $("allKids").checked ? students : kidsInGroup();
+    var list = asgList();
     $("asgRows").innerHTML = list.map(function(s){
       var a = cfg.asg[s.id] || {};
-      return '<tr><td class="av">' + esc(s.av || "") + '</td><td>' + esc(s.name) + '</td><td><input type="text" data-grade="' + esc(s.id) + '" value="' + esc(cfg.grade[s.id] || "") + '" placeholder="e.g. G2" aria-label="Grade for ' + esc(s.name) + '"></td><td><select data-lane="' + esc(s.id) + '" aria-label="Lane for ' + esc(s.name) + '">' + laneOpts(a.lane) + '</select></td>' +
+      return '<tr><td class="av">' + esc(s.av || "") + '</td><td><span class="dot' + (isHere(s) ? " on" : "") + '"></span> ' + esc(s.name) + '</td><td><input type="text" data-grade="' + esc(s.id) + '" value="' + esc(cfg.grade[s.id] || "") + '" placeholder="e.g. G2" aria-label="Grade for ' + esc(s.name) + '"></td><td><select data-lane="' + esc(s.id) + '" aria-label="Lane for ' + esc(s.name) + '">' + laneOpts(a.lane) + '</select></td>' +
         '<td><select data-goal="' + esc(s.id) + '" aria-label="Goal for ' + esc(s.name) + '" style="max-width:240px">' + goalOpts(a.lane, a.goal) + '</select></td>' +
         '<td><select data-skill="' + esc(s.id) + '" aria-label="Skill for ' + esc(s.name) + '" style="max-width:240px">' + skillOpts(a.lane, a.goal, a.skill) + '</select></td><td>' + statusPill(s.id) + '</td></tr>';
     }).join("") || '<tr><td colspan="7" class="muted">No students yet.</td></tr>';
@@ -596,7 +622,7 @@ function coach(){
   $("saSkill").onchange = function(){ sa.skill = this.value; };
   $("saGo").onclick = function(){
     if(!sa.lane) return;
-    ($("allKids").checked ? students : kidsInGroup()).forEach(function(s){ cfg.asg[s.id] = {lane:sa.lane, goal:sa.goal, skill:sa.skill}; });
+    asgList().forEach(function(s){ cfg.asg[s.id] = {lane:sa.lane, goal:sa.goal, skill:sa.skill}; });
     save(); broadcast(); renderAll();
   };
 
@@ -785,7 +811,9 @@ function student(){
     if(m.t === "st"){
       st = m; lastSt = Date.now(); $("sStatus").textContent = "";
       if(kp && m.pk && m.pk !== cPk){ cPk = m.pk; cKey = derive(kp.privateKey, m.pk); mine = null; hello(); }
-      else if(saved.av && Date.now() - lastMe > 8000 && Date.now() - lastHello > 5000) hello();
+      /* Say hello again if our goal/skill is stale, and at least every 7 s anyway: the coach page only
+         counts a student as "here" for 15 s after their last message, and an idle student sends nothing else. */
+      else if(saved.av && Date.now() - lastHello > (Date.now() - lastMe > 8000 ? 5000 : 7000)) hello();
       render();
     }
     else if(m.t === "pos" && m.a && m.a !== saved.av){ friends[m.a] = {n:m.n, at:Date.now()}; }
@@ -855,6 +883,18 @@ function student(){
   }
   var curQ = null;
   function ask(title, cb){
+    /* Highlighter skills (hub-mark.js): mark first, then answer. */
+    if(mine && mine.set && window.HubMark && HubMark.has(mine.set)){
+      var pre = WATCH ? "hub-gw-" : "hub-g-";
+      var r = HubMark.ask({box:$("qBox"), title:title, set:mine.set, kind:/Checkpoint/.test(title) ? "ckpt" : "miss",
+        store:function(k, v){ return v === undefined ? store(pre + k) : store(pre + k, v); },
+        speak:Q.speak, setQ:function(q){ curQ = q; },
+        first:function(ok){ sendLocked("ans", {ok:ok}); },
+        open:function(){ $("qModal").hidden = false; modalOpen = true; },
+        close:function(v){ $("qModal").hidden = true; modalOpen = false; curQ = null; cb(v); }});
+      if(r === "later"){ toast("Keep climbing! Your reading stop is at the next ⭐."); setTimeout(function(){ cb(null); }, 600); ask.skip = null; return; }
+      ask.skip = r.skip; return;
+    }
     var q = nextQ();
     if(!q){ toast("Keep going! 🎉"); setTimeout(function(){ cb(null); }, 600); return; }
     curQ = q; modalOpen = true;

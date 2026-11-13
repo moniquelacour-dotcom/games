@@ -32,6 +32,10 @@ var CSS = [
 ".cl-tip{font-size:16px;font-weight:700;color:#1d2a3a;background:rgba(255,255,255,.8);border-radius:999px;padding:3px 12px}",
 ".cl-banner{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);font:800 34px 'Baloo 2',system-ui,sans-serif;color:#fff;background:#1d2a3acc;border-radius:18px;padding:10px 22px;text-align:center;opacity:0;transition:opacity .3s;pointer-events:none}",
 ".cl-banner.on{opacity:1}",
+".cl-how{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#1d2a3a99;z-index:5;padding:12px}",
+".cl-how>div{background:#fff;color:#1d2a3a;border-radius:18px;padding:18px 24px;max-width:430px;text-align:center;font:600 18px/1.4 system-ui,sans-serif;display:flex;flex-direction:column;gap:10px;align-items:center}",
+".cl-how .k{display:inline-block;border:2px solid #1d2a3a;border-bottom-width:4px;border-radius:8px;padding:0 8px;font-weight:800}",
+".cl-how h3{margin:0;font:800 26px 'Baloo 2',system-ui,sans-serif}",
 ".cl-flat{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font:800 28px 'Baloo 2',system-ui,sans-serif;color:#1d2a3a}",
 ".cl-flat .cl-me{font-size:72px;transition:transform .3s}",
 ".cl-friends{font-size:22px;max-width:90%;text-align:center}"
@@ -41,14 +45,29 @@ function start(host, api){
   if(!document.getElementById("cl-css")){ var st = document.createElement("style"); st.id = "cl-css"; st.textContent = CSS; document.head.appendChild(st); }
   host.innerHTML = '<div class="cl"><div class="cl-hud"><span class="cl-where"></span><span class="cl-stars"></span></div>' +
     '<div class="cl-banner"></div><div class="cl-bot"><div class="cl-bar"><div class="cl-zone"></div><div class="cl-dot"></div></div>' +
-    '<button type="button" class="cl-jump">Jump!</button><div class="cl-tip">Jump when the dot is in the green.</div></div></div>';
+    '<button type="button" class="cl-jump">Jump!</button><div class="cl-tip">A / D: step · Space or W: jump when the dot is in the green.</div></div>' +
+    '<div class="cl-how"><div><h3>How to climb</h3>' +
+    '<div><span class="k">A</span> and <span class="k">D</span> step left and right on your ledge to line up with the next one.</div>' +
+    '<div>Press <span class="k">Space</span> or <span class="k">W</span> (or click <b>Jump!</b>) when the dot is in the <b style="color:#2c8a3f">green</b>.</div>' +
+    '<div>Miss and you fall: answer a question to get back on.</div>' +
+    '<div>Each new mountain is faster, and the green gets smaller.</div>' +
+    '<button type="button" class="cl-jump cl-go">Start (Space)</button></div></div></div>';
   var box = host.querySelector(".cl"), whereEl = host.querySelector(".cl-where"), starsEl = host.querySelector(".cl-stars"),
       dot = host.querySelector(".cl-dot"), zone = host.querySelector(".cl-zone"), banner = host.querySelector(".cl-banner"), jumpBtn = host.querySelector(".cl-jump");
-  zone.style.width = (TOL / AMP * 50) + "%";
+  var how = host.querySelector(".cl-how");
+  /* Harder each mountain: the green zone shrinks 10% per mountain, down to 60%. Speed also rises each ledge (speed()). */
+  function tol(i){ return TOL * Math.max(0.6, 1 - 0.1 * Math.floor(i / PER_MTN)); }
+  function sizeZone(){ zone.style.width = (tol(cur) / AMP * 50) + "%"; }
+  function go(){ if(how){ how.remove(); how = null; t0 = performance.now(); } }
+  host.querySelector(".cl-go").addEventListener("click", go);
 
   var saved = api.load() || {n:0, stars:0};
   var cur = saved.n || 0, stars = saved.stars || 0, t0 = performance.now(), busy = false, anim = null, stopped = false, raf = 0, lastPos = 0;
   var view = null;
+  /* dx = where you stand on your ledge, screen right = +. In 3D, +tangent shows as screen LEFT, so the ledge at
+     tangent offset `off` sits at screen -off, and you sit at tangent -dx. The jump lands if |dx + off| < tol.
+     The dot shows you relative to the next ledge: D moves it right, A moves it left. */
+  var dx = 0, LIM = 1.0, STEPX = 0.25;
 
   function speed(i){ return 1.5 + Math.min(i, 60) * 0.035; }
   function offset(now){ return AMP * Math.sin((now - t0) / 1000 * speed(cur)); }
@@ -56,19 +75,19 @@ function start(host, api){
   function hud(){ whereEl.textContent = "Ledge " + (cur % PER_MTN) + " of " + PER_MTN + " · Mountain " + mtn(cur); starsEl.textContent = "⭐ " + stars; }
   function save(){ api.save({n:cur, stars:stars}); }
   function show(msg, ms){ banner.innerHTML = msg; banner.classList.add("on"); clearTimeout(show.t); show.t = setTimeout(function(){ banner.classList.remove("on"); }, ms || 1600); }
-  hud();
+  hud(); sizeZone();
 
   function jump(){
-    if(busy || anim || stopped) return;
-    var now = performance.now(), off = offset(now), ok = Math.abs(off) < TOL;
-    anim = {t:now, ok:ok, off:off, from:cur};
+    if(busy || anim || stopped || how) return;
+    var now = performance.now(), off = offset(now), rel = off + dx, ok = Math.abs(rel) < tol(cur);
+    anim = {t:now, ok:ok, off:off, rel:rel, dx:dx, from:cur};
     if(view) view.jump(ok, off);
   }
   function landed(){
-    var ok = anim.ok; anim = null;
+    var ok = anim.ok; anim = null; dx = 0;
     if(ok){
       cur++; t0 = performance.now() + 200; hud(); save(); api.pos(cur); if(view) view.land(cur);
-      if(cur % PER_MTN === 0){ stars += 3; hud(); save(); show("🏔️ Summit! +3 ⭐<br>On to Mountain " + mtn(cur) + "!", 2600); }
+      if(cur % PER_MTN === 0){ stars += 3; hud(); save(); sizeZone(); show("🏔️ Summit! +3 ⭐<br>Mountain " + mtn(cur) + ": faster, smaller green!", 2800); }
       else if(cur % 5 === 0){
         busy = true;
         api.ask("⭐ Checkpoint! Answer to earn a star.", function(right){ busy = false; if(right){ stars++; hud(); save(); show("⭐ +1 star!"); } });
@@ -79,7 +98,14 @@ function start(host, api){
     }
   }
 
-  function onKey(e){ if((e.code === "Space" || e.key === "Enter") && !api.modal()){ e.preventDefault(); jump(); } }
+  function onKey(e){
+    if(api.modal()) return;
+    var t = e.target && e.target.tagName; if(t === "INPUT" || t === "TEXTAREA") return;
+    var step = (e.code === "KeyA" || e.key === "ArrowLeft") ? -1 : (e.code === "KeyD" || e.key === "ArrowRight") ? 1 : 0;
+    if(step){ e.preventDefault(); if(!how && !anim && !busy) dx = Math.max(-LIM, Math.min(LIM, dx + step * STEPX)); return; }
+    if(e.repeat) return;
+    if(e.code === "Space" || e.key === "Enter" || e.code === "KeyW" || e.key === "ArrowUp"){ e.preventDefault(); if(how) go(); else jump(); }
+  }
   document.addEventListener("keydown", onKey);
   jumpBtn.addEventListener("click", jump);
 
@@ -87,7 +113,8 @@ function start(host, api){
     if(stopped) return;
     raf = requestAnimationFrame(loop);
     var off = anim ? anim.off : offset(now);
-    dot.style.left = (50 + off / AMP * 50) + "%";
+    var rel = anim ? anim.rel : off + dx;
+    dot.style.left = Math.max(0, Math.min(100, 50 + rel / AMP * 50)) + "%";
     if(anim && now - anim.t > (anim.ok ? 520 : 1100)) landed();
     if(now - lastPos > 3000){ lastPos = now; api.pos(cur); }
     if(view) view.frame(now, off, anim);
@@ -101,7 +128,7 @@ function start(host, api){
     return {
       jump:function(ok){ meEl.style.transform = ok ? "translateY(-40px)" : "translateY(40px) rotate(90deg)"; },
       land:function(){ meEl.style.transform = ""; }, respawn:function(){ meEl.style.transform = ""; },
-      frame:function(){ var F = api.friends(); fr.textContent = Object.keys(F).map(function(a){ return a + " ledge " + (F[a] % PER_MTN); }).join("   "); }
+      frame:function(){ if(!anim) meEl.style.marginLeft = (dx * 60) + "px"; var F = api.friends(); fr.textContent = Object.keys(F).map(function(a){ return a + " ledge " + (F[a] % PER_MTN); }).join("   "); }
     };
   }
 
@@ -156,11 +183,11 @@ function start(host, api){
         nx.position.set(b1.x + tg.x * off, b1.y, b1.z + tg.z * off);
         if(a){
           var k = Math.min(1, (now - a.t) / 520), target = onLedge(cur + 1, a.off);
-          if(!a.ok) target = onLedge(cur + 1, a.off > 0 ? a.off + 1.4 : a.off - 1.4);
+          if(!a.ok) target = onLedge(cur + 1, -a.dx);
           if(k < 1){ pos.lerpVectors(jumpFrom, target, k); pos.y += Math.sin(k * Math.PI) * 1.6; }
           else if(!a.ok){ pos.y -= 0.18; }
           else pos.copy(target);
-        } else if(!busy){ pos.copy(onLedge(cur)); }
+        } else if(!busy){ pos.lerp(onLedge(cur, -dx), 0.35); }
         me.position.copy(pos);
         var ca = Math.atan2(pos.z, pos.x) - 0.35;
         look.lerp(new T.Vector3(pos.x * 0.6, pos.y + 1.2, pos.z * 0.6), 0.08);
