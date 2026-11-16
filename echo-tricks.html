@@ -134,7 +134,7 @@ input{font:inherit;font-size:28px;font-weight:600;border:3px solid #e2c3a8;borde
     <div class="cmds" id="cmds"></div>
     <div class="msg" id="msg" aria-live="polite"></div>
     <div class="row" id="after"></div>
-    <div class="row"><button class="toggle" id="wordMode" aria-pressed="false">📖 Words only</button><button class="toggle" id="sound" aria-pressed="true">🔊 Voice on</button></div>
+    <div class="row"><button class="toggle" id="wordMode" aria-pressed="false">📖 Words only</button><button class="toggle" id="sound" aria-pressed="true">🔊 Voice on</button><button class="toggle" id="newGame">🔄 New game</button></div>
   </section>
 </main>
 
@@ -262,6 +262,15 @@ $("aSay").onclick = function(){ speak(target.word + ". " + target.word, true); }
 $("wordMode").onclick = function(){ S.words = !S.words; save(); this.setAttribute("aria-pressed", S.words); renderCmds(); speak(S.words ? "Words only. Read the word, then tap it." : "Pictures and words."); };
 $("sound").onclick = function(){ S.voice = !S.voice; save(); this.setAttribute("aria-pressed", S.voice); this.textContent = S.voice ? "🔊 Voice on" : "🔇 Voice off"; if(S.voice) speak("Voice on."); };
 document.querySelectorAll("[data-say]").forEach(function(b){ b.onclick = function(){ speak(b.dataset.say); }; });
+$("newGame").onclick = function(){
+  var b = this;
+  if(!b.dataset.sure){ b.dataset.sure = "1"; b.textContent = "Tap again to start over"; setTimeout(function(){ delete b.dataset.sure; b.textContent = "🔄 New game"; }, 3000); return; }
+  delete b.dataset.sure; b.textContent = "🔄 New game";
+  S.name = ""; S.treats = 0; S.best = 0; save(); streak = 0; seen = {}; target = null; busy = false;
+  try{ speechSynthesis.cancel(); }catch(e){}
+  $("unlock").hidden = true; $("play").hidden = true; $("hud").hidden = true; $("start").hidden = false;
+  $("tName").value = ""; pose("", 10);
+};
 $("tName").value = S.name || "";
 $("go").onclick = function(){
   S.name = $("tName").value.trim().slice(0, 20); save();
