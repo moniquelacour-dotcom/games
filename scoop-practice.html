@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Scoop Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&family=Baloo+2:wght@700;800&display=swap">
+<style>
+/* Scoop Practice: hear the coach read a scoop (3-4 words), say it back the same way,
+   optionally record yourself. 5-minute sessions, no speed score. Saves only a weekly count on this device. */
+:root{
+  --bg:#fbf6f1; --card:#ffffff; --ink:#2a2230; --muted:#6c6272; --line:#eadfd6;
+  --mint:#1f8a6e; --mint-soft:#dff3ec; --berry:#c23b6a; --berry-soft:#fbe3ec;
+  --cone:#b9772f; --cone-soft:#f8ead8; --ok:#2e7d4f;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Lexend","Segoe UI",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#18141b; --card:#221c26; --ink:#f1eaf3; --muted:#b4a9b8; --line:#3a3040;
+  --mint:#7fd6bb; --mint-soft:#183229; --berry:#f08bb0; --berry-soft:#3a1c2a;
+  --cone:#e6b073; --cone-soft:#3a2a18; --ok:#8fd6a8; color-scheme:dark}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:20px/1.55 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 60px}
+main{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.15;text-wrap:balance}
+h1{font-size:2.3rem;color:var(--berry)} h2{font-size:1.5rem} h3{font-size:1.2rem}
+p{margin:0}
+.small{font-size:.88rem;color:var(--muted)}
+.card{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.btn{font:inherit;font-weight:700;border-radius:999px;padding:11px 20px;cursor:pointer;border:2px solid var(--ink);background:var(--ink);color:var(--card)}
+.btn.ghost{background:none;color:var(--ink)}
+.btn.mint{background:var(--mint);border-color:var(--mint);color:#fff}
+.btn.berry{background:var(--berry);border-color:var(--berry);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.pick{font:inherit;text-align:left;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:18px;padding:14px;cursor:pointer;display:flex;gap:12px;align-items:center}
+.pick:hover{border-color:var(--berry)}
+.pick .ic{font-size:2rem}
+.pick b{display:block;font-family:var(--display);font-size:1.15rem;line-height:1.2}
+.pick.did{border-color:var(--mint)}
+/* clock */
+.clock{display:flex;align-items:center;gap:12px}
+.ring{width:54px;height:54px;flex:none}
+.ring circle{fill:none;stroke-width:7}
+.ring .bg{stroke:var(--line)} .ring .fg{stroke:var(--mint);stroke-linecap:round;transition:stroke-dashoffset .9s linear}
+.clock .t{font-weight:700;font-variant-numeric:tabular-nums}
+.done-bar{background:var(--mint-soft);border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+/* passage */
+.passage{display:flex;flex-direction:column;gap:8px}
+.sent{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:clamp(1rem,3.8vw,1.2rem);padding:6px 12px 8px;border-radius:14px;border:2px solid transparent;transition:background .2s,border-color .2s,opacity .2s}
+.sent.past{opacity:.5}
+.sent.now{background:var(--berry-soft);border-color:var(--berry)}
+.sent.say{background:var(--mint-soft);border-color:var(--mint)}
+/* a scoop: the words under one arc run together */
+.scoop{white-space:nowrap;padding:0 6px 10px;border-bottom:4px solid var(--berry);border-radius:0 0 50% 50% / 0 0 18px 18px;transition:border-color .2s,background .2s}
+.sent .scoop{padding:0 4px 7px;border-bottom-width:3px}
+.say .scoop{border-bottom-color:var(--mint)}
+.scoop.lit{background:var(--cone-soft)}
+.big{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 28px;font-size:clamp(1.5rem,6.5vw,2.2rem);font-weight:700;padding:22px 12px;border-radius:20px;background:var(--berry-soft);line-height:1.3}
+.big.say{background:var(--mint-soft)}
+.big.plain{gap:10px 14px}
+.marks{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;row-gap:14px;font-size:clamp(1.5rem,6.5vw,2.2rem);font-weight:700;padding:22px 8px;border-radius:20px;background:var(--cone-soft);line-height:1.3}
+.gap{font:inherit;font-size:1rem;width:34px;height:52px;margin:0 2px;border:2px dashed transparent;border-radius:10px;background:none;color:var(--muted);cursor:pointer;display:inline-grid;place-items:center}
+.gap:hover{border-color:var(--line)}
+.gap::before{content:"·";font-size:1.6rem;line-height:1}
+.gap.on{border-color:transparent}
+.gap.on::before{content:"";width:5px;height:40px;border-radius:3px;background:var(--berry)}
+.fb{text-align:center;font-weight:700;color:var(--mint)}
+.coachline{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 22px;font-size:clamp(1.1rem,4.5vw,1.4rem);padding:10px;border-radius:16px;background:var(--mint-soft)}
+.coachline .scoop{border-bottom-color:var(--mint)}
+.whole{display:flex;flex-wrap:wrap;gap:14px 24px;font-size:clamp(1.25rem,5vw,1.7rem);line-height:1.4;padding:8px 4px}
+.prompt{font-weight:700;text-align:center}
+.status{min-height:1.4em;text-align:center;color:var(--muted);font-size:.95rem}
+.msg{white-space:pre-wrap;background:var(--cone-soft);border-radius:16px;padding:14px;font-size:1.05rem}
+/* coach page */
+table{border-collapse:collapse;width:100%;font-size:1rem}
+td{border-top:1px solid var(--line);padding:7px 4px;vertical-align:middle}
+td:last-child{white-space:nowrap;text-align:right}
+.mini{font:inherit;font-size:.85rem;font-weight:700;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:4px 10px;cursor:pointer;margin-left:4px}
+.mini.rec{border-color:var(--berry);color:var(--berry)}
+.mini.on{background:var(--berry);color:#fff}
+.mini:disabled{opacity:.35;cursor:default}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--line);margin-right:6px}
+.dot.has{background:var(--mint)}
+.wrap{overflow-x:auto}
+:focus-visible{outline:3px solid var(--berry);outline-offset:2px}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+(function(){
+"use strict";
+/* Passages: about Grade 2. "|" marks each scoop (3-4 words). */
+var P = [
+ {id:"pancakes", title:"Pancake Saturday", ic:"🥞", tag:"Cooking",
+  t:"On Saturday morning, | Dad and I | make big pancakes. | I crack the eggs | into a bowl | and add the milk. | Then I stir | the flour in | until it is smooth. | Dad pours the batter | into the hot pan. | When the bubbles pop, | it is time | to flip it! | My pancake lands | right in the middle | of the pan."},
+ {id:"biggame", title:"The Big Game", ic:"⚽", tag:"Sport",
+  t:"The whistle blows | and the game starts. | I run fast | down the green field | to get open. | My friend kicks | the ball to me, | and I stop it | with my foot. | The goal is close, | so I take aim | and kick hard. | The ball sails past | the keeper's hands | and into the net! | My whole team cheers | and we all jump!"},
+ {id:"hill", title:"Up the Hill", ic:"⛰️", tag:"Outside",
+  t:"We hike up | the big hill | behind my house. | The path is rocky | and a little steep, | so we go slow. | A bird sings | from a tall tree | as we walk by. | I see a lizard | dart under a log. | At the top, | we sit down | and eat our snack. | The wind feels cool, | and I can see | the whole town!"},
+ {id:"showtime", title:"Show Time", ic:"🎤", tag:"Performing",
+  t:"The lights go down | and the crowd hushes. | My heart beats fast | behind the red curtain | as I wait. | Then the music starts, | and I step out | onto the stage. | I sing my song | loud and clear | for all to hear. | At the end, | I do a spin | and take a bow. | Everyone claps and cheers, | and I smile big!"},
+ {id:"tacos", title:"Taco Night", ic:"🌮", tag:"Cooking",
+  t:"Tonight we make tacos | for the whole family. | I wash the lettuce | and tear it up | into little pieces. | Mom cooks the beans | in a big pot | on the stove. | I grate the cheese | with great care. | We warm the shells, | and then everyone builds | their own taco. | Mine has extra cheese | and a little salsa!"},
+ {id:"creek", title:"Race to the Creek", ic:"🏃", tag:"Outside",
+  t:"My brother and I | race down the path | to the creek. | We dash past | the old oak tree | with arms swinging. | Dry leaves crunch | under our shoes. | I jump over | a muddy puddle, | but he is close. | I keep on going | and tag it first! | We both laugh | and splash our feet | in the cool creek."}
+];
+P.forEach(function(p){
+  p.s = p.t.split("|").map(function(x){ return x.trim(); });
+  /* p.u = sentences, each a list of scoop numbers. A sentence ends on a scoop ending in . ! or ? */
+  p.u = []; var cur = [];
+  p.s.forEach(function(s, j){ cur.push(j); if(/[.!?]$/.test(s)){ p.u.push(cur); cur = []; } });
+  if(cur.length) p.u.push(cur);
+});
+
+/* Coach's published recordings. Filled in when the recordings go on the site:
+   CLIPS[id] = "mp3" means audio/scoops/<id>-01.mp3 (sentence 1) ... and <id>-all.mp3 (whole story) exist. */
+var CLIPS = {pancakes:"mp3", biggame:"mp3", hill:"mp3", showtime:"mp3", tacos:"mp3", creek:"mp3"};
+var AUDIO_DIR = "audio/scoops/";
+var GOAL = 300; /* seconds */
+var KEY = "scoop-practice.v1";
+var isCoach = /[?&]coach\b/.test(location.search) || /coach/i.test(location.pathname);
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
+function pad(n){ return (n < 10 ? "0" : "") + n; }
+function k(id, n){ return id + "-" + (n === "all" ? "all" : pad(n + 1)); }
+
+/* ---------- local store for the coach's own recordings (this browser only) ---------- */
+var db = null, local = {};
+function openDb(){
+  return new Promise(function(res){
+    try{
+      var r = indexedDB.open("scoop-practice", 1);
+      r.onupgradeneeded = function(){ r.result.createObjectStore("clips"); };
+      r.onsuccess = function(){ db = r.result; res(); };
+      r.onerror = function(){ res(); };
+    }catch(e){ res(); }
+  });
+}
+function loadLocal(){
+  return new Promise(function(res){
+    if(!db){ res(); return; }
+    try{
+      var tx = db.transaction("clips"), st = tx.objectStore("clips"), req = st.openCursor();
+      req.onsuccess = function(){ var c = req.result; if(c){ local[c.key] = c.value; c.continue(); } else res(); };
+      req.onerror = function(){ res(); };
+    }catch(e){ res(); }
+  });
+}
+function saveLocal(key, blob){
+  local[key] = blob;
+  try{ if(db) db.transaction("clips", "readwrite").objectStore("clips").put(blob, key); }catch(e){}
+}
+
+/* ---------- where each clip comes from ---------- */
+function clipUrl(id, n){
+  if(CLIPS[id]) return AUDIO_DIR + k(id, n) + "." + CLIPS[id];
+  var b = local[k(id, n)];
+  return b ? URL.createObjectURL(b) : null;
+}
+function hasAll(id){
+  if(CLIPS[id]) return true;
+  var p = P.filter(function(x){ return x.id === id; })[0];
+  for(var i = 0; i < p.u.length; i++) if(!local[k(id, i)]) return false;
+  return !!local[k(id, "all")];
+}
+function anyRecorded(){ return P.some(function(p){ return hasAll(p.id); }); }
+
+/* ---------- playback: Coach's voice, or the computer voice only while no recordings exist ---------- */
+var player = new Audio(), playToken = 0;
+function stopSound(){ playToken++; try{ player.pause(); }catch(e){} try{ speechSynthesis.cancel(); }catch(e){} }
+function speak(text, done){
+  try{
+    var u = new SpeechSynthesisUtterance(text); u.rate = 0.9; u.lang = "en-US";
+    u.onend = done; u.onerror = done; speechSynthesis.speak(u);
+  }catch(e){ done(); }
+}
+function play(id, n, onScoop, done){
+  stopSound(); var tok = playToken;
+  var url = clipUrl(id, n);
+  function fin(){ if(tok === playToken) done(); }
+  if(url){
+    player.src = url; player.onended = fin; player.onerror = fin;
+    player.play().catch(fin); return;
+  }
+  var p = P.filter(function(x){ return x.id === id; })[0];
+  var list = n === "all" ? p.s.map(function(_, j){ return j; }) : p.u[n];
+  var i = 0;
+  (function next(){
+    if(tok !== playToken) return;
+    if(i >= list.length){ if(onScoop) onScoop(null); fin(); return; }
+    if(onScoop) onScoop(list[i]);
+    speak(p.s[list[i]], function(){ i++; setTimeout(next, 300); });
+  })();
+}
+
+/* ---------- the reader's own recording: stays on this device, never uploaded ---------- */
+var me = {rec:null, chunks:[], blob:null, stream:null};
+function canRecord(){ return !!(navigator.mediaDevices && window.MediaRecorder); }
+function startMe(btn, after){
+  stopSound();
+  if(!canRecord()){ setStatus("This device can't record here. Just say it out loud!"); return; }
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(st){
+    me.stream = st; me.chunks = []; me.rec = new MediaRecorder(st);
+    me.rec.ondataavailable = function(e){ if(e.data.size) me.chunks.push(e.data); };
+    me.rec.onstop = function(){
+      me.blob = new Blob(me.chunks, {type: me.rec.mimeType || "audio/webm"});
+      st.getTracks().forEach(function(t){ t.stop(); });
+      after();
+    };
+    me.rec.start(); btn.textContent = "■ Stop"; btn.classList.add("berry");
+    setStatus("Recording… tap Stop when you finish.");
+  }).catch(function(){ setStatus("No microphone. That's OK, just say it out loud!"); });
+}
+function stopMe(){ if(me.rec && me.rec.state === "recording") me.rec.stop(); }
+function recording(){ return me.rec && me.rec.state === "recording"; }
+function hearMe(){ if(me.blob){ stopSound(); player.src = URL.createObjectURL(me.blob); player.onended = null; player.play().catch(function(){}); } }
+function setStatus(t){ var s = $("status"); if(s) s.textContent = t; }
+
+/* ---------- weekly count (this device only) ---------- */
+function monday(d){ var x = new Date(d); x.setHours(0,0,0,0); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x.getFullYear() + "-" + pad(x.getMonth() + 1) + "-" + pad(x.getDate()); }
+function readStore(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; } }
+function bumpWeek(){
+  var s = readStore(), w = monday(new Date());
+  if(s.week !== w){ s.week = w; s.count = 0; }
+  s.count = (s.count || 0) + 1;
+  try{ localStorage.setItem(KEY, JSON.stringify(s)); }catch(e){}
+  return s.count;
+}
+
+/* ================= STUDENT ================= */
+var S = {sec:0, timer:null, p:null, i:0, heard:false, did:[], finished:false};
+
+function clockHtml(){
+  var c = 2 * Math.PI * 22, f = Math.min(S.sec / GOAL, 1);
+  return '<div class="clock" aria-live="off"><svg class="ring" viewBox="0 0 54 54" aria-hidden="true"><circle class="bg" cx="27" cy="27" r="22"/><circle class="fg" id="ringfg" cx="27" cy="27" r="22" transform="rotate(-90 27 27)" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + (c * (1 - f)).toFixed(1) + '"/></svg>' +
+    '<div><div class="t" id="clockt">' + fmt(S.sec) + ' / 5:00</div><div class="small">Practice clock</div></div></div>';
+}
+function fmt(s){ s = Math.min(s, GOAL); return Math.floor(s / 60) + ":" + pad(s % 60); }
+function tick(){
+  if(document.visibilityState !== "visible" || S.finished) return;
+  S.sec++;
+  var t = $("clockt"), r = $("ringfg");
+  if(t) t.textContent = fmt(S.sec) + " / 5:00";
+  if(r){ var c = 2 * Math.PI * 22; r.setAttribute("stroke-dashoffset", (c * (1 - Math.min(S.sec / GOAL, 1))).toFixed(1)); }
+  if(S.sec === GOAL) showDoneBar();
+}
+function showDoneBar(){
+  var b = $("donebar"); if(!b) return;
+  b.hidden = false;
+}
+function doneBarHtml(){
+  return '<div class="done-bar" id="donebar"' + (S.sec >= GOAL ? '' : ' hidden') + '><span>⭐ <b>5 minutes done!</b> Finish this sentence, then tap Finish.</span><button class="btn mint" type="button" data-act="finish">Finish practice</button></div>';
+}
+
+function home(){
+  stopSound();
+  var list = P.filter(function(p){ return !anyRecorded() || hasAll(p.id); });
+  var h = '<header><h1>Scoop Practice</h1><p>For each sentence: <b>👂 listen</b> to Coach read it in scoops, <b>✏️ mark the scoops</b> you heard, then <b>🗣 read it yourself</b> the same way. The words in a scoop go together, with no stops in between.</p></header>';
+  if(S.timer) h += '<div class="card">' + clockHtml() + doneBarHtml() + '</div>';
+  if(!anyRecorded()) h += '<p class="small">Coach\'s recordings aren\'t here yet, so the computer voice reads for now.</p>';
+  h += '<section class="card"><h2>' + (S.did.length ? 'Pick another story' : 'Pick a story') + '</h2><div class="picks">' +
+    list.map(function(p){
+      return '<button class="pick' + (S.did.indexOf(p.title) >= 0 ? ' did' : '') + '" type="button" data-pick="' + p.id + '"><span class="ic" aria-hidden="true">' + p.ic + '</span><span><b>' + esc(p.title) + '</b><span class="small">' + p.tag + ' · ' + p.u.length + ' sentences' + (S.did.indexOf(p.title) >= 0 ? ' · done ✓' : '') + '</span></span></button>';
+    }).join("") + '</div></section>';
+  h += '<p class="small">Your practice clock runs while this page is open. When it reaches 5 minutes, you get a message to send Coach. Anything you record stays on this device.</p>';
+  $("app").innerHTML = h;
+}
+
+function startPassage(id){
+  S.p = P.filter(function(x){ return x.id === id; })[0]; S.i = 0;
+  if(!S.timer) S.timer = setInterval(tick, 1000);
+  scoop(true);
+}
+
+function scoopsHtml(list, pre){
+  return list.map(function(j){ return '<span class="scoop" id="' + pre + j + '">' + esc(S.p.s[j]) + '</span>'; }).join("");
+}
+function passageHtml(){
+  return '<div class="passage" aria-hidden="true">' + S.p.u.map(function(list, i){
+    var c = i < S.i ? "past" : (i === S.i ? "now" : "");
+    var inner = i < S.i ? scoopsHtml(list, "m") : esc(list.map(function(j){ return S.p.s[j]; }).join(" "));
+    return '<div class="sent ' + c + '" id="st' + i + '">' + inner + '</div>';
+  }).join("") + '</div>';
+}
+/* the words of sentence i, and where Coach's scoops break (after word k) */
+function sentWords(i){
+  var w = [], br = {};
+  S.p.u[i].forEach(function(j){ S.p.s[j].split(/\s+/).forEach(function(x){ w.push(x); }); br[w.length - 1] = true; });
+  delete br[w.length - 1];
+  return {w: w, br: br};
+}
+function arcsFrom(words, breaks){
+  var out = [], cur = [];
+  words.forEach(function(x, k){ cur.push(x); if(breaks[k] || k === words.length - 1){ out.push('<span class="scoop">' + esc(cur.join(" ")) + '</span>'); cur = []; } });
+  return out.join("");
+}
+function topHtml(){
+  return '<div class="row" style="justify-content:space-between">' + clockHtml() + '<button class="btn ghost" type="button" data-act="home">All stories</button></div>' + doneBarHtml();
+}
+function buttonsHtml(nextAct, nextLabel){
+  return '<div class="row" style="justify-content:center"><button class="btn berry" type="button" data-act="listen">🔊 Listen</button>' +
+    '<button class="btn mint" type="button" data-act="rec" id="recb" hidden>🎙 Record me</button>' +
+    '<button class="btn ghost" type="button" data-act="hearme" id="hearb" hidden>▶ Hear me</button>' +
+    '<button class="btn" type="button" data-act="' + nextAct + '" id="nextb">' + nextLabel + '</button></div>' +
+    '<p class="status" id="status"></p>';
+}
+/* light up the scoop being read (computer voice only); null = none */
+function lighter(pre){
+  return function(j){
+    var all = document.querySelectorAll(".scoop.lit"); for(var x = 0; x < all.length; x++) all[x].classList.remove("lit");
+    if(j !== null && j !== undefined){ var e = $(pre + j); if(e) e.classList.add("lit"); }
+  };
+}
+
+/* Each sentence: listen -> mark the scoops -> read it yourself */
+function scoop(auto){
+  stopSound(); stopMe(); me.blob = null; S.heard = false; S.phase = "listen"; S.marks = {};
+  if(S.i >= S.p.u.length){ whole(); return; }
+  drawSentence();
+  if(auto) listen();
+}
+function drawSentence(){
+  var sw = sentWords(S.i), body, prompt, btns;
+  if(S.phase === "listen"){
+    body = '<div class="big plain" id="big">' + sw.w.map(function(x){ return '<span>' + esc(x) + '</span>'; }).join("") + '</div>';
+    prompt = "👂 Listen to Coach read it in scoops.";
+    btns = '<button class="btn berry" type="button" data-act="listen">🔊 Listen</button>';
+  } else if(S.phase === "mark"){
+    body = '<div class="marks" id="marks">' + sw.w.map(function(x, k){
+      return '<span>' + esc(x) + '</span>' + (k < sw.w.length - 1 ? '<button type="button" class="gap' + (S.marks[k] ? ' on' : '') + '" data-gap="' + k + '" aria-pressed="' + !!S.marks[k] + '" aria-label="Scoop break after ' + esc(x) + '"></button>' : '');
+    }).join("") + '</div>';
+    prompt = "✏️ Tap between the words where you heard Coach's scoops end.";
+    btns = '<button class="btn ghost" type="button" data-act="listen">🔊 Listen again</button><button class="btn mint" type="button" data-act="check">Check my scoops ✓</button>';
+  } else {
+    var coach = Object.keys(sw.br), got = coach.filter(function(k){ return S.marks[k]; }).length;
+    var extra = Object.keys(S.marks).filter(function(k){ return S.marks[k] && !sw.br[k]; }).length;
+    var same = got === coach.length && !extra;
+    body = '<div class="big say" id="big">' + arcsFrom(sw.w, S.marks) + '</div>' +
+      '<p class="fb">' + (same ? "🌟 You scooped it just like Coach!" : "Nice listening! You found " + got + " of Coach's " + coach.length + " scoop breaks. Here's how Coach scooped it:") + '</p>' +
+      (same ? '' : '<div class="coachline">' + arcsFrom(sw.w, sw.br) + '</div>');
+    prompt = "🗣 Now read it yourself, in scoops.";
+    btns = '<button class="btn ghost" type="button" data-act="listen">🔊 Listen again</button>' +
+      '<button class="btn mint" type="button" data-act="rec" id="recb">🎙 Record me</button>' +
+      '<button class="btn ghost" type="button" data-act="hearme" id="hearb" hidden>▶ Hear me</button>' +
+      '<button class="btn" type="button" data-act="next" id="nextb">Next sentence →</button>';
+  }
+  var step = {listen:1, mark:2, read:3}[S.phase];
+  $("app").innerHTML = topHtml() +
+    '<section class="card"><h2>' + S.p.ic + ' ' + esc(S.p.title) + ' <span class="small">· sentence ' + (S.i + 1) + ' of ' + S.p.u.length + ' · step ' + step + ' of 3</span></h2>' +
+    body + '<p class="prompt" id="prompt">' + prompt + '</p>' +
+    '<div class="row" style="justify-content:center">' + btns + '</div><p class="status" id="status"></p>' + passageHtml() + '</section>';
+}
+function listen(){
+  if(S.i >= S.p.u.length){ listenAll(); return; }
+  play(S.p.id, S.i, null, function(){
+    S.heard = true;
+    if(S.phase === "listen"){ S.phase = "mark"; drawSentence(); }
+  });
+}
+
+function whole(){
+  stopSound(); me.blob = null;
+  $("app").innerHTML = topHtml() +
+    '<section class="card"><h2>' + S.p.ic + ' ' + esc(S.p.title) + ' <span class="small">· the whole story</span></h2>' +
+    '<p class="prompt" id="prompt">👂 Now listen to the whole story, in scoops.</p>' +
+    '<div class="whole" id="whole">' + scoopsHtml(S.p.s.map(function(_, j){ return j; }), "w") + '</div>' +
+    buttonsHtml("storydone", "I read it all ✓") + '</section>';
+  listenAll();
+}
+function listenAll(){
+  var w = $("whole"); if(w) w.classList.remove("say");
+  play(S.p.id, "all", lighter("w"), function(){
+    var w2 = $("whole"); if(w2) w2.classList.add("say");
+    $("prompt").textContent = "🗣 Echo the whole story, just like Coach.";
+    $("recb").hidden = false;
+  });
+}
+
+function finish(){
+  stopSound(); stopMe(); S.finished = true; clearInterval(S.timer);
+  var count = bumpWeek();
+  var d = new Date();
+  var date = d.toLocaleDateString("en-US", {weekday:"short", month:"short", day:"numeric"});
+  var stories = S.did.length ? S.did.join(", ") : (S.p ? S.p.title : "");
+  var msg = "⭐ I finished a 5-minute Scoop Practice!\nStories: " + stories + "\nDate: " + date + "\nPractice sessions this week: " + count;
+  $("app").innerHTML =
+    '<header><h1>You did it! 🍦</h1><p>Five minutes of reading in scoops. Copy this message and paste it in your chat with Coach.</p></header>' +
+    '<section class="card"><div class="msg" id="msg">' + esc(msg) + '</div>' +
+    '<div class="row"><button class="btn mint" type="button" data-act="copy">📋 Copy message</button><button class="btn ghost" type="button" data-act="again">Practice again</button></div>' +
+    '<p class="status" id="status"></p></section>';
+  S.msg = msg;
+}
+function copyMsg(){
+  function sel(){ var r = document.createRange(); r.selectNodeContents($("msg")); var s = getSelection(); s.removeAllRanges(); s.addRange(r); setStatus("It's selected. Press Ctrl+C (or Cmd+C) to copy."); }
+  try{
+    navigator.clipboard.writeText(S.msg).then(function(){ setStatus("Copied! Now paste it in your chat with Coach."); }, sel);
+  }catch(e){ sel(); }
+}
+
+function studentClick(ev){
+  var b = ev.target.closest("button"); if(!b) return;
+  if(b.dataset.pick){ startPassage(b.dataset.pick); return; }
+  if(b.dataset.gap !== undefined){ var g = b.dataset.gap; S.marks[g] = !S.marks[g]; b.classList.toggle("on", S.marks[g]); b.setAttribute("aria-pressed", S.marks[g]); return; }
+  var a = b.dataset.act;
+  if(a === "home"){ stopMe(); home(); }
+  else if(a === "listen"){ stopMe(); listen(); }
+  else if(a === "next"){ stopMe(); S.i++; scoop(true); }
+  else if(a === "rec"){
+    if(recording()){ stopMe(); return; }
+    startMe(b, function(){ b.textContent = "🎙 Record again"; b.classList.remove("berry"); $("hearb").hidden = false; setStatus("Tap ▶ Hear me, then 🔊 Listen to compare."); });
+  }
+  else if(a === "hearme"){ hearMe(); }
+  else if(a === "check"){ stopSound(); S.phase = "read"; drawSentence(); }
+  else if(a === "storydone"){ stopMe(); if(S.did.indexOf(S.p.title) < 0) S.did.push(S.p.title); if(S.sec >= GOAL) finish(); else home(); }
+  else if(a === "finish"){ if(S.p && S.did.indexOf(S.p.title) < 0) S.did.push(S.p.title); finish(); }
+  else if(a === "copy"){ copyMsg(); }
+  else if(a === "again"){ S = {sec:0, timer:null, p:null, i:0, heard:false, did:[], finished:false}; home(); }
+}
+
+/* ================= COACH (recording page, ?coach) ================= */
+var C = {rec:null, chunks:[], key:null, stream:null};
+function coachCount(){
+  var have = 0, all = 0;
+  P.forEach(function(p){ for(var i = 0; i < p.u.length; i++){ all++; if(local[k(p.id, i)]) have++; } all++; if(local[k(p.id, "all")]) have++; });
+  return have + " of " + all + " clips recorded";
+}
+function coachRow(key, text){
+  var has = !!local[key], on = C.key === key && C.rec && C.rec.state === "recording";
+  return '<tr><td><span class="dot' + (has ? ' has' : '') + '"></span>' + text + '</td><td>' +
+    '<button class="mini rec' + (on ? ' on' : '') + '" type="button" data-rec="' + key + '">' + (on ? '■ Stop' : (has ? '● Redo' : '● Record')) + '</button>' +
+    '<button class="mini" type="button" data-play="' + key + '"' + (has ? '' : ' disabled') + '>▶ Play</button></td></tr>';
+}
+function coach(){
+  var h = '<header><h1>Scoop Practice · Coach</h1><p>Record each sentence read in scoops, the way you want it read back, then each whole story read in scoops. The arcs show the scoops.</p></header>' +
+    '<section class="card"><p><b id="ccount">' + coachCount() + '</b></p>' +
+    '<p class="small">Your recordings stay in this browser until you tap <b>Save my recordings</b>. That makes one file in your Downloads to hand to Claude, who puts them on the games site. Once they\'re there, anyone with the link can hear them.</p>' +
+    '<div class="row"><button class="btn mint" type="button" id="savebtn">⬇ Save my recordings</button><a class="btn ghost" href="?" style="text-decoration:none">Try it as the reader</a></div><p class="status" id="status"></p></section>';
+  P.forEach(function(p){
+    h += '<section class="card"><h2>' + p.ic + ' ' + esc(p.title) + '</h2><div class="wrap"><table>' +
+      p.u.map(function(list, i){ return coachRow(k(p.id, i), (i + 1) + '. ' + list.map(function(j){ return '<span class="scoop" style="padding:0 3px 6px;border-bottom-width:3px">' + esc(p.s[j]) + '</span>'; }).join(" ")); }).join("") +
+      coachRow(k(p.id, "all"), '<b>Whole story, read in scoops</b>') + '</table></div></section>';
+  });
+  $("app").innerHTML = h;
+}
+function coachClick(ev){
+  var b = ev.target.closest("button"); if(!b) return;
+  if(b.id === "savebtn"){ saveAll(); return; }
+  if(b.dataset.rec){
+    var key = b.dataset.rec;
+    if(C.rec && C.rec.state === "recording"){ var same = C.key === key; C.rec.stop(); if(same) return; }
+    stopSound();
+    navigator.mediaDevices.getUserMedia({audio:true}).then(function(st){
+      C.stream = st; C.chunks = []; C.key = key;
+      C.rec = new MediaRecorder(st);
+      C.rec.ondataavailable = function(e){ if(e.data.size) C.chunks.push(e.data); };
+      C.rec.onstop = function(){
+        var blob = new Blob(C.chunks, {type: C.rec.mimeType || "audio/webm"});
+        st.getTracks().forEach(function(t){ t.stop(); });
+        saveLocal(C.key, blob); C.key = null; coach();
+        setStatus("Recorded. Tap ▶ to check it.");
+      };
+      C.rec.start(); coach(); setStatus("Recording… tap Stop when you finish.");
+    }).catch(function(){ setStatus("The microphone isn't available. Check this page's microphone permission."); });
+  } else if(b.dataset.play){
+    var blob = local[b.dataset.play]; if(blob){ stopSound(); player.src = URL.createObjectURL(blob); player.play().catch(function(){}); }
+  }
+}
+function saveAll(){
+  var keys = Object.keys(local); if(!keys.length){ setStatus("Nothing recorded yet."); return; }
+  var out = {made: new Date().toISOString(), clips: {}}, left = keys.length;
+  keys.forEach(function(key){
+    var fr = new FileReader();
+    fr.onload = function(){ out.clips[key] = fr.result; if(--left === 0) dl(); };
+    fr.readAsDataURL(local[key]);
+  });
+  function dl(){
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(out)], {type:"application/json"}));
+    a.download = "scoop-practice-recordings.json"; document.body.appendChild(a); a.click(); a.remove();
+    setStatus("Saved scoop-practice-recordings.json to your Downloads (" + keys.length + " clips).");
+  }
+}
+
+openDb().then(loadLocal).then(function(){
+  if(isCoach){ $("app").addEventListener("click", coachClick); coach(); }
+  else { $("app").addEventListener("click", studentClick); home(); }
+});
+})();
+</script>
+</body>
+</html>
