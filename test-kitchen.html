@@ -110,6 +110,8 @@ td.hi{color:var(--good)}
 .hint{font-size:14px;color:var(--ink3);margin:8px 0}
 .pens{display:flex;flex-wrap:wrap;gap:7px}
 .pens button{border-radius:999px;padding:7px 13px;font-weight:800;font-size:14px;border:3px solid transparent}
+.pens .pen{display:inline-flex;flex-direction:column;align-items:flex-start;gap:3px}
+.pens .pex{font-size:13px;color:var(--ink2);padding-left:6px}
 .pens button.sel{border-color:var(--ink);transform:scale(1.05)}
 .mtext,.mcard{background:var(--panel);border:2px solid var(--rule);border-radius:14px;padding:12px 14px;margin-top:10px;font-size:18px;line-height:2;font-weight:600}
 .tok{display:inline;border-radius:6px;padding:2px 3px;font:inherit;line-height:inherit}
@@ -429,17 +431,21 @@ const PEN={
   sim:["Simile word (like / as)","#ffb27a","#3f1a00"], met:["Metaphor: says it IS the thing","#7cc4ff","#06263f"],
   big:["Too big to be true (hyperbole)","#ff9ec7","#45061f"], idm:["Idiom (means something else)","#c9a7ff","#26094d"],
   idea:["Idea","#ffd866","#3d2e00"],
-  i1:["Item 1","#7cc4ff","#06263f"], i2:["Item 2","#8be0a4","#0b3a1a"], i3:["Item 3","#ffd866","#3d2e00"],
-  name:["Name spoken to","#ff9ec7","#45061f"], yn:["Yes or no","#c9a7ff","#26094d"], tag:["Tag question","#ffb27a","#3f1a00"], intro:["Opening part","#cfc8bb","#2a2620"],
+  list:["Thing in a list (commas between)","#7cc4ff","#06263f"],
+  name:["Name spoken to (commas set it off)","#ff9ec7","#45061f"], yn:["Yes or no word (comma after it)","#c9a7ff","#26094d"],
+  tag:["Tag question (comma before it)","#ffb27a","#3f1a00"], intro:["Opening part (comma after it)","#8be0a4","#0b3a1a"],
   need:["What I need","#ffd866","#3d2e00"], w:["About a word","#7cc4ff","#06263f"], f:["Facts or places","#8be0a4","#0b3a1a"],
   bad:["Looks wrong","#ff9ec7","#45061f"], trick:["Tricky part","#ffd866","#3d2e00"]
 };
-const SKP={tense:["past","now","fut"],fig:["sim","met","big","idm"],spell:["bad"],comma:["i1","i2","i3","name","yn","tag","intro"],ref:["need"]};
+/* examples never reuse a sentence from a card */
+const PEX={list:"cats, dogs, and birds",name:"Jo, come here.",yn:"No, thank you.",tag:"That was fun, wasn't it?",intro:"After lunch, we read."};
+const CDO={list:"every thing in a list",name:"the name of the person spoken to",yn:"a yes or no word",tag:"a tag question",intro:"an opening part"};
+const SKP={tense:["past","now","fut"],fig:["sim","met","big","idm"],spell:["bad"],comma:["list","name","yn","tag","intro"],ref:["need"]};
 const DO={
   tense:"Find each verb (the action word) and mark WHEN it happens: Past, Now or Future. A word that tells when (yesterday, tomorrow, last summer) gets a mark too.",
   fig:"Mark every clue: like or as (simile), a word that says it IS the thing (metaphor), anything too big to be true (hyperbole), and any idiom.",
   spell:"Mark the word that looks wrong.",
-  comma:"Mark each part a comma might set off: each list item in its own color, the name of the person spoken to, a yes or no word, a tag question, an opening part.",
+  comma:"Mark each part a comma goes with: every thing in a list, the name of the person spoken to, a yes or no word, a tag question, an opening part.",
   ref:"Mark what you need to find out."
 };
 /* Marking key for every question.
@@ -504,20 +510,20 @@ s20:{lt:["s[ur]prise","s[up]rise","surpri[z]e","s[er]prise"]},
 s21:{lt:["favor[i]te","charact[or]","book","brave"]},
 s22:{t:"We can't go outside untill the rain stops.",m:{bad:"untill"}},
 /* commas: the text is shown with no commas, so she finds the parts first */
-c1:{t:"We packed tents sleeping bags and flashlights",m:{i1:"tents",i2:"sleeping bags",i3:"flashlights"}},
-c2:{t:"You can order bacon and eggs pancakes or fruit and yogurt",m:{i1:"bacon and eggs",i2:"pancakes",i3:"fruit and@2 yogurt"}},
+c1:{t:"We packed tents sleeping bags and flashlights",m:{list:"tents sleeping bags flashlights"}},
+c2:{do:"Mark each breakfast in the list. Some have and inside, so mark the whole breakfast.",t:"You can order bacon and eggs pancakes or fruit and yogurt",m:{list:"bacon and eggs pancakes fruit and@2 yogurt"}},
 c3:{t:"Ms. Diaz may I sharpen my pencil",m:{name:"ms diaz"}},
 c4:{t:"Thank you Grandma for the scarf",m:{name:"grandma"}},
 c5:{t:"Yes I finished my chores",m:{yn:"yes"}},
 c6:{t:"You fed the dog didn't you",m:{tag:"didn't you@2"}},
 c7:{t:"No Sam we can't leave yet can we",m:{yn:"no",name:"sam",tag:"can we@2"}},
-c8:{ch:[{i1:"red",i2:"white",i3:"blue"},{i1:"apples",i2:"pears",i3:"grapes"},{intro:"at the beach",i1:"towels",i2:"snacks",i3:"sunscreen"},{i1:"a ruler",i2:"a@2 magnet",i3:"two batteries"}]},
-c9:{ch:[{intro:"well"},{name:"kai"},{tag:"isn't it"},{i1:"ducks",i2:"geese",i3:"swans"}]},
+c8:{ch:[{list:"red white blue"},{list:"apples pears grapes"},{intro:"at the beach",list:"towels snacks sunscreen"},{list:"a ruler a@2 magnet two batteries"}]},
+c9:{ch:[{intro:"well"},{name:"kai"},{tag:"isn't it"},{list:"ducks geese swans"}]},
 c10:{t:"Yes Mr. Lee I brought my lunch",m:{yn:"yes",name:"mr lee"}},
 c11:{ch:[{name:"jada"},{name:"jada"},{name:"dev"},{name:"dev"}]},
 c12:{t:"You're coming to the game too aren't you",m:{tag:"aren't you"}},
 c13:{t:"Grab your helmet Owen before we ride",m:{name:"owen"}},
-c14:{t:"Mom bought milk eggs and bread at the store",m:{i1:"milk",i2:"eggs",i3:"bread"},do:"Mark each item in the list in its own color. Those are the ideas every answer has to keep."},
+c14:{t:"Mom bought milk eggs and bread at the store",m:{list:"milk eggs bread"},do:"Mark each thing in the list. Those are the ideas every answer has to keep."},
 /* reference sources */
 r1:{t:"You want another word for happy in your story.",m:{need:"another word"}},
 r2:{t:"You need to know how to say quinoa and what it means.",m:{need:"say means"}},
@@ -612,8 +618,11 @@ function expMap(text,m){
 const BADKEY=[];
 function parseLt(s){const L=[],span={};let on=false,i=0;for(const ch of s){if(ch==="["){on=true;continue;}if(ch==="]"){on=false;continue;}L.push(ch);if(on)span[i]=1;i++;}return {L,span};}
 function modeOf(q){const a=AN[q.id];return a.lt?"lt":a.ch?"ch":"t";}
-function pensOf(q){const a=AN[q.id];if(a.pens)return a.pens;if(a.lt)return["trick"];return SKP[q.sk];}
-function doOf(q){const a=AN[q.id];if(a.do)return a.do;if(a.lt)return"In each word, tap the letters that are the tricky part. Tap again to undo.";
+function pensOf(q){const a=AN[q.id];if(a.pens)return a.pens;if(a.lt)return["trick"];
+  if(q.sk==="comma"){const used={};(a.ch||[a.m]).forEach(m=>Object.keys(m).forEach(k=>used[k]=1));return SKP.comma.filter(k=>used[k]);}
+  return SKP[q.sk];}
+function doOf(q){const a=AN[q.id];if(a.do)return a.do;
+  if(q.sk==="comma"){const l=pensOf(q).map(k=>CDO[k]);return "Mark "+(l.length>1?l.slice(0,-1).join(", ")+(l.length>2?",":"")+" and "+l[l.length-1]:l[0])+"."+(a.ch?" Do it in every choice.":"");}if(a.lt)return"In each word, tap the letters that are the tricky part. Tap again to undo.";
   return DO[q.sk]+(a.ch?" Do it in every choice.":"");}
 
 function prep(){
@@ -667,7 +676,7 @@ function viewQ(){
   if(R.stage!=="answer"){
     if(R.stage==="mark"){
       h+=`<p class="doline"><b>Mark it:</b> ${doOf(q)}</p>`;
-      if(pens.length)h+=`<div class="pens">${pens.map(p=>`<button data-pen="${p}" class="${R.pen===p?"sel":""}" style="background:${PEN[p][1]};color:${PEN[p][2]}">${PEN[p][0]}</button>`).join("")}</div>`;
+      if(pens.length)h+=`<div class="pens">${pens.map(p=>`<span class="pen"><button data-pen="${p}" class="${R.pen===p?"sel":""}" style="background:${PEN[p][1]};color:${PEN[p][2]}">${PEN[p][0]}</button>${PEX[p]&&!(S.pex||{})[p]?`<span class="pex">e.g. ${esc(PEX[p])}</span>`:""}</span>`).join("")}</div>`;
       h+=`<p class="hint" id="hint">${R.pen?"Tap to mark. Tap again to undo.":"Pick a marker, then tap the words."}</p>`;
     }
     h+=mode==="t"?textBox(0):R.order.map(k=>`<div class="mcard">${groupHtml(k,how)}</div>`).join("");
@@ -715,7 +724,7 @@ function viewQ(){
   M.querySelectorAll("[data-u]").forEach(b=>b.onclick=()=>{
     if(!R.pen){g("hint").textContent="Pick a marker first.";return;}
     const k=b.dataset.u;if(R.marks[k]===R.pen)delete R.marks[k];else R.marks[k]=R.pen;render();});
-  if(g("doneMark"))g("doneMark").onclick=()=>{R.stage="checked";render();};
+  if(g("doneMark"))g("doneMark").onclick=()=>{S.pex=S.pex||{};pensOf(R.qs[R.i]).forEach(p=>{if(PEX[p])S.pex[p]=1;});save();R.stage="checked";render();};
   if(g("toAns"))g("toAns").onclick=()=>{R.stage="answer";render();};
   M.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{R.sel=[+b.dataset.k];render();});
   M.querySelectorAll("[data-yes]").forEach(b=>b.onclick=()=>{R.yn[+b.dataset.yes]=true;render();});
