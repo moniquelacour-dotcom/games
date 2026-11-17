@@ -120,6 +120,9 @@ td.hi{color:var(--good)}
 .pens .pex{font-size:13px;color:var(--ink2);padding-left:6px}
 .pens button.sel{border-color:var(--ink);transform:scale(1.05)}
 .mtext,.mcard{background:var(--panel);border:2px solid var(--rule);border-radius:14px;padding:12px 14px;margin-top:10px;font-size:18px;line-height:2;font-weight:600}
+.sent{display:inline;border-radius:8px;padding:3px 6px;font:inherit;line-height:1.7;text-align:left;border:2px solid var(--rule2);background:transparent;color:inherit;cursor:pointer}
+.sent.miss{outline:3px dashed var(--ink2);outline-offset:1px}
+.wasnote{font-size:13px;color:var(--ink3);font-style:italic}
 .tok{display:inline;border-radius:6px;padding:2px 3px;font:inherit;line-height:inherit}
 button.tok:hover{outline:2px dashed var(--rule2)}
 .tok.miss,.lt.miss{outline:3px dashed var(--ink2);outline-offset:1px}
@@ -476,7 +479,7 @@ const PEN={
   past:["Past","#7cc4ff","#06263f"], now:["Now","#8be0a4","#0b3a1a"], fut:["Future","#ffb27a","#3f1a00"],
   sim:["Simile word (like / as)","#ffb27a","#3f1a00"], met:["Metaphor: says it IS the thing","#7cc4ff","#06263f"],
   big:["Too big to be true (hyperbole)","#ff9ec7","#45061f"], idm:["Idiom (means something else)","#c9a7ff","#26094d"],
-  idea:["Idea","#ffd866","#3d2e00"],
+  idea:["Idea","#ffd866","#3d2e00"], none:["No figurative language","#d6d3cc","#2a2620"],
   list:["Thing in a list (commas between)","#7cc4ff","#06263f"],
   name:["Name spoken to (commas set it off)","#ff9ec7","#45061f"], yn:["Yes or no word (comma after it)","#c9a7ff","#26094d"],
   tag:["Tag question (comma before it)","#ffb27a","#3f1a00"], intro:["Opening part (comma after it)","#8be0a4","#0b3a1a"],
@@ -515,25 +518,24 @@ t11:{t:"(1) Last fall our class planted a garden. (2) We dug rows and dropped in
      m:{past:"last fall planted dug dropped by october had picked",now:"each week water"}},
 t12:{t:"The hike already happened. At the top of the trail, we _____ the whole valley.",m:{past:"already happened"}},
 t13:{ch:[{past:"by the time woke had eaten"},{past:"by the time woke",now:"eats"},{past:"by the time woke",fut:"will eat"},{past:"by the time woke",now:"has eat"}]},
-/* figurative language: each card shows only the markers its question needs.
-   sim = like/as (simile). met = is/was/were ONLY when it says one thing IS another (metaphor).
-   "was as still as" is a simile: mark the as words, not was. */
-f1:{t:"The lake was a mirror this morning.",m:{met:"was"}},
-f2:{t:"My backpack weighs a thousand pounds today.",m:{big:"a thousand pounds"}},
-f3:{t:"Her voice was as soft as a feather.",m:{sim:"as as@2"}},
-f4:{t:"Don't spill the beans about the surprise party.",m:{idm:"spill the beans"}},
-f5:{ch:[{met:"were"},{sim:"as as@2"},{},{}],pens:["sim","met"],do:"Mark like or as in every choice. Mark is, was or were only when it says one thing IS another thing."},
-f6:{ch:[{met:"were"},{sim:"like"},{sim:"like"},{}],pens:["met","sim"],do:"Mark the word that says it IS the thing (is, was, were) in every choice. Mark like or as too, so you can tell a simile from a metaphor."},
-f7:{ch:[{},{big:"ten thousand"},{},{}],pens:["big"],do:"Mark anything too big to be true in every choice."},
-f8:{t:"Mom said the new bike cost an arm and a leg.",m:{idm:"an arm and a leg"},pens:["idm"],do:"Mark the idiom: the words that mean something else."},
-f9:{t:"Tomas was on the fence about joining the team.",m:{idm:"on the fence"},pens:["idm"],do:"Mark the idiom: the words that mean something else."},
-f10:{t:"When the door opened, the kittens scattered like marbles on a floor.",m:{sim:"like"},pens:["sim"],do:"Mark like or as."},
-f11:{ch:[{sim:"as as@2"},{met:"is"},{sim:"like"},{met:"is"}],pens:["sim","met"],do:"Mark like or as in every choice. Mark is, was or were only when it says one thing IS another thing."},
-f12:{ch:[{met:"is"},{met:"was"},{sim:"as as@2"},{}],pens:["met","sim"],do:"Mark the word that says it IS the thing (is, was, were) in every choice. Mark like or as too, so you can tell a simile from a metaphor."},
-f13:{t:"1. The field was a sea of sunflowers. 2. The truck roared like a lion.",m:{met:"was",sim:"like"}},
-f14:{ch:[{sim:"as as@2"},{},{},{}],pens:["sim"],do:"Mark like or as in every choice."},
-f15:{ch:[{met:"was"},{sim:"like"},{sim:"as as@2"},{sim:"like"}],pens:["met","sim"],do:"Mark the word that says it IS the thing (is, was, were) in every choice. Mark like or as too, so you can tell a simile from a metaphor."},
-f16:{t:"The gym was an oven.",m:{idea:"gym oven",met:"was"},pens:["idea","met"],do:"Mark the two things being compared (Idea) and the word that says the gym IS an oven."},
+/* figurative language: she picks the kind, then ONE tap colors a whole sentence.
+   k = the kind of each sentence (the choices, or the sentences in u). wd:1 = old word key (fill-the-blank cards). */
+f1:{u:["The lake was a mirror this morning."],k:["met"]},
+f2:{u:["My backpack weighs a thousand pounds today."],k:["big"]},
+f3:{u:["Her voice was as soft as a feather."],k:["sim"]},
+f4:{u:["Don't spill the beans about the surprise party."],k:["idm"]},
+f5:{k:["met","sim","big","idm"]},
+f6:{k:["met","sim","sim","big"]},
+f7:{k:["sim","big","met","idm"]},
+f8:{u:["Mom said the new bike cost an arm and a leg."],k:["idm"]},
+f9:{u:["Tomas was on the fence about joining the team."],k:["idm"]},
+f10:{u:["When the door opened, the kittens scattered like marbles on a floor."],k:["sim"]},
+f11:{k:["sim","met","sim","met"]},
+f12:{k:["met","met","sim","big"]},
+f13:{u:["1. The field was a sea of sunflowers.","2. The truck roared like a lion."],k:["met","sim"]},
+f14:{wd:1,ch:[{sim:"as as@2"},{},{},{}],pens:["sim"],do:"Mark like or as in every choice."},
+f15:{wd:1,ch:[{met:"was"},{sim:"like"},{sim:"as as@2"},{sim:"like"}],pens:["met","sim"],do:"Mark the word that says it IS the thing (is, was, were) in every choice. Mark like or as too, so you can tell a simile from a metaphor."},
+f16:{u:["The gym was an oven."],k:["met"]},
 /* spelling: tricky part of each word */
 s1:{lt:["sep[e]rate","to[mm]orow","bel[ei]ve","calend[ar]"]},
 s2:{lt:["ne[ccess]ary","su[pr]ise","li[br]ary","pro[bl]y"]},
@@ -694,12 +696,22 @@ function expMap(text,m){
   return exp;
 }
 const BADKEY=[];
+const isUnit=q=>q.sk==="fig"&&!AN[q.id].wd;
+const needAll=q=>isUnit(q)||(modeOf(q)==="ch"&&q.sk==="word");
+function allMarked(){
+  if(!Object.keys(R.marks).length)return false;
+  const q=R.qs[R.i];if(!needAll(q))return true;
+  if(isUnit(q))return R.groups.every((_,gi)=>R.marks[gi+"_u"]);
+  return R.groups.every((g,gi)=>tokens(g.text).some((_,i)=>R.marks[gi+"_"+i]));
+}
 function parseLt(s){const L=[],span={};let on=false,i=0;for(const ch of s){if(ch==="["){on=true;continue;}if(ch==="]"){on=false;continue;}L.push(ch);if(on)span[i]=1;i++;}return {L,span};}
-function modeOf(q){const a=AN[q.id];return a.lt?"lt":a.ch?"ch":"t";}
+function modeOf(q){const a=AN[q.id];return a.lt?"lt":(a.ch||(a.k&&!a.u))?"ch":"t";}
 function pensOf(q){const a=AN[q.id];if(a.pens)return a.pens;if(a.lt)return["trick"];
+  if(isUnit(q))return a.u?["sim","met","big","idm"]:["sim","met","big","idm","none"];
   if(q.sk==="comma"){const used={};(a.ch||[a.m]).forEach(m=>Object.keys(m).forEach(k=>used[k]=1));return SKP.comma.filter(k=>used[k]);}
   return SKP[q.sk];}
 function doOf(q){const a=AN[q.id];if(a.do)return a.do;
+  if(isUnit(q))return "Pick the marker for the kind, then tap the sentence. One tap colors the whole sentence."+(a.u&&a.u.length===1?"":" Do it for every sentence.")+(a.u?"":" A sentence with none? Use No figurative language.");
   if(q.sk==="comma"){const l=pensOf(q).map(k=>CDO[k]);return "Mark "+(l.length>1?l.slice(0,-1).join(", ")+(l.length>2?",":"")+" and "+l[l.length-1]:l[0])+"."+(a.ch?" Do it in every choice.":"");}if(a.lt)return"In each word, tap the letters that are the tricky part. Tap again to undo.";
   return DO[q.sk]+(a.ch?" Do it in every choice.":"");}
 
@@ -707,11 +719,20 @@ function prep(){
   const q=R.qs[R.i],a=AN[q.id];
   R.sel=[];R.yn={};R.done=false;R.ok=null;R.typed="";R.stage="mark";R.marks={};R.pen=pensOf(q).length===1?pensOf(q)[0]:"";
   R.order=q.ch?shuffle(q.ch.map((_,k)=>k)):null;
-  R.groups=a.lt?a.lt.map(parseLt):a.ch?a.ch.map((m,k)=>({text:q.ch[k],exp:expMap(q.ch[k],m)})):[{text:a.t,exp:expMap(a.t,a.m)}];
+  R.groups=a.lt?a.lt.map(parseLt):isUnit(q)?(a.u||q.ch).map((text,k)=>({unit:1,text,want:a.k[k]}))
+    :a.ch?a.ch.map((m,k)=>({text:q.ch[k],exp:expMap(q.ch[k],m)})):[{text:a.t,exp:expMap(a.t,a.m)}];
 }
 /* how a group (the text, or one choice) is drawn. how: "mark" her marks, "check" hers vs the key, "full" the key */
 function groupHtml(gi,how){
   const g=R.groups[gi];
+  if(g.unit){
+    const k=gi+"_u",mine=R.marks[k];let use=how==="mark"?mine:g.want,cls="sent";
+    if(how==="check"&&mine!==g.want)cls+=" miss";
+    if(how==="full"&&g.want==="none")use=null;
+    const st=use?` style="background:${PEN[use][1]};color:${PEN[use][2]}"`:"";
+    const tag=how==="check"&&mine&&mine!==g.want?` <span class="wasnote">(you picked ${PEN[mine][0].split(/ \(|:/)[0]})</span>`:"";
+    return how==="mark"?`<button type="button" class="${cls}" data-u="${k}"${st}>${esc(g.text)}</button>`:`<span class="${cls}"${st}>${esc(g.text)}</span>${tag}`;
+  }
   if(g.L){
     const got=g.L.some((_,i)=>g.span[i]&&R.marks[gi+"_"+i]);
     return `<span class="ltw">`+g.L.map((c,i)=>{const k=gi+"_"+i,mine=!!R.marks[k],inS=!!g.span[i];let cls="lt";
@@ -733,6 +754,7 @@ function markScore(){
   R.groups.forEach((g,gi)=>{
     if(g.L){const has=Object.keys(g.span).length;if(has){need++;if(g.L.some((_,i)=>g.span[i]&&R.marks[gi+"_"+i]))found++;}
       g.L.forEach((_,i)=>{if(!g.span[i]&&R.marks[gi+"_"+i])extra++;});return;}
+    if(g.unit){need++;const m=R.marks[gi+"_u"];if(m===g.want)found++;else if(m)extra++;return;}
     tokens(g.text).forEach((_,i)=>{const k=gi+"_"+i,want=g.exp[i],mine=R.marks[k];if(want){need++;if(mine===want)found++;}else if(mine)extra++;});
   });
   return {need,found,extra};
@@ -746,24 +768,25 @@ function viewQ(){
   let h=`<div class="card">
     <div class="meta"><span class="ty">${s.name} · ${label}</span><span>Card ${R.i+1} of ${R.qs.length} · ${stepLbl}</span></div>
     <div class="bar"><i style="width:${Math.round(R.i/R.qs.length*100)}%"></i></div>
-    <div class="strat"><p><b>Strategy:</b> ${strat}</p><p><b>Rule:</b> ${s.rule}</p></div>
+    <div class="strat"><p><b>Strategy:</b> ${isUnit(q)?"Name every sentence first: pick the kind, then tap the sentence. Then answer the question with your marks.":strat}</p><p><b>Rule:</b> ${s.rule}</p></div>
     <p class="q">${q.q}</p>`;
   const how=R.stage==="mark"?"mark":R.stage==="checked"?"check":"full";
-  const textBox=gi=>`<div class="mtext">${groupHtml(gi,how)}</div>`;
+  const textBox=gi=>isUnit(q)?`<div class="mtext">${R.groups.map((_,i)=>groupHtml(i,how)).join("<br>")}</div>`:`<div class="mtext">${groupHtml(gi,how)}</div>`;
 
   if(R.stage!=="answer"){
     if(R.stage==="mark"){
       h+=`<p class="doline"><b>Mark it:</b> ${doOf(q)}</p>`;
       if(pens.length)h+=`<div class="pens">${pens.map(p=>`<span class="pen"><button data-pen="${p}" class="${R.pen===p?"sel":""}" style="background:${PEN[p][1]};color:${PEN[p][2]}">${PEN[p][0]}</button>${PEX[p]&&!(S.pex||{})[p]?`<span class="pex">e.g. ${esc(PEX[p])}</span>`:""}</span>`).join("")}</div>`;
-      h+=`<p class="hint" id="hint">${R.pen?"Tap to mark. Tap again to undo.":"Pick a marker, then tap the words."}</p>`;
+      h+=`<p class="hint" id="hint">${R.pen?(isUnit(q)?"Tap a sentence to color it. Tap again to undo.":"Tap to mark. Tap again to undo."):(isUnit(q)?"Pick a marker, then tap the sentence.":"Pick a marker, then tap the words.")}${needAll(q)&&Object.keys(R.marks).length&&!allMarked()?" <b>Mark every sentence before you answer.</b>":""}</p>`;
     }
     h+=mode==="t"?textBox(0):R.order.map(k=>`<div class="mcard">${groupHtml(k,how)}</div>`).join("");
     if(R.stage==="mark"){
-      h+=`<div class="row"><button class="big" id="doneMark" ${Object.keys(R.marks).length?"":"disabled"}>Done marking</button>
+      h+=`<div class="row"><button class="big" id="doneMark" ${allMarked()?"":"disabled"}>Done marking</button>
         <button class="big ghost" id="quit">Back to the kitchen</button></div>`;
     }else{
       const sc=markScore(),perfect=sc.found===sc.need&&!sc.extra;
-      h+=`<div class="flash ${perfect?"yes":"no"}">You found <b>${sc.found} of ${sc.need}</b>.${sc.found<sc.need?" The dashed ones are the ones you missed.":""}${sc.extra?" The crossed-out ones didn't need a mark.":""}${perfect?" \u{1F389}":""} Now answer with these marks.</div>
+      h+=isUnit(q)?`<div class="flash ${perfect?"yes":"no"}">You named <b>${sc.found} of ${sc.need}</b> right.${sc.found<sc.need?" The dashed ones now show the right kind.":""}${perfect?" \u{1F389}":""} Now answer with these marks.</div>
+        <div class="row"><button class="big" id="toAns">Answer the question</button></div>`:`<div class="flash ${perfect?"yes":"no"}">You found <b>${sc.found} of ${sc.need}</b>.${sc.found<sc.need?" The dashed ones are the ones you missed.":""}${sc.extra?" The crossed-out ones didn't need a mark.":""}${perfect?" \u{1F389}":""} Now answer with these marks.</div>
         <div class="row"><button class="big" id="toAns">Answer the question</button></div>`;
     }
   }else{
