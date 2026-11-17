@@ -186,7 +186,9 @@ const SK={
   comma:{name:"Commas",em:"✏️",ds:"Lists, names, yes and no, question tags.",
     rule:"Find the part to set off: list items, the name of the person spoken to, yes or no at the start, a tag question at the end."},
   ref:{name:"Reference sources",em:"\u{1F4DA}",ds:"Dictionary, thesaurus, encyclopedia, atlas.",
-    rule:"Do you need a word or facts? Dictionary: meaning, saying it, syllables. Thesaurus: words that mean the same. Encyclopedia: facts. Atlas: maps and places."}
+    rule:"Do you need a word or facts? Dictionary: meaning, saying it, syllables. Thesaurus: words that mean the same. Encyclopedia: facts. Atlas: maps and places."},
+  word:{name:"Sound-alike words",em:"\u{1F442}",ds:"compliment, cymbals, miner, insight, and their twins.",
+    rule:"Say what the word should MEAN here, then check the spelling fits. compliment = praise (I like it). complement = completes. cymbals = music. symbols = signs. miner = digs in a mine. minor = small, or under 18. insight = seeing inside. incite = stir up."}
 };
 /* Question types: each has its own strategy. It stays on screen while she marks AND while she answers. */
 const TY={
@@ -423,7 +425,44 @@ const Q=[
  why:"A dictionary is about <b>words</b>: how to say them and what they mean. History is an encyclopedia; rivers on a map are an atlas."},
 {id:"r8",sk:"ref",ty:"source",q:"You want to check if <b>brave</b> and <b>bold</b> can swap in your sentence. Which source is best?",
  ch:["A thesaurus","An encyclopedia","An atlas","A newspaper"],a:0,
- why:"Checking if two words mean about the same: <b>thesaurus</b>."}
+ why:"Checking if two words mean about the same: <b>thesaurus</b>."},
+/* ---- sound-alike words (homophones) ---- */
+{id:"w1",sk:"word",ty:"find",q:"Which sentence uses a sound-alike word the wrong way?",
+ ch:["The coach gave Ava a compliment on her strong pass.","Loud cymbals crashed at the end of the song.","The miner wore a lamp on his helmet deep in the tunnel.","The rude comment was meant to insight an argument."],a:3,
+ why:"To stir up an argument is to <b>incite</b> it. <b>Insight</b> means seeing inside something: understanding."},
+{id:"w2",sk:"word",ty:"find",q:"Which sentence uses a sound-alike word the wrong way?",
+ ch:["The red scarf is a nice complement to her gray coat.","Dad dug for gold like a real minor in the old movie.","On a map, small symbols show where the parks are.","The story gave me insight into life on a farm."],a:1,
+ why:"Someone who digs for gold or coal is a <b>miner</b> (he works in a <b>mine</b>). <b>Minor</b> means small, or under 18."},
+{id:"w3",sk:"word",ty:"find",q:"Which sentence uses a sound-alike word the wrong way?",
+ ch:["We only had a miner problem with the tent.","Mr. Ruiz paid me a compliment on my poster.","The band needed someone to play the cymbals.","Her diary gave us insight into how she felt."],a:0,
+ why:"A small problem is a <b>minor</b> problem. A <b>miner</b> digs in a mine."},
+{id:"w4",sk:"word",ty:"blank",q:"Which word completes the sentence? “The mistake was _____, so I only had to fix one word.”",
+ ch:["minor","miner"],a:0,
+ why:"Only one word to fix: the mistake was small, so it's <b>minor</b>."},
+{id:"w5",sk:"word",ty:"blank",q:"Which word completes the sentence? “The _____ crashed so loudly that the baby woke up.”",
+ ch:["cymbals","symbols"],a:0,
+ why:"Things that crash loudly in a band are <b>cymbals</b>. <b>Symbols</b> are signs, like ♥ or +."},
+{id:"w6",sk:"word",ty:"blank",q:"Which word completes the sentence? “A plus sign and a minus sign are math _____.”",
+ ch:["symbols","cymbals"],a:0,
+ why:"Signs that stand for something are <b>symbols</b>."},
+{id:"w7",sk:"word",ty:"blank",q:"Which word completes the sentence? “Fries go well with a burger. They are the perfect _____ to it.”",
+ ch:["complement","compliment"],a:0,
+ why:"Something that goes with it and makes it complete is a <b>complement</b> (compl<b>e</b>ment, compl<b>e</b>te)."},
+{id:"w8",sk:"word",ty:"blank",q:"Which word completes the sentence? “I said her drawing was amazing, and she thanked me for the _____.”",
+ ch:["compliment","complement"],a:0,
+ why:"Saying something nice about someone is a <b>compliment</b> (compl<b>i</b>ment: <b>I</b> like it)."},
+{id:"w9",sk:"word",ty:"blank",q:"Which word completes the sentence? “The speech was meant to _____ the crowd to cheer and stomp.”",
+ ch:["incite","insight"],a:0,
+ why:"Stirring people up to do something is to <b>incite</b> them. It's an action word."},
+{id:"w10",sk:"word",ty:"blank",q:"Which word completes the sentence? “Reading his letters gave me _____ into why he moved away.”",
+ ch:["insight","incite"],a:0,
+ why:"Understanding why = seeing inside it: <b>insight</b>."},
+{id:"w11",sk:"word",ty:"find",q:"Which sentence uses a sound-alike word the wrong way?",
+ ch:["The cymbals in the parade were shiny and loud.","A heart is one of the cymbals for love.","The miner pushed a cart of coal out of the tunnel.","Thank you for the kind compliment!"],a:1,
+ why:"A heart is a sign that stands for love: a <b>symbol</b>. <b>Cymbals</b> are the crashing music ones."},
+{id:"w12",sk:"word",ty:"two",q:"Select the TWO sentences that use a sound-alike word the wrong way.",
+ ch:["The hat was a great compliment to her outfit.","A twelve-year-old is still a minor.","The coach's talk gave the team insight into the other team's plays.","The shouting seemed to insight the dogs to bark."],a:[0,3],
+ why:"The hat <b>completes</b> the outfit: <b>complement</b>. Stirring the dogs up: <b>incite</b>. A minor is someone under 18, and insight is understanding, so those two are right."}
 ];
 /* Markers. [name, color, ink] */
 const PEN={
@@ -435,18 +474,20 @@ const PEN={
   name:["Name spoken to (commas set it off)","#ff9ec7","#45061f"], yn:["Yes or no word (comma after it)","#c9a7ff","#26094d"],
   tag:["Tag question (comma before it)","#ffb27a","#3f1a00"], intro:["Opening part (comma after it)","#8be0a4","#0b3a1a"],
   need:["What I need","#ffd866","#3d2e00"], w:["About a word","#7cc4ff","#06263f"], f:["Facts or places","#8be0a4","#0b3a1a"],
-  bad:["Looks wrong","#ff9ec7","#45061f"], trick:["Tricky part","#ffd866","#3d2e00"]
+  bad:["Looks wrong","#ff9ec7","#45061f"], trick:["Tricky part","#ffd866","#3d2e00"],
+  sa:["Sound-alike word","#c9a7ff","#26094d"], clue:["Meaning clue","#8be0a4","#0b3a1a"]
 };
 /* examples never reuse a sentence from a card */
 const PEX={list:"cats, dogs, and birds",name:"Jo, come here.",yn:"No, thank you.",tag:"That was fun, wasn't it?",intro:"After lunch, we read."};
 const CDO={list:"every thing in a list",name:"the name of the person spoken to",yn:"a yes or no word",tag:"a tag question",intro:"an opening part"};
-const SKP={tense:["past","now","fut"],fig:["sim","met","big","idm"],spell:["bad"],comma:["list","name","yn","tag","intro"],ref:["need"]};
+const SKP={tense:["past","now","fut"],fig:["sim","met","big","idm"],spell:["bad"],comma:["list","name","yn","tag","intro"],ref:["need"],word:["sa"]};
 const DO={
   tense:"Find each verb (the action word) and mark WHEN it happens: Past, Now or Future. A word that tells when (yesterday, tomorrow, last summer) gets a mark too.",
   fig:"Mark every clue: like or as (simile), a word that says it IS the thing (metaphor), anything too big to be true (hyperbole), and any idiom.",
   spell:"Mark the word that looks wrong.",
   comma:"Mark each part a comma goes with: every thing in a list, the name of the person spoken to, a yes or no word, a tag question, an opening part.",
-  ref:"Mark what you need to find out."
+  ref:"Mark what you need to find out.",
+  word:"Mark the sound-alike word. Then say what it should mean in that sentence."
 };
 /* Marking key for every question.
    t + m: mark words in this text.  ch: mark words inside each choice (same order as the choices).
@@ -532,9 +573,22 @@ r4:{t:"You want to find which countries share a border with Peru.",m:{need:"coun
 r5:{t:"You used the word big five times and want different words.",m:{need:"different words"}},
 r6:{t:"You need to know where to split calendar into syllables.",m:{need:"syllables"}},
 r7:{ch:[{w:"word"},{w:"word"},{f:"history"},{f:"map"}],pens:["w","f"],do:"Mark the key word in each choice: is it about a word, or about facts or places?"},
-r8:{t:"You want to check if brave and bold can swap in your sentence.",m:{need:"swap"}}
+r8:{t:"You want to check if brave and bold can swap in your sentence.",m:{need:"swap"}},
+/* sound-alike words: find cards mark the sound-alike word; blank cards mark the meaning clues */
+w1:{ch:[{sa:"compliment"},{sa:"cymbals"},{sa:"miner"},{sa:"insight"}]},
+w2:{ch:[{sa:"complement"},{sa:"minor"},{sa:"symbols"},{sa:"insight"}]},
+w3:{ch:[{sa:"miner"},{sa:"compliment"},{sa:"cymbals"},{sa:"insight"}]},
+w4:{t:"The mistake was _____, so I only had to fix one word.",m:{clue:"only one word"},pens:["clue"],do:"Mark the words that tell you what the missing word means."},
+w5:{t:"The _____ crashed so loudly that the baby woke up.",m:{clue:"crashed loudly"},pens:["clue"],do:"Mark the words that tell you what the missing word means."},
+w6:{t:"A plus sign and a minus sign are math _____.",m:{clue:"sign sign@2 math"},pens:["clue"],do:"Mark the words that tell you what the missing word means."},
+w7:{t:"Fries go well with a burger. They are the perfect _____ to it.",m:{clue:"go well with"},pens:["clue"],do:"Mark the words that tell you what the missing word means."},
+w8:{t:"I said her drawing was amazing, and she thanked me for the _____.",m:{clue:"amazing thanked"},pens:["clue"],do:"Mark the words that tell you what the missing word means."},
+w9:{t:"The speech was meant to _____ the crowd to cheer and stomp.",m:{clue:"cheer stomp"},pens:["clue"],do:"Mark the words that tell you what the missing word means."},
+w10:{t:"Reading his letters gave me _____ into why he moved away.",m:{clue:"into why"},pens:["clue"],do:"Mark the words that tell you what the missing word means."},
+w11:{ch:[{sa:"cymbals"},{sa:"cymbals"},{sa:"miner"},{sa:"compliment"}]},
+w12:{ch:[{sa:"compliment"},{sa:"minor"},{sa:"insight"},{sa:"insight"}]}
 };
-const ALL=["tense","fig","spell","comma","ref"];
+const ALL=["tense","fig","spell","comma","ref","word"];
 const QS=new URLSearchParams(location.search);
 const pickList=(v,ok)=>(v||"").split(",").map(x=>x.trim()).filter(x=>ok.indexOf(x)>-1);
 const ORDER=pickList(QS.get("skill"),ALL).length?pickList(QS.get("skill"),ALL):ALL;
