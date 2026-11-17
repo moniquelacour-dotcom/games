@@ -192,8 +192,8 @@ const TY={
   correct:{label:"Pick the correct sentence",strat:"Mark every choice. Then cross out each one that breaks the rule. The one left is your answer."},
   blank:{label:"Fill the blank",strat:"Mark the clue words around the blank. Then read the whole sentence with each answer in it."},
   revise:{label:"Best revision",strat:"Mark each idea or part in the original. The best answer fixes the problem AND keeps every idea. Shorter is not enough."},
-  name:{label:"Name the type",strat:"Mark the signal words first. Then match what you marked to the rule."},
-  example:{label:"Pick the example",strat:"Mark the signal words in every choice. Then match them to the type the question asks for."},
+  name:{label:"Name the type",strat:"Mark the clues first. Then match what you marked to the rule."},
+  example:{label:"Pick the example",strat:"Mark the clues in every choice. Then match them to the type the question asks for."},
   meaning:{label:"What it means",strat:"Mark the phrase. Picture it, then pick the meaning that fits the whole sentence, not the words one by one."},
   two:{label:"Select two",strat:"It asks for TWO. Mark the text, then mark EVERY choice yes or no before you submit."},
   type:{label:"Type it",strat:"Mark the word that looks wrong. Say it slowly, part by part, then type it."},
@@ -426,17 +426,18 @@ const Q=[
 /* Markers. [name, color, ink] */
 const PEN={
   past:["Past","#7cc4ff","#06263f"], now:["Now","#8be0a4","#0b3a1a"], fut:["Future","#ffb27a","#3f1a00"],
-  sig:["Signal word","#ffb27a","#3f1a00"], big:["Too big to be true","#ff9ec7","#45061f"], idm:["Idiom","#c9a7ff","#26094d"],
+  sim:["Simile word (like / as)","#ffb27a","#3f1a00"], met:["Metaphor: says it IS the thing","#7cc4ff","#06263f"],
+  big:["Too big to be true (hyperbole)","#ff9ec7","#45061f"], idm:["Idiom (means something else)","#c9a7ff","#26094d"],
   idea:["Idea","#ffd866","#3d2e00"],
   i1:["Item 1","#7cc4ff","#06263f"], i2:["Item 2","#8be0a4","#0b3a1a"], i3:["Item 3","#ffd866","#3d2e00"],
   name:["Name spoken to","#ff9ec7","#45061f"], yn:["Yes or no","#c9a7ff","#26094d"], tag:["Tag question","#ffb27a","#3f1a00"], intro:["Opening part","#cfc8bb","#2a2620"],
   need:["What I need","#ffd866","#3d2e00"], w:["About a word","#7cc4ff","#06263f"], f:["Facts or places","#8be0a4","#0b3a1a"],
   bad:["Looks wrong","#ff9ec7","#45061f"], trick:["Tricky part","#ffd866","#3d2e00"]
 };
-const SKP={tense:["past","now","fut"],fig:["sig","big","idm"],spell:["bad"],comma:["i1","i2","i3","name","yn","tag","intro"],ref:["need"]};
+const SKP={tense:["past","now","fut"],fig:["sim","met","big","idm"],spell:["bad"],comma:["i1","i2","i3","name","yn","tag","intro"],ref:["need"]};
 const DO={
   tense:"Find each verb (the action word) and mark WHEN it happens: Past, Now or Future. A word that tells when (yesterday, tomorrow, last summer) gets a mark too.",
-  fig:"Mark the signal words (like, as, is, was), anything too big to be true, and any idiom.",
+  fig:"Mark every clue: like or as (simile), a word that says it IS the thing (metaphor), anything too big to be true (hyperbole), and any idiom.",
   spell:"Mark the word that looks wrong.",
   comma:"Mark each part a comma might set off: each list item in its own color, the name of the person spoken to, a yes or no word, a tag question, an opening part.",
   ref:"Mark what you need to find out."
@@ -460,23 +461,25 @@ t11:{t:"(1) Last fall our class planted a garden. (2) We dug rows and dropped in
      m:{past:"last fall planted dug dropped by october had picked",now:"each week water"}},
 t12:{t:"The hike already happened. At the top of the trail, we _____ the whole valley.",m:{past:"already happened"}},
 t13:{ch:[{past:"by the time woke had eaten"},{past:"by the time woke",now:"eats"},{past:"by the time woke",fut:"will eat"},{past:"by the time woke",now:"has eat"}]},
-/* figurative language */
-f1:{t:"The lake was a mirror this morning.",m:{sig:"was"}},
+/* figurative language: each card shows only the markers its question needs.
+   sim = like/as (simile). met = is/was/were ONLY when it says one thing IS another (metaphor).
+   "was as still as" is a simile: mark the as words, not was. */
+f1:{t:"The lake was a mirror this morning.",m:{met:"was"}},
 f2:{t:"My backpack weighs a thousand pounds today.",m:{big:"a thousand pounds"}},
-f3:{t:"Her voice was as soft as a feather.",m:{sig:"as as@2"}},
+f3:{t:"Her voice was as soft as a feather.",m:{sim:"as as@2"}},
 f4:{t:"Don't spill the beans about the surprise party.",m:{idm:"spill the beans"}},
-f5:{ch:[{sig:"were"},{sig:"as as@2"},{big:"a million times"},{idm:"hold your horses"}]},
-f6:{ch:[{sig:"were"},{sig:"like"},{sig:"like"},{big:"for a year"}]},
-f7:{ch:[{sig:"as as@2"},{big:"ten thousand"},{sig:"is"},{idm:"break a leg"}]},
-f8:{t:"Mom said the new bike cost an arm and a leg.",m:{idm:"an arm and a leg"}},
-f9:{t:"Tomas was on the fence about joining the team.",m:{idm:"on the fence"}},
-f10:{t:"When the door opened, the kittens scattered like marbles on a floor.",m:{sig:"like"}},
-f11:{ch:[{sig:"as as@2"},{sig:"is"},{sig:"like"},{sig:"is"}]},
-f12:{ch:[{sig:"is"},{sig:"was"},{sig:"as as@2"},{big:"eat a horse"}]},
-f13:{t:"1. The field was a sea of sunflowers. 2. The truck roared like a lion.",m:{sig:"was like"}},
-f14:{ch:[{sig:"as as@2"},{},{},{}],do:"Mark the signal words in each choice."},
-f15:{ch:[{sig:"was"},{sig:"like"},{sig:"as as@2"},{sig:"like"}],do:"Mark the signal words in each choice."},
-f16:{t:"The gym was an oven.",m:{idea:"gym oven",sig:"was"},pens:["idea","sig"],do:"Mark the two things being compared (Idea) and the signal word."},
+f5:{ch:[{met:"were"},{sim:"as as@2"},{},{}],pens:["sim","met"],do:"Mark like or as in every choice. Mark is, was or were only when it says one thing IS another thing."},
+f6:{ch:[{met:"were"},{sim:"like"},{sim:"like"},{}],pens:["met","sim"],do:"Mark the word that says it IS the thing (is, was, were) in every choice. Mark like or as too, so you can tell a simile from a metaphor."},
+f7:{ch:[{},{big:"ten thousand"},{},{}],pens:["big"],do:"Mark anything too big to be true in every choice."},
+f8:{t:"Mom said the new bike cost an arm and a leg.",m:{idm:"an arm and a leg"},pens:["idm"],do:"Mark the idiom: the words that mean something else."},
+f9:{t:"Tomas was on the fence about joining the team.",m:{idm:"on the fence"},pens:["idm"],do:"Mark the idiom: the words that mean something else."},
+f10:{t:"When the door opened, the kittens scattered like marbles on a floor.",m:{sim:"like"},pens:["sim"],do:"Mark like or as."},
+f11:{ch:[{sim:"as as@2"},{met:"is"},{sim:"like"},{met:"is"}],pens:["sim","met"],do:"Mark like or as in every choice. Mark is, was or were only when it says one thing IS another thing."},
+f12:{ch:[{met:"is"},{met:"was"},{sim:"as as@2"},{}],pens:["met","sim"],do:"Mark the word that says it IS the thing (is, was, were) in every choice. Mark like or as too, so you can tell a simile from a metaphor."},
+f13:{t:"1. The field was a sea of sunflowers. 2. The truck roared like a lion.",m:{met:"was",sim:"like"}},
+f14:{ch:[{sim:"as as@2"},{},{},{}],pens:["sim"],do:"Mark like or as in every choice."},
+f15:{ch:[{met:"was"},{sim:"like"},{sim:"as as@2"},{sim:"like"}],pens:["met","sim"],do:"Mark the word that says it IS the thing (is, was, were) in every choice. Mark like or as too, so you can tell a simile from a metaphor."},
+f16:{t:"The gym was an oven.",m:{idea:"gym oven",met:"was"},pens:["idea","met"],do:"Mark the two things being compared (Idea) and the word that says the gym IS an oven."},
 /* spelling: tricky part of each word */
 s1:{lt:["sep[e]rate","to[mm]orow","bel[ei]ve","calend[ar]"]},
 s2:{lt:["ne[ccess]ary","su[pr]ise","li[br]ary","pro[bl]y"]},
@@ -664,7 +667,7 @@ function viewQ(){
   if(R.stage!=="answer"){
     if(R.stage==="mark"){
       h+=`<p class="doline"><b>Mark it:</b> ${doOf(q)}</p>`;
-      if(pens.length>1)h+=`<div class="pens">${pens.map(p=>`<button data-pen="${p}" class="${R.pen===p?"sel":""}" style="background:${PEN[p][1]};color:${PEN[p][2]}">${PEN[p][0]}</button>`).join("")}</div>`;
+      if(pens.length)h+=`<div class="pens">${pens.map(p=>`<button data-pen="${p}" class="${R.pen===p?"sel":""}" style="background:${PEN[p][1]};color:${PEN[p][2]}">${PEN[p][0]}</button>`).join("")}</div>`;
       h+=`<p class="hint" id="hint">${R.pen?"Tap to mark. Tap again to undo.":"Pick a marker, then tap the words."}</p>`;
     }
     h+=mode==="t"?textBox(0):R.order.map(k=>`<div class="mcard">${groupHtml(k,how)}</div>`).join("");
