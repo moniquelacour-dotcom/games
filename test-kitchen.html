@@ -176,7 +176,7 @@ footer{margin-top:28px;border-top:2px solid var(--rule);padding-top:16px;color:v
 /* Skills: what the student practices. "rule" is the one-line reminder shown on every question. */
 const SK={
   tense:{name:"Verb tense",em:"⏱️",ds:"Keep every verb in the same time.",
-    rule:"Find the time words first (yesterday, last summer, by the time). Every verb has to match that time."},
+    rule:"Mark each verb Past, Now or Future. One sentence with two colors that don't match = the tense shift."},
   fig:{name:"Figurative language",em:"\u{1F308}",ds:"Simile, metaphor, hyperbole, idiom.",
     rule:"Like / as = simile. Says it IS the thing = metaphor. Too big to be true = hyperbole. Means something other than its words = idiom."},
   spell:{name:"Spelling",em:"\u{1F524}",ds:"Words that trick almost everyone.",
@@ -425,7 +425,7 @@ const Q=[
 ];
 /* Markers. [name, color, ink] */
 const PEN={
-  time:["Time word","#7cc4ff","#06263f"], verb:["Verb","#8be0a4","#0b3a1a"],
+  past:["Past","#7cc4ff","#06263f"], now:["Now","#8be0a4","#0b3a1a"], fut:["Future","#ffb27a","#3f1a00"],
   sig:["Signal word","#ffb27a","#3f1a00"], big:["Too big to be true","#ff9ec7","#45061f"], idm:["Idiom","#c9a7ff","#26094d"],
   idea:["Idea","#ffd866","#3d2e00"],
   i1:["Item 1","#7cc4ff","#06263f"], i2:["Item 2","#8be0a4","#0b3a1a"], i3:["Item 3","#ffd866","#3d2e00"],
@@ -433,9 +433,9 @@ const PEN={
   need:["What I need","#ffd866","#3d2e00"], w:["About a word","#7cc4ff","#06263f"], f:["Facts or places","#8be0a4","#0b3a1a"],
   bad:["Looks wrong","#ff9ec7","#45061f"], trick:["Tricky part","#ffd866","#3d2e00"]
 };
-const SKP={tense:["time","verb"],fig:["sig","big","idm"],spell:["bad"],comma:["i1","i2","i3","name","yn","tag","intro"],ref:["need"]};
+const SKP={tense:["past","now","fut"],fig:["sig","big","idm"],spell:["bad"],comma:["i1","i2","i3","name","yn","tag","intro"],ref:["need"]};
 const DO={
-  tense:"Mark the time words, then every verb.",
+  tense:"Find each verb (the action word) and mark WHEN it happens: Past, Now or Future. A word that tells when (yesterday, tomorrow, last summer) gets a mark too.",
   fig:"Mark the signal words (like, as, is, was), anything too big to be true, and any idiom.",
   spell:"Mark the word that looks wrong.",
   comma:"Mark each part a comma might set off: each list item in its own color, the name of the person spoken to, a yes or no word, a tag question, an opening part.",
@@ -445,21 +445,21 @@ const DO={
    t + m: mark words in this text.  ch: mark words inside each choice (same order as the choices).
    lt: tap letters; [brackets] = the tricky part.  Words: space-separated; word@2 = its 2nd time in the text. */
 const AN={
-/* verb tense */
-t1:{ch:[{verb:"opened found"},{verb:"chased spins"},{verb:"will pack leave"},{verb:"reads goes"}]},
-t2:{ch:[{verb:"rang hurried"},{verb:"tells laughs"},{verb:"finished paints"},{time:"tomorrow",verb:"will visit see"}]},
-t3:{ch:[{time:"last summer",verb:"camp caught"},{time:"last summer",verb:"camped caught"},{time:"last summer",verb:"camped catch"},{time:"last summer",verb:"will camp caught"}]},
-t4:{t:"Yesterday the class _____ seeds and watered them.",m:{time:"yesterday",verb:"watered"}},
-t5:{t:"By the time we reached the station, the train _____.",m:{time:"by the time",verb:"reached"}},
-t6:{t:"Before the storm hit, Dad _____ all the windows.",m:{time:"before",verb:"hit"}},
-t7:{t:"The goalie dove to the left and blocks the shot.",m:{verb:"dove blocks"}},
-t8:{t:"Lena grabbed her coat, runs to the door, and waved goodbye.",m:{verb:"grabbed runs waved"}},
-t9:{ch:[{verb:"jumped knocks"},{verb:"practices sings"},{verb:"walked play"},{verb:"opens closes"}]},
-t10:{ch:[{verb:"ended clapped"},{verb:"studied passes"},{time:"every morning",verb:"feeds checks"},{verb:"howled shakes"}]},
+/* verb tense: mark each verb (and when-words) Past, Now or Future */
+t1:{ch:[{past:"opened found"},{past:"chased",now:"spins"},{fut:"will pack leave"},{now:"reads goes"}]},
+t2:{ch:[{past:"rang hurried"},{now:"tells laughs"},{past:"finished",now:"paints"},{fut:"tomorrow will visit see"}]},
+t3:{ch:[{past:"last summer caught",now:"camp"},{past:"last summer camped caught"},{past:"last summer camped",now:"catch"},{past:"last summer caught",fut:"will camp"}]},
+t4:{t:"Yesterday the class _____ seeds and watered them.",m:{past:"yesterday watered"}},
+t5:{t:"By the time we reached the station, the train _____.",m:{past:"by the time reached"}},
+t6:{t:"Before the storm hit, Dad _____ all the windows.",m:{past:"before hit"}},
+t7:{t:"The goalie dove to the left and blocks the shot.",m:{past:"dove",now:"blocks"}},
+t8:{t:"Lena grabbed her coat, runs to the door, and waved goodbye.",m:{past:"grabbed waved",now:"runs"}},
+t9:{ch:[{past:"jumped",now:"knocks"},{now:"practices sings"},{past:"walked",now:"play"},{now:"opens closes"}]},
+t10:{ch:[{past:"ended clapped"},{past:"studied",now:"passes"},{now:"every morning feeds checks"},{past:"howled",now:"shakes"}]},
 t11:{t:"(1) Last fall our class planted a garden. (2) We dug rows and dropped in seeds. (3) Each week we water the plants. (4) By October we had picked twenty tomatoes.",
-     m:{time:"last fall each week by october",verb:"planted dug dropped water had picked"}},
-t12:{t:"A writer is telling about a hike that already happened. At the top of the trail, we _____ the whole valley.",m:{time:"already",verb:"is telling happened"}},
-t13:{ch:[{time:"by the time",verb:"woke had eaten"},{time:"by the time",verb:"woke eats"},{time:"by the time",verb:"woke will eat"},{time:"by the time",verb:"woke has eat"}]},
+     m:{past:"last fall planted dug dropped by october had picked",now:"each week water"}},
+t12:{t:"The hike already happened. At the top of the trail, we _____ the whole valley.",m:{past:"already happened"}},
+t13:{ch:[{past:"by the time woke had eaten"},{past:"by the time woke",now:"eats"},{past:"by the time woke",fut:"will eat"},{past:"by the time woke",now:"has eat"}]},
 /* figurative language */
 f1:{t:"The lake was a mirror this morning.",m:{sig:"was"}},
 f2:{t:"My backpack weighs a thousand pounds today.",m:{big:"a thousand pounds"}},
