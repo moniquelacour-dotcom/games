@@ -1,0 +1,814 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Test Kitchen</title>
+<meta name="description" content="Grade 5 language practice in a test kitchen: check every recipe card, earn ingredients, create your own recipes.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#127859;</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{
+  --bg:#F4F1EC; --bg2:#E8E3DA; --card:#FFFFFF; --panel:#FBFAF8;
+  --ink:#1E1B22; --ink2:#55505E; --ink3:#8C8695;
+  --rule:#DAD4CA; --rule2:#C3BBAE;
+  --hot:#C8481F; --hot-s:#FBE6DD;
+  --good:#1F7A52; --good-s:#DFF0E7;
+  --warn:#8E6212; --warn-s:#FAEFD6;
+  --b:"Figtree",system-ui,-apple-system,sans-serif;
+  --m:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141317; --bg2:#1C1A21; --card:#1F1D25; --panel:#262430;
+  --ink:#F2EFF5; --ink2:#BDB7C6; --ink3:#8E8899;
+  --rule:#36333F; --rule2:#4A4557;
+  --hot:#FF8A5C; --hot-s:#3A1D12;
+  --good:#5FC793; --good-s:#122E22;
+  --warn:#E5B454; --warn-s:#33280F;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#141317; --bg2:#1C1A21; --card:#1F1D25; --panel:#262430;
+  --ink:#F2EFF5; --ink2:#BDB7C6; --ink3:#8E8899;
+  --rule:#36333F; --rule2:#4A4557;
+  --hot:#FF8A5C; --hot-s:#3A1D12;
+  --good:#5FC793; --good-s:#122E22;
+  --warn:#E5B454; --warn-s:#33280F;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--b);font-size:17px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;background-image:linear-gradient(180deg,var(--bg2),transparent 320px)}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:disabled{cursor:default;opacity:.45}
+:focus-visible{outline:3px solid var(--hot);outline-offset:3px;border-radius:10px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.wrap{max-width:780px;margin:0 auto;padding:22px 16px 80px}
+header{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.brand{flex:1 1 250px;min-width:0}
+.kick{font-family:var(--m);font-weight:700;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--hot)}
+h1{font-size:clamp(28px,6.5vw,40px);font-weight:800;letter-spacing:-.02em;line-height:1.05;margin-top:2px}
+.sub{color:var(--ink2);margin-top:6px;font-size:16px;max-width:48ch}
+.topbtns{display:flex;gap:8px;flex-wrap:wrap}
+.tb{border:2px solid var(--rule2);border-radius:999px;padding:8px 15px;font-weight:700;font-size:14px;background:var(--card)}
+.tb:hover{border-color:var(--hot);color:var(--hot)}
+.tb.on{background:var(--hot);border-color:var(--hot);color:#fff}
+.card{background:var(--card);border:2px solid var(--rule);border-radius:18px;padding:clamp(16px,4vw,24px);margin-bottom:16px}
+.read{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.read div{background:var(--panel);border:2px solid var(--rule);border-radius:12px;padding:8px 10px;font-size:13.5px;color:var(--ink2);line-height:1.3}
+.read b{display:block;font-family:var(--m);font-size:20px;color:var(--hot)}
+@media (max-width:520px){.read{grid-template-columns:repeat(2,1fr)}}
+.skills{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.sk{background:var(--card);border:2px solid var(--rule);border-radius:16px;padding:14px;text-align:left;display:flex;flex-direction:column;gap:4px}
+.sk:hover{border-color:var(--hot);transform:translateY(-2px)}
+.sk .em{font-size:28px;line-height:1}
+.sk .nm{font-weight:800;font-size:17px}
+.sk .ds{font-size:14px;color:var(--ink2);line-height:1.35}
+.sk .tdy{font-family:var(--m);font-size:11.5px;font-weight:700;color:var(--ink3);letter-spacing:.06em;margin-top:4px}
+.sk.mix{border-style:dashed}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-family:var(--m);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--ink3)}
+.meta .ty{color:var(--hot)}
+.strat{background:var(--hot-s);border-left:4px solid var(--hot);border-radius:0 12px 12px 0;padding:10px 13px;margin:12px 0 14px;font-size:15px;color:var(--ink2)}
+.strat b{color:var(--ink)}
+.strat p+p{margin-top:5px}
+.q{font-size:clamp(18px,3.9vw,22px);font-weight:600;line-height:1.45;letter-spacing:-.005em}
+.q .pass{display:block;font-weight:500;font-size:.88em;background:var(--panel);border:2px solid var(--rule);border-radius:12px;padding:10px 12px;margin:8px 0}
+.count2{font-family:var(--m);font-size:12.5px;font-weight:700;color:var(--hot);margin-top:10px}
+.choice{display:block;width:100%;text-align:left;background:var(--panel);border:2px solid var(--rule);
+  border-radius:14px;padding:13px 16px;margin-top:10px;font-size:16.5px;font-weight:600;line-height:1.4}
+.choice:hover:not(:disabled){border-color:var(--hot)}
+.choice.on{border-color:var(--hot);background:var(--hot-s)}
+.choice.right{border-color:var(--good);background:var(--good-s)}
+.choice.wrong{border-color:var(--warn);background:var(--warn-s)}
+.choice:disabled{opacity:1;cursor:default}
+input[type=text]{width:100%;margin-top:12px;padding:12px 14px;border:2px solid var(--rule2);border-radius:12px;
+  background:var(--card);color:var(--ink);font:inherit;font-weight:700;font-size:19px}
+input[type=text]:focus{outline:none;border-color:var(--hot)}
+.big{display:inline-flex;align-items:center;gap:9px;background:var(--hot);color:#fff;border-radius:999px;padding:12px 24px;font-weight:800;font-size:17px}
+.big:hover:not(:disabled){filter:brightness(1.08)}
+.big.ghost{background:none;color:var(--ink2);border:2px solid var(--rule2);padding:10px 22px;font-weight:700;font-size:16px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.flash{border-radius:12px;padding:12px 15px;margin-top:14px;font-size:15.5px;line-height:1.55}
+.flash.no{background:var(--warn-s);border:2px solid var(--warn)}
+.flash.yes{background:var(--good-s);border:2px solid var(--good)}
+.bar{height:9px;background:var(--rule);border-radius:999px;overflow:hidden;margin-top:14px}
+.bar i{display:block;height:100%;background:var(--hot);border-radius:999px;transition:width .3s}
+table{width:100%;border-collapse:collapse;font-size:15px;margin-top:6px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--rule)}
+th{font-family:var(--m);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+td.n{font-family:var(--m);font-weight:700;white-space:nowrap}
+td.hi{color:var(--good)}
+.tablewrap{overflow-x:auto}
+.note{font-size:14px;color:var(--ink3);margin-top:10px}
+.big-score{font-size:clamp(40px,10vw,64px);font-weight:800;letter-spacing:-.03em;line-height:1}
+.doline{font-size:16px;color:var(--ink2);margin:14px 0 8px}
+.doline b{color:var(--ink)}
+.hint{font-size:14px;color:var(--ink3);margin:8px 0}
+.pens{display:flex;flex-wrap:wrap;gap:7px}
+.pens button{border-radius:999px;padding:7px 13px;font-weight:800;font-size:14px;border:3px solid transparent}
+.pens button.sel{border-color:var(--ink);transform:scale(1.05)}
+.mtext,.mcard{background:var(--panel);border:2px solid var(--rule);border-radius:14px;padding:12px 14px;margin-top:10px;font-size:18px;line-height:2;font-weight:600}
+.tok{display:inline;border-radius:6px;padding:2px 3px;font:inherit;line-height:inherit}
+button.tok:hover{outline:2px dashed var(--rule2)}
+.tok.miss,.lt.miss{outline:3px dashed var(--ink2);outline-offset:1px}
+.tok.bad,.lt.bad{text-decoration:line-through;opacity:.6}
+.ltw{display:inline-flex;gap:3px;flex-wrap:wrap}
+.lt{display:inline-block;min-width:30px;padding:4px 6px;border:2px solid var(--rule2);border-radius:8px;text-align:center;font:inherit;font-weight:800;line-height:1.3;background:var(--card)}
+.lt.on{background:#ffd866;color:#3d2e00;border-color:#d1a600}
+button.lt:hover{border-color:var(--hot)}
+.choice .tok,.choice .lt{pointer-events:none}
+.ynrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;cursor:default}
+.ynbody{flex:1 1 240px}
+.yn{display:flex;gap:6px}
+.yn button{border:2px solid var(--rule2);border-radius:999px;padding:6px 12px;font-weight:800;font-size:14px;background:var(--card)}
+.yn button.y{background:var(--good);border-color:var(--good);color:#fff}
+.yn button.n{background:var(--warn);border-color:var(--warn);color:#fff}
+.plate{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;border-radius:16px;min-height:96px;margin-top:12px;
+  border:2px dashed var(--rule2);background:var(--panel);font-size:46px;padding:10px}
+.plate-ing{font-size:28px;letter-spacing:2px}
+.lab{font-weight:800;font-size:14px;margin-top:18px}
+.pickrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.pb{border:2px solid var(--rule);border-radius:999px;padding:7px 13px;font-weight:700;font-size:14.5px;background:var(--card)}
+.pb:hover{border-color:var(--hot)} .pb.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.pantry{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px;margin-top:8px}
+.an{border:2px solid var(--rule);border-radius:12px;padding:8px 2px;font-size:26px;background:var(--card);line-height:1.1}
+.an small{display:block;font-size:10.5px;color:var(--ink3);font-weight:700;margin-top:2px}
+.an:hover:not(:disabled){border-color:var(--hot)} .an.on{border-color:var(--hot);background:var(--hot-s)}
+.book{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.rcard{background:var(--card);border:2px solid var(--rule);border-radius:16px;padding:14px}
+.rtop{display:flex;gap:10px;align-items:center}
+.rem{font-size:38px;line-height:1}
+.rname{font-weight:800;font-size:17px;line-height:1.25}
+.rmeta{font-family:var(--m);font-size:11px;color:var(--ink3);font-weight:700;letter-spacing:.04em;margin-top:2px}
+.ring{margin:10px 0 0 18px;font-size:15px;color:var(--ink2)}
+.rnote{margin-top:8px;font-style:italic;color:var(--ink2);font-size:14.5px}
+footer{margin-top:28px;border-top:2px solid var(--rule);padding-top:16px;color:var(--ink3);font-size:14px;text-align:center}
+.danger{color:var(--ink3);font-size:13px;font-weight:700;border:2px solid var(--rule);border-radius:999px;padding:6px 13px;margin-top:10px}
+.danger:hover{color:var(--hot);border-color:var(--hot)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <p class="kick">Grade 5 language</p>
+      <h1>Test Kitchen</h1>
+      <p class="sub">Every recipe card gets checked before it goes in the cookbook. Mark it, check your marks, then answer. Each first-try answer earns an ingredient for your own recipe.</p>
+    </div>
+    <div class="topbtns">
+      <button class="tb" id="tabDesk">Kitchen</button>
+      <button class="tb" id="tabBook">My cookbook</button>
+      <button class="tb" id="tabRec">My record</button>
+    </div>
+  </header>
+  <main id="main" aria-live="polite"></main>
+  <footer>
+    <p>Your cookbook and record save on <b>your own computer</b>. Same link, same cookbook.</p>
+    <button class="danger" id="reset">Clear my kitchen</button>
+  </footer>
+</div>
+
+<script>
+/* Skills: what the student practices. "rule" is the one-line reminder shown on every question. */
+const SK={
+  tense:{name:"Verb tense",em:"⏱️",ds:"Keep every verb in the same time.",
+    rule:"Find the time words first (yesterday, last summer, by the time). Every verb has to match that time."},
+  fig:{name:"Figurative language",em:"\u{1F308}",ds:"Simile, metaphor, hyperbole, idiom.",
+    rule:"Like / as = simile. Says it IS the thing = metaphor. Too big to be true = hyperbole. Means something other than its words = idiom."},
+  spell:{name:"Spelling",em:"\u{1F524}",ds:"Words that trick almost everyone.",
+    rule:"Say the word slowly, part by part. Look hard at the tricky spot: double letters, ie or ei, a dropped e."},
+  comma:{name:"Commas",em:"✏️",ds:"Lists, names, yes and no, question tags.",
+    rule:"Find the part to set off: list items, the name of the person spoken to, yes or no at the start, a tag question at the end."},
+  ref:{name:"Reference sources",em:"\u{1F4DA}",ds:"Dictionary, thesaurus, encyclopedia, atlas.",
+    rule:"Do you need a word or facts? Dictionary: meaning, saying it, syllables. Thesaurus: words that mean the same. Encyclopedia: facts. Atlas: maps and places."}
+};
+/* Question types: each has its own strategy. It stays on screen while she marks AND while she answers. */
+const TY={
+  find:{label:"Find the error",strat:"Mark first. Then check each choice for one thing at a time. Cross out each one that is fine. The one left has the error."},
+  correct:{label:"Pick the correct sentence",strat:"Mark every choice. Then cross out each one that breaks the rule. The one left is your answer."},
+  blank:{label:"Fill the blank",strat:"Mark the clue words around the blank. Then read the whole sentence with each answer in it."},
+  revise:{label:"Best revision",strat:"Mark each idea or part in the original. The best answer fixes the problem AND keeps every idea. Shorter is not enough."},
+  name:{label:"Name the type",strat:"Mark the signal words first. Then match what you marked to the rule."},
+  example:{label:"Pick the example",strat:"Mark the signal words in every choice. Then match them to the type the question asks for."},
+  meaning:{label:"What it means",strat:"Mark the phrase. Picture it, then pick the meaning that fits the whole sentence, not the words one by one."},
+  two:{label:"Select two",strat:"It asks for TWO. Mark the text, then mark EVERY choice yes or no before you submit."},
+  type:{label:"Type it",strat:"Mark the word that looks wrong. Say it slowly, part by part, then type it."},
+  source:{label:"Which source",strat:"Mark what you need to find out. Is it about a word, facts, or a place?"}
+};
+const STRAT_T={find:"Mark the text first. Then check each part against your marks, one thing at a time. The part that breaks the rule has the error.",
+  correct:"Mark the text first, so you know every part that needs a fix. Then check each choice against your marks and cross out each one that misses a part.",
+  two:"It asks for TWO. Mark the text first, then mark EVERY choice yes or no before you submit."};
+const LT_LABEL={correct:"Pick the correct spelling",find:"Find the misspelled word"};
+const LETTER_STRAT="Mark the tricky part of each word. Then compare just those letters.";
+const Q=[
+/* ---- verb tense ---- */
+{id:"t1",sk:"tense",ty:"find",q:"Which sentence has a verb tense shift that does not belong?",
+ ch:["Mia opened the box and found a note inside.","The puppy chased its tail and spins in circles.","We will pack the car and leave at noon.","Jonah reads every night before he goes to bed."],a:1,
+ why:"<b>chased</b> is past and <b>spins</b> is present, but both happened at the same time. It should be <b>chased … spun</b>."},
+{id:"t2",sk:"tense",ty:"find",q:"Which sentence has a verb tense shift that does not belong?",
+ ch:["The bell rang, and the students hurried outside.","Grandpa tells a joke, and everyone laughs.","Nina finished her model and paints it blue.","Tomorrow we will visit the aquarium and see the sharks."],a:2,
+ why:"<b>finished</b> is past, so the next action is past too: <b>painted</b>."},
+{id:"t3",sk:"tense",ty:"correct",q:"Which sentence keeps its verbs in the same time?",
+ ch:["Last summer we camp by the lake and caught fish.","Last summer we camped by the lake and caught fish.","Last summer we camped by the lake and catch fish.","Last summer we will camp by the lake and caught fish."],a:1,
+ why:"<b>Last summer</b> is the time word. It is past, so both verbs are past: <b>camped</b>, <b>caught</b>."},
+{id:"t4",sk:"tense",ty:"blank",q:"Yesterday the class _____ seeds and watered them.",
+ ch:["planted","plants","will plant","is planting"],a:0,
+ why:"<b>Yesterday</b> and <b>watered</b> are both past, so the blank is past: <b>planted</b>."},
+{id:"t5",sk:"tense",ty:"blank",q:"By the time we reached the station, the train _____.",
+ ch:["had left","leaves","will leave","is leaving"],a:0,
+ why:"<b>By the time</b> + a past verb means one thing happened first. The first one gets <b>had</b>: <b>had left</b>."},
+{id:"t6",sk:"tense",ty:"blank",q:"Before the storm hit, Dad _____ all the windows.",
+ ch:["had closed","closes","will close","is closing"],a:0,
+ why:"The windows were closed <b>before</b> the storm hit, so that action happened first: <b>had closed</b>."},
+{id:"t7",sk:"tense",ty:"revise",q:"This story is told in the past. A writer adds: <span class=\"pass\">The goalie dove to the left and blocks the shot.</span>Which change fixes the verb tense?",
+ ch:["Change blocks to blocked","Change blocks to will block","Change dove to will dive","No change is needed"],a:0,
+ why:"The story is past and <b>dove</b> is past, so <b>blocks</b> becomes <b>blocked</b>."},
+{id:"t8",sk:"tense",ty:"revise",q:"This story is told in the past. <span class=\"pass\">Lena grabbed her coat, runs to the door, and waved goodbye.</span>Which change fixes the verb tense?",
+ ch:["Change runs to ran","Change grabbed to grabs","Change waved to waves","Change runs to running"],a:0,
+ why:"Two of the three verbs are past, and the story is past. Only <b>runs</b> is out of step: <b>ran</b>."},
+{id:"t9",sk:"tense",ty:"two",q:"Select TWO sentences that have a verb tense shift that does not belong.",
+ ch:["The cat jumped on the table and knocks over a cup.","My brother practices piano and sings in the choir.","We walked to the park and play on the swings.","The bakery opens early and closes at noon."],a:[0,2],
+ why:"<b>jumped … knocks</b> and <b>walked … play</b> both switch from past to present. The other two stay in the present."},
+{id:"t10",sk:"tense",ty:"two",q:"Select TWO sentences that use verb tense correctly.",
+ ch:["When the movie ended, everyone clapped.","She studied hard, so she passes the test easily.","Every morning, Sam feeds the fish and checks the water.","The wind howled and shakes the windows."],a:[0,2],
+ why:"<b>ended … clapped</b> are both past. <b>feeds … checks</b> are both present. The other two switch times."},
+{id:"t11",sk:"tense",ty:"find",q:"<span class=\"pass\">(1) Last fall our class planted a garden. (2) We dug rows and dropped in seeds. (3) Each week we water the plants. (4) By October we had picked twenty tomatoes.</span>Which sentence has a verb that does not fit the time?",
+ ch:["Sentence 1","Sentence 2","Sentence 3","Sentence 4"],a:2,
+ why:"The whole story is about <b>last fall</b>. Sentence 3 should say <b>watered</b>."},
+{id:"t12",sk:"tense",ty:"blank",q:"A writer is telling about a hike that already happened. “At the top of the trail, we _____ the whole valley.”",
+ ch:["saw","see","will see","are seeing"],a:0,
+ why:"It <b>already happened</b>, so the verb is past: <b>saw</b>."},
+{id:"t13",sk:"tense",ty:"correct",q:"Which sentence uses had + a verb correctly?",
+ ch:["By the time I woke up, my sister had eaten all the pancakes.","By the time I woke up, my sister eats all the pancakes.","By the time I woke up, my sister will eat all the pancakes.","By the time I woke up, my sister has eat all the pancakes."],a:0,
+ why:"The pancakes were eaten <b>before</b> I woke up, so that action gets <b>had eaten</b>."},
+/* ---- figurative language ---- */
+{id:"f1",sk:"fig",ty:"name",q:"“The lake was a mirror this morning.” What type of figurative language is this?",
+ ch:["Metaphor","Simile","Hyperbole","Idiom"],a:0,
+ why:"It says the lake <b>was</b> a mirror, with no <b>like</b> or <b>as</b>. That is a metaphor."},
+{id:"f2",sk:"fig",ty:"name",q:"“My backpack weighs a thousand pounds today.” What type of figurative language is this?",
+ ch:["Hyperbole","Metaphor","Simile","Idiom"],a:0,
+ why:"No backpack weighs a thousand pounds. Too big to be true is hyperbole."},
+{id:"f3",sk:"fig",ty:"name",q:"“Her voice was as soft as a feather.” What type of figurative language is this?",
+ ch:["Simile","Metaphor","Hyperbole","Idiom"],a:0,
+ why:"<b>as soft as</b> compares with <b>as</b>. That is a simile."},
+{id:"f4",sk:"fig",ty:"name",q:"“Don't spill the beans about the surprise party.” What type of figurative language is this?",
+ ch:["Idiom","Simile","Metaphor","Hyperbole"],a:0,
+ why:"There are no beans. <b>Spill the beans</b> means tell a secret. Words that mean something else are an idiom."},
+{id:"f5",sk:"fig",ty:"example",q:"Which sentence uses a simile?",
+ ch:["The clouds were cotton balls.","The runner was as quick as a rabbit.","I've told you a million times.","Hold your horses."],a:1,
+ why:"<b>as quick as</b> compares with <b>as</b>: simile. The clouds one has no like or as, so it is a metaphor."},
+{id:"f6",sk:"fig",ty:"example",q:"Which sentence uses a metaphor?",
+ ch:["The stars were diamonds in the sky.","The baby slept like a log.","The snow sparkled like glitter.","I'm so tired I could sleep for a year."],a:0,
+ why:"The stars <b>were</b> diamonds: it says they ARE the thing. The two with <b>like</b> are similes."},
+{id:"f7",sk:"fig",ty:"example",q:"Which sentence uses hyperbole?",
+ ch:["The hallway was as quiet as a library.","I have ten thousand math problems tonight.","My dog is my shadow.","Break a leg in your play tonight!"],a:1,
+ why:"Nobody has ten thousand problems in one night. Too big to be true is hyperbole."},
+{id:"f8",sk:"fig",ty:"meaning",q:"Mom said the new bike cost an arm and a leg. What does that mean?",
+ ch:["It cost a lot of money.","It was hard to ride.","Someone got hurt buying it.","It had broken parts."],a:0,
+ why:"<b>An arm and a leg</b> is an idiom for <b>a lot of money</b>."},
+{id:"f9",sk:"fig",ty:"meaning",q:"Tomas was on the fence about joining the team. What does that mean?",
+ ch:["He could not decide.","He was sitting outside.","He was excited.","He was angry."],a:0,
+ why:"On a fence you are between two sides. <b>On the fence</b> means you have not decided."},
+{id:"f10",sk:"fig",ty:"meaning",q:"“When the door opened, the kittens scattered like marbles on a floor.” What does this simile show?",
+ ch:["They ran off fast in every direction.","They were small and round.","They made a loud noise.","They were shiny."],a:0,
+ why:"Picture dropped marbles: they roll fast, every which way. That is what the kittens did."},
+{id:"f11",sk:"fig",ty:"two",q:"Select TWO sentences that contain similes.",
+ ch:["The pond was as still as glass.","The hallway is a maze.","She sings like a bird.","That joke is old news."],a:[0,2],
+ why:"<b>as still as</b> and <b>like a bird</b> use as and like. The other two say something IS something: metaphors."},
+{id:"f12",sk:"fig",ty:"two",q:"Select TWO sentences that contain metaphors.",
+ ch:["Dad is a bear in the morning.","The classroom was an oven.","The puppy was as playful as a kitten.","I'm so hungry I could eat a horse."],a:[0,1],
+ why:"Dad <b>is</b> a bear; the classroom <b>was</b> an oven. The kitten one uses <b>as</b> (simile). The horse one is too big to be true (hyperbole)."},
+{id:"f13",sk:"fig",ty:"name",q:"<span class=\"pass\">1. The field was a sea of sunflowers.<br>2. The truck roared like a lion.</span>Which is true?",
+ ch:["The first is a metaphor; the second is a simile.","Both are metaphors.","Both are similes.","The first is a simile; the second is a metaphor."],a:0,
+ why:"Sentence 1 says the field <b>was</b> a sea: metaphor. Sentence 2 uses <b>like</b>: simile. Check each sentence on its own."},
+/* ---- spelling ---- */
+{id:"s1",sk:"spell",ty:"correct",q:"Which word is spelled correctly?",
+ ch:["seperate","tommorow","beleive","calendar"],a:3,
+ why:"<b>calendar</b>. The others: <b>separate</b> (there's <b>a rat</b> in it), <b>tomorrow</b> (one m, two r), <b>believe</b> (i before e)."},
+{id:"s2",sk:"spell",ty:"correct",q:"Which word is spelled correctly?",
+ ch:["neccessary","suprise","library","probly"],a:2,
+ why:"<b>library</b>. The others: <b>necessary</b> (one c, two s), <b>surprise</b> (sur + prise), <b>probably</b>."},
+{id:"s3",sk:"spell",ty:"correct",q:"Which word is spelled correctly?",
+ ch:["occassion","beginning","untill","arguement"],a:1,
+ why:"<b>beginning</b>. The others: <b>occasion</b> (two c, one s), <b>until</b> (one l), <b>argument</b> (argue drops its e)."},
+{id:"s4",sk:"spell",ty:"correct",q:"Which word is spelled correctly?",
+ ch:["embarass","enviroment","immediately","recomend"],a:2,
+ why:"<b>immediately</b>. The others: <b>embarrass</b> (two r, two s), <b>environment</b> (has <b>iron</b> in it), <b>recommend</b> (re + commend)."},
+{id:"s5",sk:"spell",ty:"find",q:"One word is spelled wrong. Which one? “Our neighbor said the resturant would open in February.”",
+ ch:["neighbor","resturant","would","February"],a:1,
+ why:"<b>restaurant</b>: rest + au + rant."},
+{id:"s6",sk:"spell",ty:"find",q:"One word is spelled wrong. Which one? “The goverment will share a different plan tomorrow.”",
+ ch:["goverment","different","share","tomorrow"],a:0,
+ why:"<b>government</b>: govern + ment. The n stays."},
+{id:"s7",sk:"spell",ty:"two",q:"Select the TWO misspelled words. “My freind will definitly come to the party.”",
+ ch:["freind","will","definitly","party"],a:[0,2],
+ why:"<b>friend</b> (a friend to the <b>end</b>) and <b>definitely</b> (it has <b>finite</b> in it)."},
+{id:"s8",sk:"spell",ty:"two",q:"Select the TWO misspelled words. “Please seperate the papers before the begining of class.”",
+ ch:["seperate","papers","begining","class"],a:[0,2],
+ why:"<b>separate</b> (there's <b>a rat</b> in it) and <b>beginning</b> (double n before -ing)."},
+{id:"s9",sk:"spell",ty:"type",q:"One word is misspelled. Type it the right way. “I truely believe we can win.”",
+ a:"truly",why:"<b>truly</b>: true drops its e."},
+{id:"s10",sk:"spell",ty:"type",q:"One word is misspelled. Type it the right way. “The magician made the coin dissapear.”",
+ a:"disappear",why:"<b>disappear</b> = dis + appear. One s, two p."},
+{id:"s11",sk:"spell",ty:"type",q:"One word is misspelled. Type it the right way. “We had an arguement about whose turn it was.”",
+ a:"argument",why:"<b>argument</b>: argue drops its e."},
+{id:"s12",sk:"spell",ty:"correct",q:"Which word is spelled correctly?",
+ ch:["especialy","bussiness","character","adress"],a:2,
+ why:"<b>character</b>. The others: <b>especially</b> (special + ly), <b>business</b> (busi + ness), <b>address</b> (two d, two s)."},
+{id:"s13",sk:"spell",ty:"type",q:"One word is misspelled. Type it the right way. “I will recieve my medal on Friday.”",
+ a:"receive",why:"<b>receive</b>: i before e, except after c."},
+/* ---- commas ---- */
+{id:"c1",sk:"comma",ty:"correct",q:"Which sentence uses commas correctly in a list?",
+ ch:["We packed tents, sleeping bags, and flashlights.","We packed tents sleeping bags, and flashlights.","We packed, tents, sleeping bags, and flashlights.","We packed tents, sleeping bags and, flashlights."],a:0,
+ why:"Three items: <b>tents</b> / <b>sleeping bags</b> / <b>flashlights</b>. Commas go between items, not before the list starts."},
+{id:"c2",sk:"comma",ty:"correct",q:"The diner serves three breakfasts. Which sentence uses commas correctly?",
+ ch:["You can order bacon and eggs, pancakes, or fruit and yogurt.","You can order bacon, and eggs, pancakes, or fruit and yogurt.","You can order bacon and eggs, pancakes, or fruit, and yogurt.","You can order bacon and eggs pancakes or, fruit and yogurt."],a:0,
+ why:"Find each item first: <b>bacon and eggs</b> / <b>pancakes</b> / <b>fruit and yogurt</b>. Some items have <b>and</b> inside. Commas go between items, never inside one."},
+{id:"c3",sk:"comma",ty:"correct",q:"Which sentence uses a comma correctly for the person being spoken to?",
+ ch:["Ms. Diaz, may I sharpen my pencil?","Ms. Diaz may I, sharpen my pencil?","Ms., Diaz may I sharpen my pencil?","Ms. Diaz may I sharpen my pencil?"],a:0,
+ why:"<b>Ms. Diaz</b> is the person spoken to. Her name is set off with a comma."},
+{id:"c4",sk:"comma",ty:"correct",q:"Which sentence uses commas correctly for the person being spoken to?",
+ ch:["Thank you, Grandma, for the scarf.","Thank you Grandma, for the scarf.","Thank you, Grandma for the scarf.","Thank, you Grandma for the scarf."],a:0,
+ why:"A name in the <b>middle</b> gets a comma on <b>both sides</b>: <b>, Grandma,</b>"},
+{id:"c5",sk:"comma",ty:"correct",q:"Which sentence uses a comma correctly?",
+ ch:["Yes, I finished my chores.","Yes I, finished my chores.","Yes I finished, my chores.","Yes I finished my chores."],a:0,
+ why:"<b>Yes</b> or <b>no</b> at the start gets a comma right after it."},
+{id:"c6",sk:"comma",ty:"correct",q:"Which sentence uses a comma correctly?",
+ ch:["You fed the dog, didn't you?","You fed the dog didn't you?","You fed, the dog didn't you?","You, fed the dog didn't you?"],a:0,
+ why:"<b>didn't you?</b> is a tag question at the end. It gets a comma before it."},
+{id:"c7",sk:"comma",ty:"correct",q:"“No Sam we can't leave yet can we” Which version uses commas correctly?",
+ ch:["No, Sam, we can't leave yet, can we?","No Sam, we can't leave yet, can we?","No, Sam we can't leave yet can we?","No, Sam, we can't, leave yet can we?"],a:0,
+ why:"Three parts to set off: <b>No,</b> (yes or no word) <b>Sam,</b> (person spoken to) <b>, can we?</b> (tag question). Count the parts, then count the commas."},
+{id:"c8",sk:"comma",ty:"two",q:"Select TWO sentences that use commas correctly in a list.",
+ ch:["The flag is red, white, and blue.","I like apples, pears, and, grapes.","At the beach, Mom packed towels, snacks, and sunscreen.","The kit has a ruler, a magnet, and two batteries, in a box."],a:[0,2],
+ why:"No comma after <b>and</b>, and no comma after the last item. The third one's first comma is fine: it comes after <b>At the beach</b>."},
+{id:"c9",sk:"comma",ty:"find",q:"Which sentence is missing a comma?",
+ ch:["Well, that was a surprise.","Kai can you help me carry this box?","It's cold today, isn't it?","We saw ducks, geese, and swans."],a:1,
+ why:"Kai is the person spoken to: <b>Kai, can you help me</b> …"},
+{id:"c10",sk:"comma",ty:"revise",q:"How should this be fixed? “Yes Mr. Lee I brought my lunch.”",
+ ch:["Yes, Mr. Lee, I brought my lunch.","Yes Mr. Lee, I brought my lunch.","Yes, Mr. Lee I brought my lunch.","Yes, Mr., Lee, I brought my lunch."],a:0,
+ why:"Two parts to set off: <b>Yes,</b> and <b>Mr. Lee,</b> Each one gets its comma."},
+{id:"c11",sk:"comma",ty:"two",q:"Select TWO sentences that use a comma correctly for the person being spoken to.",
+ ch:["Jada, your bus is here.","Your bus is here Jada.","Can you hear me, Dev?","Can, you hear me Dev?"],a:[0,2],
+ why:"The name is set off: <b>Jada,</b> at the start, <b>, Dev?</b> at the end."},
+{id:"c12",sk:"comma",ty:"name",q:"“You're coming to the game too, aren't you?” Why is the comma there?",
+ ch:["It sets off a tag question.","It separates items in a list.","It sets off the person spoken to.","It comes after yes or no."],a:0,
+ why:"<b>aren't you?</b> is a tag question tacked on the end."},
+{id:"c13",sk:"comma",ty:"name",q:"“Grab your helmet, Owen, before we ride.” Why are the commas there?",
+ ch:["They set off the person spoken to.","They separate items in a list.","They set off a tag question.","They come after yes or no."],a:0,
+ why:"<b>Owen</b> is the person being spoken to, so his name is set off on both sides."},
+{id:"s14",sk:"spell",ty:"correct",q:"Which word is spelled correctly?",
+ ch:["acknowlege","wierd","Wednesday","rythm"],a:2,
+ why:"<b>Wednesday</b>: say it Wed-nes-day. The others: <b>acknowledge</b> (it has <b>know</b> and <b>edge</b>), <b>weird</b> (breaks the i-before-e rule), <b>rhythm</b>."},
+{id:"s15",sk:"spell",ty:"two",q:"Select the TWO misspelled words. “The comittee will meet in the libary on Tuesday.”",
+ ch:["comittee","meet","libary","Tuesday"],a:[0,2],
+ why:"<b>committee</b> (double m, double t, double e) and <b>library</b> (say both r's: li-brar-y)."},
+{id:"s16",sk:"spell",ty:"type",q:"One word is misspelled. Type it the right way. “My aunt runs a busness that sells kites.”",
+ a:"business",why:"<b>business</b>: busi + ness. You don't hear the i, but it's there."},
+{id:"s17",sk:"spell",ty:"type",q:"One word is misspelled. Type it the right way. “Please write your adress on the envelope.”",
+ a:"address",why:"<b>address</b>: two d, two s."},
+{id:"s18",sk:"spell",ty:"blank",q:"Which spelling completes the sentence? “We need to _____ the recycling from the trash.”",
+ ch:["separate","seperate","seperete","separete"],a:0,
+ why:"<b>separate</b>: there's <b>a rat</b> in the middle: sep-<b>a</b>-<b>rat</b>-e."},
+{id:"s19",sk:"spell",ty:"blank",q:"Which spelling completes the sentence? “It is _____ to wear a helmet when you ride.”",
+ ch:["necessary","neccessary","necesary","nesessary"],a:0,
+ why:"<b>necessary</b>: one <b>c</b>ollar, two <b>s</b>leeves. One c, two s."},
+{id:"s20",sk:"spell",ty:"blank",q:"Which spelling completes the sentence? “The ending of the movie was a big _____.”",
+ ch:["surprise","suprise","surprize","serprise"],a:0,
+ why:"<b>surprise</b>: sur + prise. Say the first r."},
+{id:"s21",sk:"spell",ty:"find",q:"One word is spelled wrong. Which one? “Her favorite charactor in the book was very brave.”",
+ ch:["favorite","charactor","book","brave"],a:1,
+ why:"<b>character</b> ends in <b>-er</b>. (<b>actor</b> ends in <b>-or</b>, which is why this one tricks people.)"},
+{id:"s22",sk:"spell",ty:"type",q:"One word is misspelled. Type it the right way. “We can't go outside untill the rain stops.”",
+ a:"until",why:"<b>until</b> has one l. (<b>till</b> has two, which is why this one tricks people.)"},
+{id:"f14",sk:"fig",ty:"blank",q:"Which words complete the simile? “Her smile was _____ a summer afternoon.”",
+ ch:["as warm as","so warm on","warmer during","warming"],a:0,
+ why:"A simile compares with <b>like</b> or <b>as</b>: <b>as warm as</b> a summer afternoon."},
+{id:"f15",sk:"fig",ty:"blank",q:"Which word makes this a metaphor? “On the first snowy day, the yard _____ a white blanket.”",
+ ch:["was","was like","looked as soft as","seemed like"],a:0,
+ why:"A metaphor says it <b>IS</b> the thing: the yard <b>was</b> a blanket. The others use like or as, so they make similes."},
+{id:"f16",sk:"fig",ty:"revise",q:"A writer wants to turn this metaphor into a simile. “The gym was an oven.” Which revision does it?",
+ ch:["The gym was as hot as an oven.","The gym was a hot oven.","The gym was very hot.","The gym was the hottest oven ever."],a:0,
+ why:"A simile needs <b>like</b> or <b>as</b>, and it still compares the gym to an oven. “Very hot” drops the oven: an idea is gone."},
+{id:"c14",sk:"comma",ty:"revise",q:"Which revision fixes the commas? “Mom bought milk eggs, and bread, at the store.”",
+ ch:["Mom bought milk, eggs, and bread at the store.","Mom bought milk eggs and bread, at the store.","Mom bought, milk, eggs, and bread at the store.","Mom bought milk, eggs and, bread at the store."],a:0,
+ why:"Commas go between the three items: <b>milk, eggs, and bread</b>. None after the last item, none before the list."},
+/* ---- reference sources ---- */
+{id:"r1",sk:"ref",ty:"source",q:"You want another word for <b>happy</b> in your story. Which source is best?",
+ ch:["A thesaurus","An encyclopedia","An atlas","A newspaper"],a:0,
+ why:"Words that mean the same live in a <b>thesaurus</b>."},
+{id:"r2",sk:"ref",ty:"source",q:"You need to know how to say <b>quinoa</b> and what it means. Which source is best?",
+ ch:["A dictionary","A thesaurus","An atlas","An encyclopedia"],a:0,
+ why:"How to say a word and what it means: <b>dictionary</b>."},
+{id:"r3",sk:"ref",ty:"source",q:"You need facts about how volcanoes form for a report. Which source is best?",
+ ch:["An encyclopedia","A thesaurus","A dictionary","An atlas"],a:0,
+ why:"Facts about a topic: <b>encyclopedia</b>."},
+{id:"r4",sk:"ref",ty:"source",q:"You want to find which countries share a border with Peru. Which source is best?",
+ ch:["An atlas","A thesaurus","A dictionary","A cookbook"],a:0,
+ why:"Maps and places: <b>atlas</b>."},
+{id:"r5",sk:"ref",ty:"source",q:"You used the word <b>big</b> five times in one paragraph and want different words. Which source is best?",
+ ch:["A thesaurus","A dictionary","An encyclopedia","An atlas"],a:0,
+ why:"You need other words that mean <b>big</b>: <b>thesaurus</b>."},
+{id:"r6",sk:"ref",ty:"source",q:"You need to know where to split <b>calendar</b> into syllables at the end of a line. Which source is best?",
+ ch:["A dictionary","A thesaurus","An encyclopedia","An atlas"],a:0,
+ why:"A <b>dictionary</b> shows a word's syllables."},
+{id:"r7",sk:"ref",ty:"two",q:"Select TWO things a dictionary tells you.",
+ ch:["How to say a word","What a word means","The history of ancient Rome","Where rivers are on a map"],a:[0,1],
+ why:"A dictionary is about <b>words</b>: how to say them and what they mean. History is an encyclopedia; rivers on a map are an atlas."},
+{id:"r8",sk:"ref",ty:"source",q:"You want to check if <b>brave</b> and <b>bold</b> can swap in your sentence. Which source is best?",
+ ch:["A thesaurus","An encyclopedia","An atlas","A newspaper"],a:0,
+ why:"Checking if two words mean about the same: <b>thesaurus</b>."}
+];
+/* Markers. [name, color, ink] */
+const PEN={
+  time:["Time word","#7cc4ff","#06263f"], verb:["Verb","#8be0a4","#0b3a1a"],
+  sig:["Signal word","#ffb27a","#3f1a00"], big:["Too big to be true","#ff9ec7","#45061f"], idm:["Idiom","#c9a7ff","#26094d"],
+  idea:["Idea","#ffd866","#3d2e00"],
+  i1:["Item 1","#7cc4ff","#06263f"], i2:["Item 2","#8be0a4","#0b3a1a"], i3:["Item 3","#ffd866","#3d2e00"],
+  name:["Name spoken to","#ff9ec7","#45061f"], yn:["Yes or no","#c9a7ff","#26094d"], tag:["Tag question","#ffb27a","#3f1a00"], intro:["Opening part","#cfc8bb","#2a2620"],
+  need:["What I need","#ffd866","#3d2e00"], w:["About a word","#7cc4ff","#06263f"], f:["Facts or places","#8be0a4","#0b3a1a"],
+  bad:["Looks wrong","#ff9ec7","#45061f"], trick:["Tricky part","#ffd866","#3d2e00"]
+};
+const SKP={tense:["time","verb"],fig:["sig","big","idm"],spell:["bad"],comma:["i1","i2","i3","name","yn","tag","intro"],ref:["need"]};
+const DO={
+  tense:"Mark the time words, then every verb.",
+  fig:"Mark the signal words (like, as, is, was), anything too big to be true, and any idiom.",
+  spell:"Mark the word that looks wrong.",
+  comma:"Mark each part a comma might set off: each list item in its own color, the name of the person spoken to, a yes or no word, a tag question, an opening part.",
+  ref:"Mark what you need to find out."
+};
+/* Marking key for every question.
+   t + m: mark words in this text.  ch: mark words inside each choice (same order as the choices).
+   lt: tap letters; [brackets] = the tricky part.  Words: space-separated; word@2 = its 2nd time in the text. */
+const AN={
+/* verb tense */
+t1:{ch:[{verb:"opened found"},{verb:"chased spins"},{verb:"will pack leave"},{verb:"reads goes"}]},
+t2:{ch:[{verb:"rang hurried"},{verb:"tells laughs"},{verb:"finished paints"},{time:"tomorrow",verb:"will visit see"}]},
+t3:{ch:[{time:"last summer",verb:"camp caught"},{time:"last summer",verb:"camped caught"},{time:"last summer",verb:"camped catch"},{time:"last summer",verb:"will camp caught"}]},
+t4:{t:"Yesterday the class _____ seeds and watered them.",m:{time:"yesterday",verb:"watered"}},
+t5:{t:"By the time we reached the station, the train _____.",m:{time:"by the time",verb:"reached"}},
+t6:{t:"Before the storm hit, Dad _____ all the windows.",m:{time:"before",verb:"hit"}},
+t7:{t:"The goalie dove to the left and blocks the shot.",m:{verb:"dove blocks"}},
+t8:{t:"Lena grabbed her coat, runs to the door, and waved goodbye.",m:{verb:"grabbed runs waved"}},
+t9:{ch:[{verb:"jumped knocks"},{verb:"practices sings"},{verb:"walked play"},{verb:"opens closes"}]},
+t10:{ch:[{verb:"ended clapped"},{verb:"studied passes"},{time:"every morning",verb:"feeds checks"},{verb:"howled shakes"}]},
+t11:{t:"(1) Last fall our class planted a garden. (2) We dug rows and dropped in seeds. (3) Each week we water the plants. (4) By October we had picked twenty tomatoes.",
+     m:{time:"last fall each week by october",verb:"planted dug dropped water had picked"}},
+t12:{t:"A writer is telling about a hike that already happened. At the top of the trail, we _____ the whole valley.",m:{time:"already",verb:"is telling happened"}},
+t13:{ch:[{time:"by the time",verb:"woke had eaten"},{time:"by the time",verb:"woke eats"},{time:"by the time",verb:"woke will eat"},{time:"by the time",verb:"woke has eat"}]},
+/* figurative language */
+f1:{t:"The lake was a mirror this morning.",m:{sig:"was"}},
+f2:{t:"My backpack weighs a thousand pounds today.",m:{big:"a thousand pounds"}},
+f3:{t:"Her voice was as soft as a feather.",m:{sig:"as as@2"}},
+f4:{t:"Don't spill the beans about the surprise party.",m:{idm:"spill the beans"}},
+f5:{ch:[{sig:"were"},{sig:"as as@2"},{big:"a million times"},{idm:"hold your horses"}]},
+f6:{ch:[{sig:"were"},{sig:"like"},{sig:"like"},{big:"for a year"}]},
+f7:{ch:[{sig:"as as@2"},{big:"ten thousand"},{sig:"is"},{idm:"break a leg"}]},
+f8:{t:"Mom said the new bike cost an arm and a leg.",m:{idm:"an arm and a leg"}},
+f9:{t:"Tomas was on the fence about joining the team.",m:{idm:"on the fence"}},
+f10:{t:"When the door opened, the kittens scattered like marbles on a floor.",m:{sig:"like"}},
+f11:{ch:[{sig:"as as@2"},{sig:"is"},{sig:"like"},{sig:"is"}]},
+f12:{ch:[{sig:"is"},{sig:"was"},{sig:"as as@2"},{big:"eat a horse"}]},
+f13:{t:"1. The field was a sea of sunflowers. 2. The truck roared like a lion.",m:{sig:"was like"}},
+f14:{ch:[{sig:"as as@2"},{},{},{}],do:"Mark the signal words in each choice."},
+f15:{ch:[{sig:"was"},{sig:"like"},{sig:"as as@2"},{sig:"like"}],do:"Mark the signal words in each choice."},
+f16:{t:"The gym was an oven.",m:{idea:"gym oven",sig:"was"},pens:["idea","sig"],do:"Mark the two things being compared (Idea) and the signal word."},
+/* spelling: tricky part of each word */
+s1:{lt:["sep[e]rate","to[mm]orow","bel[ei]ve","calend[ar]"]},
+s2:{lt:["ne[ccess]ary","su[pr]ise","li[br]ary","pro[bl]y"]},
+s3:{lt:["o[ccass]ion","begi[nn]ing","unti[ll]","argu[e]ment"]},
+s4:{lt:["emba[ras]s","envi[ro]ment","i[mm]ediately","reco[m]end"]},
+s5:{lt:["n[eigh]bor","res[tu]rant","w[oul]d","Feb[ru]ary"]},
+s6:{lt:["gove[rm]ent","di[ff]erent","share","to[morr]ow"]},
+s7:{lt:["fr[ei]nd","will","defin[it]ly","party"]},
+s8:{lt:["sep[e]rate","papers","begi[n]ing","class"]},
+s9:{t:"I truely believe we can win.",m:{bad:"truely"}},
+s10:{t:"The magician made the coin dissapear.",m:{bad:"dissapear"}},
+s11:{t:"We had an arguement about whose turn it was.",m:{bad:"arguement"}},
+s12:{lt:["especia[l]y","bu[ssi]ness","[ch]aracter","a[d]ress"]},
+s13:{t:"I will recieve my medal on Friday.",m:{bad:"recieve"}},
+s14:{lt:["acknowle[g]e","w[ie]rd","We[dn]esday","r[yt]hm"]},
+s15:{lt:["co[m]ittee","meet","li[ba]ry","T[ue]sday"]},
+s16:{t:"My aunt runs a busness that sells kites.",m:{bad:"busness"}},
+s17:{t:"Please write your adress on the envelope.",m:{bad:"adress"}},
+s18:{lt:["sep[arat]e","sep[erat]e","sep[eret]e","sep[aret]e"]},
+s19:{lt:["ne[cess]ary","ne[ccess]ary","ne[ces]ary","ne[sess]ary"]},
+s20:{lt:["s[ur]prise","s[up]rise","surpri[z]e","s[er]prise"]},
+s21:{lt:["favor[i]te","charact[or]","book","brave"]},
+s22:{t:"We can't go outside untill the rain stops.",m:{bad:"untill"}},
+/* commas: the text is shown with no commas, so she finds the parts first */
+c1:{t:"We packed tents sleeping bags and flashlights",m:{i1:"tents",i2:"sleeping bags",i3:"flashlights"}},
+c2:{t:"You can order bacon and eggs pancakes or fruit and yogurt",m:{i1:"bacon and eggs",i2:"pancakes",i3:"fruit and@2 yogurt"}},
+c3:{t:"Ms. Diaz may I sharpen my pencil",m:{name:"ms diaz"}},
+c4:{t:"Thank you Grandma for the scarf",m:{name:"grandma"}},
+c5:{t:"Yes I finished my chores",m:{yn:"yes"}},
+c6:{t:"You fed the dog didn't you",m:{tag:"didn't you@2"}},
+c7:{t:"No Sam we can't leave yet can we",m:{yn:"no",name:"sam",tag:"can we@2"}},
+c8:{ch:[{i1:"red",i2:"white",i3:"blue"},{i1:"apples",i2:"pears",i3:"grapes"},{intro:"at the beach",i1:"towels",i2:"snacks",i3:"sunscreen"},{i1:"a ruler",i2:"a@2 magnet",i3:"two batteries"}]},
+c9:{ch:[{intro:"well"},{name:"kai"},{tag:"isn't it"},{i1:"ducks",i2:"geese",i3:"swans"}]},
+c10:{t:"Yes Mr. Lee I brought my lunch",m:{yn:"yes",name:"mr lee"}},
+c11:{ch:[{name:"jada"},{name:"jada"},{name:"dev"},{name:"dev"}]},
+c12:{t:"You're coming to the game too aren't you",m:{tag:"aren't you"}},
+c13:{t:"Grab your helmet Owen before we ride",m:{name:"owen"}},
+c14:{t:"Mom bought milk eggs and bread at the store",m:{i1:"milk",i2:"eggs",i3:"bread"},do:"Mark each item in the list in its own color. Those are the ideas every answer has to keep."},
+/* reference sources */
+r1:{t:"You want another word for happy in your story.",m:{need:"another word"}},
+r2:{t:"You need to know how to say quinoa and what it means.",m:{need:"say means"}},
+r3:{t:"You need facts about how volcanoes form for a report.",m:{need:"facts"}},
+r4:{t:"You want to find which countries share a border with Peru.",m:{need:"countries border"}},
+r5:{t:"You used the word big five times and want different words.",m:{need:"different words"}},
+r6:{t:"You need to know where to split calendar into syllables.",m:{need:"syllables"}},
+r7:{ch:[{w:"word"},{w:"word"},{f:"history"},{f:"map"}],pens:["w","f"],do:"Mark the key word in each choice: is it about a word, or about facts or places?"},
+r8:{t:"You want to check if brave and bold can swap in your sentence.",m:{need:"swap"}}
+};
+const ALL=["tense","fig","spell","comma","ref"];
+const QS=new URLSearchParams(location.search);
+const pickList=(v,ok)=>(v||"").split(",").map(x=>x.trim()).filter(x=>ok.indexOf(x)>-1);
+const ORDER=pickList(QS.get("skill"),ALL).length?pickList(QS.get("skill"),ALL):ALL;
+const FILTERED=ORDER.length<ALL.length;
+const ROUND=10;
+const TYALL=["find","correct","blank","revise","two"];
+const TYORDER=pickList(QS.get("type"),TYALL).length?pickList(QS.get("type"),TYALL):TYALL;
+const inPlay=q=>ORDER.indexOf(q.sk)>-1;
+
+const KEY="testkitchen.v1";
+const blank=()=>({log:{},seen:{},book:[]});
+let S=blank();
+try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(blank(),JSON.parse(r));}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+
+const M=document.getElementById("main");
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const strip=h=>String(h).replace(/<br>/g," ").replace(/<[^>]+>/g,"");
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+function today(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+const pct=(r,t)=>t?Math.round(r/t*100):0;
+
+let view="desk", R=null;
+
+function pickFor(sk,n){
+  const pool=Q.filter(q=>q.sk===sk), seen=S.seen[sk]||[];
+  let fresh=shuffle(pool.filter(q=>seen.indexOf(q.id)<0));
+  if(fresh.length<n){S.seen[sk]=[];fresh=fresh.concat(shuffle(pool.filter(q=>fresh.indexOf(q)<0)));}
+  return fresh.slice(0,n);
+}
+function startRound(sk){
+  let qs;
+  if(sk==="mix"){const per=Math.max(2,Math.ceil(ROUND/ORDER.length));qs=shuffle(ORDER.reduce((a,k)=>a.concat(pickFor(k,per)),[])).slice(0,ROUND);}
+  else if(sk.indexOf("ty:")===0){const t=sk.slice(3);qs=shuffle(Q.filter(q=>q.ty===t&&inPlay(q))).slice(0,ROUND);}
+  else qs=pickFor(sk,Math.min(ROUND,Q.filter(q=>q.sk===sk).length));
+  R={sk,qs,i:0,score:0,res:[],sel:[],done:false,ok:null,order:null};
+  prep();view="q";render();window.scrollTo({top:0,behavior:"smooth"});
+}
+function record(q,ok){
+  const d=today();S.log[d]=S.log[d]||{};const e=S.log[d][q.sk]||[0,0];
+  e[1]++;if(ok)e[0]++;S.log[d][q.sk]=e;
+  S.seen[q.sk]=S.seen[q.sk]||[];if(S.seen[q.sk].indexOf(q.id)<0)S.seen[q.sk].push(q.id);
+  save();
+}
+
+
+function viewDesk(){
+  const t=S.log[today()]||{};
+  M.innerHTML=`
+  <div class="read" aria-label="The READ steps">
+    <div><b>R</b>Reread the question</div><div><b>E</b>Examine the words</div>
+    <div><b>A</b>Assess each answer</div><div><b>D</b>Dig for proof</div>
+  </div>
+  <div class="card"><p class="kick">Pick a stack of recipe cards</p>
+  <p style="color:var(--ink2);margin-top:4px;font-size:15.5px">Each stack is ${ROUND} cards. Every card you get right on the <b>first try</b> earns an ingredient. Finish the stack, then create your own recipe with what you earned.${FILTERED?" <b>Your coach picked these skills for you.</b>":""}</p></div>
+  <div class="skills">${ORDER.map(k=>{const s=SK[k],e=t[k];
+    return `<button class="sk" data-sk="${k}"><span class="em">${s.em}</span><span class="nm">${s.name}</span>
+      <span class="ds">${s.ds}</span><span class="tdy">${e?`TODAY ${e[0]}/${e[1]} (${pct(e[0],e[1])}%)`:"NOT YET TODAY"}</span></button>`;}).join("")}
+    ${ORDER.length>1?`<button class="sk mix" data-sk="mix">`:"<!--"}<span class="em">\u{1F5C2}️</span><span class="nm">Mixed stack</span>
+      <span class="ds">Two from every skill, shuffled.</span>${ORDER.length>1?"</button>":"-->"}
+  </div>
+  <div class="card" style="margin-top:16px"><p class="kick">Or practice one question type</p>
+  <p style="color:var(--ink2);margin-top:4px;font-size:15.5px">The kinds of questions the test asks, from ${FILTERED?"your skills":"every skill"}.</p></div>
+  <div class="skills">${TYORDER.filter(t=>Q.some(q=>q.ty===t&&inPlay(q))).map(t=>`<button class="sk" data-sk="ty:${t}"><span class="nm">${TY[t].label}</span>
+    <span class="ds">${TY[t].strat}</span></button>`).join("")}</div>`;
+  M.querySelectorAll("[data-sk]").forEach(b=>b.onclick=()=>startRound(b.dataset.sk));
+}
+
+/* ---------------------------------------------------------------- mark, check the marks, then answer */
+const tokens=t=>String(t).split(/\s+/).filter(Boolean);
+const tkey=w=>w.toLowerCase().replace(/[‘’]/g,"'").replace(/[^a-z0-9']/g,"").replace(/^'+|'+$/g,"");
+function expMap(text,m){
+  const keys=tokens(text).map(tkey),exp={};
+  Object.keys(m||{}).forEach(mk=>m[mk].split(" ").forEach(w=>{
+    const p=w.split("@"),word=p[0],n=+(p[1]||1);let c=0;
+    for(let i=0;i<keys.length;i++)if(keys[i]===word&&++c===n){exp[i]=mk;return;}
+    BADKEY.push(mk+":"+w+" in “"+text+"”");
+  }));
+  return exp;
+}
+const BADKEY=[];
+function parseLt(s){const L=[],span={};let on=false,i=0;for(const ch of s){if(ch==="["){on=true;continue;}if(ch==="]"){on=false;continue;}L.push(ch);if(on)span[i]=1;i++;}return {L,span};}
+function modeOf(q){const a=AN[q.id];return a.lt?"lt":a.ch?"ch":"t";}
+function pensOf(q){const a=AN[q.id];if(a.pens)return a.pens;if(a.lt)return["trick"];return SKP[q.sk];}
+function doOf(q){const a=AN[q.id];if(a.do)return a.do;if(a.lt)return"In each word, tap the letters that are the tricky part. Tap again to undo.";
+  return DO[q.sk]+(a.ch?" Do it in every choice.":"");}
+
+function prep(){
+  const q=R.qs[R.i],a=AN[q.id];
+  R.sel=[];R.yn={};R.done=false;R.ok=null;R.typed="";R.stage="mark";R.marks={};R.pen=pensOf(q).length===1?pensOf(q)[0]:"";
+  R.order=q.ch?shuffle(q.ch.map((_,k)=>k)):null;
+  R.groups=a.lt?a.lt.map(parseLt):a.ch?a.ch.map((m,k)=>({text:q.ch[k],exp:expMap(q.ch[k],m)})):[{text:a.t,exp:expMap(a.t,a.m)}];
+}
+/* how a group (the text, or one choice) is drawn. how: "mark" her marks, "check" hers vs the key, "full" the key */
+function groupHtml(gi,how){
+  const g=R.groups[gi];
+  if(g.L){
+    const got=g.L.some((_,i)=>g.span[i]&&R.marks[gi+"_"+i]);
+    return `<span class="ltw">`+g.L.map((c,i)=>{const k=gi+"_"+i,mine=!!R.marks[k],inS=!!g.span[i];let cls="lt";
+      if(how==="mark"){if(mine)cls+=" on";}
+      else if(how==="check"){if(inS)cls+=got?" on":" on miss";else if(mine)cls+=" bad";}
+      else if(inS)cls+=" on";
+      return how==="mark"?`<button type="button" class="${cls}" data-u="${k}">${esc(c)}</button>`:`<span class="${cls}">${esc(c)}</span>`;}).join("")+`</span>`;
+  }
+  return tokens(g.text).map((w,i)=>{
+    const k=gi+"_"+i,mine=R.marks[k],want=g.exp[i],tap=how==="mark"&&tkey(w);
+    let use=how==="full"?want:how==="check"?(want||mine):mine,cls="tok";
+    if(how==="check"){if(want&&mine!==want)cls+=" miss";else if(!want&&mine)cls+=" bad";}
+    const st=use?` style="background:${PEN[use][1]};color:${PEN[use][2]}"`:"";
+    return tap?`<button type="button" class="${cls}" data-u="${k}"${st}>${esc(w)}</button>`:`<span class="${cls}"${st}>${esc(w)}</span>`;
+  }).join(" ");
+}
+function markScore(){
+  let need=0,found=0,extra=0;
+  R.groups.forEach((g,gi)=>{
+    if(g.L){const has=Object.keys(g.span).length;if(has){need++;if(g.L.some((_,i)=>g.span[i]&&R.marks[gi+"_"+i]))found++;}
+      g.L.forEach((_,i)=>{if(!g.span[i]&&R.marks[gi+"_"+i])extra++;});return;}
+    tokens(g.text).forEach((_,i)=>{const k=gi+"_"+i,want=g.exp[i],mine=R.marks[k];if(want){need++;if(mine===want)found++;}else if(mine)extra++;});
+  });
+  return {need,found,extra};
+}
+
+function viewQ(){
+  const q=R.qs[R.i],s=SK[q.sk],ty=TY[q.ty],need=q.ty==="two"?2:1,mode=modeOf(q),pens=pensOf(q);
+  const strat=mode==="lt"?LETTER_STRAT+" "+ty.strat.replace(/^Mark[^.]*\.\s*/,""):(mode==="t"&&STRAT_T[q.ty])||ty.strat;
+  const label=(mode==="lt"&&LT_LABEL[q.ty])||ty.label;
+  const stepLbl=R.stage==="mark"?"Step 1 · Mark it":R.stage==="checked"?"Step 1 · Check your marks":"Step 2 · Answer";
+  let h=`<div class="card">
+    <div class="meta"><span class="ty">${s.name} · ${label}</span><span>Card ${R.i+1} of ${R.qs.length} · ${stepLbl}</span></div>
+    <div class="bar"><i style="width:${Math.round(R.i/R.qs.length*100)}%"></i></div>
+    <div class="strat"><p><b>Strategy:</b> ${strat}</p><p><b>Rule:</b> ${s.rule}</p></div>
+    <p class="q">${q.q}</p>`;
+  const how=R.stage==="mark"?"mark":R.stage==="checked"?"check":"full";
+  const textBox=gi=>`<div class="mtext">${groupHtml(gi,how)}</div>`;
+
+  if(R.stage!=="answer"){
+    if(R.stage==="mark"){
+      h+=`<p class="doline"><b>Mark it:</b> ${doOf(q)}</p>`;
+      if(pens.length>1)h+=`<div class="pens">${pens.map(p=>`<button data-pen="${p}" class="${R.pen===p?"sel":""}" style="background:${PEN[p][1]};color:${PEN[p][2]}">${PEN[p][0]}</button>`).join("")}</div>`;
+      h+=`<p class="hint" id="hint">${R.pen?"Tap to mark. Tap again to undo.":"Pick a marker, then tap the words."}</p>`;
+    }
+    h+=mode==="t"?textBox(0):R.order.map(k=>`<div class="mcard">${groupHtml(k,how)}</div>`).join("");
+    if(R.stage==="mark"){
+      h+=`<div class="row"><button class="big" id="doneMark" ${Object.keys(R.marks).length?"":"disabled"}>Done marking</button>
+        <button class="big ghost" id="quit">Back to the kitchen</button></div>`;
+    }else{
+      const sc=markScore(),perfect=sc.found===sc.need&&!sc.extra;
+      h+=`<div class="flash ${perfect?"yes":"no"}">You found <b>${sc.found} of ${sc.need}</b>.${sc.found<sc.need?" The dashed ones are the ones you missed.":""}${sc.extra?" The crossed-out ones didn't need a mark.":""}${perfect?" \u{1F389}":""} Now answer with these marks.</div>
+        <div class="row"><button class="big" id="toAns">Answer the question</button></div>`;
+    }
+  }else{
+    if(mode==="t")h+=textBox(0);
+    if(q.ty==="type"){
+      h+=`<input type="text" id="typ" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Type the word" value="${esc(R.typed)}" ${R.done?"disabled":""}>`;
+    }else{
+      if(need===2&&!R.done){const y=Object.values(R.yn).filter(v=>v).length,m=Object.keys(R.yn).length;
+        h+=`<p class="count2">Marked ${m} of ${q.ch.length} choices · ${y} yes (you need exactly 2)</p>`;}
+      h+=R.order.map(k=>{
+        let c="choice";
+        const right=need===2?q.a.indexOf(k)>-1:q.a===k,picked=need===2?R.yn[k]===true:R.sel[0]===k;
+        if(R.done){if(right)c+=" right";else if(picked)c+=" wrong";}else if(need===1&&picked)c+=" on";
+        const body=mode==="t"?esc(q.ch[k]):groupHtml(k,"full");
+        if(need===2){
+          const v=R.yn[k];
+          return `<div class="${c} ynrow"><div class="ynbody">${body}</div>${R.done?"":`<div class="yn"><button data-yes="${k}" class="${v===true?"y":""}" aria-label="Yes">✓ Yes</button><button data-no="${k}" class="${v===false?"n":""}" aria-label="No">✗ No</button></div>`}</div>`;
+        }
+        return `<button class="${c}" data-k="${k}" ${R.done?"disabled":""}>${body}</button>`;
+      }).join("");
+    }
+    if(R.done){
+      const n2=need===2?q.a.filter(k=>R.yn[k]===true).length:0;
+      const head=R.ok?"Yes! \u{1F389}":(need===2&&n2===1?"You got 1 of the 2.":(q.ty==="type"?`It's spelled <b>${esc(q.a)}</b>.`:"Not this time."));
+      h+=`<div class="flash ${R.ok?"yes":"no"}"><b>${head}</b> ${q.why}</div>
+        <div class="row"><button class="big" id="next">${R.i+1<R.qs.length?"Next":"See my stack"}</button></div>`;
+    }else{
+      const ready=q.ty==="type"?true:need===2?(Object.keys(R.yn).length===q.ch.length&&Object.values(R.yn).filter(v=>v).length===2):R.sel.length===1;
+      h+=`<div class="row"><button class="big" id="chk" ${ready?"":"disabled"}>${need===2?"Submit":"Check"}</button></div>`;
+    }
+  }
+  h+=`</div>`;
+  M.innerHTML=h;
+  const g=id=>document.getElementById(id);
+  M.querySelectorAll("[data-pen]").forEach(b=>b.onclick=()=>{R.pen=b.dataset.pen;render();});
+  M.querySelectorAll("[data-u]").forEach(b=>b.onclick=()=>{
+    if(!R.pen){g("hint").textContent="Pick a marker first.";return;}
+    const k=b.dataset.u;if(R.marks[k]===R.pen)delete R.marks[k];else R.marks[k]=R.pen;render();});
+  if(g("doneMark"))g("doneMark").onclick=()=>{R.stage="checked";render();};
+  if(g("toAns"))g("toAns").onclick=()=>{R.stage="answer";render();};
+  M.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{R.sel=[+b.dataset.k];render();});
+  M.querySelectorAll("[data-yes]").forEach(b=>b.onclick=()=>{R.yn[+b.dataset.yes]=true;render();});
+  M.querySelectorAll("[data-no]").forEach(b=>b.onclick=()=>{R.yn[+b.dataset.no]=false;render();});
+  if(g("typ")){g("typ").oninput=e=>{R.typed=e.target.value;};
+    g("typ").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();check();}};
+    if(!R.done)g("typ").focus();}
+  if(g("chk"))g("chk").onclick=check;
+  if(g("quit"))g("quit").onclick=()=>{view="desk";render();};
+  if(g("next")){g("next").onclick=()=>{R.i++;if(R.i>=R.qs.length){view="end";}else prep();render();window.scrollTo({top:0,behavior:"smooth"});};g("next").focus();}
+}
+function check(){
+  const q=R.qs[R.i];let ok;
+  if(q.ty==="type"){const t=(R.typed||"").trim().toLowerCase();if(!t)return;ok=t===q.a;}
+  else if(q.ty==="two"){const yes=Object.keys(R.yn).filter(k=>R.yn[k]).map(Number);if(yes.length!==2||Object.keys(R.yn).length!==q.ch.length)return;ok=yes.every(k=>q.a.indexOf(k)>-1);}
+  else{if(R.sel.length!==1)return;ok=R.sel[0]===q.a;}
+  R.done=true;R.ok=ok;if(ok)R.score++;R.res.push({sk:q.sk,ok});record(q,ok);render();
+}
+
+function viewEnd(){
+  const by={};R.res.forEach(r=>{by[r.sk]=by[r.sk]||[0,0];by[r.sk][1]++;if(r.ok)by[r.sk][0]++;});
+  M.innerHTML=`<div class="card" style="text-align:center">
+    <p class="kick">Stack done 🍽️</p>
+    <p class="big-score" style="margin-top:8px">${R.score} / ${R.qs.length}</p>
+    <p style="color:var(--ink2);margin-top:6px">right on the first try. You earned <b>${Math.max(1,R.score)} ingredient${Math.max(1,R.score)===1?"":"s"}</b>.</p>
+    ${R.sk!==R.qs[0].sk||R.sk==="mix"?`<div class="tablewrap"><table style="margin-top:16px"><tr><th>Skill</th><th>First try</th></tr>
+      ${ORDER.filter(k=>by[k]).map(k=>`<tr><td>${SK[k].name}</td><td class="n">${by[k][0]} / ${by[k][1]}</td></tr>`).join("")}</table></div>`:""}
+    <div class="row" style="justify-content:center"><button class="big" id="cook">🍳 Create my recipe</button><button class="big ghost" id="again">Another stack</button>
+    <button class="big ghost" id="home">Back to the kitchen</button></div></div>`;
+  document.getElementById("again").onclick=()=>startRound(R.sk);
+  document.getElementById("home").onclick=()=>{view="desk";render();};
+  document.getElementById("cook").onclick=()=>{C={dish:0,ing:[],name:"",note:"",earned:Math.max(1,R.score),stars:R.score,of:R.qs.length};view="cook";render();};
+}
+/* ---------------------------------------------------------------- recipe creation */
+const DISHES=[["🍲","Soup"],["🍝","Pasta"],["🌮","Tacos"],["🥗","Salad"],["🍰","Dessert"],["🥞","Breakfast"],["🍕","Pizza"],["🍛","Curry"],["🥪","Sandwich"],["🥤","Smoothie"]];
+const PANTRY=[["🍅","tomato"],["🧄","garlic"],["🧅","onion"],["🥕","carrot"],["🌶️","chili"],["🫑","bell pepper"],["🍄","mushroom"],["🥔","potato"],["🌽","corn"],["🥦","broccoli"],["🍋","lemon"],["🍓","strawberry"],["🫐","blueberry"],["🍎","apple"],["🥥","coconut"],["🥑","avocado"],["🌿","basil"],["🍫","chocolate"],["🧈","butter"],["🥚","egg"],["🧀","cheese"],["🍯","honey"],["🥛","milk"],["🍚","rice"],["🍝","noodles"],["🍞","bread"],["🍗","chicken"],["🐟","fish"]];
+let C=null;
+function viewCook(){
+  const d=DISHES[C.dish],left=C.earned-C.ing.length;
+  M.innerHTML=`<div class="card">
+    <p class="kick">Create your recipe</p>
+    <p style="color:var(--ink2);margin-top:4px;font-size:15.5px">You earned <b>${C.earned}</b> ingredient${C.earned===1?"":"s"}. Pick your dish, choose your ingredients, and name it.</p>
+    <div class="plate">${d[0]}<span class="plate-ing">${C.ing.map(i=>PANTRY[i][0]).join("")}</span></div>
+    <p class="lab">Dish</p>
+    <div class="pickrow">${DISHES.map((x,i)=>`<button class="pb ${i===C.dish?"on":""}" data-dish="${i}">${x[0]} ${x[1]}</button>`).join("")}</div>
+    <p class="lab">Ingredients · ${left>0?left+" left to pick":"all picked (tap one to swap it out)"}</p>
+    <div class="pantry">${PANTRY.map((x,i)=>{const on=C.ing.indexOf(i)>-1;return `<button class="an ${on?"on":""}" data-ing="${i}" ${!on&&left<=0?"disabled":""}>${x[0]}<small>${x[1]}</small></button>`;}).join("")}</div>
+    <p class="lab">Name your recipe</p>
+    <input type="text" id="rname" maxlength="40" placeholder="e.g. Sunrise Lemon Pancakes" value="${esc(C.name)}">
+    <p class="lab">Chef's note (optional)</p>
+    <input type="text" id="rnote" maxlength="90" placeholder="e.g. Squeeze the lemon in last so it stays bright." value="${esc(C.note)}">
+    <div class="row"><button class="big" id="saveR" ${C.ing.length?"":"disabled"}>Add to my cookbook</button></div>
+  </div>`;
+  const keep=()=>{C.name=document.getElementById("rname").value;C.note=document.getElementById("rnote").value;};
+  M.querySelectorAll("[data-dish]").forEach(b=>b.onclick=()=>{keep();C.dish=+b.dataset.dish;render();});
+  M.querySelectorAll("[data-ing]").forEach(b=>b.onclick=()=>{keep();const i=+b.dataset.ing,at=C.ing.indexOf(i);
+    if(at>-1)C.ing.splice(at,1);else if(C.ing.length<C.earned)C.ing.push(i);render();});
+  document.getElementById("saveR").onclick=()=>{keep();if(!C.ing.length)return;
+    const d=DISHES[C.dish];
+    S.book.unshift({dish:d[0],type:d[1],name:(C.name.trim()||d[1]+" by the Test Kitchen"),ing:C.ing.map(i=>PANTRY[i][0]+" "+PANTRY[i][1]),note:C.note.trim(),stars:C.stars,of:C.of,date:today()});
+    S.book=S.book.slice(0,60);save();view="book";render();window.scrollTo({top:0,behavior:"smooth"});};
+}
+function viewBook(){
+  const b=S.book||[];
+  M.innerHTML=`<div class="card"><p class="kick">My cookbook</p>
+    <p style="color:var(--ink2);margin-top:4px;font-size:15.5px">${b.length?`<b>${b.length}</b> recipe${b.length===1?"":"s"}. Every one came from a stack of cards you checked.`:"No recipes yet. Finish a stack of cards and create your first one."}</p></div>
+    <div class="book">${b.map(r=>`<div class="rcard"><div class="rtop"><span class="rem">${r.dish}</span><div><p class="rname">${esc(r.name)}</p><p class="rmeta">${esc(r.type)} · ${r.date.slice(5)} · ${r.stars}/${r.of} cards right</p></div></div>
+      <ul class="ring">${r.ing.map(i=>`<li>${esc(i)}</li>`).join("")}</ul>${r.note?`<p class="rnote">“${esc(r.note)}”</p>`:""}</div>`).join("")}</div>`;
+}
+
+function viewRec(){
+  const days=Object.keys(S.log).sort().reverse().slice(0,6);
+  if(!days.length){M.innerHTML=`<div class="card"><p class="kick">My record</p><p style="margin-top:6px;color:var(--ink2)">Nothing yet. Finish a stack and your first-try scores show up here, one column per day.</p></div>`;return;}
+  M.innerHTML=`<div class="card"><p class="kick">My record</p>
+    <p style="color:var(--ink2);margin-top:4px;font-size:15.5px">First-try right, by day. Newest day first.</p>
+    <div class="tablewrap"><table><tr><th>Skill</th>${days.map(d=>`<th>${d.slice(5)}</th>`).join("")}</tr>
+    ${ORDER.map(k=>`<tr><td>${SK[k].em} ${SK[k].name}</td>${days.map(d=>{const e=(S.log[d]||{})[k];
+      return e?`<td class="n ${pct(e[0],e[1])>=90?"hi":""}">${e[0]}/${e[1]} · ${pct(e[0],e[1])}%</td>`:`<td class="n" style="color:var(--ink3)">–</td>`;}).join("")}</tr>`).join("")}
+    </table></div><p class="note">Green = 90% or higher that day.</p></div>`;
+}
+
+function render(){
+  document.getElementById("tabDesk").classList.toggle("on",view!=="rec"&&view!=="book");
+  document.getElementById("tabBook").classList.toggle("on",view==="book");
+  document.getElementById("tabRec").classList.toggle("on",view==="rec");
+  if(view==="desk")viewDesk();else if(view==="q")viewQ();else if(view==="end")viewEnd();else if(view==="cook")viewCook();else if(view==="book")viewBook();else viewRec();
+}
+document.getElementById("tabDesk").onclick=()=>{view="desk";render();};
+document.getElementById("tabRec").onclick=()=>{view="rec";render();};
+document.getElementById("tabBook").onclick=()=>{view="book";render();};
+let armed=false;
+document.getElementById("reset").onclick=function(){
+  if(!armed){armed=true;this.textContent="Tap again to clear everything";setTimeout(()=>{armed=false;this.textContent="Clear my kitchen";},4000);return;}
+  S=blank();save();armed=false;this.textContent="Clear my kitchen";view="desk";render();
+};
+render();
+</script>
+</body>
+</html>

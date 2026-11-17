@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read Closer</title>
+<meta name="description" content="Grade 6 reading strategy practice: theme, imagery and tone, central idea and summary, inference.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#128269;</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{
+  --bg:#F4F1EC; --bg2:#E8E3DA; --card:#FFFFFF; --panel:#FBFAF8;
+  --ink:#1E1B22; --ink2:#55505E; --ink3:#8C8695;
+  --rule:#DAD4CA; --rule2:#C3BBAE;
+  --hot:#2F5FD0; --hot-s:#E2EAFB;
+  --good:#1F7A52; --good-s:#DFF0E7;
+  --warn:#8E6212; --warn-s:#FAEFD6;
+  --b:"Figtree",system-ui,-apple-system,sans-serif;
+  --m:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141317; --bg2:#1C1A21; --card:#1F1D25; --panel:#262430;
+  --ink:#F2EFF5; --ink2:#BDB7C6; --ink3:#8E8899;
+  --rule:#36333F; --rule2:#4A4557;
+  --hot:#7FA4FF; --hot-s:#18223D;
+  --good:#5FC793; --good-s:#122E22;
+  --warn:#E5B454; --warn-s:#33280F;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#141317; --bg2:#1C1A21; --card:#1F1D25; --panel:#262430;
+  --ink:#F2EFF5; --ink2:#BDB7C6; --ink3:#8E8899;
+  --rule:#36333F; --rule2:#4A4557;
+  --hot:#7FA4FF; --hot-s:#18223D;
+  --good:#5FC793; --good-s:#122E22;
+  --warn:#E5B454; --warn-s:#33280F;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--b);font-size:17px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;background-image:linear-gradient(180deg,var(--bg2),transparent 320px)}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:disabled{cursor:default;opacity:.45}
+:focus-visible{outline:3px solid var(--hot);outline-offset:3px;border-radius:10px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.wrap{max-width:780px;margin:0 auto;padding:22px 16px 80px}
+header{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.brand{flex:1 1 250px;min-width:0}
+.kick{font-family:var(--m);font-weight:700;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--hot)}
+h1{font-size:clamp(28px,6.5vw,40px);font-weight:800;letter-spacing:-.02em;line-height:1.05;margin-top:2px}
+.sub{color:var(--ink2);margin-top:6px;font-size:16px;max-width:48ch}
+.topbtns{display:flex;gap:8px;flex-wrap:wrap}
+.tb{border:2px solid var(--rule2);border-radius:999px;padding:8px 15px;font-weight:700;font-size:14px;background:var(--card)}
+.tb:hover{border-color:var(--hot);color:var(--hot)}
+.tb.on{background:var(--hot);border-color:var(--hot);color:#fff}
+.card{background:var(--card);border:2px solid var(--rule);border-radius:18px;padding:clamp(16px,4vw,24px);margin-bottom:16px}
+.read{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.read div{background:var(--panel);border:2px solid var(--rule);border-radius:12px;padding:8px 10px;font-size:13.5px;color:var(--ink2);line-height:1.3}
+.read b{display:block;font-family:var(--m);font-size:20px;color:var(--hot)}
+@media (max-width:520px){.read{grid-template-columns:repeat(2,1fr)}}
+.skills{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.sk{background:var(--card);border:2px solid var(--rule);border-radius:16px;padding:14px;text-align:left;display:flex;flex-direction:column;gap:4px}
+.sk:hover{border-color:var(--hot);transform:translateY(-2px)}
+.sk .em{font-size:28px;line-height:1}
+.sk .nm{font-weight:800;font-size:17px}
+.sk .ds{font-size:14px;color:var(--ink2);line-height:1.35}
+.sk .tdy{font-family:var(--m);font-size:11.5px;font-weight:700;color:var(--ink3);letter-spacing:.06em;margin-top:4px}
+.sk.mix{border-style:dashed}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-family:var(--m);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--ink3)}
+.meta .ty{color:var(--hot)}
+.strat{background:var(--hot-s);border-left:4px solid var(--hot);border-radius:0 12px 12px 0;padding:10px 13px;margin:12px 0 14px;font-size:15px;color:var(--ink2)}
+.strat b{color:var(--ink)}
+.strat p+p{margin-top:5px}
+.q{font-size:clamp(18px,3.9vw,22px);font-weight:600;line-height:1.45;letter-spacing:-.005em}
+.q .pass{display:block;font-weight:500;font-size:.88em;background:var(--panel);border:2px solid var(--rule);border-radius:12px;padding:10px 12px;margin:8px 0}
+.count2{font-family:var(--m);font-size:12.5px;font-weight:700;color:var(--hot);margin-top:10px}
+.choice{display:block;width:100%;text-align:left;background:var(--panel);border:2px solid var(--rule);
+  border-radius:14px;padding:13px 16px;margin-top:10px;font-size:16.5px;font-weight:600;line-height:1.4}
+.choice:hover:not(:disabled){border-color:var(--hot)}
+.choice.on{border-color:var(--hot);background:var(--hot-s)}
+.choice.right{border-color:var(--good);background:var(--good-s)}
+.choice.wrong{border-color:var(--warn);background:var(--warn-s)}
+.choice:disabled{opacity:1;cursor:default}
+input[type=text]{width:100%;margin-top:12px;padding:12px 14px;border:2px solid var(--rule2);border-radius:12px;
+  background:var(--card);color:var(--ink);font:inherit;font-weight:700;font-size:19px}
+input[type=text]:focus{outline:none;border-color:var(--hot)}
+.big{display:inline-flex;align-items:center;gap:9px;background:var(--hot);color:#fff;border-radius:999px;padding:12px 24px;font-weight:800;font-size:17px}
+.big:hover:not(:disabled){filter:brightness(1.08)}
+.big.ghost{background:none;color:var(--ink2);border:2px solid var(--rule2);padding:10px 22px;font-weight:700;font-size:16px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.flash{border-radius:12px;padding:12px 15px;margin-top:14px;font-size:15.5px;line-height:1.55}
+.flash.no{background:var(--warn-s);border:2px solid var(--warn)}
+.flash.yes{background:var(--good-s);border:2px solid var(--good)}
+.bar{height:9px;background:var(--rule);border-radius:999px;overflow:hidden;margin-top:14px}
+.bar i{display:block;height:100%;background:var(--hot);border-radius:999px;transition:width .3s}
+table{width:100%;border-collapse:collapse;font-size:15px;margin-top:6px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--rule)}
+th{font-family:var(--m);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+td.n{font-family:var(--m);font-weight:700;white-space:nowrap}
+td.hi{color:var(--good)}
+.tablewrap{overflow-x:auto}
+.note{font-size:14px;color:var(--ink3);margin-top:10px}
+.big-score{font-size:clamp(40px,10vw,64px);font-weight:800;letter-spacing:-.03em;line-height:1}
+.sk .qt{font-size:12.5px;color:var(--ink3);line-height:1.35}
+footer{margin-top:28px;border-top:2px solid var(--rule);padding-top:16px;color:var(--ink3);font-size:14px;text-align:center}
+.danger{color:var(--ink3);font-size:13px;font-weight:700;border:2px solid var(--rule);border-radius:999px;padding:6px 13px;margin-top:10px}
+.danger:hover{color:var(--hot);border-color:var(--hot)}
+.ask{font-size:16.5px;color:var(--ink2);margin-bottom:10px}
+.ask b{color:var(--ink)}
+.hint{font-size:14.5px;color:var(--ink3);margin:8px 0}
+.pens{display:flex;flex-wrap:wrap;gap:8px}
+.pens button{border-radius:999px;padding:8px 16px;font-weight:800;font-size:15px;border:3px solid transparent}
+.pens button.sel{border-color:var(--ink);transform:scale(1.05)}
+.pass{background:var(--panel);border:2px solid var(--rule);border-radius:14px;padding:14px 16px;margin-top:10px;font-size:17.5px;line-height:1.75}
+.pass h3{font-size:18px;font-weight:800;margin-bottom:6px}
+.pass p+p{margin-top:10px}
+.pass.poem{font-style:italic}
+.sent{cursor:pointer;border-radius:6px;padding:1px 3px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.sent:hover{outline:2px dashed var(--rule2)}
+.pass.lock .sent,.peek .sent{cursor:default}
+.sent.miss{outline:3px dashed var(--ink2);outline-offset:1px}
+.sent.bad{text-decoration:line-through;opacity:.7}
+.tag{font-style:normal;font-family:var(--m);font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:1px 7px;margin-right:5px;vertical-align:2px}
+.peek{margin-bottom:12px}
+.peek summary{cursor:pointer;font-weight:700;color:var(--hot);font-size:15px}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <p class="kick">Grade 6 reading strategies</p>
+      <h1>Read Closer</h1>
+      <p class="sub">Mark the text first. Then answer from your marks, not from memory.</p>
+    </div>
+    <div class="topbtns">
+      <button class="tb" id="tabDesk">Passages</button>
+      <button class="tb" id="tabRec">My record</button>
+    </div>
+  </header>
+  <main id="main" aria-live="polite"></main>
+  <footer>
+    <p>Your record saves on <b>your own computer</b>. Same link, same record.</p>
+    <button class="danger" id="reset">Clear my record</button>
+  </footer>
+</div>
+
+<script>
+/* Skills. "strat" is the strategy step shown while marking and on every question. */
+const SK={
+  theme:{name:"Theme",em:"\u{1F4A1}",ds:"The lesson under the story, not just what happens.",
+    strat:"Theme = what the character learns, said as a lesson for anyone. Mark the problem, then where the character learns.",
+    markers:[{k:"p",name:"Problem",color:"#ffd866",ink:"#3d2e00"},{k:"l",name:"Learns",color:"#8be0a4",ink:"#0b3a1a"}]},
+  image:{name:"Imagery and tone",em:"\u{1F3A8}",ds:"Poems: which sense, and what feeling it gives.",
+    strat:"Imagery: which sense is it, and what feeling does it give? Tone = the feeling the whole poem leaves you with.",
+    markers:[{k:"s",name:"See",color:"#7cc4ff",ink:"#06263f"},{k:"h",name:"Hear",color:"#ffd866",ink:"#3d2e00"},{k:"t",name:"Touch",color:"#ff9ec7",ink:"#45061f"},{k:"m",name:"Smell or taste",color:"#8be0a4",ink:"#0b3a1a"}]},
+  central:{name:"Central idea and summary",em:"\u{1F3AF}",ds:"What most sentences are about, and the details that prove it.",
+    strat:"Central idea = what most sentences are about. Then check that each detail supports it. A summary = central idea + key details, no opinions.",
+    markers:[{k:"c",name:"Central idea",color:"#c9a7ff",ink:"#26094d"},{k:"d",name:"Supports it",color:"#7cc4ff",ink:"#06263f"}]},
+  infer:{name:"Inference",em:"\u{1F575}️",ds:"Clue in the text + what I know.",
+    strat:"Inference = a clue in the text + what I already know. Mark the clues before you decide.",
+    markers:[{k:"k",name:"Clue",color:"#ffb27a",ink:"#3f1a00"}]}
+};
+/* Question types: one more strategy line for the kind of question. */
+const TY={
+  theme:"Say it as a lesson for anyone. Cross out answers that only tell what happened or name the topic.",
+  main:"Main idea = what the story is about. Theme = the lesson under it.",
+  change:"Compare the character at the start with the character at the end.",
+  tone:"Look at your marks. What feeling do those images give together?",
+  imagery:"Which sense is it? What does that picture make you feel or understand?",
+  central:"Which answer are MOST of the sentences about? One small detail is not enough.",
+  detail:"Hold each detail up to the central idea: does it help prove it?",
+  summary:"Central idea + key details, in order, no opinions. Cross out answers that are one small detail or say “I think.”",
+  infer:"Clue in the text + what I know. Check that the answer has a clue behind it.",
+  attitude:"How does the author feel? Look at word choice and jokes: clue + what I know.",
+  evidence:"Find the sentence that proves it. Your marks are a good place to look."
+};
+/* Passages (all original). s: [text, marker, newParagraph]. In qs, c[0] is the right answer (choices shuffle on screen). */
+const P=[
+/* ---------------- theme ---------------- */
+{id:"th1",sk:"theme",title:"The Birdhouse",kind:"story",mark:"Mark Priya's <b>problem</b>, then the sentences where she <b>learns</b> something.",s:[
+ ["Priya wanted her birdhouse finished before the weekend, so she skipped the measuring.","p"],
+ ["“Close enough,” she said, hammering the crooked boards together.","p"],
+ ["Her grandfather raised an eyebrow but said nothing.",""],
+ ["On Monday a storm rolled through, and by morning the roof lay in the wet grass.","",1],
+ ["Priya picked up the pieces and turned them over in her hands.",""],
+ ["“I rushed it,” she admitted quietly.","l"],
+ ["This time she measured every board twice and sanded each edge until it was smooth.","l",1],
+ ["It took three afternoons instead of one.",""],
+ ["When the next storm came, the birdhouse did not move, and by spring a pair of wrens had moved in.",""]],
+ qs:[
+ {ty:"theme",q:"Which sentence best states a theme of the story?",c:["Doing a job carefully is worth the extra time.","Storms can damage things people build.","Grandparents always know best.","Wrens like to live in birdhouses."],
+  why:"Priya learns that rushing cost her. Said as a lesson for anyone: doing a job carefully is worth the time. The storm is something that <b>happens</b>, not the lesson."},
+ {ty:"main",q:"Which sentence states the main idea of the story, not its theme?",c:["Priya rebuilds her birdhouse after the first one falls apart.","Rushing a job can cost you more time.","It is wise to listen to older people.","Hard work always pays off."],
+  why:"The main idea tells what the story is <b>about</b>: Priya rebuilds the birdhouse. The other answers are lessons, which makes them themes."},
+ {ty:"evidence",q:"Which sentence best supports the theme?",c:["This time she measured every board twice and sanded each edge until it was smooth.","Her grandfather raised an eyebrow but said nothing.","Priya picked up the pieces and turned them over in her hands.","Priya wanted her birdhouse finished before the weekend, so she skipped the measuring."],
+  why:"It shows her doing the job carefully, which is the lesson in action. You marked it <b>Learns</b>."}]},
+{id:"th2",sk:"theme",title:"Second Chair",kind:"story",mark:"Mark Marcus's <b>problem</b>, then where he <b>learns</b> something.",s:[
+ ["When Ms. Okafor posted the band list, Marcus found his name in the second-chair spot.",""],
+ ["Leah's name sat above his, in first chair.",""],
+ ["He shoved his trumpet into its case and walked home without waiting for anyone.","p"],
+ ["For a week he practiced alone, and he still could not play the fast run in the middle of the march.","p",1],
+ ["On Friday, Leah stopped by his locker.","",1],
+ ["“That run trips me up too,” she said. “Want to try it slowly together?”",""],
+ ["Marcus almost said no.",""],
+ ["Instead he nodded, and by the end of lunch they could both play it at full speed.","l"],
+ ["At the concert, Marcus listened to Leah's notes beside his and realized he had not thought about chairs all night.","l",1]],
+ qs:[
+ {ty:"theme",q:"Which sentence best states a theme of the story?",c:["Working with others can help you more than competing with them.","Practicing alone is the best way to improve.","Band concerts are exciting.","Second chair is not as good as first chair."],
+  why:"Marcus learns that practicing <b>with</b> Leah helped him more than staying jealous. That is the lesson for anyone."},
+ {ty:"change",q:"How does Marcus change from the beginning to the end?",c:["He goes from jealous of Leah to working with her.","He goes from proud to embarrassed.","He goes from loving the trumpet to quitting.","He stays angry the whole story."],
+  why:"At the start he walks off alone. At the end he plays beside Leah and forgets about chairs."},
+ {ty:"main",q:"Which sentence is a theme, not just a summary of events?",c:["Letting go of jealousy can help you grow.","Marcus gets second chair and learns a hard part with Leah.","Leah is a better trumpet player than Marcus.","The concert happens after a week of practice."],
+  why:"A theme is a lesson for anyone. “Marcus gets second chair and learns a hard part” tells what happened, so it is a summary."}]},
+{id:"th3",sk:"theme",title:"The Map",kind:"story",mark:"Mark Jada's <b>problem</b>, then where she <b>learns</b> something.",s:[
+ ["Jada had hiked Cedar Ridge twice, so she told her little brother to put the map away.","p"],
+ ["“I know this trail by heart,” she said, and marched ahead.","p"],
+ ["An hour later, the trail split into three paths that all looked the same.","",1],
+ ["Jada's stomach tightened, but she kept walking and chose the left path without a word.","p"],
+ ["The path ended at a creek with no bridge.",""],
+ ["Behind her, Theo held out the folded map.",""],
+ ["Jada took a breath. “Okay,” she said. “Show me where we are.”","l",1],
+ ["Together they traced the blue line back to the fork and found the right path in ten minutes.","l"],
+ ["On the drive home, Jada asked Theo to be the navigator next time.","l"]],
+ qs:[
+ {ty:"theme",q:"Which sentence best states a theme of the story?",c:["Asking for help is smarter than pretending you know everything.","Hiking trails can be confusing.","Little brothers can be annoying.","Always bring water on a hike."],
+  why:"Jada learns to stop acting like she knows it all and to use Theo's help. “Hiking trails can be confusing” is the topic, not a lesson."},
+ {ty:"evidence",q:"Which sentence best shows that Jada has learned something?",c:["On the drive home, Jada asked Theo to be the navigator next time.","“I know this trail by heart,” she said, and marched ahead.","The path ended at a creek with no bridge.","An hour later, the trail split into three paths that all looked the same."],
+  why:"Asking Theo to navigate <b>next time</b> shows the lesson stuck."},
+ {ty:"main",q:"Which sentence is the main idea (what the story is about), not the theme?",c:["Jada gets lost on a hike until she uses her brother's map.","Pride can get in the way of good choices.","Asking for help is a strength.","Listening to others can save time."],
+  why:"The main idea tells what happens. The other three are lessons, so they are themes."}]},
+/* ---------------- imagery and tone (poems) ---------------- */
+{id:"im1",sk:"image",title:"Last Day at the Lake",kind:"poem",mark:"Mark each line by the <b>sense</b> it uses most.",s:[
+ ["The dock boards creak beneath my feet,","h"],
+ ["still warm from August's final sun.","t"],
+ ["The pines smell sharp, like something ending;","m"],
+ ["the water's gray where blue had run.","s"],
+ ["I hear the screen door slap behind me,","h",1],
+ ["see Dad load boxes, one by one.","s"],
+ ["I taste the last of summer peaches,","m"],
+ ["so sweet and sticky. Then they're done.","m"]],
+ qs:[
+ {ty:"tone",q:"Which word best describes the tone of the poem?",c:["wistful (sad that something good is ending)","excited","angry","frightened"],
+  why:"“Final sun,” “something ending,” “gray where blue had run,” “then they're done.” The images keep saying summer is over, and the speaker misses it."},
+ {ty:"imagery",q:"The image of the water turning “gray where blue had run” helps show that —",c:["the happy summer is ending","a storm is about to hit the lake","the lake is polluted","the speaker cannot swim"],
+  why:"Sense: <b>see</b>. Blue turning gray gives a feeling of something bright fading, like the end of summer."},
+ {ty:"imagery",q:"Which line appeals mostly to the sense of smell?",c:["The pines smell sharp, like something ending;","The dock boards creak beneath my feet,","see Dad load boxes, one by one.","I hear the screen door slap behind me,"],
+  why:"“The pines <b>smell</b> sharp.” You marked it Smell or taste."}]},
+{id:"im2",sk:"image",title:"City Morning",kind:"poem",mark:"Mark each line by the <b>sense</b> it uses most. One line has none.",s:[
+ ["Buses sigh and hiss awake,","h"],
+ ["the bakery breathes out cinnamon,","m"],
+ ["a hundred shoes go clicking past,","h"],
+ ["and windows flash like coins in sun.","s"],
+ ["A vendor's cart goes rattling by,","h",1],
+ ["steam curls up from paper cups,","s"],
+ ["the cold rail tingles in my palm,","t"],
+ ["and the whole street wakes up.",""]],
+ qs:[
+ {ty:"tone",q:"Which phrase best describes the tone of the poem?",c:["lively and full of energy","lonely and quiet","angry and tense","sleepy and dull"],
+  why:"Sighing buses, clicking shoes, flashing windows, rattling carts. So many sounds and sights at once give a busy, lively feeling."},
+ {ty:"imagery",q:"The poet uses sound words like “sigh,” “hiss,” and “clicking” mostly to show that —",c:["the city is busy and noisy in the morning","the buses are broken","the speaker is annoyed by the noise","it is the middle of the night"],
+  why:"Sense: <b>hear</b>. Lots of sounds mean lots of people and motion: a city waking up."},
+ {ty:"imagery",q:"Which line appeals mostly to the sense of touch?",c:["the cold rail tingles in my palm,","the bakery breathes out cinnamon,","a hundred shoes go clicking past,","steam curls up from paper cups,"],
+  why:"“Cold” and “tingles in my palm” are things you <b>feel</b>."}]},
+{id:"im3",sk:"image",title:"Grandmother's Hands",kind:"poem",mark:"Mark each line by the <b>sense</b> it uses most. Two lines have none.",s:[
+ ["I see her hands, a map of years,","s"],
+ ["the creases soft as flannel cloth;","t"],
+ ["they smell of bread dough and of soap.","m"],
+ ["She hums while kneading, low and slow.","h"],
+ ["I watch them fold a paper crane,","s",1],
+ ["each wing pressed sharp and neat and sure.",""],
+ ["When mine are old, I hope they look","",1],
+ ["like hers: still busy, still at work.",""]],
+ qs:[
+ {ty:"tone",q:"Which phrase best describes the speaker's tone?",c:["loving and admiring","jealous and bitter","bored and tired","worried and afraid"],
+  why:"Soft flannel, bread dough, humming, a neat paper crane, and “I hope they look like hers.” The speaker admires her."},
+ {ty:"theme",q:"Which sentence best states a theme of the poem?",c:["A life of hard work and care is something to admire.","Paper cranes are hard to fold.","Getting old is something to fear.","Baking bread takes a long time."],
+  why:"The last two lines are the lesson: the speaker wants hands like hers, “still busy, still at work.” Paper cranes and bread are details, not the theme."},
+ {ty:"imagery",q:"The image “her hands, a map of years” helps the reader understand that —",c:["the lines on her hands show a long, full life","she likes to travel","she draws maps for a living","her hands are cold"],
+  why:"A map is covered in lines. Her hands are lined from many years of living and working."}]},
+/* ---------------- central idea and summary ---------------- */
+{id:"ce1",sk:"central",title:"Escape Artists of the Sea",kind:"info",mark:"Mark the <b>central idea</b>. Then mark each detail that <b>supports</b> it. Leave the rest.",s:[
+ ["Have you ever tried to hold on to a wet bar of soap?",""],
+ ["Octopuses are among the best escape artists in the ocean, thanks to their unusual bodies.","c"],
+ ["An octopus has no bones, so it can squeeze through almost any gap larger than its beak.","d",1],
+ ["Its skin can change color in less than a second to match rocks, sand, or coral.","d"],
+ ["If a predator gets too close, it can squirt a cloud of dark ink and jet away.","d"],
+ ["Octopuses also have three hearts.","",1],
+ ["Some octopuses in aquariums have even slipped out of their tanks at night to look for food.","d"]],
+ qs:[
+ {ty:"central",q:"What is the central idea of the passage?",c:["An octopus's body helps it escape danger and tight spots.","Octopuses have three hearts.","Aquariums should build stronger tanks.","Wet soap is hard to hold."],
+  why:"Most sentences are about how octopuses get away. Three hearts is one fact; the soap is just the hook."},
+ {ty:"detail",q:"Which detail does NOT support the central idea?",c:["Octopuses also have three hearts.","An octopus has no bones, so it can squeeze through almost any gap larger than its beak.","Its skin can change color in less than a second to match rocks, sand, or coral.","If a predator gets too close, it can squirt a cloud of dark ink and jet away."],
+  why:"Three hearts is true, but it does not help an octopus escape. You left it unmarked."},
+ {ty:"summary",q:"Which is the best summary of the passage?",c:["Octopuses are skilled escape artists. With no bones, color-changing skin, and ink, they can squeeze, hide, and get away, even from aquarium tanks.","Octopuses have three hearts and no bones. They are interesting animals that live in the ocean.","I think octopuses are the coolest animals in the ocean because they can escape.","An octopus can squirt a cloud of dark ink."],
+  why:"Central idea + key details, no opinion. “I think” is an opinion. The ink answer is one small detail."}]},
+{id:"ce2",sk:"central",title:"The Garden Behind the Gym",kind:"info",mark:"This one never states its central idea in one sentence. Mark only the details that tell what the garden <b>does for students</b>.",s:[
+ ["At Lincoln Middle School, a patch of dirt behind the gym has become one of the busiest classrooms in the building.",""],
+ ["Science classes measure how fast bean plants grow and test which soil holds water best.","d",1],
+ ["Math students figure out how many seeds fit in each row.","d"],
+ ["Students who grow vegetables are more likely to try them, and the cafeteria now serves salad from the garden every Friday.","d",1],
+ ["The tomato plants are taller than most of the sixth graders.",""],
+ ["Teachers say that students who have trouble sitting still in class often work hard for a whole hour in the garden.","d",1]],
+ qs:[
+ {ty:"central",q:"What is the central idea of the passage?",c:["The school garden helps students learn and eat better.","Tomato plants can grow very tall.","Lincoln Middle School has a large gym.","Math is the most important subject."],
+  why:"It is not stated in one sentence. Look at what your marked details have in common: learning, eating vegetables, focus. That is the central idea."},
+ {ty:"detail",q:"Which detail best supports the idea that the garden helps students eat better?",c:["Students who grow vegetables are more likely to try them, and the cafeteria now serves salad from the garden every Friday.","Science classes measure how fast bean plants grow and test which soil holds water best.","Math students figure out how many seeds fit in each row.","The tomato plants are taller than most of the sixth graders."],
+  why:"Only this one is about <b>eating</b>. The others are about learning, or a fun fact."},
+ {ty:"summary",q:"Which is the best summary of the passage?",c:["Lincoln Middle School's garden is a busy classroom. Students use it for science and math, eat more vegetables, and stay focused while they work.","The garden behind the gym has tall tomato plants and a lot of dirt.","School gardens are the best idea any school has ever had.","Science classes measure bean plants in the garden."],
+  why:"It covers the central idea and every key detail. “The best idea ever” is an opinion. The tomato and bean answers are single details."}]},
+{id:"ce3",sk:"central",title:"Built for the Cold",kind:"info",mark:"Mark the <b>central idea</b>. Then mark each detail that <b>supports</b> it. Leave the rest.",s:[
+ ["Sled dogs can sleep outside in snow on nights far below freezing.",""],
+ ["Their bodies hold in heat in several ways.","c"],
+ ["A thick double coat traps warm air close to the skin, while the outer hairs keep out snow and wind.","d",1],
+ ["When a husky sleeps, it curls into a ball and covers its nose with its fluffy tail.","d"],
+ ["Tough pads and fur between the toes protect the dogs' feet from ice.","d"],
+ ["Some huskies have one blue eye and one brown eye.","",1],
+ ["Mushers also feed their teams extra fat in winter, which the dogs' bodies burn for warmth.","d"]],
+ qs:[
+ {ty:"central",q:"What is the central idea of the passage?",c:["Sled dogs' bodies are built to keep them warm in extreme cold.","Some huskies have eyes of two different colors.","Mushers feed their dogs in winter.","Sled dogs should sleep indoors in winter."],
+  why:"Almost every sentence is a way sled dogs stay warm. The eye color is a side fact."},
+ {ty:"detail",q:"Which detail does NOT support the central idea?",c:["Some huskies have one blue eye and one brown eye.","When a husky sleeps, it curls into a ball and covers its nose with its fluffy tail.","Tough pads and fur between the toes protect the dogs' feet from ice.","A thick double coat traps warm air close to the skin, while the outer hairs keep out snow and wind."],
+  why:"Eye color has nothing to do with staying warm."},
+ {ty:"summary",q:"Which is the best summary of the passage?",c:["Sled dogs are built for the cold. A double coat, a tail over the nose, tough furry feet, and extra fat in winter all help them stay warm.","Huskies have beautiful eyes and fluffy tails, and they are very cute.","Sled dogs curl into a ball when they sleep.","Sled dogs live where it snows, and some have blue eyes."],
+  why:"Central idea + the key details. “Beautiful” and “cute” are opinions. The curl-up answer is one detail."}]},
+/* ---------------- inference ---------------- */
+{id:"in1",sk:"infer",title:"The Boss of Harlow Farm",kind:"info",mark:"Mark the <b>clues</b> that show how the author feels about Pepper.",s:[
+ ["Every farm has a boss, and on the Harlow farm, the boss is a goat named Pepper.","k"],
+ ["Pepper has learned to lift the gate latch with her lips, which she does mostly right after someone has fixed it.","k"],
+ ["She has eaten a straw hat, two gardening gloves, and most of a farm report.","k"],
+ ["The farmers have tried four new latches.","",1],
+ ["Pepper has opened all four.",""],
+ ["These days, the farmers simply leave the gate open and let Pepper supervise.","k"]],
+ qs:[
+ {ty:"attitude",q:"The author's attitude toward Pepper is one of —",c:["amusement","anger","fear","sadness"],
+  why:"Clues: calling a goat “the boss,” opening the latch “right after someone has fixed it,” letting her “supervise.” What I know: people joke like that about things they find funny."},
+ {ty:"infer",q:"What can the reader infer about the farmers?",c:["They have given up trying to keep Pepper in.","They want to sell Pepper.","They are afraid of goats.","They are building a new barn."],
+  why:"Clue: they “simply leave the gate open.” What I know: you stop locking a gate when locking it doesn't work."},
+ {ty:"evidence",q:"Which sentence best supports the inference that the farmers have given up?",c:["These days, the farmers simply leave the gate open and let Pepper supervise.","Every farm has a boss, and on the Harlow farm, the boss is a goat named Pepper.","She has eaten a straw hat, two gardening gloves, and most of a farm report.","The farmers have tried four new latches."],
+  why:"Leaving the gate open is giving up. Trying four latches shows they were still trying."}]},
+{id:"in2",sk:"infer",title:"The Envelope",kind:"story",mark:"Mark the <b>clues</b> that show how Nadia feels. The story never names the feeling.",s:[
+ ["Nadia checked the mailbox three times before lunch.","k"],
+ ["When the envelope finally came, she held it for a long minute without opening it.","k"],
+ ["Her little brother asked what it was, and she said, “Nothing,” a little too fast.","k"],
+ ["She went to her room and closed the door.","",1],
+ ["A moment later, the whole house heard her scream, then laugh, then run down the stairs waving a letter with a gold seal.","k"]],
+ qs:[
+ {ty:"infer",q:"Before she opens the letter, Nadia most likely feels —",c:["nervous about what it says","bored","angry at her brother","sleepy"],
+  why:"Clues: checking three times, holding it a long minute, “Nothing” too fast. What I know: people act like that when they're nervous about news."},
+ {ty:"infer",q:"What can the reader infer about the letter?",c:["It has good news Nadia was hoping for.","It is a bill for her parents.","It is for her brother.","It has bad news."],
+  why:"Clues: she was waiting for it, then she screamed, laughed and ran down waving it. What I know: that is how people react to great news."},
+ {ty:"evidence",q:"Which sentence best supports the inference that the news was good?",c:["A moment later, the whole house heard her scream, then laugh, then run down the stairs waving a letter with a gold seal.","Nadia checked the mailbox three times before lunch.","She went to her room and closed the door.","Her little brother asked what it was, and she said, “Nothing,” a little too fast."],
+  why:"Laughing and waving the letter show the news was good. The other clues show she was nervous, not how it turned out."}]},
+{id:"in3",sk:"infer",title:"Builders Without Blueprints",kind:"info",mark:"Mark the <b>clues</b> that show how the author feels about beavers.",s:[
+ ["Beavers do not have blueprints, hard hats, or machines.",""],
+ ["Yet with only their teeth and paws, a family of beavers can build a dam strong enough to hold back a stream.","k"],
+ ["They pack the cracks with mud so carefully that very little water leaks through.","k"],
+ ["Their pond becomes a home for frogs, ducks, fish, and insects.","",1],
+ ["Engineers have studied beaver dams to learn how to slow down floods.","k"],
+ ["Not bad for an animal about the size of a backpack.","k"]],
+ qs:[
+ {ty:"attitude",q:"The author's attitude toward beavers is one of —",c:["admiration","disgust","boredom","worry"],
+  why:"Clues: “strong enough,” “so carefully,” engineers learn from them, “Not bad for an animal about the size of a backpack.” What I know: that is how people talk about something they're impressed by."},
+ {ty:"infer",q:"What can the reader infer from the fact that engineers have studied beaver dams?",c:["Beaver dams work well enough for people to learn from them.","Engineers build dams for beavers.","Beavers cause most floods.","Engineers are afraid of beavers."],
+  why:"Clue: engineers study the dams. What I know: experts study things that work well."},
+ {ty:"evidence",q:"Which sentence shows the author's attitude most directly?",c:["Not bad for an animal about the size of a backpack.","Beavers do not have blueprints, hard hats, or machines.","Their pond becomes a home for frogs, ducks, fish, and insects.","Engineers have studied beaver dams to learn how to slow down floods."],
+  why:"Here the author talks to you directly, with a playful compliment. The others state facts."}]}
+];
+const ALL=["theme","image","central","infer"];
+const QS=new URLSearchParams(location.search);
+const PICK=(QS.get("skill")||"").split(",").map(x=>x.trim()).filter(x=>ALL.indexOf(x)>-1);
+const ORDER=PICK.length?PICK:ALL;
+/* question types each skill practices, shown on its card (the index) */
+const TYNAME={theme:"best states the theme",main:"main idea vs. theme",change:"how a character changes",tone:"tone",imagery:"what an image shows",central:"central idea",detail:"which detail supports",summary:"best summary",infer:"what you can infer",attitude:"author's attitude",evidence:"best evidence"};
+const typesOf=sk=>[...new Set(P.filter(p=>p.sk===sk).flatMap(p=>p.qs.map(q=>q.ty)))].map(t=>TYNAME[t]);
+
+const KEY="readcloser.v1";
+const blank=()=>({log:{},next:{}});
+let S=blank();
+try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(blank(),JSON.parse(r));}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+
+const M=document.getElementById("main");
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+function today(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+const pct=(r,t)=>t?Math.round(r/t*100):0;
+function speak(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.rate=.95;speechSynthesis.speak(u);}catch(e){}}
+
+let view="desk", R=null;
+
+function startSkill(sk){
+  const list=P.filter(p=>p.sk===sk), i=(S.next[sk]||0)%list.length;
+  R={p:list[i],step:"mark",pen:"",marks:{},qi:0,sel:null,done:false,score:0};
+  view="pass";render();window.scrollTo({top:0,behavior:"smooth"});
+}
+function passHtml(p,marks,check){
+  const pen={};SK[p.sk].markers.forEach(m=>pen[m.k]=m);
+  let h=`<div class="pass ${p.kind==="poem"?"poem":""} ${check?"lock":""}"><h3>${esc(p.title)}</h3><p>`;
+  p.s.forEach((s,i)=>{
+    if(s[2]&&i>0)h+=`</p><p>`;
+    let m=marks[i]&&pen[marks[i]],st=m?` style="background:${m.color};color:${m.ink}"`:"",cls="sent",tag="";
+    if(check){
+      if(s[1]&&marks[i]!==s[1]){const w=pen[s[1]];st=` style="background:${w.color};color:${w.ink}"`;cls+=" miss";}
+      else if(!s[1]&&marks[i])cls+=" bad";
+      const k=s[1]||marks[i];
+      if(k)tag=`<span class="tag" style="background:${pen[k].color};color:${pen[k].ink}">${esc(s[1]?pen[k].name:"not "+pen[k].name)}</span>`;
+    }
+    h+=`<span class="${cls}" data-i="${i}"${st}>${tag}${esc(s[0])}</span>${p.kind==="poem"?"<br>":" "}`;
+  });
+  return h+`</p></div>`;
+}
+function viewPass(){
+  const p=R.p,sk=SK[p.sk],read=p.s.map(s=>s[0]).join(" ");
+  let h=`<div class="card"><div class="meta"><span class="ty">${sk.name}</span><span>${R.step==="mark"?"Step 1 · Mark it":R.step==="checked"?"Step 1 · Check your marks":"Step 2 · Question "+(R.qi+1)+" of "+p.qs.length}</span></div>
+    <div class="strat"><p><b>Strategy:</b> ${sk.strat}</p>${R.step==="q"?`<p><b>This question:</b> ${TY[p.qs[R.qi].ty]}</p>`:""}</div>`;
+  if(R.step==="mark"){
+    h+=`<p class="ask">${p.mark}</p>
+      <div class="pens">${sk.markers.map(m=>`<button data-pen="${m.k}" class="${R.pen===m.k?"sel":""}" style="background:${m.color};color:${m.ink}">${esc(m.name)}</button>`).join("")}</div>
+      <p class="hint" id="hint">${R.pen?"Tap a "+(p.kind==="poem"?"line":"sentence")+" to mark it. Tap again to undo.":"Pick a marker, then tap a "+(p.kind==="poem"?"line":"sentence")+"."}</p>
+      ${passHtml(p,R.marks,false)}
+      <div class="row"><button class="big" id="doneMark" ${Object.keys(R.marks).length?"":"disabled"}>Done marking</button>
+      <button class="big ghost" id="say">\u{1F50A} Read it to me</button>
+      <button class="big ghost" id="quit">Back</button></div>`;
+  }else if(R.step==="checked"){
+    const need=p.s.filter(s=>s[1]).length,found=p.s.filter((s,i)=>s[1]&&R.marks[i]===s[1]).length,extra=p.s.filter((s,i)=>!s[1]&&R.marks[i]).length;
+    h+=passHtml(p,R.marks,true)+`<div class="flash ${found===need&&!extra?"yes":"no"}">You found <b>${found} of ${need}</b>.${found<need?" The dashed ones are the ones you missed.":""}${extra?" The crossed-out ones didn't need a mark.":""}${found===need&&!extra?" \u{1F389}":""} Now answer from these marks.</div>
+      <div class="row"><button class="big" id="toQ">Answer the questions</button></div>`;
+  }else{
+    const q=p.qs[R.qi];
+    if(!R.order)R.order=shuffle(q.c.map((_,k)=>k));
+    h+=`<details class="peek" open><summary>The ${p.kind==="poem"?"poem":"passage"} with the marks</summary>${passHtml(p,R.full,false)}</details>
+      <p class="q">${esc(q.q)}</p>`+R.order.map(k=>{let c="choice";
+        if(R.done){if(k===0)c+=" right";else if(R.sel===k)c+=" wrong";}else if(R.sel===k)c+=" on";
+        return `<button class="${c}" data-k="${k}" ${R.done?"disabled":""}>${esc(q.c[k])}</button>`;}).join("");
+    if(R.done)h+=`<div class="flash ${R.sel===0?"yes":"no"}"><b>${R.sel===0?"Yes! \u{1F389}":"Not this time."}</b> ${q.why}</div>
+      <div class="row"><button class="big" id="next">${R.qi+1<p.qs.length?"Next question":"Finish"}</button></div>`;
+    else h+=`<div class="row"><button class="big" id="chk" ${R.sel===null?"disabled":""}>Check</button></div>`;
+  }
+  M.innerHTML=h+`</div>`;
+  const g=id=>document.getElementById(id);
+  M.querySelectorAll("[data-pen]").forEach(b=>b.onclick=()=>{R.pen=b.dataset.pen;render();});
+  if(R.step==="mark")M.querySelectorAll(".sent").forEach(sp=>sp.onclick=()=>{
+    if(!R.pen){g("hint").textContent="Pick a marker first.";return;}
+    const i=+sp.dataset.i;if(R.marks[i]===R.pen)delete R.marks[i];else R.marks[i]=R.pen;render();});
+  if(g("say"))g("say").onclick=()=>speak(p.title+". "+read);
+  if(g("quit"))g("quit").onclick=()=>{view="desk";render();};
+  if(g("doneMark"))g("doneMark").onclick=()=>{R.step="checked";R.full={};p.s.forEach((s,i)=>{if(s[1])R.full[i]=s[1];});render();};
+  if(g("toQ"))g("toQ").onclick=()=>{R.step="q";R.order=null;R.sel=null;R.done=false;render();window.scrollTo({top:0,behavior:"smooth"});};
+  M.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{if(R.done)return;R.sel=+b.dataset.k;render();});
+  if(g("chk"))g("chk").onclick=()=>{if(R.sel===null)return;R.done=true;const ok=R.sel===0;if(ok)R.score++;record(p.sk,ok);render();};
+  if(g("next"))g("next").onclick=()=>{R.qi++;R.order=null;R.sel=null;R.done=false;
+    if(R.qi>=p.qs.length){S.next[p.sk]=(S.next[p.sk]||0)+1;save();view="end";}render();window.scrollTo({top:0,behavior:"smooth"});};
+}
+function record(sk,ok){const d=today();S.log[d]=S.log[d]||{};const e=S.log[d][sk]||[0,0];e[1]++;if(ok)e[0]++;S.log[d][sk]=e;save();}
+
+function viewDesk(){
+  const t=S.log[today()]||{};
+  M.innerHTML=`<div class="card"><p class="kick">Pick a skill</p>
+    <p style="color:var(--ink2);margin-top:4px;font-size:15.5px">Each round is one short passage or poem: mark it, then answer 3 questions. Your <b>first try</b> on each question counts.${PICK.length?" <b>Your coach picked these skills for you.</b>":""}</p></div>
+    <div class="skills">${ORDER.map(k=>{const s=SK[k],e=t[k];
+    return `<button class="sk" data-sk="${k}"><span class="em">${s.em}</span><span class="nm">${s.name}</span>
+      <span class="ds">${s.ds}</span><span class="qt">Questions: ${typesOf(k).join(" · ")}</span><span class="tdy">${e?`TODAY ${e[0]}/${e[1]} (${pct(e[0],e[1])}%)`:"NOT YET TODAY"}</span></button>`;}).join("")}</div>`;
+  M.querySelectorAll("[data-sk]").forEach(b=>b.onclick=()=>startSkill(b.dataset.sk));
+}
+function viewEnd(){
+  M.innerHTML=`<div class="card" style="text-align:center"><p class="kick">${esc(R.p.title)} · done</p>
+    <p class="big-score" style="margin-top:8px">${R.score} / ${R.p.qs.length}</p>
+    <p style="color:var(--ink2);margin-top:6px">right on the first try</p>
+    <div class="row" style="justify-content:center"><button class="big" id="again">Next ${R.p.kind==="poem"?"poem":"passage"}</button>
+    <button class="big ghost" id="home">Pick a skill</button></div></div>`;
+  document.getElementById("again").onclick=()=>startSkill(R.p.sk);
+  document.getElementById("home").onclick=()=>{view="desk";render();};
+}
+function viewRec(){
+  const days=Object.keys(S.log).sort().reverse().slice(0,6);
+  if(!days.length){M.innerHTML=`<div class="card"><p class="kick">My record</p><p style="margin-top:6px;color:var(--ink2)">Nothing yet. Finish a passage and your first-try scores show up here, one column per day.</p></div>`;return;}
+  M.innerHTML=`<div class="card"><p class="kick">My record</p>
+    <p style="color:var(--ink2);margin-top:4px;font-size:15.5px">First-try right, by day. Newest day first.</p>
+    <div class="tablewrap"><table><tr><th>Skill</th>${days.map(d=>`<th>${d.slice(5)}</th>`).join("")}</tr>
+    ${ORDER.map(k=>`<tr><td>${SK[k].em} ${SK[k].name}</td>${days.map(d=>{const e=(S.log[d]||{})[k];
+      return e?`<td class="n ${pct(e[0],e[1])>=90?"hi":""}">${e[0]}/${e[1]} · ${pct(e[0],e[1])}%</td>`:`<td class="n" style="color:var(--ink3)">–</td>`;}).join("")}</tr>`).join("")}
+    </table></div><p class="note">Green = 90% or higher that day.</p></div>`;
+}
+function render(){
+  document.getElementById("tabDesk").classList.toggle("on",view!=="rec");
+  document.getElementById("tabRec").classList.toggle("on",view==="rec");
+  if(view==="desk")viewDesk();else if(view==="pass")viewPass();else if(view==="end")viewEnd();else viewRec();
+}
+document.getElementById("tabDesk").onclick=()=>{view="desk";render();};
+document.getElementById("tabRec").onclick=()=>{view="rec";render();};
+let armed=false;
+document.getElementById("reset").onclick=function(){
+  if(!armed){armed=true;this.textContent="Tap again to clear everything";setTimeout(()=>{armed=false;this.textContent="Clear my record";},4000);return;}
+  S=blank();save();armed=false;this.textContent="Clear my record";view="desk";render();
+};
+render();
+</script>
+</body>
+</html>
