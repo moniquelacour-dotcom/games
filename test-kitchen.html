@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Test Kitchen</title>
-<meta name="description" content="Grade 5 language practice in a test kitchen: check every recipe card, earn ingredients, create your own recipes.">
+<meta name="description" content="Grade 5 and 6 language practice in a test kitchen: check every recipe card, earn ingredients, create your own recipes.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#127859;</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -166,7 +166,7 @@ footer{margin-top:28px;border-top:2px solid var(--rule);padding-top:16px;color:v
 <div class="wrap">
   <header>
     <div class="brand">
-      <p class="kick">Grade 5 language</p>
+      <p class="kick" id="grlab">Grade 5 language</p>
       <h1>Test Kitchen</h1>
       <p class="sub">Every recipe card gets checked before it goes in the cookbook. Mark it, check your marks, then answer. Each first-try answer earns an ingredient for your own recipe.</p>
     </div>
@@ -197,6 +197,16 @@ const SK={
     rule:"Find the part to set off: list items, the name of the person spoken to, yes or no at the start, a tag question at the end."},
   ref:{name:"Reference sources",em:"\u{1F4DA}",ds:"Dictionary, thesaurus, encyclopedia, atlas.",
     rule:"Do you need a word or facts? Dictionary: meaning, saying it, syllables. Thesaurus: words that mean the same. Encyclopedia: facts. Atlas: maps and places."},
+  pron6:{gr:6,name:"Pronouns",em:"\u{1F464}",ds:"I or me, he or him, -self words, clear pronouns.",
+    rule:"Take the other person out and read it: Sam and I went = I went. Subject spot (I, he, she, we, they) does the action. After to, for, with = me, him, her, us, them. A -self word needs its own person earlier in the sentence."},
+  sva6:{gr:6,name:"Subject-verb agreement",em:"\u2696\uFE0F",ds:"Find the real subject, then match the verb.",
+    rule:"Find the real subject. Skip the words in the middle (of the boxes, with her friends). Each, everyone, neither, somebody = one, so the verb is singular. There is / there are: look after the verb for the subject."},
+  tense6:{gr:6,name:"Verb tense in a passage",em:"\u23F3",ds:"Match the time of the whole passage. Know when to leave it as is.",
+    rule:"Find the time of the whole passage first. Every verb about that time matches it. If the word already matches, the answer is leave it as is. Something that happened before another past thing gets had."},
+  formal6:{gr:6,name:"Formal style",em:"\u{1F3A9}",ds:"Reports and essays: no slang, no you, no exclamation points.",
+    rule:"Formal writing uses exact words and full sentences. Cross out slang (super, totally, gonna), talking to the reader (you), and exclamation points. The best ending sums up the whole topic."},
+  move6:{gr:6,name:"Revising sentences",em:"\u2702\uFE0F",ds:"Move a phrase, combine sentences, pick the exact word.",
+    rule:"Moving a phrase to the front keeps the meaning the same, with a comma after it. Combining keeps EVERY idea. The best word is the most exact one (sprinted, not went)."},
   word:{name:"Sound-alike words",em:"\u{1F442}",ds:"compliment, cymbals, miner, insight, and their twins.",
     rule:"Say what the word should MEAN here, then check the spelling fits. compliment = praise (I like it). complement = completes. cymbals = music. symbols = signs. miner = digs in a mine. minor = small, or under 18. insight = seeing inside. incite = stir up."}
 };
@@ -472,7 +482,132 @@ const Q=[
  why:"A heart is a sign that stands for love: a <b>symbol</b>. <b>Cymbals</b> are the crashing music ones."},
 {id:"w12",sk:"word",ty:"two",q:"Select the TWO sentences that use a sound-alike word the wrong way.",
  ch:["The hat was a great compliment to her outfit.","A twelve-year-old is still a minor.","The coach's talk gave the team insight into the other team's plays.","The shouting seemed to insight the dogs to bark."],a:[0,3],
- why:"The hat <b>completes</b> the outfit: <b>complement</b>. Stirring the dogs up: <b>incite</b>. A minor is someone under 18, and insight is understanding, so those two are right."}
+ why:"The hat <b>completes</b> the outfit: <b>complement</b>. Stirring the dogs up: <b>incite</b>. A minor is someone under 18, and insight is understanding, so those two are right."},
+/* ======== GRADE 6 · pronouns ======== */
+{id:"p6a",sk:"pron6",ty:"correct",q:"Which sentence uses the pronoun correctly?",
+ ch:["Maya and me built the robot.","Maya and I built the robot.","Me and Maya built the robot.","Maya and myself built the robot."],a:1,
+ why:"Take Maya out: <b>I built the robot</b>. The subject spot needs <b>I</b>."},
+{id:"p6b",sk:"pron6",ty:"blank",q:"The coach handed the trophy to Sam and _____.",
+ ch:["I","me","myself","mine"],a:1,
+ why:"After <b>to</b> comes the object spot. Take Sam out: <b>to me</b>."},
+{id:"p6c",sk:"pron6",ty:"find",q:"Which sentence uses a -self pronoun the wrong way?",
+ ch:["Leo taught himself to juggle.","The cat cleaned itself in the sun.","Please give the notes to myself.","We made ourselves a snack."],a:2,
+ why:"<b>Myself</b> needs an <b>I</b> earlier in the sentence. There isn't one, so it should be <b>to me</b>."},
+{id:"p6d",sk:"pron6",ty:"two",q:"Select the TWO sentences where the -self pronoun only adds emphasis (you could take it out).",
+ ch:["The author herself signed my book.","Jada hurt herself on the stairs.","I myself checked every answer.","They taught themselves to code."],a:[0,2],
+ why:"Take it out: <b>The author signed my book</b> and <b>I checked every answer</b> still work. Hurt and taught need the -self word."},
+{id:"p6e",sk:"pron6",ty:"blank",q:"Ben and Ava finished the poster by _____.",
+ ch:["themselves","theirselves","themself","themselfs"],a:0,
+ why:"Two people: <b>themselves</b>. Theirselves and themselfs are not words."},
+{id:"p6f",sk:"pron6",ty:"correct",q:"Which sentence is correct?",
+ ch:["Him and his sister walk to school.","He and his sister walk to school.","His sister and him walk to school.","He and her walk to school."],a:1,
+ why:"Take the sister out: <b>He walks to school</b>. The subject spot needs <b>he</b>."},
+{id:"p6g",sk:"pron6",ty:"find",q:"Which sentence has a pronoun that could mean two different people?",
+ ch:["When Rosa called Tina, she was laughing.","Rosa laughed when she called Tina.","Tina was laughing when Rosa called her.","Rosa called Tina, who was laughing."],a:0,
+ why:"<b>She</b> could be Rosa or Tina. The others make it clear."},
+{id:"p6h",sk:"pron6",ty:"revise",q:"Choose the best revision: “The scientists told the reporters that they had made a mistake.”",
+ ch:["The scientists told the reporters that they made a mistake.","The scientists told the reporters, “We made a mistake.”","They told them that they had made a mistake.","The scientists told the reporters that it was a mistake."],a:1,
+ why:"<b>They</b> could be the scientists or the reporters. Quoting the scientists makes it clear who made the mistake."},
+/* ======== GRADE 6 · subject-verb agreement ======== */
+{id:"v6a",sk:"sva6",ty:"blank",q:"The box of old photos _____ in the attic.",
+ ch:["sits","sit","are sitting","were sitting"],a:0,
+ why:"The real subject is <b>box</b> (one). Skip <b>of old photos</b>: the box <b>sits</b>."},
+{id:"v6b",sk:"sva6",ty:"find",q:"Which sentence has a verb that does not match its subject?",
+ ch:["Each of the players has a water bottle.","The dogs in the yard bark at every car.","Neither of the answers are correct.","My aunt, along with my cousins, is visiting."],a:2,
+ why:"<b>Neither</b> means not one, so it takes a singular verb: <b>is</b>."},
+{id:"v6c",sk:"sva6",ty:"blank",q:"Everyone in the two classes _____ invited to the play.",
+ ch:["is","are","were","have been"],a:0,
+ why:"<b>Everyone</b> is one group of people counted one at a time: <b>is</b>."},
+{id:"v6d",sk:"sva6",ty:"blank",q:"There _____ three good reasons to recycle.",
+ ch:["are","is","was","has been"],a:0,
+ why:"After <b>there</b>, look past the verb for the subject: <b>reasons</b> (more than one) <b>are</b>."},
+{id:"v6e",sk:"sva6",ty:"correct",q:"Which sentence is correct?",
+ ch:["The team are on the bus.","The team is on the bus.","The team were on the bus.","The team be on the bus."],a:1,
+ why:"<b>Team</b> is one group, so it takes <b>is</b>."},
+{id:"v6f",sk:"sva6",ty:"find",q:"<span class=\"pass\">(1) The museum in our town has a new exhibit. (2) The fossils in the main hall is millions of years old. (3) Every visitor gets a map. (4) The guides answer questions all day.</span>Which sentence has a verb that does not match its subject?",
+ ch:["Sentence 1","Sentence 2","Sentence 3","Sentence 4"],a:1,
+ why:"The real subject is <b>fossils</b> (more than one), so it should be <b>are</b>."},
+{id:"v6g",sk:"sva6",ty:"two",q:"Select the TWO sentences where the verb matches its subject.",
+ ch:["Both of my brothers plays soccer.","The pile of leaves was huge.","Somebody have left the gate open.","The girls on the bench were cheering."],a:[1,3],
+ why:"<b>Pile … was</b> and <b>girls … were</b> match. <b>Brothers</b> needs play, and <b>somebody</b> needs has."},
+{id:"v6h",sk:"sva6",ty:"revise",q:"Choose the best revision: “The list of chores are on the fridge.”",
+ ch:["The list of chores is on the fridge.","The lists of chore is on the fridge.","The list of chores were on the fridge.","The list of chores be on the fridge."],a:0,
+ why:"The real subject is <b>list</b> (one). Skip <b>of chores</b>: the list <b>is</b>."},
+/* ======== GRADE 6 · verb tense in a passage ======== */
+{id:"s6a",sk:"tense6",ty:"blank",q:"“Yesterday Ana finished her report and turns it in.” What should <b>turns</b> be?",
+ ch:["turned","turns (leave as is)","will turn","is turning"],a:0,
+ why:"<b>Yesterday</b> and <b>finished</b> are past, so it should be <b>turned</b>."},
+{id:"s6b",sk:"tense6",ty:"blank",q:"“Every morning, Kai walks his dog and feeds the fish.” What should <b>feeds</b> be?",
+ ch:["fed","feeds (leave as is)","will feed","had fed"],a:1,
+ why:"<b>Every morning</b> and <b>walks</b> are now. <b>Feeds</b> already matches: leave it as is."},
+{id:"s6c",sk:"tense6",ty:"find",q:"<span class=\"pass\">(1) Last spring our family visited a farm. (2) We milked a cow and gathered eggs. (3) The farmer shows us how to plant corn. (4) At sunset we rode a wagon back to the gate.</span>Which sentence has a verb that does not match the passage?",
+ ch:["Sentence 1","Sentence 2","Sentence 3","Sentence 4"],a:2,
+ why:"The passage is about <b>last spring</b>. Sentence 3 should say <b>showed</b>."},
+{id:"s6d",sk:"tense6",ty:"blank",q:"“Next week the club will hold a bake sale and sold cookies.” What should <b>sold</b> be?",
+ ch:["sell","sold (leave as is)","sells","had sold"],a:0,
+ why:"<b>Next week … will hold</b> is future. The club will hold a sale and (will) <b>sell</b> cookies."},
+{id:"s6e",sk:"tense6",ty:"correct",q:"Which sentence keeps its verbs in the same time?",
+ ch:["When the alarm rang, everyone leaves the room.","When the alarm rang, everyone left the room.","When the alarm rings, everyone left the room.","When the alarm rang, everyone will leave the room."],a:1,
+ why:"<b>Rang</b> is past, so the other verb is past too: <b>left</b>."},
+{id:"s6f",sk:"tense6",ty:"blank",q:"“By the time the movie ended, we had eaten all the popcorn.” What should <b>had eaten</b> be?",
+ ch:["ate","had eaten (leave as is)","eat","will eat"],a:1,
+ why:"The popcorn was gone <b>before</b> the movie ended, so <b>had eaten</b> is right: leave it as is."},
+{id:"s6g",sk:"tense6",ty:"find",q:"<span class=\"pass\">(1) Right now the storm is moving east. (2) Rain falls on the roads. (3) Drivers slowed down. (4) The news shows a map of the clouds.</span>Which sentence has a verb that does not match the passage?",
+ ch:["Sentence 1","Sentence 2","Sentence 3","Sentence 4"],a:2,
+ why:"The passage is happening <b>right now</b>. Sentence 3 should say <b>slow</b>."},
+{id:"s6h",sk:"tense6",ty:"two",q:"Select the TWO sentences that keep the same time.",
+ ch:["She opened the door and stepped outside.","He studies hard and passed the test.","They will travel and visit Grandma.","I drew a picture and paint it."],a:[0,2],
+ why:"<b>Opened … stepped</b> are both past. <b>Will travel and visit</b> are both future."},
+/* ======== GRADE 6 · formal style ======== */
+{id:"o6a",sk:"formal6",ty:"find",q:"Which sentence is too casual for a science report?",
+ ch:["Volcanoes form where plates meet.","Lava can reach very high temperatures.","Honestly, volcanoes are super cool!","Some volcanoes have not erupted in centuries."],a:2,
+ why:"<b>Honestly</b>, <b>super cool</b> and the exclamation point are how we talk, not how a report sounds."},
+{id:"o6b",sk:"formal6",ty:"revise",q:"Choose the most formal way to write: “Kids gotta drink lots of water when it's hot.”",
+ ch:["Children should drink plenty of water in hot weather.","Kids gotta drink tons of water when it's hot!","You should totally drink water when it's hot.","Drink water, kids, it's hot."],a:0,
+ why:"Exact words, a full sentence, no slang and no <b>you</b>: <b>Children should drink plenty of water</b>."},
+{id:"o6c",sk:"formal6",ty:"two",q:"A student is writing a report about bees. Select the TWO sentences that fit a formal report.",
+ ch:["Bees carry pollen from flower to flower.","Bees are, like, the best bugs ever.","Without bees, many crops would not grow.","You won't believe how busy bees are!"],a:[0,2],
+ why:"Facts in plain, exact words. <b>Like, the best bugs ever</b> and <b>you won't believe</b> are casual."},
+{id:"o6d",sk:"formal6",ty:"correct",q:"Which sentence would best end a formal report about recycling?",
+ ch:["Recycling saves resources and keeps waste out of landfills.","So yeah, recycle your stuff!","Anyway, that's all I've got about recycling.","Recycling is awesome, trust me."],a:0,
+ why:"A formal ending sums up the whole topic in exact words. The others sound like talking."},
+{id:"o6e",sk:"formal6",ty:"find",q:"“The experiment was a total flop, so the team tried a new plan.” Which part is too casual for a formal essay?",
+ ch:["experiment","total flop","the team","a new plan"],a:1,
+ why:"<b>Total flop</b> is slang. A formal essay would say <b>did not work</b> or <b>failed</b>."},
+{id:"o6f",sk:"formal6",ty:"revise",q:"Choose the best formal revision: “You can see that the river is really dirty.”",
+ ch:["The river shows signs of pollution.","You can totally see the river is gross.","The river is really, really dirty!","Check out how dirty the river is."],a:0,
+ why:"No <b>you</b>, no <b>really</b>, and an exact word: <b>pollution</b>."},
+{id:"o6g",sk:"formal6",ty:"two",q:"Select the TWO sentences written in a formal style.",
+ ch:["The data shows a steady rise in temperature.","OMG, it got so hot!","Researchers measured the water each week.","We were like, wow."],a:[0,2],
+ why:"Plain facts in exact words. <b>OMG</b> and <b>like, wow</b> are texting and talking."},
+{id:"o6h",sk:"formal6",ty:"blank",q:"In a formal letter to the mayor: “We _____ that the park needs new benches.”",
+ ch:["believe","kinda think","feel like","bet"],a:0,
+ why:"A formal letter uses an exact word: <b>believe</b>."},
+/* ======== GRADE 6 · revising sentences ======== */
+{id:"m6a",sk:"move6",ty:"revise",q:"Which sentence moves <b>after the game</b> to the beginning without changing the meaning? “The team ate pizza after the game.”",
+ ch:["After the game, the team ate pizza.","After the game the team, ate pizza.","The team, after the game ate pizza.","After the team ate pizza, the game."],a:0,
+ why:"Same meaning, and a comma goes right after the opening part: <b>After the game,</b>"},
+{id:"m6b",sk:"move6",ty:"revise",q:"Which sentence moves <b>during the storm</b> to the beginning correctly? “The lights flickered during the storm.”",
+ ch:["During the storm, the lights flickered.","During the storm the, lights flickered.","The storm flickered during the lights.","During the lights, the storm flickered."],a:0,
+ why:"Same meaning, with the comma after the opening part: <b>During the storm,</b>"},
+{id:"m6c",sk:"move6",ty:"two",q:"Select the TWO sentences that keep the meaning of: “We stayed inside because it was raining.”",
+ ch:["Because it was raining, we stayed inside.","Because we stayed inside, it was raining.","We stayed inside, because, it was raining.","It was raining, so we stayed inside."],a:[0,3],
+ why:"Rain is still the reason. The second one flips the reason, and the third has extra commas."},
+{id:"m6d",sk:"move6",ty:"revise",q:"Choose the best way to combine: “Owls hunt at night. Owls have excellent hearing.”",
+ ch:["Owls, which have excellent hearing, hunt at night.","Owls hunt at night, owls have excellent hearing.","Owls hunt at night and owls.","Hunting at night with hearing."],a:0,
+ why:"It keeps BOTH ideas (hunt at night, excellent hearing) in one correct sentence."},
+{id:"m6e",sk:"move6",ty:"revise",q:"Choose the best way to combine: “The bridge is old. The bridge is still safe.”",
+ ch:["The bridge is old, but it is still safe.","The bridge is old, the bridge is safe.","The bridge is old and safe and still.","Old bridge, still safe bridge."],a:0,
+ why:"<b>But</b> shows the two ideas go against each other, and every idea stays."},
+{id:"m6f",sk:"move6",ty:"blank",q:"“The runner went across the finish line.” Which word is more exact than <b>went</b>?",
+ ch:["sprinted","moved","got","did"],a:0,
+ why:"<b>Sprinted</b> tells exactly how she crossed the line."},
+{id:"m6g",sk:"move6",ty:"blank",q:"“The chef chopped the stuff for the soup.” Which word is more exact than <b>stuff</b>?",
+ ch:["vegetables","things","items","food stuff"],a:0,
+ why:"<b>Vegetables</b> names exactly what was chopped."},
+{id:"m6h",sk:"move6",ty:"revise",q:"Which sentence moves <b>with a loud crash</b> to the beginning correctly? “The shelf fell over with a loud crash.”",
+ ch:["With a loud crash, the shelf fell over.","With a loud crash the, shelf fell over.","The shelf, with a loud, crash fell over.","With the shelf, a loud crash fell over."],a:0,
+ why:"Same meaning, comma after the opening part: <b>With a loud crash,</b>"}
 ];
 /* Markers. [name, color, ink] */
 const PEN={
@@ -485,19 +620,26 @@ const PEN={
   tag:["Tag question (comma before it)","#ffb27a","#3f1a00"], intro:["Opening part (comma after it)","#8be0a4","#0b3a1a"],
   need:["What I need","#ffd866","#3d2e00"], w:["About a word","#7cc4ff","#06263f"], f:["Facts or places","#8be0a4","#0b3a1a"],
   bad:["Looks wrong","#ff9ec7","#45061f"], trick:["Tricky part","#ffd866","#3d2e00"],
-  sa:["Sound-alike word","#c9a7ff","#26094d"], clue:["Meaning clue","#8be0a4","#0b3a1a"]
+  sa:["Sound-alike word","#c9a7ff","#26094d"],
+  pro:["Pronoun","#c9a7ff","#26094d"], subj:["Real subject","#7cc4ff","#06263f"], verb:["Verb","#8be0a4","#0b3a1a"],
+  inf:["Too casual","#ff9ec7","#45061f"], part:["Part that moves","#ffb27a","#3f1a00"], vague:["Vague word","#ffd866","#3d2e00"], clue:["Meaning clue","#8be0a4","#0b3a1a"]
 };
 /* examples never reuse a sentence from a card */
 const PEX={list:"cats, dogs, and birds",name:"Jo, come here.",yn:"No, thank you.",tag:"That was fun, wasn't it?",intro:"After lunch, we read."};
 const CDO={list:"every thing in a list",name:"the name of the person spoken to",yn:"a yes or no word",tag:"a tag question",intro:"an opening part"};
-const SKP={tense:["past","now","fut"],fig:["sim","met","big","idm"],spell:["bad"],comma:["list","name","yn","tag","intro"],ref:["need"],word:["sa"]};
+const SKP={tense:["past","now","fut"],fig:["sim","met","big","idm"],spell:["bad"],comma:["list","name","yn","tag","intro"],ref:["need"],word:["sa"],pron6:["pro"],sva6:["subj","verb"],tense6:["past","now","fut"],formal6:["inf"],move6:["part","idea"]};
 const DO={
   tense:"Find each verb (the action word) and mark WHEN it happens: Past, Now or Future. A word that tells when (yesterday, tomorrow, last summer) gets a mark too.",
   fig:"Mark every clue: like or as (simile), a word that says it IS the thing (metaphor), anything too big to be true (hyperbole), and any idiom.",
   spell:"Mark the word that looks wrong.",
   comma:"Mark each part a comma goes with: every thing in a list, the name of the person spoken to, a yes or no word, a tag question, an opening part.",
   ref:"Mark what you need to find out.",
-  word:"Mark the sound-alike word. Then say what it should mean in that sentence."
+  word:"Mark the sound-alike word. Then say what it should mean in that sentence.",
+  pron6:"Mark every pronoun (I, me, he, him, she, her, they, them, -self words, who).",
+  sva6:"Mark the real subject and its verb. Skip the words in the middle.",
+  tense6:"Mark each verb (and when-words) Past, Now or Future. Find the time of the whole passage first.",
+  formal6:"Mark every word or part that sounds too casual for a report.",
+  move6:"Mark the part that moves, or each idea that must stay."
 };
 /* Marking key for every question.
    t + m: mark words in this text.  ch: mark words inside each choice (same order as the choices).
@@ -595,18 +737,63 @@ w8:{t:"I said her drawing was amazing, and she thanked me for the _____.",m:{clu
 w9:{t:"The speech was meant to _____ the crowd to cheer and stomp.",m:{clue:"cheer stomp"},pens:["clue"],do:"Mark the words that tell you what the missing word means."},
 w10:{t:"Reading his letters gave me _____ into why he moved away.",m:{clue:"into why"},pens:["clue"],do:"Mark the words that tell you what the missing word means."},
 w11:{ch:[{sa:"cymbals"},{sa:"cymbals"},{sa:"miner"},{sa:"compliment"}]},
-w12:{ch:[{sa:"compliment"},{sa:"minor"},{sa:"insight"},{sa:"insight"}]}
+w12:{ch:[{sa:"compliment"},{sa:"minor"},{sa:"insight"},{sa:"insight"}]},
+/* ======== GRADE 6 keys ======== */
+p6a:{ch:[{pro:"me"},{pro:"i"},{pro:"me"},{pro:"myself"}]},
+p6b:{t:"The coach handed the trophy to Sam and _____.",m:{clue:"to"},pens:["clue"],do:"Mark the word that tells you which spot the missing pronoun is in."},
+p6c:{ch:[{pro:"himself"},{pro:"itself"},{pro:"myself"},{pro:"ourselves"}]},
+p6d:{ch:[{pro:"herself"},{pro:"herself"},{pro:"i myself"},{pro:"they themselves"}]},
+p6e:{t:"Ben and Ava finished the poster by _____.",m:{clue:"ben ava"},pens:["clue"],do:"Mark who the missing word points back to."},
+p6f:{ch:[{pro:"him his"},{pro:"he his"},{pro:"his him"},{pro:"he her"}]},
+p6g:{ch:[{pro:"she"},{pro:"she"},{pro:"her"},{pro:"who"}]},
+p6h:{t:"The scientists told the reporters that they had made a mistake.",m:{pro:"they"}},
+v6a:{t:"The box of old photos _____ in the attic.",m:{subj:"box"}},
+v6b:{ch:[{subj:"each",verb:"has"},{subj:"dogs",verb:"bark"},{subj:"neither",verb:"are"},{subj:"aunt",verb:"is"}]},
+v6c:{t:"Everyone in the two classes _____ invited to the play.",m:{subj:"everyone"}},
+v6d:{t:"There _____ three good reasons to recycle.",m:{subj:"reasons"}},
+v6e:{ch:[{subj:"team",verb:"are"},{subj:"team",verb:"is"},{subj:"team",verb:"were"},{subj:"team",verb:"be"}]},
+v6f:{t:"(1) The museum in our town has a new exhibit. (2) The fossils in the main hall is millions of years old. (3) Every visitor gets a map. (4) The guides answer questions all day.",m:{subj:"museum fossils visitor guides",verb:"has is gets answer"}},
+v6g:{ch:[{subj:"both",verb:"plays"},{subj:"pile",verb:"was"},{subj:"somebody",verb:"have"},{subj:"girls",verb:"were"}]},
+v6h:{t:"The list of chores are on the fridge.",m:{subj:"list",verb:"are"}},
+s6a:{t:"Yesterday Ana finished her report and turns it in.",m:{past:"yesterday finished",now:"turns"}},
+s6b:{t:"Every morning, Kai walks his dog and feeds the fish.",m:{now:"every morning walks feeds"}},
+s6c:{t:"(1) Last spring our family visited a farm. (2) We milked a cow and gathered eggs. (3) The farmer shows us how to plant corn. (4) At sunset we rode a wagon back to the gate.",m:{past:"last spring visited milked gathered rode",now:"shows"}},
+s6d:{t:"Next week the club will hold a bake sale and sold cookies.",m:{fut:"next week will hold",past:"sold"}},
+s6e:{ch:[{past:"rang",now:"leaves"},{past:"rang left"},{now:"rings",past:"left"},{past:"rang",fut:"will leave"}]},
+s6f:{t:"By the time the movie ended, we had eaten all the popcorn.",m:{past:"by the time ended had eaten"}},
+s6g:{t:"(1) Right now the storm is moving east. (2) Rain falls on the roads. (3) Drivers slowed down. (4) The news shows a map of the clouds.",m:{now:"right now is moving falls shows",past:"slowed"}},
+s6h:{ch:[{past:"opened stepped"},{now:"studies",past:"passed"},{fut:"will travel visit"},{past:"drew",now:"paint"}]},
+o6a:{ch:[{},{},{inf:"honestly super cool"},{}],do:"Mark every word that sounds too casual. Some choices have none."},
+o6b:{t:"Kids gotta drink lots of water when it's hot.",m:{inf:"kids gotta lots"}},
+o6c:{ch:[{},{inf:"like the best bugs ever"},{},{inf:"you won't believe"}],do:"Mark every part that sounds too casual. Some choices have none."},
+o6d:{ch:[{},{inf:"so yeah stuff"},{inf:"anyway that's all i've got"},{inf:"awesome trust me"}],do:"Mark every part that sounds too casual. Some choices have none."},
+o6e:{t:"The experiment was a total flop, so the team tried a new plan.",m:{inf:"total flop"}},
+o6f:{t:"You can see that the river is really dirty.",m:{inf:"you can see really dirty"}},
+o6g:{ch:[{},{inf:"omg so hot"},{},{inf:"like wow"}],do:"Mark every part that sounds too casual. Some choices have none."},
+o6h:{t:"In a formal letter to the mayor: We _____ that the park needs new benches.",m:{clue:"formal letter mayor"},pens:["clue"],do:"Mark the words that tell you how formal the missing word must be."},
+m6a:{t:"The team ate pizza after the game.",m:{part:"after the game"}},
+m6b:{t:"The lights flickered during the storm.",m:{part:"during the storm"}},
+m6c:{t:"We stayed inside because it was raining.",m:{part:"because it was raining"}},
+m6d:{t:"Owls hunt at night. Owls have excellent hearing.",m:{idea:"hunt night excellent hearing"}},
+m6e:{t:"The bridge is old. The bridge is still safe.",m:{idea:"old still safe"}},
+m6f:{t:"The runner went across the finish line.",m:{vague:"went"},pens:["vague"],do:"Mark the vague word."},
+m6g:{t:"The chef chopped the stuff for the soup.",m:{vague:"stuff"},pens:["vague"],do:"Mark the vague word."},
+m6h:{t:"The shelf fell over with a loud crash.",m:{part:"with a loud crash"}}
 };
-const ALL=["tense","fig","spell","comma","ref","word"];
+const ALL=["tense","fig","spell","comma","ref","word","pron6","sva6","tense6","formal6","move6"];
+const grOf=k=>SK[k].gr||5;
 const QS=new URLSearchParams(location.search);
 const pickList=(v,ok)=>(v||"").split(",").map(x=>x.trim()).filter(x=>ok.indexOf(x)>-1);
-const ORDER=pickList(QS.get("skill"),ALL).length?pickList(QS.get("skill"),ALL):ALL;
-const FILTERED=ORDER.length<ALL.length;
+const GRADE=+(QS.get("grade")||0);
+const ORDER=pickList(QS.get("skill"),ALL).length?pickList(QS.get("skill"),ALL):ALL.filter(k=>grOf(k)===(GRADE||5));
+const FILTERED=pickList(QS.get("skill"),ALL).length>0;
+const GRLABEL=ORDER.every(k=>grOf(k)===grOf(ORDER[0]))?"Grade "+grOf(ORDER[0])+" language":"Language";
 const ROUND=10;
 const TYALL=["find","correct","blank","revise","two"];
 const TYORDER=pickList(QS.get("type"),TYALL).length?pickList(QS.get("type"),TYALL):TYALL;
 const inPlay=q=>ORDER.indexOf(q.sk)>-1;
 
+try{document.getElementById("grlab").textContent=GRLABEL;}catch(e){}
 const KEY="testkitchen.v1", CK="testkitchen.cooks";
 const blank=()=>({log:{},seen:{},book:[]});
 /* cooks: names typed on this computer only. Nothing about any student is in the page itself. */
