@@ -209,6 +209,14 @@ const SK={
     rule:"Moving a phrase to the front keeps the meaning the same, with a comma after it. Combining keeps EVERY idea. The best word is the most exact one (sprinted, not went)."},
   word:{name:"Sound-alike words",em:"\u{1F442}",ds:"compliment, cymbals, miner, insight, and their twins.",
     rule:"Say what the word should MEAN here, then check the spelling fits. compliment = praise (I like it). complement = completes. cymbals = music. symbols = signs. miner = digs in a mine. minor = small, or under 18. insight = seeing inside. incite = stir up."}
+  ,agree:{name:"Agreement",em:"\u{1F91D}",ds:"Subject and verb. A pronoun and its noun.",
+    rule:"Find the real subject. Skip the words in the middle (with her friends, of the books). Two subjects joined by and = plural. A group (class, club, team) is one, so it takes its."}
+  ,combine:{name:"Combining sentences",em:"\u{1F9E9}",ds:"Join ideas and keep every one.",
+    rule:"Mark each idea in the original. The best answer keeps EVERY idea, joins them with the right word (and, but, so, because, although), and puts a comma after an opening part. Shorter is not enough if an idea is lost."}
+  ,write:{name:"Opinion and story writing",em:"\u{1F4DD}",ds:"Openings, reasons with facts, conclusions, sense details.",
+    rule:"Opinion: the opening says what you think AND why. Reasons need facts you could check. The conclusion says the opinion again with the reasons. Stories: the opening shows who and what is happening. Sense words let the reader see, hear, smell, taste or feel it."}
+  ,conj:{name:"Joining words and complete sentences",em:"\u{1F517}",ds:"either/or, neither/nor, because, fragments, run-ons.",
+    rule:"Pairs stay together: either/or, neither/nor, both/and. A complete sentence has a subject, a verb and one finished thought. Because, when, after, although at the start need a second part."}
 };
 /* Question types: each has its own strategy. It stays on screen while she marks AND while she answers. */
 const TY={
@@ -607,7 +615,86 @@ const Q=[
  why:"<b>Vegetables</b> names exactly what was chopped."},
 {id:"m6h",sk:"move6",ty:"revise",q:"Which sentence moves <b>with a loud crash</b> to the beginning correctly? “The shelf fell over with a loud crash.”",
  ch:["With a loud crash, the shelf fell over.","With a loud crash the, shelf fell over.","The shelf, with a loud, crash fell over.","With the shelf, a loud crash fell over."],a:0,
- why:"Same meaning, comma after the opening part: <b>With a loud crash,</b>"}
+ why:"Same meaning, comma after the opening part: <b>With a loud crash,</b>"},
+/* ---- added 19 Nov 2026 from her G5 test misses: agreement, combining, writing, joining words, intro commas. New sentences, never test items. ---- */
+{id:"ci1",sk:"comma",ty:"correct",q:"Which sentence uses a comma correctly after the opening part?",
+ ch:["Although the movie was long, we enjoyed every minute.","Although, the movie was long we enjoyed every minute.","Although the movie was long we, enjoyed every minute.","Although the movie, was long we enjoyed every minute."],a:0,
+ why:"The whole opening part is <b>Although the movie was long</b>. The comma goes right after it, not after the first word."},
+{id:"ci2",sk:"comma",ty:"correct",q:"Which sentence is punctuated correctly?",
+ ch:["After the storm passed, we went outside to look for rainbows.","After the storm, passed we went outside to look for rainbows.","After, the storm passed we went outside to look for rainbows.","After the storm passed we went outside, to look for rainbows."],a:0,
+ why:"The opening part is <b>After the storm passed</b>. One comma, right after it."},
+{id:"a1",sk:"agree",ty:"blank",q:"A basket of red apples _____ on the kitchen table.",
+ ch:["sits","sit","are sitting","have sat"],a:0,
+ why:"The real subject is <b>basket</b> (one). Skip <b>of red apples</b>: the basket <b>sits</b>."},
+{id:"a2",sk:"agree",ty:"blank",q:"The girl and her cousin _____ ready, but the pile of coats _____ still on the bed.",
+ ch:["are … is","is … are","is … is","are … are"],a:0,
+ why:"<b>The girl and her cousin</b> = two people: <b>are</b>. <b>The pile</b> is one thing (skip of coats): <b>is</b>."},
+{id:"a3",sk:"agree",ty:"correct",q:"Choose the sentence with correct subject-verb agreement.",
+ ch:["The players on the team runs laps every day.","My grandma and my uncle bakes bread on Sundays.","The stack of library books needs to go back today.","Everybody in the bleachers cheer for the home team."],a:2,
+ why:"<b>stack</b> is one, so <b>needs</b>. Players run, grandma and uncle bake, everybody cheers."},
+{id:"a4",sk:"agree",ty:"find",q:"Which sentence has a verb that does not match its subject?",
+ ch:["The legs on the old chair wobble.","A box of crayons sits on each desk.","Marco and his sister walks to school.","The team practices after school."],a:2,
+ why:"<b>Marco and his sister</b> are two people, so they <b>walk</b>."},
+{id:"a5",sk:"agree",ty:"two",q:"Select TWO sentences with correct subject-verb agreement.",
+ ch:["The puppies in the box sleeps all day.","Each of the students has a pencil.","The flowers along the fence are blooming.","My brother and I is going to the game."],a:[1,2],
+ why:"<b>Each</b> is one: has. <b>Flowers</b> are many: are. Puppies sleep. My brother and I are."},
+{id:"a6",sk:"agree",ty:"correct",q:"Which sentence uses the pronoun correctly?",
+ ch:["The club held their meeting in the library.","The club held its meeting in the library.","The club held his meeting in the library.","The club held them meeting in the library."],a:1,
+ why:"A <b>club</b> is one group, so on these tests it takes <b>its</b>."},
+{id:"a7",sk:"agree",ty:"blank",q:"If the bikes are left out in the rain, _____ will rust.",
+ ch:["they","it","he","she"],a:0,
+ why:"<b>bikes</b> is more than one, so the pronoun is <b>they</b>."},
+{id:"a8",sk:"agree",ty:"find",q:"Which sentence has a pronoun that does not match its noun?",
+ ch:["The jury gave its answer.","The birds built their nest.","The class finished their project early.","Mom and Dad packed their bags."],a:2,
+ why:"A <b>class</b> is one group: <b>its</b> project. Birds and Mom and Dad are more than one, so their is right."},
+{id:"b1",sk:"combine",ty:"revise",q:"Which revision best combines these? <span class=\"pass\">The wind was strong. It blew the trash cans over.</span>",
+ ch:["The strong wind blew the trash cans over.","The wind was strong, it blew the trash cans over.","The wind blew.","The wind was strong, and blew, the trash cans over."],a:0,
+ why:"It keeps both ideas (strong, blew the trash cans over) in one smooth sentence. Two sentences joined with only a comma is a run-on."},
+{id:"b2",sk:"combine",ty:"revise",q:"Which sentence combines them with an opening part? <span class=\"pass\">We walked along the beach. I found a white shell.</span>",
+ ch:["As we walked along the beach, I found a white shell.","We walked along the beach, I found a white shell.","As we walked along the beach I, found a white shell.","I found a white shell, we walked."],a:0,
+ why:"<b>As we walked along the beach</b> is the opening part, with the comma right after it. Both ideas stay."},
+{id:"b3",sk:"combine",ty:"revise",q:"Which revision shows how the ideas connect? <span class=\"pass\">Mia studied hard for the quiz. She still missed two questions.</span>",
+ ch:["Although Mia studied hard for the quiz, she still missed two questions.","Mia studied hard for the quiz because she still missed two questions.","Mia studied hard, and the quiz.","Mia studied hard for the quiz so she missed two questions."],a:0,
+ why:"<b>still</b> means the second idea is a surprise, so the joining word is <b>Although</b>. Because and so say one caused the other."},
+{id:"b4",sk:"combine",ty:"revise",q:"Which revision is shorter AND keeps every idea? <span class=\"pass\">The new bike is faster than the old bike, and the new bike is also lighter than the old bike.</span>",
+ ch:["The new bike is faster and lighter than the old bike.","The new bike is fast and light.","The new bike is faster than the old bike.","The new bike, the old bike, is faster and lighter."],a:0,
+ why:"Keep faster, lighter AND than the old bike. <b>fast and light</b> is shorter, but it drops the comparison."},
+{id:"b5",sk:"combine",ty:"blank",q:"Fill the blank to make a compound sentence. The park was closed for repairs, _____",
+ ch:["so we played in the back yard.","playing in the back yard.","because of the broken swings.","the back yard instead."],a:0,
+ why:"A compound sentence is two complete sentences joined by a comma and a joining word: <b>, so we played</b>."},
+{id:"b6",sk:"combine",ty:"two",q:"Select TWO sentences that correctly combine these: <span class=\"pass\">The bell rang. The students lined up.</span>",
+ ch:["When the bell rang, the students lined up.","The bell rang, and the students lined up.","The bell rang the students lined up.","The bell rang, the students lined up."],a:[0,1],
+ why:"An opening part with a comma, or a comma plus <b>and</b>. No joining word at all, or only a comma, is a run-on."},
+{id:"op1",sk:"write",ty:"two",q:"Opinion: “Our town should build a skate park.” Select TWO reasons supported by facts.",
+ ch:["Last year 300 kids signed a letter asking for one.","Skate parks are really cool.","The nearest skate park is forty minutes away by car.","Everyone would love it."],a:[0,2],
+ why:"A fact can be checked: 300 kids, forty minutes. <b>really cool</b> and <b>everyone would love it</b> are feelings."},
+{id:"op2",sk:"write",ty:"correct",q:"Which sentence is the best conclusion for an opinion essay about longer recess?",
+ ch:["Recess is a time to play outside.","Some schools have recess and some do not.","So longer recess is important because it helps students focus and stay healthy.","I like recess."],a:2,
+ why:"A conclusion says the opinion again (longer recess is important) AND the reasons (focus, healthy)."},
+{id:"op3",sk:"write",ty:"correct",q:"Which opening best introduces the topic and states a clear opinion?",
+ ch:["Pets can be different sizes and colors.","Every classroom should have a class pet because caring for it teaches responsibility.","Some people have pets and some do not.","Do you have a pet?"],a:1,
+ why:"It says what the writer thinks (every classroom should have one) AND why."},
+{id:"op4",sk:"write",ty:"correct",q:"Which sentence uses sensory details best?",
+ ch:["The soup was good.","The bowl of soup was on the table.","Steam curled from the soup, and it smelled of garlic and warm bread.","We ate soup for dinner."],a:2,
+ why:"You can SEE the steam, SMELL the garlic and FEEL the warm bread."},
+{id:"op5",sk:"write",ty:"correct",q:"Which opening sentence best introduces the character and the situation?",
+ ch:["The library had tall shelves and big windows.","On the morning of the spelling bee, Jada could not stop shaking.","It was a day.","Spelling bees have many rounds."],a:1,
+ why:"It tells WHO (Jada) and WHAT is happening (the spelling bee, and she is nervous)."},
+{id:"op6",sk:"write",ty:"blank",q:"Bike lanes keep riders safe. _____, they help traffic move faster. _____, some streets are too narrow for them.",
+ ch:["In addition … However","However … In addition","Therefore … For example","For example … Therefore"],a:0,
+ why:"The second idea ADDS a reason: <b>In addition</b>. The third goes AGAINST it: <b>However</b>."},
+{id:"j1",sk:"conj",ty:"correct",q:"Which sentence uses joining-word pairs correctly?",
+ ch:["Neither the cat or the dog wanted to go outside.","Either we leave now, or we will miss the bus.","Both my sister or I play piano.","Not only is it cold but also."],a:1,
+ why:"Pairs stay together: <b>either … or</b>, neither … nor, both … and."},
+{id:"j2",sk:"conj",ty:"correct",q:"Which is a complete sentence with no fragment or run-on?",
+ ch:["Because the river was too high to cross.","The river was too high we waited.","The river was too high, so we waited on the bank.","Waiting on the bank for hours."],a:2,
+ why:"Two complete ideas joined by a comma and <b>so</b>. Because… alone is a fragment, and the second has no joining word."},
+{id:"j3",sk:"conj",ty:"find",q:"Which group of words is a fragment?",
+ ch:["The fox ran into the woods.","When the fox ran into the woods.","The fox ran, and the hens relaxed.","The fox ran fast."],a:1,
+ why:"<b>When</b> at the start needs a second part: When the fox ran into the woods, WHAT happened?"},
+{id:"j4",sk:"conj",ty:"two",q:"Select TWO sentences that start an idea with because, when, after or although.",
+ ch:["We stayed inside because it was raining.","I like pizza and pasta.","After the game ended, we went home.","She is tall, but he is taller."],a:[0,2],
+ why:"<b>because</b> and <b>after</b> join a part that cannot stand alone. And and but join equal parts."},
 ];
 /* Markers. [name, color, ink] */
 const PEN={
@@ -623,11 +710,12 @@ const PEN={
   sa:["Sound-alike word","#c9a7ff","#26094d"],
   pro:["Pronoun","#c9a7ff","#26094d"], subj:["Real subject","#7cc4ff","#06263f"], verb:["Verb","#8be0a4","#0b3a1a"],
   inf:["Too casual","#ff9ec7","#45061f"], part:["Part that moves","#ffb27a","#3f1a00"], vague:["Vague word","#ffd866","#3d2e00"], clue:["Meaning clue","#8be0a4","#0b3a1a"]
+  ,op:["Opinion (what the writer thinks)","#c9a7ff","#26094d"], fact:["Fact or detail (you could check it)","#8be0a4","#0b3a1a"], sense:["Sense word (see, hear, smell, taste, feel)","#ffb27a","#3f1a00"], conj:["Joining word","#7cc4ff","#06263f"]
 };
 /* examples never reuse a sentence from a card */
 const PEX={list:"cats, dogs, and birds",name:"Jo, come here.",yn:"No, thank you.",tag:"That was fun, wasn't it?",intro:"After lunch, we read."};
 const CDO={list:"every thing in a list",name:"the name of the person spoken to",yn:"a yes or no word",tag:"a tag question",intro:"an opening part"};
-const SKP={tense:["past","now","fut"],fig:["sim","met","big","idm"],spell:["bad"],comma:["list","name","yn","tag","intro"],ref:["need"],word:["sa"],pron6:["pro"],sva6:["subj","verb"],tense6:["past","now","fut"],formal6:["inf"],move6:["part","idea"]};
+const SKP={tense:["past","now","fut"],fig:["sim","met","big","idm"],spell:["bad"],comma:["list","name","yn","tag","intro"],ref:["need"],word:["sa"],pron6:["pro"],sva6:["subj","verb"],tense6:["past","now","fut"],formal6:["inf"],move6:["part","idea"],agree:["subj","verb","pro"],combine:["idea","intro"],write:["op","fact","sense"],conj:["conj"]};
 const DO={
   tense:"Find each verb (the action word) and mark WHEN it happens: Past, Now or Future. A word that tells when (yesterday, tomorrow, last summer) gets a mark too.",
   fig:"Mark every clue: like or as (simile), a word that says it IS the thing (metaphor), anything too big to be true (hyperbole), and any idiom.",
@@ -640,6 +728,10 @@ const DO={
   tense6:"Mark each verb (and when-words) Past, Now or Future. Find the time of the whole passage first.",
   formal6:"Mark every word or part that sounds too casual for a report.",
   move6:"Mark the part that moves, or each idea that must stay."
+  ,agree:"Mark the real subject, its verb, and any pronoun. Skip the words in the middle."
+  ,combine:"Mark each idea in the original, and any opening part. Every idea has to stay."
+  ,write:"Mark the opinion, every fact you could check, and every word you could see, hear, smell, taste or feel."
+  ,conj:"Mark every joining word (and, but, so, or, nor, because, when, after, although). Then check each choice is one complete thought."
 };
 /* Marking key for every question.
    t + m: mark words in this text.  ch: mark words inside each choice (same order as the choices).
@@ -779,8 +871,34 @@ m6e:{t:"The bridge is old. The bridge is still safe.",m:{idea:"old still safe"}}
 m6f:{t:"The runner went across the finish line.",m:{vague:"went"},pens:["vague"],do:"Mark the vague word."},
 m6g:{t:"The chef chopped the stuff for the soup.",m:{vague:"stuff"},pens:["vague"],do:"Mark the vague word."},
 m6h:{t:"The shelf fell over with a loud crash.",m:{part:"with a loud crash"}}
+,ci1:{ch:[{intro:"although the movie was long"},{intro:"although the movie was long"},{intro:"although the movie was long"},{intro:"although the movie was long"}]}
+,ci2:{t:"After the storm passed we went outside to look for rainbows.",m:{intro:"after the storm passed"}}
+,a1:{t:"A basket of red apples _____ on the kitchen table.",m:{subj:"basket"}}
+,a2:{t:"The girl and her cousin _____ ready, but the pile of coats _____ still on the bed.",m:{subj:"girl cousin pile"}}
+,a3:{ch:[{subj:"players",verb:"runs"},{subj:"grandma uncle",verb:"bakes"},{subj:"stack",verb:"needs"},{subj:"everybody",verb:"cheer"}]}
+,a4:{ch:[{subj:"legs",verb:"wobble"},{subj:"box",verb:"sits"},{subj:"marco sister",verb:"walks"},{subj:"team",verb:"practices"}]}
+,a5:{ch:[{subj:"puppies",verb:"sleeps"},{subj:"each",verb:"has"},{subj:"flowers",verb:"are"},{subj:"brother i",verb:"is"}]}
+,a6:{ch:[{subj:"club",pro:"their"},{subj:"club",pro:"its"},{subj:"club",pro:"his"},{subj:"club",pro:"them"}]}
+,a7:{t:"If the bikes are left out in the rain, _____ will rust.",m:{subj:"bikes"}}
+,a8:{ch:[{subj:"jury",pro:"its"},{subj:"birds",pro:"their"},{subj:"class",pro:"their"},{subj:"mom dad",pro:"their"}]}
+,b1:{t:"The wind was strong. It blew the trash cans over.",m:{idea:"strong blew trash cans over"}}
+,b2:{t:"We walked along the beach. I found a white shell.",m:{idea:"walked beach found shell"}}
+,b3:{t:"Mia studied hard for the quiz. She still missed two questions.",m:{idea:"studied hard still missed"}}
+,b4:{t:"The new bike is faster than the old bike, and the new bike is also lighter than the old bike.",m:{idea:"faster lighter old"}}
+,b5:{t:"The park was closed for repairs, _____",m:{idea:"closed repairs"}}
+,b6:{t:"The bell rang. The students lined up.",m:{idea:"rang lined"}}
+,op1:{ch:[{fact:"300 kids signed letter"},{op:"really cool"},{fact:"forty minutes"},{op:"everyone love"}]}
+,op2:{ch:[{fact:"play outside"},{fact:"some schools"},{op:"longer recess important",fact:"focus healthy"},{op:"like"}]}
+,op3:{ch:[{fact:"sizes colors"},{op:"should have class pet",fact:"teaches responsibility"},{fact:"some people"},{op:"pet"}]}
+,op4:{ch:[{op:"good"},{fact:"bowl table"},{sense:"steam curled smelled garlic warm"},{fact:"dinner"}]}
+,op5:{ch:[{sense:"tall big"},{fact:"jada spelling bee",sense:"shaking"},{op:"day"},{fact:"rounds"}]}
+,op6:{t:"Bike lanes keep riders safe. _____, they help traffic move faster. _____, some streets are too narrow for them.",m:{fact:"safe faster narrow"}}
+,j1:{ch:[{conj:"neither or"},{conj:"either or"},{conj:"both or"},{conj:"not only but also"}]}
+,j2:{ch:[{conj:"because"},{},{conj:"so"},{}]}
+,j3:{ch:[{},{conj:"when"},{conj:"and"},{}]}
+,j4:{ch:[{conj:"because"},{conj:"and"},{conj:"after"},{conj:"but"}]}
 };
-const ALL=["tense","fig","spell","comma","ref","word","pron6","sva6","tense6","formal6","move6"];
+const ALL=["tense","fig","spell","comma","ref","word","agree","combine","write","conj","pron6","sva6","tense6","formal6","move6"];
 const grOf=k=>SK[k].gr||5;
 const QS=new URLSearchParams(location.search);
 const pickList=(v,ok)=>(v||"").split(",").map(x=>x.trim()).filter(x=>ok.indexOf(x)>-1);
