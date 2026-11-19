@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Read in Scoops: The Busy Beaver</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1f2a37;--bg:#fbf7ef;--card:#fff;--line:#e5e1d8;--arc:#2f6fdf;--go:#1f7a5a;--rec:#c0392b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Lexend,Arial,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:26px;margin:0 0 4px}
+.sub{margin:0 0 16px;color:#5b6472;font-size:16px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+button{font:inherit;font-size:17px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 14px;cursor:pointer}
+button.on{background:var(--arc);border-color:var(--arc);color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 20px}
+.text{font-size:28px;line-height:2.4;word-spacing:4px}
+.s{display:inline;padding:0 3px 6px;border-bottom:4px solid transparent;border-radius:0 0 22px 22px}
+.scoops .s{border-bottom-color:var(--arc)}
+.scoops .gap{display:inline-block;width:14px}
+.gap{display:inline-block;width:0}
+.reads{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:16px}
+.read{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.read h2{font-size:18px;margin:0}
+.read .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.rec{background:var(--rec);border-color:var(--rec);color:#fff}
+.play{background:var(--go);border-color:var(--go);color:#fff}
+.note{font-size:14px;color:#5b6472}
+.live{color:var(--rec);font-weight:600}
+@media (max-width:520px){.text{font-size:23px}}
+</style></head><body><div class="wrap">
+<h1>The Busy Beaver</h1>
+<p class="sub">Read it in scoops. The words in a scoop go together. Take a tiny breath between scoops.</p>
+<div class="bar"><button id="bOff" type="button">Plain</button><button id="bOn" type="button" class="on">Show the scoops</button></div>
+<div class="card"><div class="text scoops" id="text"></div></div>
+<div class="reads" id="reads"></div>
+<p class="note">Your reads stay on this computer. Nothing is sent anywhere. They go away when you close the page.</p>
+</div>
+<script>
+const T="A beaver lives|by the river|behind our school.|You can tell|it is there|because of the trees.|Some of them|have been chewed|into points.|Beavers have|strong front teeth|that never stop growing.|They use them|to cut down|small trees.|Then they drag the wood|into the water|and pile it up|with mud and rocks.|This makes a dam.|The dam|slows down the river|and makes a pond.|In the middle of the pond,|the beaver builds a home|called a lodge.|The door|is under the water,|so other animals|cannot get in.|We have never seen the beaver,|but we see more of its work|each week.";
+const $=id=>document.getElementById(id);
+$("text").innerHTML=T.split("|").map(s=>'<span class="s">'+s+'</span>').join('<span class="gap"> </span>');
+function mode(on){$("text").classList.toggle("scoops",on);$("bOn").classList.toggle("on",on);$("bOff").classList.toggle("on",!on);}
+$("bOn").onclick=()=>mode(true);$("bOff").onclick=()=>mode(false);
+if(/[?&]plain(=|&|$)/.test(location.search))mode(false);
+const READS=["Read 1: first try","Read 2: with scoops","Read 3: try again"];
+let stream=null,rec=null,chunks=[],cur=-1,stopT=null;const urls=[];
+READS.forEach((name,i)=>{const d=document.createElement("div");d.className="read";
+ d.innerHTML='<h2>'+name+'</h2><div class="row"><button type="button" class="rec" id="r'+i+'">Record</button><button type="button" class="play" id="p'+i+'" hidden>Listen</button><span id="st'+i+'" class="note"></span></div><audio id="a'+i+'" hidden></audio>';
+ $("reads").appendChild(d);});
+async function start(i){
+ if(rec&&rec.state==="recording"){stop();return;}
+ try{stream=stream||await navigator.mediaDevices.getUserMedia({audio:true});}catch(e){$("st"+i).textContent="Allow the microphone, then try again.";return;}
+ chunks=[];cur=i;rec=new MediaRecorder(stream);
+ rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+ rec.onstop=()=>{const b=new Blob(chunks,{type:rec.mimeType||"audio/webm"});if(urls[cur])URL.revokeObjectURL(urls[cur]);urls[cur]=URL.createObjectURL(b);$("a"+cur).src=urls[cur];$("p"+cur).hidden=false;$("r"+cur).textContent="Record again";$("st"+cur).textContent="Saved";READS.forEach((_,k)=>$("r"+k).disabled=false);};
+ rec.start();READS.forEach((_,k)=>{if(k!==i)$("r"+k).disabled=true});
+ $("r"+i).textContent="Stop";$("st"+i).innerHTML='<span class="live">Recording</span>';
+ clearTimeout(stopT);stopT=setTimeout(()=>{if(rec&&rec.state==="recording")stop()},60000);
+}
+function stop(){clearTimeout(stopT);if(rec&&rec.state==="recording")rec.stop();}
+READS.forEach((_,i)=>{$("r"+i).onclick=()=>start(i);$("p"+i).onclick=()=>{const a=$("a"+i);READS.forEach((_,k)=>{if(k!==i){$("a"+k).pause()}});a.currentTime=0;a.play();};});
+</script></body></html>
