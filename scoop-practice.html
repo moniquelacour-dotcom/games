@@ -126,7 +126,7 @@ var CLIPS = {pancakes:"mp3", biggame:"mp3", hill:"mp3", showtime:"mp3", tacos:"m
 var AUDIO_DIR = "audio/scoops/";
 var GOAL = 300; /* seconds */
 var KEY = "scoop-practice.v1";
-var isCoach = /[?&]coach\b/.test(location.search) || /coach/i.test(location.pathname);
+var isCoach = /[?&]coach=echo(&|$)/.test(location.search);
 
 function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
