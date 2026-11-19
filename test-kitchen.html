@@ -327,7 +327,7 @@ const Q=[
 /* ---- spelling ---- */
 {id:"s1",sk:"spell",ty:"correct",q:"Which word is spelled correctly?",
  ch:["seperate","tommorow","beleive","calendar"],a:3,
- why:"<b>calendar</b>. The others: <b>separate</b> (say it SEP-A-RATE: the middle is <b>a</b>, not e), <b>tomorrow</b> (one m, two r), <b>believe</b> (i before e)."},
+ why:"<b>calendar</b>. The others: <b>separate</b> (a after the p), <b>tomorrow</b> (one m, two r), <b>believe</b> (i before e)."},
 {id:"s2",sk:"spell",ty:"correct",q:"Which word is spelled correctly?",
  ch:["neccessary","suprise","library","probly"],a:2,
  why:"<b>library</b>. The others: <b>necessary</b> (one c, two s), <b>surprise</b> (sur + prise), <b>probably</b>."},
@@ -336,7 +336,7 @@ const Q=[
  why:"<b>beginning</b>. The others: <b>occasion</b> (two c, one s), <b>until</b> (one l), <b>argument</b> (argue drops its e)."},
 {id:"s4",sk:"spell",ty:"correct",q:"Which word is spelled correctly?",
  ch:["embarass","enviroment","immediately","recomend"],a:2,
- why:"<b>immediately</b>. The others: <b>embarrass</b> (two r, two s), <b>environment</b> (has <b>iron</b> in it), <b>recommend</b> (re + commend)."},
+ why:"<b>immediately</b>. The others: <b>embarrass</b> (two r, two s), <b>environment</b> (environ + ment), <b>recommend</b> (re + commend)."},
 {id:"s5",sk:"spell",ty:"find",q:"One word is spelled wrong. Which one? “Our neighbor said the resturant would open in February.”",
  ch:["neighbor","resturant","would","February"],a:1,
  why:"<b>restaurant</b>: rest + au + rant."},
@@ -345,10 +345,10 @@ const Q=[
  why:"<b>government</b>: govern + ment. The n stays."},
 {id:"s7",sk:"spell",ty:"two",q:"Select the TWO misspelled words. “My freind will definitly come to the party.”",
  ch:["freind","will","definitly","party"],a:[0,2],
- why:"<b>friend</b> (a friend to the <b>end</b>) and <b>definitely</b> (say it de-fin-ITE-ly: ite, not ate)."},
+ why:"<b>friend</b> (i before e) and <b>definitely</b> (ite, not ate)."},
 {id:"s8",sk:"spell",ty:"two",q:"Select the TWO misspelled words. “Please seperate the papers before the begining of class.”",
  ch:["seperate","papers","begining","class"],a:[0,2],
- why:"<b>separate</b> (say it SEP-A-RATE: the middle is <b>a</b>, not e) and <b>beginning</b> (double n before -ing)."},
+ why:"<b>separate</b> (a after the p) and <b>beginning</b> (double n before -ing)."},
 {id:"s9",sk:"spell",ty:"type",q:"One word is misspelled. Type it the right way. “I truely believe we can win.”",
  a:"truly",why:"<b>truly</b>: true drops its e."},
 {id:"s10",sk:"spell",ty:"type",q:"One word is misspelled. Type it the right way. “The magician made the coin dissapear.”",
@@ -402,7 +402,7 @@ const Q=[
  why:"<b>Owen</b> is the person being spoken to, so his name is set off on both sides."},
 {id:"s14",sk:"spell",ty:"correct",q:"Which word is spelled correctly?",
  ch:["acknowlege","wierd","Wednesday","rythm"],a:2,
- why:"<b>Wednesday</b>: say it Wed-nes-day. The others: <b>acknowledge</b> (it has <b>know</b> and <b>edge</b>), <b>weird</b> (breaks the i-before-e rule), <b>rhythm</b>."},
+ why:"<b>Wednesday</b>: say it Wed-nes-day. The others: <b>acknowledge</b> (ac + know + ledge), <b>weird</b> (breaks the i-before-e rule), <b>rhythm</b>."},
 {id:"s15",sk:"spell",ty:"two",q:"Select the TWO misspelled words. “The comittee will meet in the libary on Tuesday.”",
  ch:["comittee","meet","libary","Tuesday"],a:[0,2],
  why:"<b>committee</b> (double m, double t, double e) and <b>library</b> (say both r's: li-brar-y)."},
@@ -412,18 +412,18 @@ const Q=[
  a:"address",why:"<b>address</b>: two d, two s."},
 {id:"s18",sk:"spell",ty:"blank",q:"Which spelling completes the sentence? “We need to _____ the recycling from the trash.”",
  ch:["separate","seperate","seperete","separete"],a:0,
- why:"<b>separate</b>: say it the silly way, SEP-A-RATE. The letter after p is <b>a</b>, not e."},
+ why:"<b>separate</b>: the letter after p is <b>a</b>."},
 {id:"s19",sk:"spell",ty:"blank",q:"Which spelling completes the sentence? “It is _____ to wear a helmet when you ride.”",
  ch:["necessary","neccessary","necesary","nesessary"],a:0,
- why:"<b>necessary</b>: one <b>c</b>ollar, two <b>s</b>leeves. One c, two s."},
+ why:"<b>necessary</b>: one c, two s."},
 {id:"s20",sk:"spell",ty:"blank",q:"Which spelling completes the sentence? “The ending of the movie was a big _____.”",
  ch:["surprise","suprise","surprize","serprise"],a:0,
  why:"<b>surprise</b>: sur + prise. Say the first r."},
 {id:"s21",sk:"spell",ty:"find",q:"One word is spelled wrong. Which one? “Her favorite charactor in the book was very brave.”",
  ch:["favorite","charactor","book","brave"],a:1,
- why:"<b>character</b> ends in <b>-er</b>. (<b>actor</b> ends in <b>-or</b>, which is why this one tricks people.)"},
+ why:"<b>character</b> ends in <b>-er</b>."},
 {id:"s22",sk:"spell",ty:"type",q:"One word is misspelled. Type it the right way. “We can't go outside untill the rain stops.”",
- a:"until",why:"<b>until</b> has one l. (<b>till</b> has two, which is why this one tricks people.)"},
+ a:"until",why:"<b>until</b> has one l at the end."},
 {id:"f14",sk:"fig",ty:"blank",q:"Which words complete the simile? “Her smile was _____ a summer afternoon.”",
  ch:["as warm as","so warm on","warmer during","warming"],a:0,
  why:"A simile compares with <b>like</b> or <b>as</b>: <b>as warm as</b> a summer afternoon."},
@@ -1145,7 +1145,7 @@ function viewQ(){
         const w=ws[R.sp.i],e=SPW[w],plain=spPlain(e[0]);
         h+=`<div class="spbox"><p class="kick2">Practice the word ${R.sp.i+1} of ${ws.length}: look, cover, type</p>`;
         if(R.sp.ph==="look"){
-          h+=`<p class="spword">${spMark(e[0])}</p><p class="sptip">${esc(e[1])}</p><p class="spdots">Look at the yellow part. Say the word slowly, part by part. Then cover it.</p>
+          h+=`<p class="spword">${spMark(e[0])}</p><p class="spdots">Look at the yellow part. Say the word slowly, part by part. Then cover it.</p>
             <div class="row"><button class="big" id="spCover">Cover it and type</button></div>`;
         }else if(R.sp.ph==="type"){
           h+=`<p class="sptip">Type the word you just studied.</p><input type="text" id="spIn" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Type the word" value="${esc(R.sp.typed)}">
@@ -1154,7 +1154,7 @@ function viewQ(){
           h+=`<p class="spword">${spMark(e[0])}</p><div class="flash yes"><b>Yes! ${esc(plain)}</b></div>
             <div class="row"><button class="big" id="spNext">${R.sp.i+1<ws.length?"Next word":"Done practicing"}</button></div>`;
         }else{
-          h+=`<p class="sptip">You typed <b>${esc(R.sp.typed)}</b>. It's:</p><p class="spword">${spMark(e[0])}</p><p class="sptip">${esc(e[1])}</p>
+          h+=`<p class="sptip">You typed <b>${esc(R.sp.typed)}</b>. It's:</p><p class="spword">${spMark(e[0])}</p>
             <div class="row"><button class="big" id="spCover">Cover it and try again</button></div>`;
         }
         h+=`</div>`;
