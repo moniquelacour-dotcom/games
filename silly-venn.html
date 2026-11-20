@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Silly Venn</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⭕</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Silly Venn: compare two silly things. Read both, sort each fact into
+   only A / both / only B, then answer one compare-and-contrast question.
+   No timer, no sound, no names. Stars save in this browser only. */
+:root{
+  --paper:#FFF8EF;--card:#FFFFFF;--ink:#2B2233;--ink-2:#5E5169;--rule:#EBDCC8;
+  --a:#3D7BE0;--a-soft:#E2ECFC;--b:#D9567E;--b-soft:#FBE3EB;--both:#8A5CD1;--both-soft:#EEE4FB;
+  --ok:#2E7D5B;--ok-soft:#DDF0E6;--no:#B8365C;--sun:#E5A00D;
+  --f-head:"Baloo 2","Trebuchet MS",system-ui,sans-serif;--f-body:"Figtree",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:19px/1.45 var(--f-body)}
+main{max-width:900px;margin:0 auto;padding-block:16px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+h1,h2{font-family:var(--f-head);font-weight:800;margin:0;line-height:1.1;text-wrap:balance}
+h1{font-size:clamp(32px,7vw,46px);text-align:center}
+h2{font-size:26px}
+p{margin:0}
+button{font:inherit;cursor:pointer;color:inherit}
+[hidden]{display:none!important}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.stars{font-size:22px;letter-spacing:2px}
+.pill{background:var(--card);border:2px solid var(--rule);border-radius:999px;padding:4px 14px;font-weight:700}
+.card{background:var(--card);border:2px solid var(--rule);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.texts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:620px){.texts{grid-template-columns:1fr}}
+.text{border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.text.A{background:var(--a-soft);border:2px solid var(--a)}
+.text.B{background:var(--b-soft);border:2px solid var(--b)}
+.text h3{margin:0;font:800 24px var(--f-head);display:flex;align-items:center;gap:8px}
+.text h3 .em{font-size:32px}
+.text p{font-size:20px}
+/* venn */
+.venn{position:relative;width:100%;max-width:620px;margin:0 auto;aspect-ratio:62/34}
+.venn svg{position:absolute;inset:0;width:100%;height:100%}
+.zone{position:absolute;top:8%;height:84%;border:none;background:transparent;border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;padding:6px 4px;min-width:0}
+.zone.A{left:3%;width:33%}.zone.both{left:36%;width:28%}.zone.B{left:64%;width:33%}
+@media (max-width:620px){.venn{aspect-ratio:62/46}}
+.zone .lab{background:#fffe;border-radius:8px;padding:1px 6px;font:800 clamp(13px,2.8vw,18px) var(--f-head);text-align:center;line-height:1.05}
+.zone.A .lab{color:var(--a)}.zone.B .lab{color:var(--b)}.zone.both .lab{color:var(--both)}
+.zone .dots{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.dot{font:700 clamp(11px,2.4vw,15px) var(--f-body);background:#fff;border:2px solid var(--rule);border-radius:10px;padding:1px 6px;max-width:100%;text-align:center;line-height:1.2}
+.dot.ok{border-color:var(--ok);background:var(--ok-soft)}
+.venn.armed .zone{outline:3px dashed #0002;outline-offset:-4px}
+.venn.armed .zone:hover{background:#ffffff66}
+/* facts tray */
+.howto{color:var(--ink-2);font-weight:600}
+.tray{display:flex;flex-wrap:wrap;gap:8px}
+.fact{border:2px solid var(--rule);background:#fff;border-radius:14px;padding:8px 14px;font-weight:700;font-size:19px;text-align:left}
+.fact[aria-pressed="true"]{border-color:var(--ink);background:var(--paper);box-shadow:0 0 0 3px var(--sun)}
+.fact.placed{opacity:.45}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.big{border:none;border-radius:999px;background:var(--both);color:#fff;font:800 22px var(--f-head);padding:10px 26px;box-shadow:0 4px 0 #5f3aa0}
+.big:active{transform:translateY(2px);box-shadow:0 2px 0 #5f3aa0}
+.big:disabled{opacity:.4;cursor:default}
+.ghost{border:2px solid var(--rule);background:#fff;border-radius:999px;padding:6px 16px;font-weight:700}
+.msg{font-weight:700;min-height:1.4em}
+.msg.no{color:var(--no)}.msg.ok{color:var(--ok)}
+/* question */
+.stem{font:700 21px var(--f-body)}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choices button{border:2px solid var(--rule);background:#fff;border-radius:14px;padding:10px 14px;text-align:left;font-size:19px}
+.choices button.right{border-color:var(--ok);background:var(--ok-soft)}
+.choices button.wrong{border-color:var(--no);background:var(--b-soft)}
+.why{color:var(--ink-2);font-weight:600}
+/* reveal */
+.reveal{text-align:center;align-items:center}
+.reveal .mash{font-size:64px;line-height:1}
+.reveal .name{font:800 34px var(--f-head);color:var(--both)}
+.reveal .got{font-size:44px;letter-spacing:4px}
+.fly{position:fixed;font-size:30px;pointer-events:none;z-index:8;animation:fly 1.4s ease-out forwards}
+@keyframes fly{to{transform:translate(var(--dx),var(--dy)) rotate(300deg);opacity:0}}
+@keyframes pop{50%{transform:scale(1.12)}}
+.pop{animation:pop .35s ease}
+.map{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:10px}
+.map button{border:2px solid var(--rule);background:#fff;border-radius:16px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:700}
+.map button .em{font-size:30px}
+.map button .st{color:var(--sun);letter-spacing:2px}
+@media (prefers-reduced-motion:reduce){.fly,.pop{animation:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Silly Venn</h1>
+
+  <!-- pick a round -->
+  <section class="card" id="home">
+    <p>Two silly things. Read about each one. Then sort the facts: is it true for <b>only one</b>, or for <b>both</b>?</p>
+    <div class="map" id="map"></div>
+  </section>
+
+  <!-- a round -->
+  <div id="game" hidden>
+    <div class="top"><button class="ghost" id="back">← All rounds</button><span class="pill" id="rnd"></span></div>
+    <div class="texts" id="texts" style="margin-top:12px"></div>
+
+    <section class="card" id="sort" style="margin-top:16px">
+      <h2>Sort the facts</h2>
+      <p class="howto" id="howto">Tap a fact. Then tap where it goes.</p>
+      <div class="tray" id="tray"></div>
+      <div class="venn" id="venn">
+        <svg viewBox="0 0 620 340" preserveAspectRatio="none" aria-hidden="true">
+          <circle cx="225" cy="170" r="160" fill="#3D7BE0" fill-opacity=".13" stroke="#3D7BE0" stroke-width="5"/>
+          <circle cx="395" cy="170" r="160" fill="#D9567E" fill-opacity=".13" stroke="#D9567E" stroke-width="5"/>
+        </svg>
+        <button class="zone A" data-z="A"><span class="lab" id="labA"></span><span class="dots"></span></button>
+        <button class="zone both" data-z="both"><span class="lab">Both</span><span class="dots"></span></button>
+        <button class="zone B" data-z="B"><span class="lab" id="labB"></span><span class="dots"></span></button>
+      </div>
+      <div class="row"><button class="big" id="check" disabled>Check my Venn</button></div>
+      <p class="msg" id="sortMsg" aria-live="polite"></p>
+    </section>
+
+    <section class="card" id="quiz" hidden style="margin-top:16px">
+      <h2>One question</h2>
+      <p class="stem" id="stem"></p>
+      <div class="choices" id="choices"></div>
+      <p class="why" id="why" hidden></p>
+      <div class="row"><button class="big" id="toReveal" hidden>See your stars ★</button></div>
+    </section>
+
+    <section class="card reveal" id="reveal" hidden style="margin-top:16px">
+      <div class="mash" id="mash"></div>
+      <div class="name" id="mashName"></div>
+      <div class="got" id="got"></div>
+      <p id="gotLine"></p>
+      <div class="row" style="justify-content:center"><button class="big" id="nextR">Next round ▶</button><button class="ghost" id="home2">All rounds</button></div>
+    </section>
+  </div>
+</main>
+
+<script>
+(function(){
+"use strict";
+/* f: [short label, where it belongs: "A" | "B" | "both"] */
+var ROUNDS = [
+ {a:{n:"A horse",em:"🐴",t:["A horse is a big animal.","It has four legs and a long tail.","A horse can carry a person.","It drinks lots of water."]},
+  b:{n:"A bathtub",em:"🛁",t:["A bathtub sits in the bathroom.","It has four little feet.","Lots of water goes in it.","You can splash in it."]},
+  f:[["Has four legs or feet","both"],["Lots of water goes in","both"],["Has a long tail","A"],["Can carry a person","A"],["Sits in the bathroom","B"],["You can splash in it","B"]],
+  q:{s:"How are a horse and a bathtub alike?",c:["Both have four legs or feet.","Both can carry a person.","Both have a long tail.","Both sit in the bathroom."],a:0,w:"The horse has four legs and the bathtub has four little feet. The other choices are true for only one of them."},
+  mash:"Horsetub"},
+ {a:{n:"A cupcake",em:"🧁",t:["A cupcake is a small cake.","It is sweet and soft.","It can have frosting on top.","You eat it at a party."]},
+  b:{n:"A cat",em:"🐱",t:["A cat is a small pet.","It is soft and furry.","It has whiskers and a tail.","A cat naps in the sun."]},
+  f:[["Is small","both"],["Is soft","both"],["Is sweet","A"],["Has frosting on top","A"],["Has whiskers","B"],["Naps in the sun","B"]],
+  q:{s:"Which detail shows a difference between a cupcake and a cat?",c:["Both are small.","A cat has whiskers.","Both are soft.","You can find both at home."],a:1,w:"Only the cat has whiskers, so that is a difference. Small and soft are true for both."},
+  mash:"Cupcat"},
+ {a:{n:"A play",em:"🎭",t:["A play happens on a stage.","Actors say their lines.","The lights get bright, then dark.","At the end, people clap loudly."]},
+  b:{n:"A thunderstorm",em:"⛈️",t:["A thunderstorm happens in the sky.","Lightning makes bright flashes.","Thunder booms loudly.","Rain falls on the ground."]},
+  f:[["Has bright light","both"],["Is loud","both"],["Happens on a stage","A"],["Actors say lines","A"],["Happens in the sky","B"],["Rain falls","B"]],
+  q:{s:"How are a play and a thunderstorm alike?",c:["Both happen on a stage.","Both have actors.","Both have bright light and loud sounds.","Both make rain fall."],a:2,w:"The play has bright lights and loud clapping. The storm has bright lightning and loud thunder."},
+  mash:"Thunderplay"},
+ {a:{n:"A dog",em:"🐶",t:["A dog is a friendly pet.","It barks when someone comes to the door.","You can play fetch with a dog.","It wags its tail when it is happy."]},
+  b:{n:"A drum",em:"🥁",t:["A drum is a music toy.","It booms when you hit it.","You can play a drum in a band.","It is round on top."]},
+  f:[["Makes a loud sound","both"],["You can play with it","both"],["Is a pet","A"],["Wags its tail","A"],["Is round on top","B"],["Played in a band","B"]],
+  q:{s:"Which sentence tells how a dog and a drum are different?",c:["Both make a loud sound.","You can play with both of them.","A dog wags its tail, but a drum is played in a band.","A drum is a friendly pet."],a:2,w:"A difference tells something true for only one. Wagging is only the dog. A band is only the drum."},
+  mash:"Drumdog"},
+ {a:{n:"A pancake",em:"🥞",t:["A pancake is flat and round.","You cook it in a hot pan.","You can pour syrup on top.","It is good for breakfast."]},
+  b:{n:"A pond",em:"🪷",t:["A pond is flat and round.","Frogs and ducks live there.","It is full of cool water.","Lily pads float on top."]},
+  f:[["Flat and round","both"],["Something on top","both"],["Cooked in a hot pan","A"],["Good for breakfast","A"],["Frogs live there","B"],["Full of cool water","B"]],
+  q:{s:"The pancake text is mostly about a food. What is the pond text mostly about?",c:["A food for breakfast","A place where animals live","How to cook in a pan","Syrup"],a:1,w:"Most of the pond sentences tell about frogs, ducks, water and lily pads: a place where animals live."},
+  mash:"Pondcake"},
+ {a:{n:"A black horse",em:"🐎",t:["This horse is black and shiny.","It has a white star on its face.","It runs fast in the field.","It is gentle and calm."]},
+  b:{n:"The night sky",em:"🌌",t:["The night sky is dark black.","It is full of white stars.","Clouds float across it.","It is quiet and calm."]},
+  f:[["Is black","both"],["Has a white star","both"],["Is calm","both"],["Runs in the field","A"],["Has a face","A"],["Clouds float across it","B"]],
+  q:{s:"Which detail shows how the horse and the night sky are alike?",c:["Both run in the field.","Both are black with white stars.","Both have clouds.","Both have a face."],a:1,w:"The horse is black with a white star. The sky is black with white stars."},
+  mash:"Starhorse"}
+];
+var KEY = "silly-venn.v1", best = {};
+try{ best = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; }catch(e){ best = {}; }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(best)); }catch(e){} }
+var $ = function(id){ return document.getElementById(id); };
+var R, ri = 0, place = {}, sel = null, checks = 0, qWrong = 0, order = [];
+
+function starStr(n){ return "★★★".slice(0, n) + "☆☆☆".slice(0, 3 - n); }
+function home(){
+  $("game").hidden = true; $("home").hidden = false;
+  $("map").innerHTML = ROUNDS.map(function(r, i){
+    return '<button data-i="' + i + '"><span class="em">' + r.a.em + ' ' + r.b.em + '</span><span>' + r.a.n + ' vs. ' + r.b.n.toLowerCase().replace(/^a /,"a ") + '</span><span class="st">' + starStr(best[i] || 0) + '</span></button>';
+  }).join("");
+  $("map").querySelectorAll("button").forEach(function(b){ b.onclick = function(){ start(+b.dataset.i); }; });
+}
+function shuffle(a){ a = a.slice(); for(var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function start(i){
+  ri = i; R = ROUNDS[i]; place = {}; sel = null; checks = 0; qWrong = 0;
+  order = shuffle(R.f.map(function(_, k){ return k; }));
+  $("home").hidden = true; $("game").hidden = false;
+  $("rnd").textContent = "Round " + (i + 1) + " of " + ROUNDS.length;
+  $("texts").innerHTML = [["A", R.a], ["B", R.b]].map(function(x){
+    return '<div class="text ' + x[0] + '"><h3><span class="em">' + x[1].em + '</span>' + x[1].n + '</h3><p>' + x[1].t.join(" ") + '</p></div>';
+  }).join("");
+  $("labA").textContent = "Only " + R.a.n.replace(/^(A|The) /, "").replace(/^./, function(c){ return c; });
+  $("labB").textContent = "Only " + R.b.n.replace(/^(A|The) /, "");
+  $("sort").hidden = false; $("quiz").hidden = true; $("reveal").hidden = true;
+  $("sortMsg").textContent = ""; $("sortMsg").className = "msg";
+  draw(); window.scrollTo(0, 0);
+}
+function draw(){
+  $("tray").innerHTML = order.map(function(k){
+    var f = R.f[k], p = place[k];
+    return '<button class="fact' + (p ? " placed" : "") + '" data-k="' + k + '" aria-pressed="' + (sel === k) + '">' + f[0] + '</button>';
+  }).join("");
+  $("tray").querySelectorAll(".fact").forEach(function(b){ b.onclick = function(){ var k = +b.dataset.k; sel = sel === k ? null : k; draw(); }; });
+  ["A", "both", "B"].forEach(function(z){
+    var box = document.querySelector('.zone[data-z="' + z + '"] .dots');
+    box.innerHTML = order.filter(function(k){ return place[k] && place[k].z === z; }).map(function(k){
+      return '<span class="dot' + (place[k].ok ? " ok" : "") + '">' + R.f[k][0] + '</span>';
+    }).join("");
+  });
+  $("venn").classList.toggle("armed", sel !== null);
+  $("howto").textContent = sel !== null ? "Now tap where “" + R.f[sel][0] + "” goes." : "Tap a fact. Then tap where it goes.";
+  $("check").disabled = Object.keys(place).length < R.f.length;
+}
+document.querySelectorAll(".zone").forEach(function(z){
+  z.onclick = function(){
+    if(sel === null){ $("sortMsg").className = "msg"; $("sortMsg").textContent = "Tap a fact first."; return; }
+    if(place[sel] && place[sel].ok){ sel = null; draw(); return; }
+    place[sel] = {z: z.dataset.z, ok: false}; sel = null; $("sortMsg").textContent = ""; draw();
+  };
+});
+$("check").onclick = function(){
+  checks++;
+  var wrong = [];
+  Object.keys(place).forEach(function(k){ if(place[k].z === R.f[k][1]) place[k].ok = true; else wrong.push(+k); });
+  wrong.forEach(function(k){ delete place[k]; });
+  draw();
+  var m = $("sortMsg");
+  if(!wrong.length){
+    m.className = "msg ok"; m.textContent = "Every fact is in the right place!";
+    $("venn").classList.add("pop"); setTimeout(function(){ $("venn").classList.remove("pop"); }, 400);
+    setTimeout(quiz, 700);
+  } else {
+    var k = wrong[0], f = R.f[k];
+    m.className = "msg no";
+    m.textContent = (wrong.length === 1 ? "One fact went back. " : wrong.length + " facts went back. ") +
+      "Look back at both texts: is “" + f[0].toLowerCase() + "” true for " + R.a.n.toLowerCase() + ", for " + R.b.n.toLowerCase() + ", or for both?";
+  }
+};
+function quiz(){
+  var q = R.q;
+  $("quiz").hidden = false; $("stem").textContent = q.s; $("why").hidden = true; $("toReveal").hidden = true;
+  var box = $("choices"); box.innerHTML = ""; var done = false;
+  q.c.forEach(function(t, i){
+    var b = document.createElement("button"); b.type = "button"; b.textContent = String.fromCharCode(65 + i) + ". " + t;
+    b.onclick = function(){
+      if(done) return;
+      if(i === q.a){
+        done = true; b.classList.add("right");
+        $("why").hidden = false; $("why").textContent = "Yes! " + q.w; $("toReveal").hidden = false;
+      } else if(!b.classList.contains("wrong")){
+        qWrong++; b.classList.add("wrong");
+        $("why").hidden = false; $("why").textContent = "Not that one. Check the Venn: which circle is that fact in? Try again.";
+      }
+    };
+    box.appendChild(b);
+  });
+  $("quiz").scrollIntoView({behavior:"smooth", block:"start"});
+}
+$("toReveal").onclick = function(){
+  var n = 3 - (checks > 1 ? 1 : 0) - (qWrong > 0 ? 1 : 0);
+  if(n < 1) n = 1;
+  if(n > (best[ri] || 0)){ best[ri] = n; save(); }
+  $("mash").textContent = R.a.em + " + " + R.b.em;
+  $("mashName").textContent = "You made a " + R.mash + "!";
+  $("got").textContent = starStr(n);
+  $("gotLine").textContent = n === 3 ? "Three stars! Sorted and answered on the first try." : "Play it again any time to try for three stars.";
+  $("nextR").textContent = ri < ROUNDS.length - 1 ? "Next round ▶" : "All rounds ▶";
+  $("reveal").hidden = false; $("reveal").scrollIntoView({behavior:"smooth", block:"center"});
+  burst(R.a.em, R.b.em);
+};
+function burst(e1, e2){
+  var r = $("reveal").getBoundingClientRect();
+  for(var i = 0; i < 14; i++){
+    var s = document.createElement("span"); s.className = "fly"; s.textContent = i % 3 === 2 ? "★" : (i % 2 ? e1 : e2);
+    s.style.left = (r.left + r.width / 2) + "px"; s.style.top = (r.top + 40) + "px"; s.style.color = "#E5A00D";
+    var a = Math.random() * Math.PI * 2, d = 90 + Math.random() * 120;
+    s.style.setProperty("--dx", Math.cos(a) * d + "px"); s.style.setProperty("--dy", Math.sin(a) * d - 40 + "px");
+    document.body.appendChild(s); setTimeout(function(x){ return function(){ x.remove(); }; }(s), 1500);
+  }
+}
+$("nextR").onclick = function(){ if(ri < ROUNDS.length - 1) start(ri + 1); else home(); };
+$("home2").onclick = home; $("back").onclick = home;
+home();
+})();
+</script>
+</body>
+</html>
