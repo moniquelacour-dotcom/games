@@ -1,0 +1,498 @@
+<title>READ the Board</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout: a test page on a desk. Five highlighter-colored columns, tiles are folded answer cards; a card opens full-size over the board. */
+:root{
+  --desk:#e9edf2; --paper:#ffffff; --ink:#1d2433; --ink-soft:#5b6578; --line:#cfd6e0;
+  --r:#ffe14d; --e:#ff8fc7; --a:#7ee0a1; --d:#7cc8ff; --b:#ffb057;
+  --r-ink:#5c4a00; --e-ink:#6b1446; --a-ink:#0d5228; --d-ink:#0b4470; --b-ink:#6a3500;
+  --good:#1a8a4a; --bad:#c23a3a; --used:#dfe4ea; --used-ink:#8a94a6;
+  --display:"Lilita One","Arial Rounded MT Bold","Trebuchet MS",sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --desk:#141922; --paper:#1e2531; --ink:#eef1f6; --ink-soft:#a5afc2; --line:#343e4f;
+  --used:#252c38; --used-ink:#6c7689; --good:#4fd18a; --bad:#ff7a7a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --desk:#141922; --paper:#1e2531; --ink:#eef1f6; --ink-soft:#a5afc2; --line:#343e4f;
+  --used:#252c38; --used-ink:#6c7689; --good:#4fd18a; --bad:#ff7a7a; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--desk);color:var(--ink);font-family:var(--body);font-size:16px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px;box-sizing:border-box}
+*{box-sizing:border-box}
+button{font-family:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--d);outline-offset:2px}
+.wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,5vw,44px);margin:0;letter-spacing:.5px;line-height:1}
+h1 .hl{background:linear-gradient(transparent 55%,var(--r) 55%);padding:0 4px;color:var(--ink)}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.tbtn{background:var(--paper);border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;font-size:14px;font-weight:700}
+.tbtn:hover{border-color:var(--ink-soft)}
+
+.scores{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{display:flex;align-items:center;gap:8px;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;padding:6px 6px 6px 12px;font-weight:700}
+.chip .pts{font-family:var(--display);font-weight:400;font-size:20px;font-variant-numeric:tabular-nums}
+.chip.squad{border-color:var(--ink);}
+.chip .x{border:0;background:transparent;color:var(--ink-soft);font-size:16px;padding:2px 6px;border-radius:6px}
+.chip .x:hover{background:var(--used)}
+.addp{display:flex;gap:6px}
+.addp input{font:inherit;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);border-radius:10px;padding:6px 10px;width:130px}
+
+.board{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.colhead{border-radius:14px;padding:12px 8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:118px;justify-content:center}
+.colhead .big{font-family:var(--display);font-size:clamp(34px,6vw,58px);line-height:1}
+.colhead .emo{font-size:clamp(22px,3.4vw,34px);line-height:1}
+.colhead .lbl{font-weight:700;font-size:clamp(11px,1.5vw,15px);line-height:1.15}
+.c-r{background:var(--r);color:var(--r-ink)} .c-e{background:var(--e);color:var(--e-ink)}
+.c-a{background:var(--a);color:var(--a-ink)} .c-d{background:var(--d);color:var(--d-ink)} .c-b{background:var(--b);color:var(--b-ink)}
+.tile{background:var(--paper);border:2px solid var(--line);border-radius:14px;min-height:76px;font-family:var(--display);font-size:clamp(20px,3.6vw,36px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:transform .12s,border-color .12s;font-variant-numeric:tabular-nums}
+.tile:hover:not(.used){transform:translateY(-2px);border-color:var(--ink)}
+.tile .a{font-size:.6em;opacity:.7;margin-right:2px}
+.tile.used{background:var(--used);color:var(--used-ink);border-style:dashed;cursor:default}
+.tile.used .who{font-family:var(--body);font-weight:700;font-size:12px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 4px}
+.legend{font-size:13px;color:var(--ink-soft);text-align:center}
+
+/* Card */
+.overlay{position:fixed;inset:0;background:rgba(10,14,22,.55);display:flex;align-items:flex-start;justify-content:center;overflow:auto;z-index:20;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.card{background:var(--paper);border-radius:20px;max-width:820px;width:100%;margin:auto;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.cardtop{display:flex;align-items:center;gap:12px;padding:14px 18px;flex-wrap:wrap}
+.cardtop .big{font-family:var(--display);font-size:44px;line-height:1}
+.cardtop .name{font-weight:700;font-size:18px;flex:1;min-width:0}
+.cardtop .val{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.cardbody{padding:18px 22px 22px;display:flex;flex-direction:column;gap:16px}
+.passage{border-left:6px solid var(--line);padding:10px 14px;font-size:20px;line-height:1.6;background:color-mix(in srgb,var(--desk) 55%,var(--paper))}
+.sent{border-radius:6px;padding:1px 3px;cursor:pointer;border:0;background:transparent;font:inherit;text-align:left;display:inline;line-height:inherit;color:inherit}
+.sent:hover{background:color-mix(in srgb,var(--d) 35%,transparent)}
+.sent.pick{background:var(--d);color:var(--d-ink)}
+.sent.right{background:var(--a);color:var(--a-ink)}
+.sent.wrong{background:color-mix(in srgb,var(--bad) 25%,transparent);text-decoration:line-through}
+.question{font-size:24px;font-weight:700;line-height:1.35;text-wrap:balance}
+.prompt{font-size:18px;color:var(--ink-soft);display:flex;gap:8px;align-items:flex-start}
+.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.choice{display:flex;gap:12px;align-items:flex-start;text-align:left;background:var(--paper);border:2px solid var(--line);border-radius:14px;padding:12px 14px;font-size:19px;line-height:1.35}
+.choice .ltr,.erow .ltr{font-family:var(--display);font-size:22px;min-width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:var(--used);color:var(--ink);flex:none}
+.choice:hover:not([disabled]){border-color:var(--ink)}
+.choice.pick{border-color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.choice.right{border-color:var(--good);background:color-mix(in srgb,var(--good) 12%,var(--paper))}
+.choice.right .ltr{background:var(--good);color:#fff}
+.choice.wrong{opacity:.75}
+.choice .why{display:block;font-size:15px;color:var(--ink-soft);margin-top:4px}
+.choice.right .why{color:var(--ink)}
+.choice[disabled]{cursor:default}
+.whybox{display:flex;gap:12px;align-items:center;flex-wrap:wrap;border:2px dashed var(--ink-soft);border-radius:14px;padding:12px 14px;font-size:19px;font-weight:700}
+.whybox .emo{font-size:30px}
+.whybox span.t{flex:1;min-width:180px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:700;font-size:17px;background:var(--ink);color:var(--paper)}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:default}
+.verdict{font-family:var(--display);font-size:30px}
+.verdict.good{color:var(--good)} .verdict.bad{color:var(--bad)}
+.award{display:flex;flex-direction:column;gap:8px;border-top:1.5px solid var(--line);padding-top:14px}
+.award .row{display:flex;gap:8px;flex-wrap:wrap}
+.award h3{margin:0;font-size:15px;color:var(--ink-soft);font-weight:700}
+.give{border:2px solid var(--line);background:var(--paper);border-radius:999px;padding:8px 14px;font-weight:700;font-size:15px}
+.give.on{background:var(--a);border-color:var(--a);color:var(--a-ink)}
+.give.think.on{background:var(--b);border-color:var(--b);color:var(--b-ink)}
+.confirm{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--paper);border:2px solid var(--bad);border-radius:12px;padding:10px 14px;font-weight:700}
+
+.tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:2px solid var(--line);padding-bottom:0}
+.tab{border:2px solid var(--line);border-bottom:0;background:var(--used);border-radius:12px 12px 0 0;padding:9px 14px;font-weight:700;font-size:15px;display:flex;gap:8px;align-items:center;margin-bottom:-2px}
+.tab.on{background:var(--paper);border-color:var(--ink);border-bottom:2px solid var(--paper)}
+.tab .cnt{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.card{overflow:clip}
+.card.wide{max-width:1080px}
+.elimbody{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);column-gap:24px;row-gap:16px;align-items:start}
+.elimbody > *{grid-column:2}
+.elimbody > .passage{grid-column:1;grid-row:1 / span 12;position:sticky;top:0;z-index:2}
+@media (max-width:760px){
+  .elimbody{grid-template-columns:minmax(0,1fr)}
+  .elimbody > *{grid-column:1}
+  .elimbody > .passage{grid-row:auto;max-height:38vh;overflow:auto;box-shadow:0 6px 12px -8px rgba(0,0,0,.35)}
+}
+.passage.pa{background:color-mix(in srgb,var(--a) 28%,var(--paper));border-left:8px solid var(--a);border-radius:0 12px 12px 0;padding:14px 16px;font-size:21px}
+.plabel{display:block;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:4px}
+.dig{touch-action:none;user-select:none;-webkit-user-select:none}
+.w{border-radius:4px;padding:1px 1px;cursor:pointer;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.w.hl{background:var(--r);color:var(--r-ink)}
+.dig .w:hover{box-shadow:inset 0 -3px 0 var(--r)}
+.sentwrap.ev{outline:3px solid var(--good);outline-offset:3px;border-radius:6px}
+.elim{display:flex;flex-direction:column;gap:8px}
+.erow{display:flex;gap:12px;align-items:center;flex-wrap:wrap;border:2px solid var(--line);border-radius:14px;padding:10px 12px;font-size:19px;line-height:1.35}
+.erow .txt{flex:1;min-width:160px}
+.erow.out .ct{text-decoration:line-through;text-decoration-thickness:3px;text-decoration-color:var(--bad);opacity:.6}
+.erow.keep{border-color:var(--a)}
+.erow.pick{box-shadow:inset 0 0 0 2px var(--ink)}
+.erow.right{border-color:var(--good);background:color-mix(in srgb,var(--good) 12%,var(--paper))}
+.erow.right .ltr{background:var(--good);color:#fff}
+.erow .why{display:block;font-size:15px;color:var(--ink-soft);margin-top:4px}
+.ctl{display:flex;gap:6px;flex-wrap:wrap}
+.mini{border:2px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 12px;font-weight:700;font-size:15px}
+.erow.out .mini.x{background:var(--bad);border-color:var(--bad);color:#fff}
+.erow.keep .mini.k{background:var(--a);border-color:var(--a);color:var(--a-ink)}
+.mini.best{border-color:var(--ink)}
+.erow.pick .mini.best{background:var(--ink);color:var(--paper)}
+.enote{font-weight:700;font-size:15px}
+.estatus{font-weight:700;font-size:17px}
+@media (max-width:640px){
+  .board{gap:6px}
+  .colhead{min-height:86px;padding:8px 2px;border-radius:10px}
+  .colhead .lbl{display:none}
+  .tile{min-height:58px;border-radius:10px}
+  .choices{grid-template-columns:1fr}
+  .question{font-size:21px}
+  .passage{font-size:18px}
+  .cardbody{padding:14px}
+}
+@media (prefers-reduced-motion:reduce){.tile{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><span class="hl">READ</span> the Board</h1>
+    <div class="tools">
+      <button class="tbtn" id="undoBtn" type="button">↶ Undo last points</button>
+      <button class="tbtn" id="resetBtn" type="button">New game</button>
+    </div>
+  </header>
+  <div class="tabs" id="tabs" role="tablist" aria-label="Squads"></div>
+  <div id="confirmSlot"></div>
+
+  <div class="scores" id="scores"></div>
+
+  <div class="board" id="board" aria-label="Game board"></div>
+  <div class="legend">Pick a letter and an amount. Every question is multiple choice. Tell us WHY before you check!</div>
+</div>
+
+<div class="overlay" id="overlay" hidden></div>
+
+<script>
+const COLS = [
+  {k:"r", L:"R", emo:"🔁", name:"Reread the question", tip:"Say what it's really asking before you look at the choices."},
+  {k:"e", L:"E", emo:"🔍", name:"Examine the words", tip:"Know the words the question uses."},
+  {k:"a", L:"A", emo:"❓", name:"Ask each answer", tip:"Go through all 4 choices. Cross out the wrong ones."},
+  {k:"d", L:"D", emo:"🖍️", name:"Dig for evidence", tip:"The answer is in the text. Highlight the proof."},
+  {k:"b", L:"★", emo:"💡", name:"Bonus: The format talks", tip:"Bold, italics and how it's worded are clues."}
+];
+const ROWS = [0,1,2,3,4];
+// R, E, A, D rows are worth 1-5 alphas; the bonus column is worth 5-25.
+const worth = (k, ri) => k === "b" ? (ri + 1) * 5 : ri + 1;
+
+// q: question, p: prompt (what to do), x: passage (string) or s: sentences (evidence tap), c: choices, ok: correct index, w: why for each choice
+const Q = {
+ r:[
+  {x:"Sam has a red ball. He kicks it to his dog, Max.", q:"Who does Sam kick the ball to?", p:"Reread the question. What is it asking you to find?",
+   c:["A color","A person or animal","A place","A time"], ok:1,
+   w:["Red is a color, but the question says WHO.","WHO asks for a person or animal. The answer is Max!","WHERE would ask for a place.","WHEN would ask for a time."]},
+  {q:"Which word does <b>NOT</b> describe the weather in the story?", p:"Reread the question. What job is it giving you?",
+   c:["Find a weather word","Find a word that is NOT about the weather","Find the longest word","Find the first word"], ok:1,
+   w:["Careful! That skips the word NOT.","Yes! NOT flips the job. Find the one that doesn't fit.","Length has nothing to do with the question.","The question never says first."]},
+  {q:"Why did Mia leave the party early?", p:"Kai answered: “Mia left at 8 o'clock.” What went wrong?",
+   c:["He told WHEN, not WHY","He spelled a word wrong","His answer was too long","Nothing. It's right."], ok:0,
+   w:["Yes! The question asks WHY. Kai answered a different question.","The spelling is fine.","It's short. Length isn't the problem.","8 o'clock is a time. The question wants a reason."]},
+  {q:"Which <b>TWO</b> sentences best show that the town changed?", p:"Reread the question. What do you need to give?",
+   c:["One sentence about the town","Two sentences that show the town changed","Every sentence about the town","Your opinion of the town"], ok:1,
+   w:["It says TWO, not one.","Yes! Two sentences, and they must show a change.","Too many. It asks for the best two.","It asks for sentences from the text, not your opinion."]},
+  {q:"<b>According to the author</b>, what was the <b>most important</b> reason the bridge was built?", p:"Which one says the same question in your own words?",
+   c:["What do I think was the best reason?","What reason does the author say mattered most?","What are all the reasons it was built?","When was the bridge built?"], ok:1,
+   w:["It asks what the AUTHOR says, not what you think.","Yes! The author's view, and only the MOST important reason.","It wants the most important one, not all of them.","That's a WHEN question. This one asks for a reason."]}
+ ],
+ e:[
+  {q:"What happens <b>FIRST</b> in the story?", p:"Examine the word FIRST. What does it mean?",
+   c:["At the start","At the end","The best part","The saddest part"], ok:0,
+   w:["Yes! First means at the start.","That would be LAST.","Best is about how you feel, not order.","Saddest is about feelings, not order."]},
+  {q:"What is the <b>MAIN</b> idea?", p:"Examine the word MAIN. What does it mean?",
+   c:["A small detail","The most important idea","The first sentence","The funniest part"], ok:1,
+   w:["A detail is small. MAIN is the big one.","Yes! Main means the most important idea of the whole thing.","The main idea is not always in the first sentence.","Funny isn't the same as important."]},
+  {q:"How are the two characters <b>ALIKE</b>?", p:"Examine the word ALIKE. What does it mean?",
+   c:["Different from each other","The same in some way","Good friends","Angry at each other"], ok:1,
+   w:["That's the opposite of alike.","Yes! Alike means the same in some way.","Friends can be very different.","That's about feelings, not alike."]},
+  {q:"Which word best describes the author's <b>TONE</b>?", p:"Examine the word TONE. What does it mean in reading?",
+   c:["How loud the story is","Where the story happens","The feeling or attitude in how it's written","The lesson of the story"], ok:2,
+   w:["In music tone can mean sound. In reading it's different!","That's the setting.","Yes! Tone is the author's feeling or attitude, like cheerful, serious or worried.","That's the theme or moral."]},
+  {q:"What can the reader <b>INFER</b> about Leo?", p:"Examine the word INFER. What does it ask you to do?",
+   c:["Copy a sentence that says it","Figure it out from clues in the text","Guess with no clues","Retell the whole story"], ok:1,
+   w:["If the text says it straight out, you don't need to infer.","Yes! Infer means use clues to figure out what isn't said.","Inferring always uses clues from the text.","That's a summary."]}
+ ],
+ a:[
+  {x:"The cat lay in the warm sun. It closed its eyes and purred.", q:"How does the cat feel?", p:"Go through all 4. Cross out each one the text does not prove.",
+   c:["Scared","Relaxed","Angry","Hungry"], ok:1,
+   w:["A scared cat would hide or run. This one is lying down.","Yes! Warm sun, eyes closed, purring. That proves relaxed.","No hissing or growling. Nothing proves angry.","Food is never mentioned."]},
+  {x:"Ana packed water, a map, and a snack. She laced up her boots and headed for the trail.", q:"What is Ana about to do?", p:"Go through all 4. Cross out each one the text does not prove.",
+   c:["Go swimming","Go on a hike","Go to bed","Go to school"], ok:1,
+   w:["Boots and a trail don't fit swimming.","Yes! Boots, a map and a trail prove it.","She's heading out, not to bed.","Nothing about school or a backpack of books."]},
+  {x:"Every morning, Jaden fed the chickens before breakfast. Even on cold, rainy days, he never skipped it.", q:"Which word best describes Jaden?", p:"Go through all 4. Cross out each one the text does not prove.",
+   c:["Lazy","Responsible","Funny","Nervous"], ok:1,
+   w:["He never skipped it. That's the opposite of lazy.","Yes! Every morning, even in the rain. He does his job.","No jokes in the text.","Nothing shows he is worried."]},
+  {x:"The storm knocked out power across the town. Neighbors shared flashlights, and the bakery handed out free bread until the lights came back.", q:"What is the main idea?", p:"Go through all 4. Two may look right, so cross out the rest and pick the BEST.",
+   c:["A storm knocked out the power.","The town worked together during a hard time.","The bakery sells bread.","Flashlights are useful."], ok:1,
+   w:["True, but it's only the first sentence. It's not the whole idea.","Yes! It covers the storm AND how everyone helped.","The bread was free that day, and it's just one detail.","One small detail, not the main idea."]},
+  {x:"Although critics called the invention useless, Dr. Reyes kept testing it. Ten years later, hospitals around the world relied on it.", q:"Which statement is best supported by the passage?", p:"Go through all 4. Cross out each one the text does not prove.",
+   c:["The critics were right about the invention.","Dr. Reyes's hard work paid off.","Dr. Reyes invented hospitals.","The invention took one year to build."], ok:1,
+   w:["Hospitals everywhere use it. The critics were wrong.","Yes! She kept going, and ten years later it mattered.","Hospitals used it. She didn't invent them.","The text says ten years, not one."]}
+ ],
+ d:[
+  {s:["Lila sat by the window.","A tear rolled down her cheek.","Outside, it was raining.","Her cat jumped up beside her."], q:"Highlight the evidence that Lila is sad.", p:"Highlight only the words that prove it.", ok:1,
+   w:["Sitting by a window doesn't prove a feeling.","Yes! A tear is the proof.","Rain can feel gloomy, but it's about the weather, not Lila.","That's about the cat."]},
+  {s:["Tom put one plant in the closet and one by the window.","He watered both plants every day.","After a week, the closet plant was pale and droopy, but the window plant was green and tall.","Tom wrote down what he saw."], q:"Highlight the evidence that plants need sunlight.", p:"Highlight only the words that prove it.", ok:2,
+   w:["That sets up the test, but it doesn't show the result.","Both got water, so water isn't the difference.","Yes! The plant with sun grew. The one in the dark didn't.","Writing it down doesn't prove anything about sunlight."]},
+  {s:["Rosa had never spoken in front of the whole school.","Her hands shook as she walked to the stage.","She took a deep breath and began her speech anyway.","Afterward, her friends cheered."], q:"Highlight the evidence that Rosa is brave.", p:"Highlight only the words that prove it.", ok:2,
+   w:["This tells us it's new for her, not what she did.","Shaking hands show she's scared. That's only half of brave.","Yes! Scared AND she did it anyway. That's brave.","That's what her friends did."]},
+  {s:["Honeybees live in hives with thousands of other bees.","Bees carry pollen from flower to flower, which helps crops like apples and almonds grow.","A queen bee can lay up to 2,000 eggs in a day.","Some people are allergic to bee stings."], q:"Highlight the BEST evidence that honeybees are important to farmers.", p:"Highlight only the words that prove it.", ok:1,
+   w:["True, but nothing about farmers.","Yes! Bees help crops grow. That's why farmers need them.","Interesting, but not about farming.","That's about people, not farms."]},
+  {s:["Grandpa rarely said much at dinner.","When I showed him my science ribbon, he set down his fork.","Later, I found the ribbon pinned above his workbench, where he kept only his most treasured things.","He told me to finish my vegetables."], q:"Highlight the BEST evidence that Grandpa was proud of the narrator.", p:"Highlight only the words that prove it.", ok:2,
+   w:["That tells us he was quiet, not proud.","He paid attention. It's a clue, but not the strongest one.","Yes! He kept it with his most treasured things. That's the strongest proof.","Nothing about the ribbon here."]}
+ ],
+ b:[
+  {q:"Which animal does <b>NOT</b> live on the farm?", p:"The format is talking! Which word is it pointing at?",
+   c:["animal","NOT","live","farm"], ok:1,
+   w:["Look again. Which word is bold and in capitals?","Yes! Bold capitals shout: read me carefully!","Not bold. Keep looking.","Not bold. Keep looking."]},
+  {x:"Plants make their own food through <b>photosynthesis</b>, using sunlight, water, and air.", q:"Why is the word <b>photosynthesis</b> in bold?", p:"What does bold usually tell you?",
+   c:["It is spelled wrong","It's an important word, and it's explained nearby","You can skip it","It is the title"], ok:1,
+   w:["Bold is never a spelling clue.","Yes! Bold words matter, and the meaning is often right next to them.","Bold means the opposite. Slow down here!","Titles sit at the top, not in the middle of a sentence."]},
+  {q:"In <b>paragraph 3</b>, why does the boy hide the letter?", p:"The question tells you where to look. What should you do first?",
+   c:["Reread the whole story","Go back and reread paragraph 3","Guess and move on","Read only paragraph 1"], ok:1,
+   w:["You could, but the question already told you where.","Yes! It gave you the address. Go there first.","No guessing when the question gives you a map!","Wrong paragraph."]},
+  {x:"Jada stared up at the giant hill. <i>I can do this,</i> she thought.", q:"Why are the words <i>I can do this</i> in italics?", p:"What do italics show here?",
+   c:["They are spelled wrong","They show what Jada is thinking","They are the title","They aren't important"], ok:1,
+   w:["Italics aren't a spelling clue.","Yes! In stories, italics often show a character's thoughts.","Not a title. It's in the middle of the story.","Italics usually mean the words matter."]},
+  {q:"Which choice <b>BEST</b> describes the narrator?", p:"What does the word BEST tell you?",
+   c:["Only one choice is true","More than one may be partly right. Pick the strongest.","The longest answer wins","Pick your favorite"], ok:1,
+   w:["BEST warns you that others might be partly true.","Yes! BEST means compare. Find the one the text proves most.","Length doesn't make an answer right.","It's about proof, not favorites."]}
+ ]
+};
+
+const SQUADS = [
+  {id:"sq1", name:"Squad #1"},
+  {id:"fillies", name:"French Toast Fillies"},
+  {id:"fun", name:"The Fun Crew"},
+  {id:"sq4", name:"Squad #4"}
+];
+const OLD_KEY = "read-the-board-v1", KEY = "read-the-board-squads-v1";
+const fresh = () => ({used:{}, players:[{name:"Squad",pts:0,fixed:true}], log:[]});
+let all = {active:"fun", squads:{}, seeded:false};
+let state = fresh();
+function load(){
+  try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s && s.squads) all = s; }catch(e){}
+  if(!all.seeded){
+    // The Fillies played the board first, on 16 Nov, before squad tabs existed: carry that game over.
+    let old = null; try{ old = JSON.parse(localStorage.getItem(OLD_KEY)||"null"); }catch(e){}
+    const f = (old && old.players) ? old : fresh();
+    if(!f.used.b3) f.used.b3 = "✓ 16 Nov";
+    if(!f.used.b4) f.used.b4 = "✓ 16 Nov";
+    all.squads.fillies = f; all.seeded = true;
+  }
+  SQUADS.forEach(s => { if(!all.squads[s.id]) all.squads[s.id] = fresh(); });
+  if(!all.squads[all.active]) all.active = "fun";
+  state = all.squads[all.active];
+}
+function save(){ all.squads[all.active] = state; try{ localStorage.setItem(KEY, JSON.stringify(all)); }catch(e){} }
+function renderTabs(){
+  const el = $("#tabs");
+  el.innerHTML = SQUADS.map(s => {
+    const n = Object.keys(all.squads[s.id].used).length;
+    return `<button class="tab${s.id===all.active?' on':''}" data-sq="${s.id}" role="tab" aria-selected="${s.id===all.active}">${esc(s.name)}<span class="cnt">${n}/25</span></button>`; }).join("");
+  el.querySelectorAll("[data-sq]").forEach(b => b.onclick = () => {
+    if(cur) closeCard(false);
+    save(); all.active = b.dataset.sq; state = all.squads[all.active]; save();
+    $("#confirmSlot").innerHTML = ""; renderTabs(); renderScores(); renderBoard(); });
+}
+
+const $ = s => document.querySelector(s);
+const esc = t => String(t).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const strip = h => h.replace(/<[^>]+>/g,"");
+
+function renderScores(){
+  const el = $("#scores");
+  el.innerHTML = state.players.map((p,i)=>`
+    <div class="chip ${p.fixed?'squad':''}">${p.fixed?'🤝 ':''}${esc(p.name)} <span class="pts">α${p.pts}</span>
+      ${p.fixed?'':`<button class="x" data-rm="${i}" aria-label="Remove ${esc(p.name)}">✕</button>`}</div>`).join("") +
+    `<form class="addp" id="addForm"><input id="pname" maxlength="18" placeholder="Add a player" aria-label="Player name"><button class="tbtn" type="submit">Add</button></form>`;
+  el.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{ state.players.splice(+b.dataset.rm,1); save(); renderScores(); });
+  $("#addForm").onsubmit = e => { e.preventDefault(); const n = $("#pname").value.trim(); if(!n) return;
+    state.players.push({name:n,pts:0}); save(); renderScores(); setTimeout(()=>$("#pname")?.focus(),0); };
+}
+
+function renderBoard(){
+  const b = $("#board"); let h = "";
+  COLS.forEach(c => h += `<div class="colhead c-${c.k}" title="${esc(c.name)}"><div class="emo">${c.emo}</div><div class="big">${c.L}</div><div class="lbl">${esc(c.name.replace("Bonus: ",""))}</div></div>`);
+  ROWS.forEach(ri => COLS.forEach(c => {
+    const v = worth(c.k, ri), id = c.k+ri, u = state.used[id];
+    h += u ? `<button class="tile used" disabled aria-label="${c.L} ${v} done"><span><span class="a">α</span>${v}</span><span class="who">${esc(u)}</span></button>`
+           : `<button class="tile" data-id="${id}" aria-label="${esc(c.name)} for ${v}"><span><span class="a">α</span>${v}</span></button>`;
+  }));
+  b.innerHTML = h;
+  b.querySelectorAll(".tile[data-id]").forEach(t => t.onclick = () => openCard(t.dataset.id));
+  renderTabs();
+}
+
+let cur = null;
+function openCard(id){
+  const col = COLS.find(c=>c.k===id[0]), ri = +id.slice(1), q = Q[col.k][ri], val = worth(col.k, ri);
+  cur = {id, col, q, val, pick:null, checked:false, given:new Set(), think:new Set(), elim:[null,null,null,null], hl:new Set(), wordSent:[], right:false, extra:0};
+  if(q.s) q.s.forEach((t,si)=>t.split(" ").forEach(()=>cur.wordSent.push(si)));
+  drawCard(); $("#overlay").hidden = false; document.body.style.overflow="hidden";
+  setTimeout(()=>$("#overlay .card")?.focus(),0);
+}
+function closeCard(markUsed){
+  stopSpeech();
+  if(markUsed && cur){
+    const names = state.players.filter((p,i)=>cur.given.has(i)).map(p=>p.name);
+    state.used[cur.id] = names.length ? "✓ "+names.join(", ") : "✓";
+    save(); renderBoard();
+  }
+  $("#overlay").hidden = true; $("#overlay").innerHTML=""; document.body.style.overflow=""; cur=null;
+}
+
+function drawCard(){
+  const {col,q,val,checked} = cur;
+  const mode = q.s ? "dig" : col.k === "a" ? "elim" : "pick";
+  let passage = "", choices = "", status = "", ready = false;
+
+  if(mode === "dig"){
+    let wi = 0;
+    passage = `<div class="passage ${checked?'':'dig'}" id="digText">${q.s.map((s,si)=>{
+      const words = s.split(" ").map(w=>{ const i = wi++; return `<span class="w${cur.hl.has(i)?' hl':''}" data-w="${i}">${esc(w)}</span>`; }).join(" ");
+      return `<span class="sentwrap${checked && si===q.ok ? ' ev':''}">${words}</span>`; }).join(" ")}</div>`;
+    ready = cur.hl.size > 0;
+    if(!checked) status = `<div class="actions"><span class="estatus">🖍️ ${ready ? "Highlighted! Only the proof?" : "Drag across the words, or tap them one at a time."}</span>${ready?`<button class="mini" id="clearHl" type="button">Clear my highlights</button>`:""}</div>`;
+    if(checked) choices = `<div class="choices">${q.s.map((s,i)=>`<div class="choice ${i===q.ok?'right':'wrong'}"><span class="ltr">${i===q.ok?'✓':'✗'}</span><span>${esc(s)}<span class="why">${q.w[i]}</span></span></div>`).join("")}</div>`;
+  } else if(mode === "elim"){
+    const kept = [0,1,2,3].filter(i=>cur.elim[i]==="k");
+    const decided = cur.elim.filter(Boolean).length;
+    if(!checked){
+      if(cur.pick !== null && cur.elim[cur.pick] !== "k") cur.pick = null;
+      if(decided === 4 && kept.length === 1) cur.pick = kept[0];
+      ready = decided === 4 && cur.pick !== null;
+      status = `<div class="estatus">${
+        decided < 4 ? `❓ Checked ${decided} of 4. Go through all 4. Cross out each one the text does not prove.`
+        : kept.length === 0 ? "You crossed out all 4! Bring back the one the text proves best."
+        : kept.length === 1 ? `Only ${"ABCD"[kept[0]]} is left. That's your answer!`
+        : cur.pick === null ? `${kept.length} answers are left. Which one is BEST? Tap “Pick as BEST”.`
+        : `You picked ${"ABCD"[cur.pick]} as the BEST answer.`}</div>`;
+    }
+    const note = i => { const st = cur.elim[i];
+      if(i === q.ok) return st === "k" ? "✓ Right to keep it" : "Oops! This was the answer";
+      return st === "x" ? "✓ Right to cross it out" : "This one should be crossed out"; };
+    choices = `<div class="elim">${q.c.map((c,i)=>{
+      const st = cur.elim[i]; let cls = "erow";
+      if(st==="x") cls+=" out"; if(st==="k") cls+=" keep"; if(cur.pick===i) cls+=" pick";
+      if(checked) cls += i===q.ok ? " right" : " wrong";
+      const ctl = checked ? `<span class="enote">${note(i)}</span>`
+        : `<button class="mini x" data-x="${i}" type="button">✗ Cross out</button><button class="mini k" data-k="${i}" type="button">✓ Keep</button>${
+          decided===4 && kept.length>1 && st==="k" ? `<button class="mini best" data-best="${i}" type="button">${cur.pick===i?'★ My answer':'Pick as BEST'}</button>` : ""}`;
+      return `<div class="${cls}"><span class="ltr">${"ABCD"[i]}</span><span class="txt"><span class="ct">${esc(c)}</span>${checked?`<span class="why">${q.w[i]}</span>`:""}</span><span class="ctl">${ctl}</span></div>`; }).join("")}</div>`;
+  } else {
+    if(q.x) passage = `<div class="passage">${q.x}</div>`;
+    ready = cur.pick !== null;
+    choices = `<div class="choices">${q.c.map((c,i)=>{
+      let cls="choice"; if(cur.pick===i) cls+=" pick"; if(checked) cls += i===q.ok?" right":" wrong";
+      return `<button class="${cls}" data-pick="${i}" ${checked?'disabled':''}><span class="ltr">${checked?(i===q.ok?'✓':'✗'):"ABCD"[i]}</span><span>${esc(c)}${checked?`<span class="why">${q.w[i]}</span>`:""}</span></button>`; }).join("")}</div>`;
+  }
+  if(mode === "elim" && q.x) passage = `<div class="passage pa"><span class="plabel">📖 The text</span>${q.x}</div>`;
+
+  let lower = "";
+  if(!checked){
+    lower = ready ? `<div class="whybox"><span class="emo">🗣️</span><span class="t">Tell us WHY. Which READ strategy did you use?</span><button class="btn" id="checkBtn">Check it</button></div>` : "";
+  } else {
+    const msg = cur.right
+      ? (mode==="dig" && cur.extra ? "Found it! 🎉 Next time, highlight only the proof." : "Got it! 🎉")
+      : (mode==="dig" ? "Not quite. The green box is the proof." : "Not this time. Look at why ✓ wins.");
+    lower = `<div class="actions"><span class="verdict ${cur.right?'good':'bad'}">${msg}</span></div>
+      <div class="award">
+        <h3>Who earns α${val}?</h3>
+        <div class="row">${state.players.map((p,i)=>`<button class="give ${cur.given.has(i)?'on':''}" data-give="${i}">${p.fixed?'🤝 ':''}${esc(p.name)}</button>`).join("")}</div>
+        <h3>Great thinking bonus, α1 (for a strong WHY, right or wrong)</h3>
+        <div class="row">${state.players.map((p,i)=>`<button class="give think ${cur.think.has(i)?'on':''}" data-think="${i}">💡 ${esc(p.name)}</button>`).join("")}</div>
+      </div>
+      <div class="actions"><button class="btn" id="doneBtn">Back to the board</button></div>`;
+  }
+
+  $("#overlay").innerHTML = `<div class="card${mode==="elim" && q.x ? " wide" : ""}" role="dialog" aria-modal="true" tabindex="-1" aria-label="${esc(col.name)} for ${val}">
+    <div class="cardtop c-${col.k}"><span class="big">${col.L}</span><span class="name">${col.emo} ${esc(col.name)}<br><span style="font-weight:400;font-size:15px">${esc(col.tip)}</span></span><span class="val">α${val}</span></div>
+    <div class="cardbody${mode==="elim" && q.x ? " elimbody" : ""}">
+      ${passage}
+      ${mode==="dig" ? "" : ""}
+      <div class="question">${q.q}</div>
+      <div class="prompt"><span>👉</span><span>${q.p}</span></div>
+      ${mode==="dig" ? status + choices : choices + status}
+      ${lower}
+      <div class="actions">
+        <button class="btn ghost" id="speakBtn" type="button">🔊 Read it to me</button>
+        ${checked?"":`<button class="btn ghost" id="backBtn" type="button">Put it back</button>`}
+      </div>
+    </div></div>`;
+
+  const ov = $("#overlay");
+  ov.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>{ cur.pick=+b.dataset.pick; drawCard(); });
+  ov.querySelectorAll("[data-x]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.x; cur.elim[i] = cur.elim[i]==="x" ? null : "x"; drawCard(); });
+  ov.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.k; cur.elim[i] = cur.elim[i]==="k" ? null : "k"; drawCard(); });
+  ov.querySelectorAll("[data-best]").forEach(b=>b.onclick=()=>{ cur.pick=+b.dataset.best; drawCard(); });
+  ov.querySelector("#clearHl")?.addEventListener("click",()=>{ cur.hl.clear(); drawCard(); });
+  ov.querySelector("#checkBtn")?.addEventListener("click",()=>{
+    if(mode==="dig"){ let inside=0, outside=0; cur.hl.forEach(i=> cur.wordSent[i]===q.ok ? inside++ : outside++);
+      cur.right = inside>0 && outside<inside; cur.extra = outside; }
+    else cur.right = cur.pick===q.ok;
+    cur.checked=true; stopSpeech(); drawCard(); });
+  ov.querySelectorAll("[data-give]").forEach(b=>b.onclick=()=>toggle("given",+b.dataset.give,cur.val));
+  ov.querySelectorAll("[data-think]").forEach(b=>b.onclick=()=>toggle("think",+b.dataset.think,1));
+  ov.querySelector("#doneBtn")?.addEventListener("click",()=>closeCard(true));
+  ov.querySelector("#backBtn")?.addEventListener("click",()=>closeCard(false));
+  ov.querySelector("#speakBtn").onclick = speakCard;
+
+  // Highlighter: press on a word and drag across, or tap words one at a time.
+  const dig = ov.querySelector(".passage.dig");
+  if(dig){
+    let drag = null;
+    const apply = w => { const i = +w.dataset.w;
+      if(drag==="add"){ cur.hl.add(i); w.classList.add("hl"); } else { cur.hl.delete(i); w.classList.remove("hl"); } };
+    dig.addEventListener("pointerdown", e=>{ const w = e.target.closest(".w"); if(!w) return; e.preventDefault();
+      drag = cur.hl.has(+w.dataset.w) ? "rm" : "add"; apply(w); try{ dig.setPointerCapture(e.pointerId); }catch(_){} });
+    dig.addEventListener("pointermove", e=>{ if(!drag) return;
+      const t = document.elementFromPoint(e.clientX, e.clientY); const w = t && t.closest && t.closest(".w");
+      if(w && dig.contains(w)) apply(w); });
+    const end = ()=>{ if(drag){ drag=null; drawCard(); } };
+    dig.addEventListener("pointerup", end); dig.addEventListener("pointercancel", end);
+  }
+}
+
+function toggle(setName, i, amt){
+  const s = cur[setName], p = state.players[i]; if(!p) return;
+  if(s.has(i)){ s.delete(i); p.pts -= amt; state.log.push({i,amt:-amt}); }
+  else { s.add(i); p.pts += amt; state.log.push({i,amt}); }
+  if(state.log.length>60) state.log.shift();
+  save(); renderScores(); drawCard();
+}
+
+// Read-aloud: only ever starts from the button. Stops when the card closes or the tab is hidden.
+function speakCard(){
+  if(!("speechSynthesis" in window)) return;
+  stopSpeech();
+  const q = cur.q, parts = [];
+  if(q.x) parts.push(strip(q.x));
+  parts.push(strip(q.q), strip(q.p));
+  if(q.s) q.s.forEach((s,i)=>parts.push("Sentence "+(i+1)+". "+s));
+  else q.c.forEach((c,i)=>parts.push("ABCD"[i]+". "+c));
+  const u = new SpeechSynthesisUtterance(parts.join(". "));
+  u.rate = .9; speechSynthesis.speak(u);
+}
+function stopSpeech(){ try{ speechSynthesis.cancel(); }catch(e){} }
+document.addEventListener("visibilitychange",()=>{ if(document.hidden) stopSpeech(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && cur && !cur.checked) closeCard(false); });
+
+$("#undoBtn").onclick = () => { const l = state.log.pop(); if(!l) return; const p = state.players[l.i]; if(p) p.pts -= l.amt; save(); renderScores(); };
+$("#resetBtn").onclick = () => {
+  $("#confirmSlot").innerHTML = `<div class="confirm">Start a new game for ${esc(SQUADS.find(s=>s.id===all.active).name)}? This clears only this squad's board and scores. <button class="btn" id="yesReset">Yes, new game</button><button class="btn ghost" id="noReset">Keep playing</button></div>`;
+  $("#yesReset").onclick = () => { state = {used:{}, players:state.players.map(p=>({...p,pts:0})), log:[]}; save(); renderScores(); renderBoard(); $("#confirmSlot").innerHTML=""; };
+  $("#noReset").onclick = () => $("#confirmSlot").innerHTML="";
+};
+
+load(); save(); renderTabs(); renderScores(); renderBoard();
+</script>
