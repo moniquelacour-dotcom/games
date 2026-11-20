@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Echo's Scoop Walk</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐕</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800&display=swap">
+<style>
+/* Echo's Scoop Walk: hear Coach read a sentence in scoops, read it back the same way,
+   and Echo takes one step per scoop. A finished story earns treats in Echo's Trick School
+   (same browser, key "echo-tricks.v1"). No timer, no speed score, no names.
+   Recordings stay on this device. Sound plays only when a button is tapped. */
+:root{--sky:#bfe6ff;--grass:#8fd16a;--path:#e8cf9c;--ink:#22303c;--card:#ffffff;--muted:#5b6b78;
+  --accent:#ff8a3d;--accent2:#e86f1f;--soft:#fff3e8;--line:#ecdcc9;--mint:#2fa35b;--mint-soft:#e1f4e8;--blue:#3d7be0;--blue-soft:#e4eefc;color-scheme:light}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:linear-gradient(var(--sky) 0 300px,#eaf6ff 300px);background-color:#eaf6ff;color:var(--ink);font:20px/1.5 "Lexend","Atkinson Hyperlegible",system-ui,sans-serif}
+main{max-width:820px;margin:0 auto;padding-block:14px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
+h1,h2{margin:0;font-weight:800;line-height:1.15;text-wrap:balance}
+h1{font-size:clamp(30px,6.5vw,44px);text-align:center}
+h2{font-size:24px}
+p{margin:0}
+button{font:inherit;cursor:pointer;color:inherit}
+.small{font-size:16px;color:var(--muted)}
+.card{background:var(--card);border-radius:22px;padding:16px;box-shadow:0 5px 0 #0001;display:flex;flex-direction:column;gap:12px;min-width:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
+.btn{border:none;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:20px;padding:10px 22px;box-shadow:0 4px 0 var(--accent2)}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--accent2)}
+.btn.blue{background:var(--blue);box-shadow:0 4px 0 #2a5bb0}
+.btn.mint{background:var(--mint);box-shadow:0 4px 0 #217a43}
+.btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--line);box-shadow:none}
+.btn:disabled{opacity:.4;cursor:default}
+.chip{background:#ffffffd9;border-radius:999px;padding:4px 14px;font-weight:700}
+.modes{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.mode{border:3px solid var(--line);background:var(--soft);border-radius:18px;padding:8px 14px;font-weight:800}
+.mode[aria-pressed="true"]{border-color:var(--accent2);background:var(--accent);color:#fff}
+.picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));gap:10px}
+.pick{text-align:left;border:3px solid var(--line);background:#fff;border-radius:18px;padding:12px;display:flex;gap:10px;align-items:center}
+.pick .ic{font-size:32px}
+.pick b{display:block;font-size:19px;line-height:1.2}
+.pick.did{border-color:var(--mint)}
+/* the walk */
+.walk{position:relative;height:96px;border-radius:18px;background:linear-gradient(#bfe6ff 0 55%,var(--grass) 55%);overflow:hidden}
+.walk .path{position:absolute;left:0;right:0;bottom:12px;height:20px;background:var(--path);border-radius:10px}
+.walk .step{position:absolute;bottom:18px;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:#c9a46a}
+.walk .step.done{background:var(--accent2)}
+.walk .goal{position:absolute;right:6px;bottom:22px;font-size:34px}
+.walk .dog{position:absolute;bottom:22px;font-size:44px;line-height:1;transform:translateX(-50%) scaleX(-1);transition:left .9s ease}
+.walk .dog.hop{animation:hop .45s ease 2}
+@keyframes hop{50%{bottom:40px}}
+/* sentences and scoops */
+.big{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 26px;font-size:clamp(26px,6.5vw,36px);font-weight:700;padding:20px 10px;border-radius:20px;background:var(--soft);line-height:1.3}
+.scoop{white-space:nowrap;padding:0 6px 10px;border-bottom:4px solid var(--accent);border-radius:0 0 50% 50% / 0 0 18px 18px}
+.scoop.lit{background:#ffe6cf}
+.coachline{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 20px;font-size:clamp(19px,4.5vw,24px);padding:10px;border-radius:16px;background:var(--mint-soft)}
+.coachline .scoop{border-bottom-color:var(--mint)}
+.marks{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;row-gap:14px;font-size:clamp(26px,6.5vw,36px);font-weight:700;padding:20px 6px;border-radius:20px;background:var(--blue-soft);line-height:1.3}
+.gap{width:34px;height:52px;margin:0 2px;border:2px dashed transparent;border-radius:10px;background:none;color:var(--muted);display:inline-grid;place-items:center;font-size:16px}
+.gap:hover{border-color:var(--line)}
+.gap::before{content:"·";font-size:28px;line-height:1}
+.gap.on::before{content:"";width:5px;height:40px;border-radius:3px;background:var(--blue)}
+.whole{display:flex;flex-wrap:wrap;gap:12px 22px;font-size:clamp(21px,5vw,27px);line-height:1.45;padding:6px 2px}
+.whole .scoop{padding:0 3px 6px;border-bottom-width:2px;border-bottom-color:#f3b98f}
+.prompt{font-weight:800;text-align:center}
+.fb{text-align:center;font-weight:700;color:var(--mint)}
+.status{min-height:1.4em;text-align:center;color:var(--muted);font-size:16px}
+.reward{text-align:center;align-items:center}
+.reward .bones{font-size:46px;letter-spacing:6px}
+.reward .earned{font-size:30px;font-weight:800}
+.fly{position:fixed;font-size:30px;pointer-events:none;z-index:8;animation:fly 1.3s ease-out forwards}
+@keyframes fly{to{transform:translate(var(--dx),var(--dy)) rotate(300deg);opacity:0}}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.walk .dog{transition:none}.walk .dog.hop,.fly{animation:none}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+(function(){
+"use strict";
+/* Same Grade 2 stories and recordings as Scoop Practice. "|" marks each scoop. */
+var P = [
+ {id:"pancakes", title:"Pancake Saturday", ic:"🥞",
+  t:"On Saturday morning, | Dad and I | make big pancakes. | I crack the eggs | into a bowl | and add the milk. | Then I stir | the flour in | until it is smooth. | Dad pours the batter | into the hot pan. | When the bubbles pop, | it is time | to flip it! | My pancake lands | right in the middle | of the pan."},
+ {id:"biggame", title:"The Big Game", ic:"⚽",
+  t:"The whistle blows | and the game starts. | I run fast | down the green field | to get open. | My friend kicks | the ball to me, | and I stop it | with my foot. | The goal is close, | so I take aim | and kick hard. | The ball sails past | the keeper's hands | and into the net! | My whole team cheers | and we all jump!"},
+ {id:"hill", title:"Up the Hill", ic:"⛰️",
+  t:"We hike up | the big hill | behind my house. | The path is rocky | and a little steep, | so we go slow. | A bird sings | from a tall tree | as we walk by. | I see a lizard | dart under a log. | At the top, | we sit down | and eat our snack. | The wind feels cool, | and I can see | the whole town!"},
+ {id:"showtime", title:"Show Time", ic:"🎤",
+  t:"The lights go down | and the crowd hushes. | My heart beats fast | behind the red curtain | as I wait. | Then the music starts, | and I step out | onto the stage. | I sing my song | loud and clear | for all to hear. | At the end, | I do a spin | and take a bow. | Everyone claps and cheers, | and I smile big!"},
+ {id:"tacos", title:"Taco Night", ic:"🌮",
+  t:"Tonight we make tacos | for the whole family. | I wash the lettuce | and tear it up | into little pieces. | Mom cooks the beans | in a big pot | on the stove. | I grate the cheese | with great care. | We warm the shells, | and then everyone builds | their own taco. | Mine has extra cheese | and a little salsa!"},
+ {id:"creek", title:"Race to the Creek", ic:"🏃",
+  t:"My brother and I | race down the path | to the creek. | We dash past | the old oak tree | with arms swinging. | Dry leaves crunch | under our shoes. | I jump over | a muddy puddle, | but he is close. | I keep on going | and tag it first! | We both laugh | and splash our feet | in the cool creek."}
+];
+P.forEach(function(p){
+  p.s = p.t.split("|").map(function(x){ return x.trim(); });
+  p.u = []; var cur = [];
+  p.s.forEach(function(s, j){ cur.push(j); if(/[.!?]$/.test(s)){ p.u.push(cur); cur = []; } });
+  if(cur.length) p.u.push(cur);
+});
+var AUDIO = "audio/scoops/";
+var TREATS_PER_STORY = 3;
+var ECHO_KEY = "echo-tricks.v1", MY_KEY = "echo-scoops.v1";
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
+function pad(n){ return (n < 10 ? "0" : "") + n; }
+
+/* ---- Echo's Trick School shares treats through its own saved state ---- */
+function readEcho(){ try{ var s = JSON.parse(localStorage.getItem(ECHO_KEY) || "null"); return (s && typeof s === "object") ? s : {}; }catch(e){ return {}; } }
+function writeEcho(s){ try{ localStorage.setItem(ECHO_KEY, JSON.stringify(s)); return true; }catch(e){ return false; } }
+function addTreats(n){ var s = readEcho(); s.treats = (+s.treats || 0) + n; writeEcho(s); return s.treats; }
+function setEchoPlace(p){ var s = readEcho(); s.place = p; writeEcho(s); }
+var mine = {mode:"say", did:[]};
+try{ var m = JSON.parse(localStorage.getItem(MY_KEY) || "null"); if(m){ if(m.mode === "make") mine.mode = "make"; if(Array.isArray(m.did)) mine.did = m.did; } }catch(e){}
+function saveMine(){ try{ localStorage.setItem(MY_KEY, JSON.stringify(mine)); }catch(e){} }
+
+/* ---- Coach's voice (only when a button is tapped) ---- */
+var player = new Audio(), tok = 0;
+function stopSound(){ tok++; try{ player.pause(); }catch(e){} }
+function play(id, n, done){
+  stopSound(); var my = tok;
+  player.src = AUDIO + id + "-" + (n === "all" ? "all" : pad(n + 1)) + ".mp3";
+  function fin(){ if(my === tok && done) done(); }
+  player.onended = fin; player.onerror = fin;
+  player.play().catch(fin);
+}
+
+/* ---- her own recording: this device only, never uploaded ---- */
+var me = {rec:null, chunks:[], blob:null};
+function recording(){ return me.rec && me.rec.state === "recording"; }
+function stopMe(){ if(recording()) me.rec.stop(); }
+function setStatus(t){ var s = $("status"); if(s) s.textContent = t; }
+function startMe(btn){
+  stopSound();
+  if(!(navigator.mediaDevices && window.MediaRecorder)){ setStatus("This device can't record here. Just say it out loud!"); return; }
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(st){
+    me.chunks = []; me.rec = new MediaRecorder(st);
+    me.rec.ondataavailable = function(e){ if(e.data.size) me.chunks.push(e.data); };
+    me.rec.onstop = function(){
+      me.blob = new Blob(me.chunks, {type: me.rec.mimeType || "audio/webm"});
+      st.getTracks().forEach(function(t){ t.stop(); });
+      btn.textContent = "🎙 Record again"; var h = $("hearb"); if(h) h.hidden = false;
+      setStatus("Tap ▶ Hear me, then 🔊 Listen to Coach to compare.");
+    };
+    me.rec.start(); btn.textContent = "■ Stop"; setStatus("Recording… tap Stop when you finish.");
+  }).catch(function(){ setStatus("No microphone. That's OK, just say it out loud!"); });
+}
+function hearMe(){ if(me.blob){ stopSound(); player.src = URL.createObjectURL(me.blob); player.onended = null; player.play().catch(function(){}); } }
+
+/* ---- screens ---- */
+var G = {p:null, i:0, phase:"say", marks:{}, steps:0, paid:false};
+
+function home(){
+  stopSound(); stopMe();
+  var t = +readEcho().treats || 0;
+  $("app").innerHTML =
+    '<h1>Echo\'s Scoop Walk</h1>' +
+    '<section class="card"><p>Echo wants to go for a walk! Read in <b>scoops</b>: the words in a scoop go together, with no stops in between. Every scoop you read, Echo takes a step. Finish a story and Echo earns treats for <b>Trick School</b>.</p>' +
+    '<div class="row"><span class="chip">🦴 Echo has ' + t + ' treat' + (t === 1 ? '' : 's') + '</span></div>' +
+    '<div class="modes" role="group" aria-label="How to practice">' +
+      '<button class="mode" data-mode="say" aria-pressed="' + (mine.mode === "say") + '">👂 Hear and say</button>' +
+      '<button class="mode" data-mode="make" aria-pressed="' + (mine.mode === "make") + '">✏️ Make the scoops</button></div>' +
+    '<p class="small" style="text-align:center">' + (mine.mode === "say" ? "Listen to Coach read each sentence in scoops, then read it the same way." : "Listen, tap where each scoop ends, then read it in scoops.") + '</p></section>' +
+    '<section class="card"><h2>Pick a story</h2><div class="picks">' + P.map(function(p){
+      var did = mine.did.indexOf(p.id) >= 0;
+      return '<button class="pick' + (did ? ' did' : '') + '" data-pick="' + p.id + '"><span class="ic" aria-hidden="true">' + p.ic + '</span><span><b>' + esc(p.title) + '</b><span class="small">' + p.u.length + ' sentences' + (did ? ' · walked ✓' : '') + '</span></span></button>';
+    }).join("") + '</div></section>' +
+    '<div class="row"><a class="btn ghost" href="echo-tricks.html" style="text-decoration:none">🐶 Go to Echo\'s Trick School</a></div>' +
+    '<p class="small" style="text-align:center">No timer. Anything you record stays on this device.</p>';
+}
+
+function walkHtml(){
+  var n = G.p.s.length, pct = function(k){ return 6 + (k / n) * 82; };
+  var dots = ""; for(var k = 1; k <= n; k++) dots += '<span class="step' + (k <= G.steps ? ' done' : '') + '" style="left:' + pct(k) + '%"></span>';
+  return '<div class="walk" aria-label="Echo has walked ' + G.steps + ' of ' + n + ' steps"><div class="path"></div>' + dots +
+    '<span class="goal" aria-hidden="true">🦴</span><span class="dog" id="dog" style="left:' + pct(G.steps) + '%" aria-hidden="true">🐕</span></div>';
+}
+function moveDog(){
+  var d = $("dog"); if(!d) return; var n = G.p.s.length;
+  d.style.left = (6 + (G.steps / n) * 82) + "%"; d.classList.remove("hop"); void d.offsetWidth; d.classList.add("hop");
+}
+function words(i){
+  var w = [], br = {};
+  G.p.u[i].forEach(function(j){ G.p.s[j].split(/\s+/).forEach(function(x){ w.push(x); }); br[w.length - 1] = true; });
+  delete br[w.length - 1];
+  return {w:w, br:br};
+}
+function arcs(w, br){
+  var out = [], cur = [];
+  w.forEach(function(x, k){ cur.push(x); if(br[k] || k === w.length - 1){ out.push('<span class="scoop">' + esc(cur.join(" ")) + '</span>'); cur = []; } });
+  return out.join("");
+}
+function top(){
+  return '<div class="row" style="justify-content:space-between"><button class="btn ghost" data-act="home">← Stories</button><span class="chip">' + G.p.ic + ' ' + esc(G.p.title) + '</span></div>' + walkHtml();
+}
+function start(id){
+  G = {p:P.filter(function(x){ return x.id === id; })[0], i:0, phase:"", marks:{}, steps:0, paid:false};
+  sentence();
+}
+function sentence(){
+  stopSound(); stopMe(); me.blob = null; G.marks = {};
+  if(G.i >= G.p.u.length){ whole(); return; }
+  G.phase = mine.mode === "make" ? "mark" : "say";
+  draw();
+}
+function draw(){
+  var sw = words(G.i), body, prompt, btns, extra = "";
+  var head = '<span class="small">Sentence ' + (G.i + 1) + ' of ' + G.p.u.length + '</span>';
+  if(G.phase === "mark"){
+    body = '<div class="marks">' + sw.w.map(function(x, k){
+      return '<span>' + esc(x) + '</span>' + (k < sw.w.length - 1 ? '<button class="gap' + (G.marks[k] ? ' on' : '') + '" data-gap="' + k + '" aria-pressed="' + !!G.marks[k] + '" aria-label="Scoop ends after ' + esc(x) + '"></button>' : '');
+    }).join("") + '</div>';
+    prompt = "👂 Listen to Coach. Then tap between the words where each scoop ends.";
+    btns = '<button class="btn blue" data-act="listen">🔊 Listen to Coach</button><button class="btn mint" data-act="check">Show Coach\'s scoops</button>';
+  } else {
+    if(G.phase === "after"){
+      var cb = Object.keys(sw.br), got = cb.filter(function(k){ return G.marks[k]; }).length;
+      var same = got === cb.length && !Object.keys(G.marks).some(function(k){ return G.marks[k] && !sw.br[k]; });
+      extra = '<p class="fb">' + (same ? "🌟 You scooped it just like Coach!" : "Nice listening! Here is how Coach scooped it. Read it this way.") + '</p>';
+    }
+    body = '<div class="big">' + arcs(sw.w, sw.br) + '</div>';
+    prompt = "🗣 Read it out loud in scoops, just like Coach.";
+    btns = '<button class="btn blue" data-act="listen">🔊 Listen to Coach</button>' +
+      '<button class="btn ghost" data-act="rec" id="recb">🎙 Record me</button>' +
+      '<button class="btn ghost" data-act="hearme" id="hearb" hidden>▶ Hear me</button>' +
+      '<button class="btn mint" data-act="said">I said it ✓</button>';
+  }
+  $("app").innerHTML = top() + '<section class="card">' + head + extra + body +
+    '<p class="prompt">' + prompt + '</p><div class="row">' + btns + '</div><p class="status" id="status"></p></section>';
+}
+function whole(){
+  stopSound(); stopMe(); me.blob = null;
+  var all = G.p.s.map(function(_, j){ return j; });
+  $("app").innerHTML = top() + '<section class="card"><span class="small">The whole story</span>' +
+    '<p class="prompt">📖 Now read the whole story to Echo, in scoops.</p>' +
+    '<div class="whole">' + all.map(function(j){ return '<span class="scoop">' + esc(G.p.s[j]) + '</span>'; }).join("") + '</div>' +
+    '<div class="row"><button class="btn blue" data-act="listenall">🔊 Hear Coach read it all</button>' +
+    '<button class="btn ghost" data-act="rec" id="recb">🎙 Record me</button>' +
+    '<button class="btn ghost" data-act="hearme" id="hearb" hidden>▶ Hear me</button>' +
+    '<button class="btn mint" data-act="done">I read it all ✓</button></div><p class="status" id="status"></p></section>';
+}
+function reward(){
+  stopSound(); stopMe();
+  var total = G.paid ? (+readEcho().treats || 0) : addTreats(TREATS_PER_STORY);
+  G.paid = true;
+  if(mine.did.indexOf(G.p.id) < 0){ mine.did.push(G.p.id); saveMine(); }
+  $("app").innerHTML = '<h1>Walk done!</h1><section class="card reward" id="rw">' +
+    '<div class="bones" aria-hidden="true">' + "🦴".repeat(TREATS_PER_STORY) + '</div>' +
+    '<p class="earned">Echo earned ' + TREATS_PER_STORY + ' treats!</p>' +
+    '<p>He has <b>' + total + '</b> treats for Trick School now. Where do you want to train him?</p>' +
+    '<div class="row"><button class="btn" data-go="yard">🏡 Train Echo in the backyard</button><button class="btn mint" data-go="park">🌳 Train Echo at the dog park</button></div>' +
+    '<div class="row"><button class="btn ghost" data-act="home">Walk another story</button></div></section>';
+  var r = $("rw").getBoundingClientRect();
+  for(var i = 0; i < 12; i++){ var s = document.createElement("span"); s.className = "fly"; s.textContent = "🦴";
+    s.style.left = (r.left + r.width / 2) + "px"; s.style.top = (r.top + 40) + "px";
+    var a = Math.random() * Math.PI * 2, d = 80 + Math.random() * 110; s.style.setProperty("--dx", Math.cos(a) * d + "px"); s.style.setProperty("--dy", Math.sin(a) * d - 40 + "px");
+    document.body.appendChild(s); setTimeout(function(x){ return function(){ x.remove(); }; }(s), 1400); }
+}
+
+$("app").addEventListener("click", function(ev){
+  var b = ev.target.closest("button"); if(!b) return;
+  if(b.dataset.mode){ mine.mode = b.dataset.mode; saveMine(); home(); return; }
+  if(b.dataset.pick){ start(b.dataset.pick); return; }
+  if(b.dataset.go){ setEchoPlace(b.dataset.go); location.href = "echo-tricks.html"; return; }
+  if(b.dataset.gap !== undefined){ var g = b.dataset.gap; G.marks[g] = !G.marks[g]; b.classList.toggle("on", G.marks[g]); b.setAttribute("aria-pressed", G.marks[g]); return; }
+  var a = b.dataset.act;
+  if(a === "home") home();
+  else if(a === "listen"){ stopMe(); play(G.p.id, G.i); }
+  else if(a === "listenall"){ stopMe(); play(G.p.id, "all"); }
+  else if(a === "check"){ stopSound(); G.phase = "after"; draw(); }
+  else if(a === "rec"){ if(recording()) stopMe(); else startMe(b); }
+  else if(a === "hearme") hearMe();
+  else if(a === "said"){ stopSound(); stopMe(); G.steps += G.p.u[G.i].length; moveDog(); b.disabled = true; setTimeout(function(){ G.i++; sentence(); }, 1000); }
+  else if(a === "done"){ reward(); }
+});
+home();
+})();
+</script>
+</body>
+</html>
