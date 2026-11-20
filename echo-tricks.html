@@ -82,6 +82,15 @@ input{font:inherit;font-size:28px;font-weight:600;border:3px solid #e2c3a8;borde
 @keyframes runoff{40%{transform:translateX(-420px)}60%{transform:translateX(-420px) scaleX(-1)}100%{transform:none}}
 @keyframes sniffs{50%{transform:translateX(30px)}}
 @media (prefers-reduced-motion:reduce){#dog *{animation:none!important;transition:none!important}}
+/* ---- places: backyard (default) and the dog park ---- */
+#scene{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:min(860px,100vw);height:300px;z-index:0;pointer-events:none}
+#dog{position:relative;z-index:1}
+body.park{background:linear-gradient(#a9dcff 0 58%,#7cc65a 58% 100%);background-color:#a9dcff}
+#scene .pal{animation:pal 2.4s ease-in-out infinite alternate;transform-origin:760px 260px}
+@keyframes pal{from{transform:translateX(0)}to{transform:translateX(-26px)}}
+.places{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.place{border:3px solid #e2c3a8;background:var(--soft);border-radius:18px;padding:8px 16px;font-weight:800;font-size:24px;color:var(--ink)}
+.place[aria-pressed="true"]{border-color:var(--accent2);background:var(--accent);color:#fff}
 </style>
 </head>
 <body>
@@ -97,6 +106,20 @@ input{font:inherit;font-size:28px;font-weight:600;border:3px solid #e2c3a8;borde
 
   <div class="stage">
     <div class="bubble" id="bubble"></div>
+    <svg id="scene" viewBox="0 0 860 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true" hidden>
+      <rect x="0" y="236" width="860" height="64" fill="#7cc65a"/>
+      <path d="M0 290 C200 262 420 300 860 268 L860 300 L0 300Z" fill="#e8cf9c"/>
+      <g stroke="#a7743f" stroke-width="7" stroke-linecap="round">
+        <path d="M0 214H860M0 236H860"/>
+        <path d="M30 200V246M110 200V246M190 200V246M270 200V246M590 200V246M670 200V246M750 200V246M830 200V246"/>
+      </g>
+      <g><rect x="74" y="96" width="16" height="140" rx="6" fill="#8a5a2e"/><circle cx="82" cy="84" r="54" fill="#4f9a3a"/><circle cx="48" cy="112" r="36" fill="#5fae47"/><circle cx="118" cy="110" r="38" fill="#5fae47"/></g>
+      <g><rect x="786" y="106" width="16" height="130" rx="6" fill="#8a5a2e"/><circle cx="794" cy="94" r="50" fill="#4f9a3a"/><circle cx="760" cy="120" r="32" fill="#5fae47"/><circle cx="828" cy="118" r="34" fill="#5fae47"/></g>
+      <g><rect x="140" y="120" width="10" height="96" fill="#7a4e26"/><rect x="104" y="104" width="122" height="42" rx="8" fill="#fff6e6" stroke="#a7743f" stroke-width="5"/><text x="165" y="134" text-anchor="middle" font-size="24" font-weight="800" fill="#22303c" font-family="Lexend,system-ui,sans-serif">DOG PARK</text></g>
+      <g><rect x="620" y="226" width="90" height="10" rx="4" fill="#a7743f"/><rect x="620" y="206" width="90" height="10" rx="4" fill="#a7743f"/><rect x="628" y="226" width="8" height="26" fill="#7a4e26"/><rect x="694" y="226" width="8" height="26" fill="#7a4e26"/></g>
+      <g><ellipse cx="560" cy="270" rx="26" ry="9" fill="#3d7be0"/><ellipse cx="560" cy="267" rx="18" ry="5" fill="#9fd3ff"/></g>
+      <g class="pal"><ellipse cx="760" cy="262" rx="30" ry="15" fill="#f2f2f2"/><circle cx="792" cy="248" r="14" fill="#f2f2f2"/><circle cx="798" cy="245" r="3" fill="#22303c"/><ellipse cx="786" cy="240" rx="5" ry="9" fill="#555"/><rect x="740" y="270" width="7" height="16" rx="3" fill="#ddd"/><rect x="770" y="270" width="7" height="16" rx="3" fill="#ddd"/><path d="M732 256 C722 248 724 240 728 236" stroke="#ddd" stroke-width="5" fill="none" stroke-linecap="round"/></g>
+    </svg>
     <svg id="dog" viewBox="0 0 330 210" role="img" aria-label="Echo the dog">
       <g class="whole">
         <path class="tail" d="M66 112 C40 98 34 74 46 60" stroke="#8a5528" stroke-width="12" fill="none" stroke-linecap="round"/>
@@ -125,6 +148,11 @@ input{font:inherit;font-size:28px;font-weight:600;border:3px solid #e2c3a8;borde
   <section class="card" id="start">
     <div class="ask">Echo is a cheeky dog. Teach him tricks! <button class="say" data-say="Echo is a cheeky dog. Teach him tricks! Type your trainer name, then press Start." aria-label="Hear it">🔊</button></div>
     <input id="tName" maxlength="20" placeholder="Trainer name" aria-label="Your trainer name">
+    <div class="ask">Where do you train? <button class="say" data-say="Where do you want to train Echo? The backyard, or the dog park?" aria-label="Hear it">🔊</button></div>
+    <div class="places" role="group" aria-label="Training place">
+      <button class="place" data-place="yard" aria-pressed="true">🏡 Backyard</button>
+      <button class="place" data-place="park" aria-pressed="false">🌳 Dog park</button>
+    </div>
     <button class="big" id="go">Start ▶</button>
   </section>
 
@@ -134,7 +162,7 @@ input{font:inherit;font-size:28px;font-weight:600;border:3px solid #e2c3a8;borde
     <div class="cmds" id="cmds"></div>
     <div class="msg" id="msg" aria-live="polite"></div>
     <div class="row" id="after"></div>
-    <div class="row"><button class="toggle" id="wordMode" aria-pressed="false">📖 Words only</button><button class="toggle" id="sound" aria-pressed="true">🔊 Voice on</button><button class="toggle" id="newGame">🔄 New game</button></div>
+    <div class="row"><button class="toggle" id="wordMode" aria-pressed="false">📖 Words only</button><button class="toggle" id="sound" aria-pressed="true">🔊 Voice on</button><button class="toggle" id="goPlace">🌳 Go to the dog park</button><button class="toggle" id="newGame">🔄 New game</button></div>
   </section>
 </main>
 
@@ -164,8 +192,17 @@ var CHEEKY = [
   {pose:"hide",      line:"Where is Echo? He is hiding!"},
   {pose:"hide",      line:"Sneaky Echo! He hid in the bush!"}
 ];
+var PARK_CHEEKY = [
+  {pose:"runoff",    line:"Echo ran off to say hi to a new dog!"},
+  {pose:"tilt",      line:"Echo saw a squirrel!", b:"Squirrel!"},
+  {pose:"sniff",     line:"Echo is sniffing a tree!"},
+  {pose:"jump",      line:"Splash! Echo jumped in a puddle!"},
+  {pose:"tailchase", line:"Ha! Echo chased his tail by the bench!"},
+  {pose:"tilt",      line:"Woof! Echo barked at a leaf!", b:"Woof!"},
+  {pose:"yawn",      line:"Echo flopped down on the grass!"}
+];
 var KEY = "echo-tricks.v1";
-var S = {name:"", treats:0, best:0, words:false, voice:true};
+var S = {name:"", treats:0, best:0, words:false, voice:true, place:"yard"};
 try{ var sv = JSON.parse(localStorage.getItem(KEY) || "null"); if(sv) for(var k in sv) S[k] = sv[k]; }catch(e){}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 var streak = 0, target = null, seen = {}, busy = false, unlockedCount = 0;
@@ -219,8 +256,9 @@ function correct(){
   var cheeky = !seen[target.id] || Math.random() < 0.3;
   seen[target.id] = true;
   if(cheeky){
-    var c = CHEEKY[Math.floor(Math.random() * CHEEKY.length)];
-    if(c.pose === "tilt") bubble("Woof!");
+    var L = S.place === "park" ? PARK_CHEEKY : CHEEKY;
+    var c = L[Math.floor(Math.random() * L.length)];
+    if(c.pose === "tilt") bubble(c.b || "Woof!");
     pose(c.pose, 1500, function(){
       $("msg").textContent = c.line; speak(c.line + " Show him a treat.");
       $("after").innerHTML = '<button class="big" id="treat">🦴 Show a treat</button>';
@@ -271,6 +309,23 @@ $("newGame").onclick = function(){
   $("unlock").hidden = true; $("play").hidden = true; $("hud").hidden = true; $("start").hidden = false;
   $("tName").value = ""; pose("", 10);
 };
+function setPlace(p, say){
+  S.place = p === "park" ? "park" : "yard"; save();
+  var park = S.place === "park";
+  document.body.classList.toggle("park", park); if(park) $("scene").removeAttribute("hidden"); else $("scene").setAttribute("hidden", "");
+  document.querySelectorAll(".place").forEach(function(b){ b.setAttribute("aria-pressed", b.dataset.place === S.place); });
+  $("goPlace").textContent = park ? "🏡 Go home" : "🌳 Go to the dog park";
+  if(say) speak(park ? "Echo is at the dog park!" : "Echo is in the backyard.");
+}
+document.querySelectorAll(".place").forEach(function(b){ b.onclick = function(){ setPlace(b.dataset.place, true); }; });
+$("goPlace").onclick = function(){
+  if(busy) return;
+  setPlace(S.place === "park" ? "yard" : "park", false);
+  var park = S.place === "park", line = park ? "Echo is at the dog park! So much to sniff!" : "Echo is home in the backyard.";
+  $("msg").textContent = line; speak(line); bubble(park ? "Park!" : "Home!");
+  pose("dance", 1000);
+};
+setPlace(S.place, false);
 $("tName").value = S.name || "";
 $("go").onclick = function(){
   S.name = $("tName").value.trim().slice(0, 20); save();
