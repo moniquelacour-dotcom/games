@@ -5912,7 +5912,11 @@ let iHost = false, lastHostAt = 0;
 /* Twenty seconds, not six. A free public broker drops a beat now and then, and
    a laptop that goes to sleep for a moment should not empty the room. This only
    has to be short enough that a code cannot be reused next week. */
-function roomOpen() { return iHost || (performance.now() - lastHostAt <= 20000); }
+/* lastHostAt starts at 0, which the subtraction below reads as "a host was here
+   at time zero" — so for the first 20 seconds of EVERY page load the room looked
+   open. Harmless when this only drew a status line; not harmless now that it
+   decides whether a child can play. It has to have actually heard a host. */
+function roomOpen() { return iHost || (lastHostAt > 0 && performance.now() - lastHostAt <= 20000); }
 
 /* The coach's own device plays whenever she likes. Everyone else plays only
    while she is in the room with them. */
