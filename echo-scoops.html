@@ -102,6 +102,10 @@ P.forEach(function(p){
   p.s.forEach(function(s, j){ cur.push(j); if(/[.!?]$/.test(s)){ p.u.push(cur); cur = []; } });
   if(cur.length) p.u.push(cur);
 });
+/* ?story=pancakes (or pancakes,tacos) shows only those stories, so a coach can send one at a time. ONLY_STORIES */
+(function(){ try{ var q = new URLSearchParams(location.search).get("story"); if(!q) return;
+  var want = q.toLowerCase().split(","); var keep = P.filter(function(p){ return want.indexOf(p.id) >= 0; });
+  if(keep.length) P = keep; }catch(e){} })();
 var AUDIO = "audio/scoops/";
 var TREATS_PER_STORY = 3;
 var ECHO_KEY = "echo-tricks.v1", MY_KEY = "echo-scoops.v1";
