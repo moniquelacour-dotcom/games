@@ -5901,14 +5901,22 @@ let roomCode = null, sock = null, bc = null, netState = "off", lastBeat = 0, las
    week's four letters can walk back in whenever she likes. Two of them did.
    So the room is only OPEN while whoever started it is still in it. The starter
    stamps h:1 on every packet; everyone else ignores each other until they have
-   heard one in the last six seconds. Nobody is locked out of their own game —
-   Northgate itself carries on exactly as before, they just cannot see each
-   other without the coach there. */
+   heard one in the last six seconds.
+
+   20 Nov 2026: and the game itself now waits too. Closing the shared room was
+   never the point — the point is that Northgate is played on her calls, with
+   her, and the old build told a child "keep playing" when no coach was there.
+   So no host in the room means the day does not advance for a student. Her own
+   device carries the coach flag and is never held. */
 let iHost = false, lastHostAt = 0;
 /* Twenty seconds, not six. A free public broker drops a beat now and then, and
    a laptop that goes to sleep for a moment should not empty the room. This only
    has to be short enough that a code cannot be reused next week. */
 function roomOpen() { return iHost || (performance.now() - lastHostAt <= 20000); }
+
+/* The coach's own device plays whenever she likes. Everyone else plays only
+   while she is in the room with them. */
+function coachPresent() { return COACH || roomOpen(); }
 
 /* AND ONLY THE COACH CAN OPEN ONE. Starting a room is hers to give out, so it
    can be a reward rather than something any child can switch on. The Start
@@ -6363,7 +6371,7 @@ window.addEventListener("pagehide", () => leaveRoom(true));
 
 function netWord() {
   if (netState === "open") {
-    if (!roomOpen()) return "Waiting for your coach. Keep playing — you will see each other as soon as she is back.";
+    if (!roomOpen()) return "Waiting for your coach. Northgate starts again as soon as she is back.";
     return peerCount() ? "" : "Nobody else yet. Read the four letters out.";
   }
   if (netState === "connecting") return "Connecting\u2026";
@@ -6543,9 +6551,25 @@ document.getElementById("overlay").addEventListener("click", e => { if (e.target
 
 /* ============================== LOOP ============================== */
 let last = performance.now();
+let heldBanner = null;
+function paintHeld(held) {
+  if (!heldBanner) {
+    heldBanner = document.createElement("div");
+    heldBanner.id = "ngHeld";
+    heldBanner.style.cssText = "position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:9000;background:rgba(8,14,26,.82);backdrop-filter:blur(3px);font:600 22px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;color:#fff;text-align:center;padding:24px;";
+    heldBanner.innerHTML = '<div style="max-width:30rem"><div style="font-size:44px;margin-bottom:12px">⏸️</div>' +
+      '<div>Northgate waits for your coach.</div>' +
+      '<div style="font:400 17px/1.6 inherit;opacity:.85;margin-top:12px">Press <b>Together</b> and put in the four letters from the chat. The city starts moving as soon as she is in the room.</div></div>';
+    document.body.appendChild(heldBanner);
+  }
+  heldBanner.style.display = held ? "flex" : "none";
+}
+
 function loop(now) {
   const dt = Math.min(60, now - last); last = now; T = now / 1000;
-  if (!paused) {
+  const held = !coachPresent();
+  paintHeld(held);
+  if (!paused && !held) {
     if (mode === "drive") stepCar(dt);
     else stepWalk(dt, mode === "inside");
     updateFocus();
