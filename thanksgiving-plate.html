@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fill the Plate</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥧</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#FFF6E9; --ink:#2B1B0E; --soft:#6B5542; --card:#FFFFFF; --edge:#E8D5BC;
+  --warm:#C2410C; --warm2:#EA580C; --gold:#B45309; --green:#3F6212; --plum:#9D174D;
+  --shadow:0 10px 30px rgba(80,45,15,.14);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1A1209; --ink:#FBEFE0; --soft:#C3AC93; --card:#271A0E; --edge:#4A3420;
+    --warm:#FB923C; --warm2:#FDBA74; --gold:#FCD34D; --green:#A3C255; --plum:#F9A8C4;
+    --shadow:0 10px 30px rgba(0,0,0,.45);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1A1209; --ink:#FBEFE0; --soft:#C3AC93; --card:#271A0E; --edge:#4A3420;
+  --warm:#FB923C; --warm2:#FDBA74; --gold:#FCD34D; --green:#A3C255; --plum:#F9A8C4;
+  --shadow:0 10px 30px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font:500 17px/1.55 Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:60rem;margin:0 auto;padding:22px 16px 56px}
+h1{font:800 clamp(30px,6vw,46px)/1.05 "Baloo 2",system-ui,sans-serif;margin:0 0 4px;color:var(--warm)}
+.sub{color:var(--soft);margin:0 0 22px;font-size:1.02rem}
+
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 20px}
+button{font:700 1rem/1 Figtree,system-ui,sans-serif;cursor:pointer;border-radius:999px;border:2px solid var(--edge);
+  background:var(--card);color:var(--ink);padding:11px 18px;box-shadow:var(--shadow)}
+button:hover{border-color:var(--warm)}
+button.key{background:var(--warm);border-color:var(--warm);color:#fff}
+button.key:hover{background:var(--warm2);border-color:var(--warm2)}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+.plate{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;margin:0 0 8px;padding:0;list-style:none;
+}
+.food{
+  background:var(--card);border:2px solid var(--edge);border-radius:20px;padding:18px 12px 15px;
+  text-align:center;box-shadow:var(--shadow);width:100%;display:block;
+}
+.food .em{display:block;font-size:40px;line-height:1;margin-bottom:8px}
+.food .nm{display:block;font:700 1.02rem/1.2 Figtree,sans-serif}
+.food.done{opacity:.4}
+.food.done .nm::after{content:" ✓";color:var(--green)}
+
+.card{
+  background:var(--card);border:2px solid var(--edge);border-radius:26px;padding:26px 22px;box-shadow:var(--shadow);
+  margin:22px 0 0;display:none
+}
+.card.on{display:block}
+.card .big{font-size:clamp(54px,13vw,86px);line-height:1;text-align:center;display:block;margin-bottom:6px}
+.card .who{text-align:center;font:800 1.3rem/1.2 "Baloo 2",sans-serif;color:var(--plum);margin:0 0 10px}
+.card .q{font:700 clamp(21px,4.4vw,30px)/1.3 "Baloo 2",sans-serif;margin:0 0 12px;text-align:center}
+.card .because{color:var(--soft);text-align:center;margin:0 0 18px;font-size:1.05rem}
+.card .row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+
+.names{background:var(--card);border:2px dashed var(--edge);border-radius:20px;padding:16px 18px;margin:0 0 20px}
+.names label{display:block;font-weight:700;margin-bottom:6px}
+.names input{width:100%;font:500 1rem Figtree,sans-serif;padding:11px 13px;border-radius:12px;
+  border:2px solid var(--edge);background:var(--bg);color:var(--ink)}
+.names .hint{color:var(--soft);font-size:.93rem;margin:8px 0 0}
+
+footer{margin-top:34px;color:var(--soft);font-size:.95rem}
+@media (max-width:420px){ .wrap{padding-left:16px;padding-right:16px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Fill the Plate</h1>
+  <p class="sub">Tap something on the plate. Whoever it lands on answers — and says one reason why.</p>
+
+  <div class="names">
+    <label for="who">Who is playing? (type names, separated by commas — leave it empty if it is just the two of you)</label>
+    <input id="who" type="text" autocomplete="off" placeholder="e.g. Sam, Alex, Coach">
+    <p class="hint">Names stay on this computer. Nothing is sent anywhere.</p>
+  </div>
+
+  <ul class="plate" id="plate"></ul>
+
+  <div class="bar" style="margin-top:18px">
+    <button id="reset">Start a fresh plate</button>
+    <button id="theme">Light / dark</button>
+  </div>
+
+  <section class="card" id="card" aria-live="polite">
+    <span class="big" id="cEm">🦃</span>
+    <p class="who" id="cWho"></p>
+    <p class="q" id="cQ"></p>
+    <p class="because" id="cB"></p>
+    <div class="row">
+      <button class="key" id="again">Someone else answers this</button>
+      <button id="back">Back to the plate</button>
+    </div>
+  </section>
+
+  <footer>Your plate saves on this computer, so you can come back to the same link.</footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* Each food carries one prompt. Mixed on purpose: some silly, some warm, a
+     couple that need a real reason. Every one is answerable out loud by a kid
+     who cannot read the screen — the coach reads it. Nothing here needs any
+     knowledge of Thanksgiving history, because not every family keeps it. */
+  var FOODS = [
+    { em:"🦃", nm:"Turkey",      q:"You get to rename the turkey. What is its new name?",
+      b:"Then say why that name suits it." },
+    { em:"🥧", nm:"Pie",         q:"Pie or cake, forever — you can never have the other one again.",
+      b:"Say the reason, not just the pick." },
+    { em:"🥔", nm:"Potatoes",    q:"Name one thing you are good at that has nothing to do with school.",
+      b:"Then say how you got good at it." },
+    { em:"🌽", nm:"Corn",        q:"Would you rather eat only one food for a week, or a different food every single hour?",
+      b:"Say what would be hard about your pick." },
+    { em:"🍞", nm:"Rolls",       q:"Who is someone you would save a seat for?",
+      b:"Say one reason why them." },
+    { em:"🫛", nm:"Green beans", q:"What is a food you used to hate and now you are fine with?",
+      b:"Say what changed." },
+    { em:"🧈", nm:"Butter",      q:"You can make one thing in your week easier. What do you pick?",
+      b:"Say what it would free you up to do." },
+    { em:"🍠", nm:"Sweet potato",q:"Would you rather host twenty people or be a guest at someone else's?",
+      b:"Say what the hard part of your pick would be." },
+    { em:"🍇", nm:"Grapes",      q:"Something small that went well this week. Anything counts.",
+      b:"Say why it counted." },
+    { em:"🥤", nm:"Drinks",      q:"Make up a brand new drink. What is in it and what is it called?",
+      b:"Say who would love it." },
+    { em:"🧁", nm:"Cupcake",     q:"Would you rather be the funniest person in the room or the kindest?",
+      b:"Say what you would miss about the other one." },
+    { em:"🐶", nm:"Under the table", q:"If a dog could talk for one minute at dinner, what would it say?",
+      b:"Say why it would say that." }
+  ];
+
+  var KEY = "fillplate.v1";
+  var PKEY = "fillplate.players.v1";
+  var TKEY = "fillplate.theme.v1";
+
+  var done = load(KEY, []);
+  var lastIdx = -1;
+  var turn = 0;
+
+  function load(k, fallback){
+    try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : fallback; }
+    catch(e){ return fallback; }
+  }
+  function save(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+
+  var plate = document.getElementById("plate");
+  var card  = document.getElementById("card");
+  var cEm   = document.getElementById("cEm");
+  var cWho  = document.getElementById("cWho");
+  var cQ    = document.getElementById("cQ");
+  var cB    = document.getElementById("cB");
+  var who   = document.getElementById("who");
+
+  try { who.value = localStorage.getItem(PKEY) || ""; } catch(e){}
+  who.addEventListener("input", function(){
+    try { localStorage.setItem(PKEY, who.value); } catch(e){}
+    turn = 0;
+  });
+
+  function players(){
+    return who.value.split(",").map(function(s){ return s.trim(); }).filter(Boolean);
+  }
+
+  function paintPlate(){
+    plate.innerHTML = "";
+    FOODS.forEach(function(f, i){
+      var li = document.createElement("li");
+      var b = document.createElement("button");
+      b.className = "food" + (done.indexOf(i) >= 0 ? " done" : "");
+      b.type = "button";
+      b.innerHTML = '<span class="em" aria-hidden="true">' + f.em + '</span><span class="nm"></span>';
+      b.querySelector(".nm").textContent = f.nm;
+      b.addEventListener("click", function(){ open(i); });
+      li.appendChild(b);
+      plate.appendChild(li);
+    });
+  }
+
+  function nextName(){
+    var p = players();
+    if (!p.length) return "";
+    var n = p[turn % p.length];
+    turn++;
+    return n;
+  }
+
+  function open(i){
+    lastIdx = i;
+    var f = FOODS[i];
+    cEm.textContent = f.em;
+    cQ.textContent = f.q;
+    cB.textContent = f.b;
+    var n = nextName();
+    cWho.textContent = n ? n + ", this one is yours" : "";
+    if (done.indexOf(i) < 0) { done.push(i); save(KEY, done); }
+    paintPlate();
+    card.classList.add("on");
+    card.scrollIntoView({ behavior:"smooth", block:"center" });
+  }
+
+  document.getElementById("again").addEventListener("click", function(){
+    var n = nextName();
+    cWho.textContent = n ? n + ", your turn on this one" : "Someone else have a go";
+  });
+  document.getElementById("back").addEventListener("click", function(){
+    card.classList.remove("on");
+    window.scrollTo({ top:0, behavior:"smooth" });
+  });
+  document.getElementById("reset").addEventListener("click", function(){
+    done = []; save(KEY, done); turn = 0;
+    card.classList.remove("on");
+    paintPlate();
+  });
+
+  /* Theme toggle, remembered. Falls back silently where storage is blocked. */
+  try { if (localStorage.getItem(TKEY)) document.documentElement.setAttribute("data-theme", localStorage.getItem(TKEY)); } catch(e){}
+  document.getElementById("theme").addEventListener("click", function(){
+    var now = document.documentElement.getAttribute("data-theme");
+    var dark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var next = now ? (now === "dark" ? "light" : "dark") : (dark ? "light" : "dark");
+    document.documentElement.setAttribute("data-theme", next);
+    try { localStorage.setItem(TKEY, next); } catch(e){}
+  });
+
+  paintPlate();
+})();
+</script>
+</body>
+</html>
