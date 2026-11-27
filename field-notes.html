@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Field Notes for the Bureau</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐇</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fredoka:wght@500;600&display=swap">
+<style>
+/* Field Notes for the Bureau: nonfiction reading practice for a Clover Hollow detective.
+   Before reading: find the text features, predict, connect. During: questions in the test's own wording.
+   After: main idea and summary. Every 3 right answers (first try) earns a clue key for Clover Hollow.
+   Played with the coach. No timer, no sound, no names. Progress stays in this browser. */
+:root{--soil:#2b2119;--soil2:#3a2c21;--paper:#fbf4e6;--paper2:#f2e6cf;--ink:#2b2119;--muted:#6e5d4c;--moss:#4f7a3a;--moss-soft:#e3eed9;--clover:#2f8f4e;--berry:#b8445a;--berry-soft:#f7e0e4;--gold:#c99a2e;--gold-soft:#f8ecc9;--line:#dccbae;color-scheme:light}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--soil);color:var(--paper);font:19px/1.55 "Atkinson Hyperlegible",system-ui,sans-serif}
+main{max-width:900px;margin:0 auto;padding-block:16px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{font-family:"Fredoka","Trebuchet MS",system-ui,sans-serif;font-weight:600;margin:0;line-height:1.15;text-wrap:balance}
+h1{font-size:clamp(30px,6vw,42px);text-align:center;color:var(--paper)}
+p{margin:0}
+button{font:inherit;cursor:pointer;color:inherit}
+.paper{background:var(--paper);color:var(--ink);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.keys{background:var(--gold-soft);color:var(--ink);border-radius:999px;padding:6px 14px;font-weight:700}
+.ghost{border:2px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:6px 16px;font-weight:700}
+.on-dark .ghost{background:var(--soil2);color:var(--paper);border-color:#5a4636}
+.btn{border:none;border-radius:999px;background:var(--clover);color:#fff;font:600 20px "Fredoka",system-ui,sans-serif;padding:10px 24px;box-shadow:0 4px 0 #1f6236}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 #1f6236}
+.btn.gold{background:var(--gold);box-shadow:0 4px 0 #8f6c1c;color:#2b2119}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.small{font-size:15px;color:var(--muted)}
+.picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:12px}
+.pick{text-align:left;border:3px solid var(--line);background:var(--paper);color:var(--ink);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:4px}
+.pick .em{font-size:34px}
+.pick b{font:600 20px "Fredoka",system-ui,sans-serif}
+.pick.done{border-color:var(--clover)}
+/* steps strip */
+.steps{display:flex;gap:6px;flex-wrap:wrap}
+.steps span{border-radius:999px;padding:3px 12px;font-weight:700;font-size:15px;background:var(--paper2);color:var(--muted)}
+.steps span.now{background:var(--moss);color:#fff}
+.steps span.past{background:var(--moss-soft);color:var(--moss)}
+/* the case file (passage) */
+.file{background:#fff;color:var(--ink);border:2px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;font-size:19px;line-height:1.65}
+.file .tf{border-radius:6px;transition:background .2s,box-shadow .2s}
+.file.hunt .tf{cursor:pointer}
+.file.hunt .tf:hover{box-shadow:0 0 0 3px var(--gold-soft)}
+.file .tf.found{background:var(--gold-soft);box-shadow:0 0 0 3px var(--gold)}
+.file .ttl{font:600 26px "Fredoka",system-ui,sans-serif;color:var(--moss)}
+.file h3{font-size:20px;color:var(--berry);margin-top:4px}
+.file .pn{font-size:13px;font-weight:700;color:var(--muted);margin-right:6px;font-family:system-ui,sans-serif}
+.file b.bw{font-weight:700}
+.file figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:6px}
+.file figure svg{width:100%;max-width:420px;height:auto}
+.file figcaption{font-size:15px;color:var(--muted);text-align:center}
+.file .fact{background:var(--moss-soft);border-radius:12px;padding:10px 14px;font-size:17px}
+.file .fact b{color:var(--moss)}
+.file table{border-collapse:collapse;width:100%;font-size:16px}
+.file th,.file td{border:1px solid var(--line);padding:6px 8px;text-align:left}
+.file th{background:var(--paper2)}
+/* questions */
+.ask{background:var(--paper2);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.ask .stage{font:600 15px "Fredoka",system-ui,sans-serif;color:var(--moss);letter-spacing:.04em;text-transform:uppercase}
+.ask .stem{font-weight:700;font-size:20px}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choices button{border:2px solid var(--line);background:#fff;color:var(--ink);border-radius:12px;padding:10px 14px;text-align:left}
+.choices button.ruled{opacity:.4;text-decoration:line-through}
+.choices button.right{border-color:var(--clover);background:var(--moss-soft)}
+.choices button.wrong{border-color:var(--berry);background:var(--berry-soft)}
+.order{display:flex;flex-wrap:wrap;gap:8px}
+.order button{border:2px solid var(--line);background:#fff;color:var(--ink);border-radius:12px;padding:8px 14px;font-weight:700}
+.order button.used{opacity:.35}
+.slots{display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-height:44px}
+.slots span{background:var(--moss-soft);color:var(--moss);border-radius:10px;padding:6px 12px;font-weight:700}
+.typein{display:flex;gap:8px;flex-wrap:wrap}
+.typein input{font:inherit;font-size:20px;border:2px solid var(--line);border-radius:10px;padding:8px 12px;flex:1 1 200px;min-width:0;background:#fff;color:var(--ink)}
+.tip{border-left:5px solid var(--berry);background:#fff;border-radius:0 12px 12px 0;padding:10px 14px}
+.tip b{color:var(--berry)}
+.yes{border-left:5px solid var(--clover);background:#fff;border-radius:0 12px 12px 0;padding:10px 14px}
+.yes b{color:var(--clover)}
+.keyburst{text-align:center;align-items:center}
+.keyburst .big{font-size:60px;line-height:1}
+.read4{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:8px}
+.read4 div{background:var(--paper2);border-radius:12px;padding:8px 12px;font-size:16px}
+.read4 b{font:600 24px "Fredoka",system-ui,sans-serif;color:var(--berry);margin-right:6px}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+(function(){
+"use strict";
+/* ---------- the case files ----------
+   Each passage: html with text features marked data-tf="title|heading|bold|picture|fact".
+   Questions: {st:"before|during|after", s:stem, c:[choices], a:index}  or  {type:"order", items:[], answer:[...]}  or  {type:"type", answer:["word"]}
+   r: the READ letter + strategy shown after a wrong try; w: why, shown after the right answer. */
+var RABBIT_SVG = '<svg viewBox="0 0 420 200" role="img" aria-label="Labeled drawing of a rabbit: eyes on the sides of the head, long ears, strong back legs"><g fill="#e9ddc9" stroke="#6e5d4c" stroke-width="3"><ellipse cx="200" cy="130" rx="95" ry="50"/><ellipse cx="300" cy="100" rx="42" ry="36"/><ellipse cx="285" cy="45" rx="12" ry="40" transform="rotate(-12 285 45)"/><ellipse cx="312" cy="45" rx="12" ry="40" transform="rotate(10 312 45)"/><ellipse cx="135" cy="168" rx="55" ry="16"/></g><circle cx="318" cy="96" r="6" fill="#2b2119"/><g fill="#2b2119" font-family="system-ui,sans-serif" font-size="15" font-weight="700"><line x1="318" y1="96" x2="372" y2="140" stroke="#b8445a" stroke-width="2"/><text x="340" y="160">eyes on the sides</text><line x1="298" y1="20" x2="240" y2="14" stroke="#b8445a" stroke-width="2"/><text x="140" y="18">ears that turn</text><line x1="110" y1="170" x2="60" y2="196" stroke="#b8445a" stroke-width="2"/><text x="6" y="196">strong back legs</text></g></svg>';
+var CHAIN_SVG = '<svg viewBox="0 0 420 130" role="img" aria-label="Food chain diagram: sun, then grass, then rabbit, then fox, with arrows showing where the energy goes"><g font-family="system-ui,sans-serif" font-size="16" font-weight="700" text-anchor="middle"><circle cx="40" cy="60" r="26" fill="#f8ecc9" stroke="#c99a2e" stroke-width="3"/><text x="40" y="66" fill="#2b2119">Sun</text><rect x="100" y="38" width="80" height="44" rx="10" fill="#e3eed9" stroke="#4f7a3a" stroke-width="3"/><text x="140" y="66" fill="#2b2119">Grass</text><rect x="210" y="38" width="80" height="44" rx="10" fill="#fbf4e6" stroke="#6e5d4c" stroke-width="3"/><text x="250" y="66" fill="#2b2119">Rabbit</text><rect x="320" y="38" width="80" height="44" rx="10" fill="#f7e0e4" stroke="#b8445a" stroke-width="3"/><text x="360" y="66" fill="#2b2119">Fox</text></g><g stroke="#2b2119" stroke-width="3" fill="#2b2119"><line x1="68" y1="60" x2="94" y2="60"/><polygon points="94,54 102,60 94,66"/><line x1="182" y1="60" x2="204" y2="60"/><polygon points="204,54 212,60 204,66"/><line x1="292" y1="60" x2="314" y2="60"/><polygon points="314,54 322,60 314,66"/></g><text x="210" y="118" text-anchor="middle" font-family="system-ui,sans-serif" font-size="14" fill="#6e5d4c">The arrows point to the living thing that gets the energy.</text></svg>';
+
+var FILES = [
+ {id:"rabbits", em:"🐇", title:"How Rabbits Stay Safe", kind:"Informational",
+  html:
+  '<div class="tf ttl" data-tf="title">How Rabbits Stay Safe</div>'+
+  '<p><span class="pn">1</span>A wild rabbit is small, soft, and quiet. Foxes, hawks, and owls all hunt rabbits. An animal that hunts other animals for food is called a <b class="bw tf" data-tf="bold">predator</b>. A rabbit cannot fight a predator, so it has other ways to stay safe.</p>'+
+  '<h3 class="tf" data-tf="heading">Eyes on the Sides</h3>'+
+  '<p><span class="pn">2</span>A rabbit\'s eyes are on the sides of its head, not the front. This lets a rabbit see almost all the way around its body without turning its head. It can spot a hawk above it or a fox behind it while it eats.</p>'+
+  '<h3>Ears That Turn</h3>'+
+  '<p><span class="pn">3</span>A rabbit\'s long ears can turn in different directions, one at a time. One ear can listen to the front while the other listens behind. When a rabbit hears danger, it freezes and stays very still so it is hard to see.</p>'+
+  '<figure class="tf" data-tf="picture">'+RABBIT_SVG+'<figcaption>A rabbit\'s body is built for spotting danger and running away fast.</figcaption></figure>'+
+  '<h3>The Thump Signal</h3>'+
+  '<p><span class="pn">4</span>If a rabbit sees danger, it may pound the ground with its strong back legs. This loud thump warns other rabbits nearby. Then the rabbit runs in a zigzag path back to its hiding place. Zigzagging makes it hard for a predator to follow.</p>'+
+  '<div class="fact tf" data-tf="fact"><b>Fast Facts</b><br>Some wild rabbits can run as fast as a car on a neighborhood street, up to about 25 miles per hour.<br>A rabbit\'s eyes are high on its head, so it can watch for danger while it eats.</div>',
+  q:[
+   {st:"before", s:"Look at the title and the headings. What will this selection mostly be about?", c:["How to take care of a pet rabbit","The ways a rabbit keeps itself safe","What rabbits like to eat","Where rabbits live in winter"], a:1, r:["R","Reread the title and headings: they tell you the topic before you read."], w:"The title says it: How Rabbits Stay Safe. The headings name three ways."},
+   {st:"during", s:"In paragraph 1, what does the word predator mean?", c:["An animal that hunts other animals for food","An animal that hides in a hole","A baby rabbit","An animal that eats only plants"], a:0, r:["E","Examine the words: bold words are explained right in the sentence."], w:"Paragraph 1 says it: an animal that hunts other animals for food is called a predator."},
+   {st:"during", s:"According to the selection, why are a rabbit's eyes on the sides of its head helpful?", c:["They help it see in the dark","They let it see almost all the way around without turning its head","They make it look bigger","They help it find food under the snow"], a:1, r:["D","Dig for evidence: find the section titled “Eyes on the Sides” and reread it."], w:"Paragraph 2: it can see almost all the way around its body without turning its head."},
+   {st:"during", s:"The drawing in the selection helps the reader understand —", c:["what color rabbits are","which body parts help a rabbit stay safe","how many babies a rabbit has","how a rabbit digs a burrow"], a:1, r:["A","Ask each answer: does the drawing really show this? Look at the labels."], w:"The labels point to the eyes, ears, and back legs, the parts that keep it safe."},
+   {st:"during", s:"What does a rabbit do right after it thumps the ground?", c:["It freezes and stays still","It eats more grass","It runs in a zigzag path to its hiding place","It turns its ears"], a:2, r:["D","Dig for evidence: find “thump” in paragraph 4, then read the very next sentence."], w:"Paragraph 4: it thumps, then it runs in a zigzag path back to its hiding place."},
+   {st:"after", s:"Which sentence best states the main idea of the selection?", c:["Foxes and hawks hunt rabbits.","Rabbits can run as fast as a car.","A rabbit's body and actions help it stay safe from predators.","A rabbit has long ears."], a:2, r:["A","Ask each answer: is it about the WHOLE selection, or just one part?"], w:"Every section shows one way a rabbit stays safe. The other choices are single details."}
+  ]},
+ {id:"backbone", em:"🦞", title:"Backbone or No Backbone?", kind:"Informational",
+  html:
+  '<div class="tf ttl" data-tf="title">Backbone or No Backbone?</div>'+
+  '<p><span class="pn">1</span>Scientists sort animals into groups to study them. One of the biggest ways to sort animals is to ask a simple question: Does this animal have a backbone?</p>'+
+  '<h3 class="tf" data-tf="heading">Animals With Backbones</h3>'+
+  '<p><span class="pn">2</span>An animal with a backbone is called a <b class="bw tf" data-tf="bold">vertebrate</b>. A backbone is a row of small bones down the middle of the back. Fish, frogs, snakes, birds, and rabbits are all vertebrates. You are a vertebrate too!</p>'+
+  '<h3>Animals Without Backbones</h3>'+
+  '<p><span class="pn">3</span>An animal without a backbone is called an <b class="bw">invertebrate</b>. Worms, snails, spiders, insects, and jellyfish are invertebrates. Most of the animals on Earth are invertebrates.</p>'+
+  '<p><span class="pn">4</span>Some invertebrates have a hard covering on the outside of their bodies instead of bones on the inside. This covering is called an <b class="bw">exoskeleton</b>. Crabs, lobsters, and beetles have exoskeletons. An exoskeleton protects the soft body inside, like a suit of armor. It cannot grow, so the animal must shed it and grow a new, bigger one.</p>'+
+  '<div class="tf" data-tf="picture"><table><caption class="small" style="caption-side:bottom;padding-top:6px">Chart: some animals in each group</caption><tr><th>Vertebrates</th><th>Invertebrates</th></tr><tr><td>fish</td><td>worm</td></tr><tr><td>frog</td><td>spider</td></tr><tr><td>bird</td><td>lobster</td></tr><tr><td>rabbit</td><td>snail</td></tr></table></div>'+
+  '<div class="fact tf" data-tf="fact"><b>Did You Know?</b><br>A lobster sheds its exoskeleton many times as it grows. Right after shedding, its new shell is soft, so it hides until the shell gets hard.</div>',
+  q:[
+   {st:"before", s:"Look at the title, the headings, and the chart. What will the reader most likely learn?", c:["How to catch a lobster","How animals are sorted by whether they have a backbone","Why rabbits run fast","How fish breathe underwater"], a:1, r:["R","Reread the title and headings: put them together to predict."], w:"The title asks the question, and the two headings and the chart sort animals into two groups."},
+   {st:"during", type:"type", s:"In paragraph 4, which word means a hard covering on the outside of an animal's body? Type the word.", answer:["exoskeleton"], r:["E","Examine the words: look for the bold word in paragraph 4."], w:"Paragraph 4 says the hard outside covering is called an exoskeleton."},
+   {st:"during", s:"According to the selection, which animal is a vertebrate?", c:["A spider","A snail","A frog","A worm"], a:2, r:["D","Dig for evidence: use the chart, or find the list in paragraph 2."], w:"Paragraph 2 and the chart both list the frog as a vertebrate."},
+   {st:"during", s:"Under which heading would a reader find information about worms and snails?", c:["Backbone or No Backbone?","Animals With Backbones","Animals Without Backbones","Did You Know?"], a:2, r:["R","Reread the question: it asks WHERE to look. Check what each heading is about."], w:"Worms and snails have no backbone, so they are under “Animals Without Backbones.”"},
+   {st:"during", s:"Why must a lobster shed its exoskeleton?", c:["Because it gets dirty","Because the exoskeleton cannot grow","Because predators break it","Because it is too heavy to swim"], a:1, r:["D","Dig for evidence: reread the last two sentences of paragraph 4."], w:"Paragraph 4: it cannot grow, so the animal must shed it and grow a bigger one."},
+   {st:"after", s:"Which is the best summary of the selection?", c:["Lobsters have hard shells that they shed.","Animals are sorted into vertebrates, which have backbones, and invertebrates, which do not. Some invertebrates have exoskeletons.","You are a vertebrate.","Scientists like to study animals."], a:1, r:["A","Ask each answer: a summary covers the important ideas from the beginning, middle, and end."], w:"It names both groups and the exoskeleton idea. The other choices are one detail each."}
+  ]},
+ {id:"chain", em:"🦊", title:"Who Eats Whom in the Meadow", kind:"Informational",
+  html:
+  '<div class="tf ttl" data-tf="title">Who Eats Whom in the Meadow</div>'+
+  '<p><span class="pn">1</span>Every living thing needs energy to live and grow. In a meadow, energy passes from one living thing to the next when one eats another. This path of energy is called a food chain.</p>'+
+  '<h3 class="tf" data-tf="heading">Producers</h3>'+
+  '<p><span class="pn">2</span>A food chain starts with the sun. Plants like grass and clover use sunlight to make their own food. A living thing that makes its own food is called a <b class="bw tf" data-tf="bold">producer</b>.</p>'+
+  '<h3>Consumers</h3>'+
+  '<p><span class="pn">3</span>Animals cannot make their own food, so they eat other living things. An animal that eats is called a <b class="bw">consumer</b>. A rabbit is a consumer that eats grass and clover. A fox is a consumer that eats rabbits.</p>'+
+  '<figure class="tf" data-tf="picture">'+CHAIN_SVG+'<figcaption>A meadow food chain</figcaption></figure>'+
+  '<h3>Decomposers</h3>'+
+  '<p><span class="pn">4</span>When plants and animals die, <b class="bw">decomposers</b> such as mushrooms and worms break them down. This puts nutrients back into the soil. Then new grass can grow, and the chain begins again.</p>'+
+  '<div class="fact tf" data-tf="fact"><b>Think About It</b><br>If all the grass in a meadow disappeared, the rabbits would have less food. Then the foxes would have fewer rabbits to eat.</div>',
+  q:[
+   {st:"before", s:"Look at the headings: Producers, Consumers, Decomposers. How is this selection most likely organized?", c:["It tells a story about a fox","It explains the parts of a food chain, one section at a time","It compares two meadows","It gives steps for planting grass"], a:1, r:["R","Reread the headings in order: each one names a part."], w:"Each heading names one part of the food chain, so each section explains one part."},
+   {st:"during", s:"In paragraph 2, a producer is a living thing that —", c:["eats other animals","breaks down dead plants","makes its own food","lives in the soil"], a:2, r:["E","Examine the words: the bold word is explained in the same sentence."], w:"Paragraph 2: a living thing that makes its own food is called a producer."},
+   {st:"during", type:"order", s:"Use the diagram. Tap the living things in the order the energy moves, starting after the sun.", items:["Fox","Grass","Rabbit"], answer:["Grass","Rabbit","Fox"], r:["D","Dig for evidence: follow the arrows in the diagram from the sun."], w:"Sun → grass → rabbit → fox. The arrows point to who gets the energy."},
+   {st:"during", s:"The arrows in the diagram help the reader understand —", c:["how fast each animal runs","which way the energy moves in the food chain","how big each animal is","where the meadow is"], a:1, r:["R","Reread the caption and the note under the diagram."], w:"The note says the arrows point to the living thing that gets the energy."},
+   {st:"during", s:"Based on the box titled “Think About It,” what would most likely happen if all the grass disappeared?", c:["The foxes would have more food","The rabbits and then the foxes would have less food","The mushrooms would stop growing","Nothing would change"], a:1, r:["A","Ask each answer: test it against the box, one choice at a time."], w:"The box says the rabbits would have less food, and then the foxes would have fewer rabbits."},
+   {st:"after", s:"What is the selection mostly about?", c:["How foxes hunt","How energy moves from the sun through plants and animals in a food chain","Why mushrooms grow","How to find clover"], a:1, r:["A","Ask each answer: does it cover every section, not just one?"], w:"All four paragraphs explain how energy passes along the food chain."}
+  ]}
+];
+FILES.forEach(function(f){ f.q.forEach(function(q){ if(!q.type) q.type = "pick"; }); });
+
+/* ---------- saved progress (this browser only) ---------- */
+var KEY = "field-notes.v1", KEYS_KEY = "clover-keys.v1";
+var S = {done:{}, rights:0};
+try{ var sv = JSON.parse(localStorage.getItem(KEY) || "null"); if(sv){ S.done = sv.done || {}; S.rights = +sv.rights || 0; } }catch(e){}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function keysEarned(){ try{ var k = JSON.parse(localStorage.getItem(KEYS_KEY) || "null"); return k && +k.earned || 0; }catch(e){ return 0; } }
+function addKey(){ var k; try{ k = JSON.parse(localStorage.getItem(KEYS_KEY) || "null"); }catch(e){} if(!k || typeof k !== "object") k = {}; k.earned = (+k.earned || 0) + 1; try{ localStorage.setItem(KEYS_KEY, JSON.stringify(k)); }catch(e){} return k.earned; }
+
+var $ = function(id){ return document.getElementById(id); };
+var G = null;
+var FEATURES = [["title","the title"],["heading","a heading"],["bold","a bold word"],["picture","the picture, drawing, or chart"],["fact","the fact box"]];
+var STEP_NAMES = {preview:"Before: text features", predict:"Before: predict", connect:"Before: what I know", during:"During reading", after:"After reading"};
+
+function topBar(){
+  return '<div class="top on-dark"><button class="ghost" data-act="home">← Case files</button><span class="keys">🗝️ Clue keys: ' + keysEarned() + '</span></div>';
+}
+function home(){
+  G = null;
+  $("app").innerHTML = '<h1>Field Notes for the Bureau</h1>' + topBar().replace('<button class="ghost" data-act="home">← Case files</button>', '<span></span>') +
+    '<section class="paper"><p><b>Every detective reads the case file first.</b> These files are nonfiction. Read each one like a detective: before, during, and after. Every <b>3 answers right on the first try</b> earns a <b>clue key</b> for the next clue in Clover Hollow.</p>' +
+    '<div class="read4"><div><b>R</b>Reread the question</div><div><b>E</b>Examine the words</div><div><b>A</b>Ask each answer</div><div><b>D</b>Dig for evidence</div></div></section>' +
+    '<section class="paper"><h2>Pick a case file</h2><div class="picks">' + FILES.map(function(f){
+      var d = S.done[f.id];
+      return '<button class="pick' + (d ? ' done' : '') + '" data-file="' + f.id + '"><span class="em">' + f.em + '</span><b>' + f.title + '</b><span class="small">' + f.kind + (d ? ' · filed ✓' : '') + '</span></button>';
+    }).join("") + '</div></section>' +
+    '<div class="row" style="justify-content:center"><a class="btn gold" href="clover-hollow.html" style="text-decoration:none">🐇 Go to Clover Hollow</a></div>';
+}
+function start(id){
+  var f = FILES.filter(function(x){ return x.id === id; })[0];
+  G = {f:f, phase:"preview", fi:0, found:{}, qi:0, tries:0, streak:0};
+  draw();
+}
+function stepsHtml(){
+  var order = ["preview","predict","connect","during","after"];
+  var cur = G.phase === "q" ? (G.f.q[G.qi].st === "after" ? "after" : (G.f.q[G.qi].st === "before" ? "predict" : "during")) : G.phase;
+  var ci = order.indexOf(cur);
+  return '<div class="steps">' + order.map(function(k, i){ return '<span class="' + (i < ci ? 'past' : (i === ci ? 'now' : '')) + '">' + STEP_NAMES[k] + '</span>'; }).join("") + '</div>';
+}
+function draw(){
+  var f = G.f, body = "";
+  if(G.phase === "preview"){
+    var want = FEATURES[G.fi];
+    body = '<div class="ask"><span class="stage">Before reading</span><p class="stem">Preview the text features. Tap ' + want[1] + '.</p><p class="small">Found ' + Object.keys(G.found).length + ' of 5.</p><div id="fb"></div></div>';
+  } else if(G.phase === "predict" || G.phase === "q"){
+    body = qHtml();
+  } else if(G.phase === "connect"){
+    body = '<div class="ask"><span class="stage">Before reading</span><p class="stem">Connect: tell your coach one thing you already know about this topic.</p><div class="row"><button class="btn" data-act="connected">I told my coach ✓</button></div></div>';
+  } else if(G.phase === "filed"){
+    S.done[f.id] = true; save();
+    body = '<div class="ask keyburst"><span class="big">📁</span><p class="stem">Case file read: before, during, and after.</p><p>Tell your coach which strategy helped most today.</p><div class="row" style="justify-content:center"><button class="ghost" data-act="home">More case files</button><a class="btn gold" href="clover-hollow.html" style="text-decoration:none">🐇 Go to Clover Hollow</a></div></div>';
+  }
+  var hunt = G.phase === "preview";
+  $("app").innerHTML = topBar() + '<section class="paper">' + stepsHtml() + body + '</section>' +
+    '<section class="paper"><div class="file' + (hunt ? ' hunt' : '') + '" id="file">' + f.html + '</div></section>';
+  /* every heading and every bold word counts, not only the first one */
+  document.querySelectorAll('#file h3:not([data-tf])').forEach(function(el){ el.setAttribute("data-tf", "heading"); el.classList.add("tf"); });
+  document.querySelectorAll('#file b.bw:not([data-tf])').forEach(function(el){ el.setAttribute("data-tf", "bold"); el.classList.add("tf"); });
+  if(hunt){ Object.keys(G.found).forEach(function(k){ var el = document.querySelector('#file [data-tf="' + k + '"]'); if(el) el.classList.add("found"); }); }
+}
+function qHtml(){
+  var q = G.f.q[G.qi], stage = q.st === "before" ? "Before reading: predict" : (q.st === "after" ? "After reading" : "During reading");
+  var h = '<div class="ask"><span class="stage">' + stage + '</span><p class="stem">' + q.s + '</p>';
+  if(q.type === "pick"){
+    h += '<div class="choices">' + q.c.map(function(t, i){ return '<button data-ch="' + i + '">' + String.fromCharCode(65 + i) + '. ' + t + '</button>'; }).join("") + '</div>' +
+      '<p class="small">Tap a choice. Long-press or right-click a choice to cross it out.</p>';
+  } else if(q.type === "type"){
+    h += '<div class="typein"><input id="tin" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Type the word"><button class="btn" data-act="check">Check</button></div>';
+  } else {
+    h += '<div class="slots" id="slots"></div><div class="order">' + q.items.map(function(t){ return '<button data-ord="' + t + '">' + t + '</button>'; }).join("") + '</div><div class="row"><button class="ghost" data-act="reorder">Start over</button></div>';
+  }
+  return h + '<div id="fb"></div></div>';
+}
+function feedback(ok, q){
+  var fb = $("fb");
+  if(ok){
+    var firstTry = G.tries === 0, got = "";
+    if(firstTry){ S.rights++; save(); if(S.rights % 3 === 0){ var n = addKey(); got = '<p><b>🗝️ You earned a clue key!</b> That makes ' + n + '. Spend it on the next clue in Clover Hollow.</p>'; } }
+    fb.innerHTML = '<div class="yes"><b>Yes!</b> ' + q.w + '</div>' + got + '<div class="row"><button class="btn" data-act="next">Next →</button>' + (got ? '<a class="btn gold" href="clover-hollow.html" style="text-decoration:none">🐇 Clover Hollow</a>' : '') + '</div>';
+    document.querySelectorAll(".keys").forEach(function(k){ k.textContent = "🗝️ Clue keys: " + keysEarned(); });
+  } else {
+    G.tries++;
+    fb.innerHTML = '<div class="tip"><b>Inspector Bramble’s tip · ' + q.r[0] + ':</b> ' + q.r[1] + ' Then try again.</div>';
+  }
+}
+function norm(s){ return String(s).toLowerCase().replace(/[^a-z]/g, ""); }
+function nextQ(){
+  if(G.phase === "predict"){ G.phase = "connect"; G.qi++; draw(); return; }
+  G.qi++; G.tries = 0;
+  if(G.qi >= G.f.q.length){ G.phase = "filed"; } else { G.phase = "q"; }
+  draw();
+}
+
+$("app").addEventListener("click", function(ev){
+  var t = ev.target;
+  if(G && G.phase === "preview"){
+    var tf = t.closest("[data-tf]");
+    if(tf && tf.closest("#file")){
+      var want = FEATURES[G.fi][0], got = tf.getAttribute("data-tf");
+      if(got === want){
+        G.found[want] = true; G.fi++;
+        if(G.fi >= FEATURES.length){ G.phase = "predict"; G.qi = 0; G.tries = 0; }
+        draw();
+        if(G.phase === "predict"){ var s = document.querySelector(".ask .small"); }
+      } else {
+        $("fb").innerHTML = '<div class="tip"><b>Look again:</b> that is ' + FEATURES.filter(function(x){ return x[0] === got; })[0][1] + '. Find ' + FEATURES[G.fi][1] + '.</div>';
+      }
+      return;
+    }
+  }
+  var b = t.closest("button"); if(!b) return;
+  if(b.dataset.file){ start(b.dataset.file); return; }
+  var a = b.dataset.act;
+  if(a === "home"){ home(); return; }
+  if(a === "connected"){ G.phase = "q"; G.tries = 0; draw(); return; }
+  if(a === "next"){ nextQ(); return; }
+  var q = G && G.f.q[G.qi];
+  if(b.dataset.ch !== undefined && q){
+    if(b.classList.contains("right") || document.querySelector(".choices .right")) return;
+    var i = +b.dataset.ch;
+    if(i === q.a){ b.classList.add("right"); feedback(true, q); }
+    else if(!b.classList.contains("wrong")){ b.classList.add("wrong"); feedback(false, q); }
+    return;
+  }
+  if(a === "check" && q){
+    var v = norm($("tin").value); if(!v) return;
+    if(q.answer.some(function(x){ return norm(x) === v; })){ $("tin").disabled = true; b.disabled = true; feedback(true, q); }
+    else { feedback(false, q); $("tin").select(); }
+    return;
+  }
+  if(b.dataset.ord && q){
+    if(b.classList.contains("used") || $("slots").dataset.done) return;
+    b.classList.add("used");
+    var sp = document.createElement("span"); sp.textContent = b.dataset.ord; $("slots").appendChild(sp);
+    var picked = [].map.call($("slots").children, function(x){ return x.textContent; });
+    if(picked.length === q.answer.length){
+      if(picked.join("|") === q.answer.join("|")){ $("slots").dataset.done = "1"; feedback(true, q); }
+      else { feedback(false, q); }
+    }
+    return;
+  }
+  if(a === "reorder"){ $("slots").innerHTML = ""; document.querySelectorAll(".order button").forEach(function(x){ x.classList.remove("used"); }); $("fb").innerHTML = ""; return; }
+});
+/* cross out a choice (rule it out) without answering */
+$("app").addEventListener("contextmenu", function(ev){
+  var b = ev.target.closest(".choices button"); if(!b) return;
+  ev.preventDefault(); if(!b.classList.contains("right")) b.classList.toggle("ruled");
+});
+$("app").addEventListener("keydown", function(ev){ if(ev.key === "Enter" && ev.target.id === "tin"){ var c = document.querySelector('[data-act="check"]'); if(c) c.click(); } });
+home();
+})();
+</script>
+</body>
+</html>
