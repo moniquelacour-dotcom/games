@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TEST · Reading Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Baloo+2:wght@600;800&display=swap">
+<style>
+/* One dark game-lobby look for coach and students (single theme on purpose). */
+:root{--bg:#10131f;--card:#191d2d;--ink:#eef0f8;--muted:#a3a9c2;--line:#2c3248;--accent:#8fe36b;--accentInk:#0d1a08;--soft:#222842;--ok:#8fe0a6;--okSoft:#173822;--bad:#ff9b92;--badSoft:#3d1715;--warn:#f4d27a;--warnSoft:#3a2f12;--pull:#7fb6ff;--pullSoft:#18294a;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.45 "Atkinson Hyperlegible",system-ui,sans-serif}
+main{max-width:1240px;margin:0 auto;padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:"Baloo 2",system-ui,sans-serif;line-height:1.15;margin:0}
+h1{font-size:32px} h2{font-size:24px} h3{font-size:19px}
+button,select,input,textarea{font:inherit;color:inherit}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 14px;font-weight:700;cursor:pointer}
+.btn.main{background:var(--accent);border-color:var(--accent);color:var(--accentInk)}
+.btn.on{outline:3px solid var(--accent);outline-offset:1px}
+.btn.sm{padding:3px 10px;font-size:14px}
+.btn.danger{color:var(--bad)}
+select,input[type=text],input[type=number],textarea{border:1px solid var(--line);border-radius:10px;padding:5px 8px;background:var(--card);min-width:0}
+input[type=number]{width:70px}
+.muted{color:var(--muted)} .small{font-size:14px}
+.label{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.code{font:800 40px/1 "Baloo 2",system-ui,sans-serif;letter-spacing:.18em}
+.mono{font-family:ui-monospace,Consolas,monospace;font-size:14px;word-break:break-all;background:var(--soft);border-radius:10px;padding:6px 10px}
+.note{background:var(--soft);border-radius:12px;padding:8px 12px;font-size:15px}
+.warnbox{background:var(--warnSoft);color:var(--ink);border-radius:12px;padding:8px 12px;font-size:15px}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:6px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.av{font-size:24px;line-height:1}
+.lanes{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.lane{border:1px solid var(--line);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.goal{border:2px solid var(--line);border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.goal>.row input{font-weight:700}
+.pairs{display:flex;flex-wrap:wrap;gap:8px}
+.pairs button{font-size:28px;line-height:1;border:2px solid var(--line);background:var(--card);border-radius:14px;padding:6px 10px;cursor:pointer}
+.pairs button.sel{border-color:var(--accent);outline:3px solid var(--accent)}
+.pairgrp{display:flex;gap:4px;align-items:center;background:var(--soft);border-radius:14px;padding:4px 8px}
+.stu-goal{background:var(--card);border:2px solid var(--accent);border-radius:16px;padding:10px 14px;display:flex;flex-direction:column;gap:2px}
+.stu-goal b{font:800 20px/1.25 "Baloo 2",system-ui,sans-serif}
+.stu-goal span{font-size:16px}
+#kList .kid{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(127,127,127,.25)}
+#kList .kav{font-size:26px;background:none;border:1px solid rgba(127,127,127,.4);border-radius:10px;padding:2px 8px;cursor:pointer}
+#kList .grid{display:flex;flex-wrap:wrap;gap:4px;padding:6px 0}
+#kList .grid button{font-size:22px;background:none;border:1px solid rgba(127,127,127,.3);border-radius:8px;padding:2px 6px;cursor:pointer}
+#kList .grid button:disabled{opacity:.25;cursor:default}
+.turnbar{border:2px solid var(--pull);background:var(--pullSoft);border-radius:14px;padding:8px 14px;text-align:center;font:800 22px "Baloo 2",system-ui,sans-serif}
+.turnbar .t{font-variant-numeric:tabular-nums}
+.turnbar .nx{display:block;font-size:18px}
+.pullsteps{font:800 28px "Baloo 2",system-ui,sans-serif;line-height:1.35}
+.pclock{font:800 56px "Baloo 2",system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.ownbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 8px;font:800 20px "Baloo 2",system-ui,sans-serif}
+.ownbar a{font:700 15px "Atkinson Hyperlegible",system-ui,sans-serif;color:inherit}
+iframe.own{width:100%;height:78vh;border:0;border-radius:18px;background:#fff;display:block}
+.stu-page{align-self:flex-start;margin-top:6px;font:800 16px "Baloo 2",system-ui,sans-serif;background:var(--accent);color:#14213d;border-radius:999px;padding:4px 14px;text-decoration:none}
+.taken{border:2px solid var(--bad);background:var(--badSoft);border-radius:12px;padding:8px 10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.skill{border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px;background:var(--soft)}
+.qed{display:flex;flex-direction:column;gap:6px;border-top:1px dashed var(--line);padding-top:6px}
+.qed .ans{display:grid;grid-template-columns:auto 1fr;gap:4px 6px;align-items:center}
+.ownq{font-size:14px;background:var(--card);border-radius:8px;padding:4px 8px;display:flex;gap:6px;justify-content:space-between;align-items:center}
+.pill{display:inline-block;border-radius:999px;padding:1px 9px;font-size:13px;font-weight:700;background:var(--soft)}
+.pill.ok{background:var(--okSoft);color:var(--ok)} .pill.warn{background:var(--warnSoft);color:var(--warn)}
+.help{border:2px solid var(--warn);background:var(--warnSoft);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:6px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--muted)} .dot.on{background:var(--ok)}
+/* student */
+.stu{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:14px;padding-bottom:70px}
+.stu-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.stu-me{font-size:40px;line-height:1}
+.big{font:800 30px/1.2 "Baloo 2",system-ui,sans-serif;text-align:center}
+.join{display:flex;flex-direction:column;gap:12px;align-items:center;padding:22px}
+.join input{font:800 34px "Baloo 2",system-ui,sans-serif;letter-spacing:.3em;text-transform:uppercase;width:200px;text-align:center}
+.avs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.avs button{font-size:40px;line-height:1;border:2px solid var(--line);background:var(--card);border-radius:16px;padding:8px 12px;cursor:pointer}
+.helpbtn{position:fixed;left:12px;bottom:12px;z-index:2147483601;font:800 18px "Baloo 2",system-ui,sans-serif;border:2px solid var(--warn);background:var(--warnSoft);color:var(--ink);border-radius:999px;padding:8px 16px;cursor:pointer}
+.toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:2147483602;max-width:min(560px,92vw);background:var(--accent);color:var(--accentInk);border-radius:16px;padding:10px 16px;font-size:19px;font-weight:700;display:flex;gap:12px;align-items:center;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.toast button{border:none;background:var(--accentInk);color:var(--accent);border-radius:999px;padding:2px 10px;font-weight:700;cursor:pointer}
+.modal{position:fixed;inset:0;z-index:2147483600;background:rgba(20,16,32,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.qbox{background:var(--card);border-radius:22px;padding:20px;width:min(560px,100%);display:flex;flex-direction:column;gap:12px;max-height:94vh;overflow:auto}
+.qtitle{font:800 20px "Baloo 2",system-ui,sans-serif;color:var(--muted);text-align:center}
+.qprompt{font:700 22px/1.35 "Atkinson Hyperlegible",system-ui,sans-serif;text-align:center}
+.qshow{font:800 40px/1.1 "Atkinson Hyperlegible",system-ui,sans-serif;text-align:center;letter-spacing:.06em}
+.qchoices{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qchoices button{font:800 28px/1.1 "Atkinson Hyperlegible",system-ui,sans-serif;border:3px solid var(--line);background:var(--card);border-radius:16px;padding:16px 8px;cursor:pointer}
+.qchoices.long{grid-template-columns:1fr}
+.qchoices.long button{font-size:21px;line-height:1.35;text-align:left;padding:12px 14px}
+.qchoices button.right{background:var(--okSoft);border-color:var(--ok)}
+.qchoices button.wrong{background:var(--badSoft);border-color:var(--bad);opacity:.7}
+.qmsg{min-height:1.4em;text-align:center;font-size:20px;font-weight:700}
+.qrow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.say{font-size:22px;border:2px solid var(--line);background:var(--soft);border-radius:999px;padding:4px 14px;cursor:pointer}
+[hidden]{display:none!important}
+/* coach lobby */
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.top h1{font-size:30px;letter-spacing:.02em}
+.top h1 b{color:var(--accent)}
+.tag{font:700 12px "Atkinson Hyperlegible",sans-serif;letter-spacing:.08em;border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--muted);vertical-align:middle;margin-left:6px}
+.live{font:700 13px "Atkinson Hyperlegible",sans-serif;color:var(--muted);margin-left:8px;vertical-align:middle}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start;padding-bottom:110px}
+.side{display:flex;flex-direction:column;gap:16px;position:sticky;top:12px}
+.mainc{display:flex;flex-direction:column;gap:16px;min-width:0}
+.step{font:800 15px "Atkinson Hyperlegible",sans-serif;letter-spacing:.06em;text-transform:uppercase}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.gcard{position:relative;text-align:left;border:2px solid var(--line);background:var(--soft);border-radius:14px;padding:12px;cursor:pointer;display:flex;flex-direction:column;gap:4px;min-height:120px}
+.gcard .ic{font-size:28px;line-height:1}
+.gcard b{font:800 17px/1.15 "Baloo 2",system-ui,sans-serif;text-transform:uppercase}
+.gcard span{font-size:13px;color:var(--muted)}
+.gcard.picked{border-color:var(--accent)}
+.gcard.picked::after{content:"PICKED";position:absolute;top:8px;right:8px;font:800 10px "Atkinson Hyperlegible",sans-serif;letter-spacing:.08em;background:var(--accent);color:var(--accentInk);border-radius:6px;padding:2px 6px}
+.gcard.soon{cursor:default;opacity:.55;border-style:dashed}
+.bigcode{font:800 44px/1 "Baloo 2",system-ui,sans-serif;letter-spacing:.14em;color:var(--accent)}
+.flow{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:15px}
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(16,19,31,.96);border-top:1px solid var(--line);padding:10px max(16px,env(safe-area-inset-left,0px)) calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center}
+.dock .btn{padding:9px 16px}
+.btn.go{background:var(--accent);border-color:var(--accent);color:var(--accentInk)}
+.btn.pull{background:var(--pullSoft);border-color:var(--pull);color:var(--ink)}
+.pullbox{border:2px solid var(--pull);background:var(--pullSoft);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.pairline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.setall{display:flex;gap:6px;flex-wrap:wrap;align-items:center;background:var(--soft);border-radius:12px;padding:8px}
+.setall select,.setall input,#asgRows select,#asgRows input{max-width:190px}
+#asgRows input{width:70px}
+.now{font-size:13px}
+.now.pulled{color:var(--pull);font-weight:700}
+.now.help{color:var(--warn);font-weight:700}
+details.card>summary{cursor:pointer;list-style:none}
+details.card>summary::-webkit-details-marker{display:none}
+/* student: only the goal and the activity */
+.stu-head{display:flex;align-items:center;gap:12px}
+.stu-head .stu-goal{flex:1}
+.svbox{position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:78px;z-index:60;width:min(420px,calc(100vw - 24px));height:min(720px,calc(100vh - 110px));background:var(--card);border:2px solid var(--accent);border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:6px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.svbox iframe{flex:1;width:100%;border:0;border-radius:10px;background:var(--bg)}
+.watchnote{text-align:center;font-size:13px;color:var(--muted);border:1px dashed var(--line);border-radius:10px;padding:4px 8px;margin-bottom:6px}
+.pullscreen{position:fixed;inset:0;z-index:2147483603;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center}
+.pullscreen .wave{font-size:84px;line-height:1}
+.pullscreen b{font:800 34px/1.2 "Baloo 2",system-ui,sans-serif}
+.pullscreen span{font-size:20px;color:var(--muted)}
+.pullscreen .with{font-size:44px}
+@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}.side{position:static;order:-1}}
+@media (max-width:520px){.qchoices button{font-size:22px} .code{font-size:32px}}
+</style>
+</head>
+<body>
+<main>
+  <!-- ================= COACH ================= -->
+  <div id="coach" hidden>
+    <div class="top">
+      <h1><b>READING</b> HUB <span class="tag">COACH</span><span class="live"><span class="dot" id="cDot"></span> <span id="cStatus"></span></span></h1>
+      <a class="btn sm" href="turn-timer.html#coach" target="_blank" rel="noopener">Turn Timer coach page ↗</a>
+    </div>
+    <div id="noStudents" class="warnbox" hidden style="margin-bottom:12px">No students yet. Add them in “My students” just below.</div>
+    <details class="card" id="kidsCard" style="margin-bottom:12px">
+      <summary><span class="step">My students</span> <span class="small muted" id="kidsSum"></span></summary>
+      <div class="small muted">First names stay in this browser only. Students see animals, never names. The same list shows on your Turn Timer page.</div>
+      <div class="row" style="margin-top:8px"><label class="small" for="kGroup"><b>Group</b></label><select id="kGroup"></select>
+        <input type="text" id="kNewGroup" maxlength="40" placeholder="New group name" style="max-width:200px"><button class="btn sm" id="kAddGroup" type="button">+ New group</button></div>
+      <form class="row" id="kAdd" style="margin-top:8px"><input type="text" id="kName" maxlength="30" placeholder="First name" autocomplete="off" style="max-width:200px"><button class="btn go sm" type="submit">Add a student</button><span class="small muted" id="kMsg"></span></form>
+      <div id="kList" style="margin-top:8px"></div>
+    </details>
+    <div class="layout">
+      <div class="mainc">
+        <section class="card" id="liveCard">
+          <div class="row" style="justify-content:space-between"><span class="step">Right now</span><span class="small muted" id="cMode"></span></div>
+          <div id="takenQ"></div>
+          <div id="pairBox" class="pullbox" hidden></div>
+          <div id="turnBox" class="pullbox">
+            <div class="row" style="justify-content:space-between"><b>⏱ Turns</b><span class="small muted" id="tStat">One student reads to you while the others play. Everyone's screen shows whose turn it is.</span></div>
+            <div class="row"><label class="small" for="tSecs">Each turn</label><select id="tSecs"><option value="30">30 seconds</option><option value="60" selected>1 minute</option><option value="90">1½ minutes</option><option value="120">2 minutes</option></select>
+              <button class="btn go sm" id="tStart" type="button">⏱ Start turns</button><button class="btn sm" id="tNext" type="button" hidden>Next turn ▶</button><button class="btn sm" id="tAgain" type="button" hidden>↺ Same reader again</button><button class="btn sm" id="tStop" type="button" hidden>■ End turns</button></div>
+          </div>
+          <div id="helpQ"></div>
+          <div style="overflow-x:auto"><table><thead><tr><th></th><th>Student</th><th>Skill</th><th>First try</th><th>Ledge</th><th>Right now</th><th></th></tr></thead><tbody id="liveRows"></tbody></table></div>
+        </section>
+        <section class="card">
+          <span class="step">1 · Pick the warm-up</span>
+          <div class="cards" id="warmCards"></div>
+          <div class="row"><span class="small muted" id="cWarmProg"></span><button class="btn sm" id="cWarmNew">New puzzle</button></div>
+        </section>
+        <section class="card">
+          <span class="step">2 · Pick the game</span>
+          <div class="cards" id="gameCards"></div>
+        </section>
+        <section class="card">
+          <span class="step">3 · Pick each student's skill</span>
+          <p class="small muted" style="margin:0">Lane, then goal, then the one skill they work on now. Each student sees only their own goal and skill. Changes reach them in a few seconds, even in the middle of a game.</p>
+          <div class="setall"><span class="label">Set everyone</span><select id="saLane" aria-label="Lane for everyone"></select><select id="saGoal" aria-label="Goal for everyone"></select><select id="saSkill" aria-label="Skill for everyone"></select><button class="btn sm" id="saGo">Apply to all</button></div>
+          <label class="small"><input type="checkbox" id="hereOnly" checked> Only students who joined today</label>
+          <label class="small"><input type="checkbox" id="allKids"> Show all my students (not just this group)</label>
+          <div class="small muted" id="asgNote"></div>
+          <div style="overflow-x:auto"><table><thead><tr><th></th><th>Student</th><th>Grade</th><th>Lane</th><th>Goal</th><th>Skill</th><th>Their game</th><th>Check</th></tr></thead><tbody id="asgRows"></tbody></table></div>
+        </section>
+        <details class="card">
+          <summary><span class="step">Questions for each skill ▾</span></summary>
+          <p class="small muted">The lanes, goals and skills come from the Lanes tab on your My Reading Roster. Here you pick where each skill's questions come from: a built-in list, or questions you write (4 answers, you mark the right one).</p>
+          <div class="lanes" id="lanes"></div>
+        </details>
+      </div>
+      <aside class="side">
+        <section class="card">
+          <span class="label">Room code</span>
+          <div class="bigcode" id="cCode"></div>
+          <div class="mono" id="cLink"></div>
+          <button class="btn sm" id="cCopy">Copy student link</button>
+          <div class="row"><span class="label">Group</span><select id="cGroup" aria-label="Group"></select></div>
+          <div class="small muted">Students open the link and tap their animal. They see only their own goal, skill and the activity.</div>
+        </section>
+        <section class="card">
+          <span class="label">Student view</span>
+          <div class="row"><select id="svAv" aria-label="Which student to watch"></select><button class="btn sm" id="svOpen">👀 Show</button></div>
+          <div class="small muted">See exactly what that student's screen shows right now. It only watches: it never takes their animal or sends answers.</div>
+        </section>
+        <section class="card">
+          <span class="label">How a session runs</span>
+          <ol class="flow"><li>Warm-up while everyone arrives</li><li>Pull the whole group, pairs, or one student to Zoom</li><li>Send them back and start the game</li></ol>
+          <div class="small muted">You can pull anyone out of the game, and send them back, at any time.</div>
+        </section>
+        <section class="card">
+          <span class="label">Skill check</span>
+          <div class="warnbox small">Your rule for when to check a skill is <b>not settled yet</b>.</div>
+          <div class="small">Check early at <input type="number" id="rPct" min="50" max="100">% first try, <input type="number" id="rRow" min="1" max="5"> sessions in a row, at least <input type="number" id="rMin" min="1" max="60"> questions each. Check anyway after <input type="number" id="rMax" min="1" max="20"> sessions.</div>
+          <details><summary class="small" style="cursor:pointer;font-weight:700">Progress by student</summary><div id="progRows" style="overflow-x:auto"></div></details>
+          <button class="btn sm" id="copyRes">Copy results</button><span class="small muted" id="copyMsg"></span>
+        </section>
+        <p class="small muted">🔒 Names, skills and scores stay in this browser only. Students see animals, never names.</p>
+      </aside>
+    </div>
+    <div class="svbox" id="svBox" hidden><div class="row" style="justify-content:space-between"><b id="svTitle"></b><button class="btn sm" id="svClose">Close</button></div><iframe id="svFrame" title="Student view"></iframe></div>
+    <div class="dock" role="toolbar" aria-label="Session controls">
+      <button class="btn" id="mWarm">▶ Warm-up</button>
+      <button class="btn pull" id="mPullAll">👋 Pull whole group</button>
+      <button class="btn pull" id="mPullPairs">👋 Pull pairs</button>
+      <button class="btn" id="mSendBack" hidden>↩ Send everyone back</button>
+      <button class="btn go" id="mGame">🚀 Start the game</button>
+      <button class="btn" id="mIdle">⏸ Pause</button>
+    </div>
+  </div>
+
+  <!-- ================= STUDENT ================= -->
+  <div id="student" class="stu" hidden>
+    <div class="stu-head"><span class="stu-me" id="sMe"></span><div class="stu-goal" id="sGoal" hidden></div></div>
+    <div class="small muted" id="sStatus" style="text-align:center"></div>
+    <div class="turnbar" id="sTurn" hidden></div>
+    <div class="card" id="sJoin"></div>
+    <div class="card" id="sWait" hidden><div class="big">Hold on! Your coach is getting ready. 🎈</div></div>
+    <div class="card" id="sWarm" hidden></div>
+    <div id="sGame" hidden></div>
+  </div>
+</main>
+<button class="helpbtn" id="sHelp" hidden>🙋 I need help</button>
+<div class="pullscreen" id="sPull" hidden><div class="wave">👋</div><b>Come to Zoom!</b><span class="pullsteps" id="sPullSteps"></span><span>Your game waits right here.</span><div class="with" id="sPullWith"></div><div class="pclock" id="sPullClock"></div></div>
+<div class="modal" id="qModal" hidden><div class="qbox" id="qBox" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast" hidden><span id="toastMsg"></span><button id="toastX">OK</button></div>
+
+<script src="turn-timer.js?v=9"></script>
+<script src="hub-questions.js?v=2"></script>
+<script src="hub-mark.js?v=2"></script>
+<script src="hub-lanes.js?v=4"></script>
+<script src="hub-warmups.js?v=1"></script>
+<script src="hub-climb.js?v=4"></script>
+<script>
+(function(){
+"use strict";
+var T = window.TurnTimer, Q = window.HubQ, W = window.HubWarm, G = window.HubGames || {};
+/* Independent practice pages on this site, by Roster skill id. The student sees a button to it under their skill. */
+var PAGES = {"flu-scoops": {n:"Scoop Practice", u:"scoop-practice.html"}};
+/* "Their own game": each student plays their own games-site page inside the hub. Tabs open with #tab. */
+var OWN = [
+  {u:"read-the-signs.html", n:"Read the Signs"},
+  {u:"phrasing.html", n:"Read in Scoops", tabs:[["see","1 · See the scoops"],["make","2 · Make the scoops"],["story","3 · Read a story"]]},
+  {u:"field-notes.html", n:"Field Notes for the Bureau"},
+  {u:"clover-hollow.html", n:"Clover Hollow", tabs:[["files","Case files"],["suspects","Suspects"],["notes","Case notes"],["gallery","The Hollow Irregulars"]]},
+  {u:"echo-tricks.html", n:"Echo's Trick School"},
+  {u:"echo-scoops.html", n:"Echo's Scoop Walk"},
+  {u:"scoop-practice.html", n:"Scoop Practice"},
+  {u:"silly-venn.html", n:"Silly Venn"},
+  {u:"read-closer.html", n:"Read Closer"},
+  {u:"test-kitchen.html", n:"Test Kitchen"},
+  {u:"word-stage.html", n:"Word Stage"},
+  {u:"long-vowels.html", n:"Long Vowel Chart"},
+  {u:"word-parts.html", n:"Word Parts"}
+];
+function ownOptions(){ var o = []; OWN.forEach(function(g){ o.push({v:g.u, n:g.n}); (g.tabs || []).forEach(function(t){ o.push({v:g.u + "#" + t[0], n:g.n + " · " + t[1]}); }); }); return o; }
+function ownName(v){ var x = ownOptions().filter(function(o){ return o.v === v; })[0]; return x ? x.n : ""; }
+var OWN_OK = /^[a-z0-9-]+\.html(#[a-z0-9-]+)?$/;
+var $ = function(id){ return document.getElementById(id); };
+var esc = T.esc, store = T.store;
+var isCoach = /^#coach/i.test(location.hash);
+function today(){ var d = new Date(); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
+function nice(day){ var p = day.split("-"); return +p[2] + " " + ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+p[1] - 1]; }
+function uid(){ return Math.random().toString(36).slice(2, 9); }
+function roomOf(code){ return code + "H"; }   // the hub talks in its own room next to the Turn Timer room
+
+/* Locked messages. Each student's device and the coach page agree on a secret key over the public relay
+   (ECDH key exchange), then that student's goal, skill, questions, answers and help travel scrambled (AES-GCM).
+   Anyone else listening, other students included, sees only scrambled data. */
+var SUB = window.crypto && crypto.subtle;
+function b64(buf){ var s = "", a = new Uint8Array(buf); for(var i = 0; i < a.length; i++) s += String.fromCharCode(a[i]); return btoa(s); }
+function unb64(s){ var b = atob(s), a = new Uint8Array(b.length); for(var i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; }
+var EC = {name:"ECDH", namedCurve:"P-256"};
+function loadKeys(name){
+  var j = store(name);
+  if(j && j.priv && j.pub) return Promise.all([SUB.importKey("jwk", j.priv, EC, true, ["deriveKey"]), SUB.importKey("jwk", j.pub, EC, true, [])]).then(function(k){ return {privateKey:k[0], publicKey:k[1]}; }).catch(function(){ return newKeys(name); });
+  return newKeys(name);
+}
+function newKeys(name){
+  return SUB.generateKey(EC, true, ["deriveKey"]).then(function(kp){
+    return Promise.all([SUB.exportKey("jwk", kp.privateKey), SUB.exportKey("jwk", kp.publicKey)]).then(function(j){ store(name, {priv:j[0], pub:j[1]}); return kp; });
+  });
+}
+function pubOf(kp){ return SUB.exportKey("raw", kp.publicKey).then(b64); }
+function derive(priv, pub){ return SUB.importKey("raw", unb64(pub), EC, false, []).then(function(p){ return SUB.deriveKey({name:"ECDH", public:p}, priv, {name:"AES-GCM", length:256}, false, ["encrypt","decrypt"]); }); }
+function seal(key, obj){ var iv = crypto.getRandomValues(new Uint8Array(12)); return SUB.encrypt({name:"AES-GCM", iv:iv}, key, new TextEncoder().encode(JSON.stringify(obj))).then(function(ct){ return {iv:b64(iv), ct:b64(ct)}; }); }
+function unseal(key, m){ if(!key || !m.iv || !m.ct) return Promise.resolve(null); return SUB.decrypt({name:"AES-GCM", iv:unb64(m.iv)}, key, unb64(m.ct)).then(function(pt){ return JSON.parse(new TextDecoder().decode(pt)); }).catch(function(){ return null; }); }
+
+if(isCoach) coach(); else student();
+/* Pasting the other link into a tab that already has the hub open changes only the part after "#",
+   which browsers don't reload. Reload so the coach link opens the coach page and a student link the student page. */
+var startHash = location.hash;
+window.addEventListener("hashchange", function(){ if(location.hash !== startHash) location.reload(); });
+
+/* =================================================================== COACH */
+function coach(){
+  $("coach").hidden = false; document.title = "Reading Hub · coach";
+  var tt = store("tt-coach2") || {};
+  var students = tt.students || [], groups = tt.groups || [];
+  if(!students.length) $("noStudents").hidden = false;
+  /* My students: add and edit right here. It writes the same list the Turn Timer uses (tt-coach2). */
+  var kPick = "";
+  function kUid(){ return Math.random().toString(36).slice(2, 9); }
+  function kSave(){
+    tt.students = students; tt.groups = groups; store("tt-coach2", tt);
+    if(typeof cfg !== "undefined" && $("cGroup")){
+      if(!cfg.group || !groups.some(function(g){ return g.id === cfg.group; })){ cfg.group = $("kGroup").value || (groups[0] && groups[0].id) || ""; store("hub-coach1", cfg); }
+      $("cGroup").innerHTML = (groups.length ? groups : [{id:"", name:"All my students"}]).map(function(g){ return '<option value="' + esc(g.id) + '">' + esc(g.name) + '</option>'; }).join("");
+      $("cGroup").value = cfg.group;
+    }
+    $("noStudents").hidden = !!students.length;
+    kRender(); if(typeof renderAll === "function") renderAll();
+  }
+  function kGroupObj(){ return groups.filter(function(g){ return g.id === $("kGroup").value; })[0] || null; }
+  function kRender(){
+    var cur = $("kGroup").value || (typeof cfg !== "undefined" && cfg.group) || (groups[0] && groups[0].id) || "";
+    $("kGroup").innerHTML = (groups.length ? "" : '<option value="">No groups yet: make one →</option>') + groups.map(function(g){ return '<option value="' + esc(g.id) + '"' + (g.id === cur ? " selected" : "") + '>' + esc(g.name) + '</option>'; }).join("");
+    var g = kGroupObj(), ids = g ? g.ids : [];
+    var inG = students.filter(function(x){ return ids.indexOf(x.id) >= 0; });
+    $("kidsSum").textContent = students.length ? students.length + (students.length === 1 ? " student" : " students") + (g ? " · " + inG.length + " in " + g.name : "") : "none yet";
+    var used = students.map(function(x){ return x.av; });
+    $("kList").innerHTML = !g ? '<div class="small muted">Make a group first, then add students to it.</div>' : !inG.length ? '<div class="small muted">No students in ' + esc(g.name) + ' yet.</div>' :
+      inG.map(function(x){
+        return '<div class="kid"><button type="button" class="kav" data-kav="' + esc(x.id) + '" aria-label="Change animal for ' + esc(x.name) + '">' + esc(x.av) + '</button><b>' + esc(x.name) + '</b><span class="small muted">tap the animal to change it</span><button type="button" class="btn sm" data-kout="' + esc(x.id) + '" style="margin-left:auto">Take out of ' + esc(g.name) + '</button></div>' +
+          (kPick === x.id ? '<div class="grid">' + T.AVATARS.map(function(a){ return '<button type="button" data-kset="' + esc(a) + '"' + (used.indexOf(a) >= 0 && a !== x.av ? " disabled" : "") + '>' + esc(a) + '</button>'; }).join("") + '</div>' : "");
+      }).join("");
+    $("kList").querySelectorAll("[data-kav]").forEach(function(b){ b.onclick = function(){ kPick = kPick === b.dataset.kav ? "" : b.dataset.kav; kRender(); }; });
+    $("kList").querySelectorAll("[data-kset]").forEach(function(b){ b.onclick = function(){ var x = students.filter(function(y){ return y.id === kPick; })[0]; if(x) x.av = b.dataset.kset; kPick = ""; kSave(); }; });
+    $("kList").querySelectorAll("[data-kout]").forEach(function(b){ b.onclick = function(){ var g2 = kGroupObj(); if(g2){ g2.ids = g2.ids.filter(function(i){ return i !== b.dataset.kout; }); kSave(); } }; });
+  }
+  $("kGroup").onchange = function(){ kPick = ""; kRender(); };
+  $("kAddGroup").onclick = function(){
+    var n = $("kNewGroup").value.trim(); if(!n){ $("kNewGroup").focus(); return; }
+    var g = {id:kUid(), name:n, ids:[]}; groups.push(g); $("kNewGroup").value = "";
+    kRender(); $("kGroup").value = g.id; kSave();
+  };
+  $("kAdd").onsubmit = function(e){
+    e.preventDefault();
+    var n = $("kName").value.trim(); if(!n) return;
+    var g = kGroupObj(); if(!g){ $("kMsg").textContent = "Make a group first."; return; }
+    var x = students.filter(function(y){ return y.name.toLowerCase() === n.toLowerCase(); })[0];   // same child keeps the same animal
+    if(!x){ var used = students.map(function(y){ return y.av; }); x = {id:kUid(), name:n, av:T.AVATARS.filter(function(a){ return used.indexOf(a) < 0; })[0] || "⭐"}; students.push(x); }
+    if(g.ids.indexOf(x.id) < 0) g.ids.push(x.id);
+    $("kName").value = ""; $("kMsg").textContent = x.name + " is " + x.av + " in " + g.name + ".";
+    kSave();
+  };
+  if(!students.length) $("kidsCard").open = true;
+  setTimeout(kRender, 0);
+  var BUILT = Q.LIST.concat(window.HubMark ? HubMark.LIST : []);   // built-in sets: long vowels, punctuation, phrasing, highlighters
+  var cfg = store("hub-coach1") || {};
+  cfg.lanes = cfg.lanes || {};
+  Object.keys(cfg.lanes).forEach(function(lk){   // an older lane > skill list
+    var L = cfg.lanes[lk]; if(!L.goals){ L.goals = L.skills && L.skills.length ? [{id:lk + "-g1", name:"Goal not named yet", skills:L.skills}] : []; delete L.skills; }
+  });
+  cfg.asg = cfg.asg || {}; cfg.stats = cfg.stats || {};
+  cfg.play = cfg.play || "group"; cfg.pairs = cfg.pairs || [];
+  /* The lanes, goals and skills follow hub-lanes.js (copied from her Roster). What she set up here is kept:
+     which questions a skill uses, the questions she wrote, assignments and progress (matched by id, then name). */
+  (function follow(list){
+    if(!list || !list.length) return;
+    var low = function(s){ return String(s || "").trim().toLowerCase(); };
+    var oldSkills = [];
+    Object.keys(cfg.lanes).forEach(function(lk){ cfg.lanes[lk].goals.forEach(function(g){ g.skills.forEach(function(s){ oldSkills.push({lk:lk, s:s}); }); }); });
+    var used = {}, next = {};
+    list.forEach(function(L){
+      next[L.key] = {name:L.name, goals:L.goals.map(function(g){
+        return {id:g.id, name:g.name, skills:g.skills.map(function(s){
+          var hit = oldSkills.filter(function(o){ return o.s.id === s.id; })[0] || oldSkills.filter(function(o){ return o.lk === L.key && low(o.s.name) === low(s.name) && !used[o.s.id]; })[0];
+          var o = hit ? hit.s : {own:[]};
+          if(hit) used[hit.s.id] = s.id;
+          return {id:s.id, name:s.name, set:o.set || s.set || "", own:o.own || []};
+        })};
+      })};
+    });
+    /* a skill dropped from the list but holding her own questions stays, so nothing she wrote is lost */
+    oldSkills.forEach(function(o){
+      if(used[o.s.id] || !(o.s.own && o.s.own.length) || !next[o.lk]) return;
+      var g = next[o.lk].goals.filter(function(x){ return x.id === "_kept"; })[0];
+      if(!g){ g = {id:"_kept", name:"Not on your Roster list (your questions kept)", skills:[]}; next[o.lk].goals.push(g); }
+      g.skills.push(o.s); used[o.s.id] = o.s.id;
+    });
+    /* progress and assignments move to the new ids */
+    Object.keys(cfg.stats).forEach(function(sid){ var st = cfg.stats[sid]; Object.keys(st).forEach(function(k){ if(used[k] && used[k] !== k){ st[used[k]] = st[k]; delete st[k]; } }); });
+    cfg.lanes = next;
+    Object.keys(cfg.asg).forEach(function(sid){
+      var a = cfg.asg[sid]; if(a.skill && used[a.skill]) a.skill = used[a.skill];
+      var f0 = a.skill ? findSkill(a.skill) : null;
+      if(f0){ a.lane = f0.lane; a.goal = f0.goal.id; }
+      else { a.skill = ""; if(!goalById(a.lane, a.goal)) a.goal = ""; if(!cfg.lanes[a.lane]) a.lane = ""; }
+    });
+  })(window.HubLanes);
+  cfg.rule = cfg.rule || {pct:90, row:2, min:10, max:4};
+  cfg.warm = cfg.warm || {pick:"auto", cur:"ws", day:"", st:{}};
+  cfg.game = cfg.game || "climb"; cfg.mode = cfg.mode || "idle";
+  cfg.own = cfg.own || {};
+  cfg.turn = null;   /* {who, secs, at} : who is reading, how long, when it started. Not kept between visits. */
+  cfg.pull = cfg.pull || []; cfg.pullMode = cfg.pullMode || ""; cfg.grade = cfg.grade || {}; cfg.play = "group";
+  cfg.code = tt.code || cfg.code || T.newCode();
+  cfg.group = cfg.group || tt.cur || (groups[0] && groups[0].id) || "";
+  function save(){ store("hub-coach1", cfg); }
+  save();
+
+  var live = {}, helps = [], room = null, ckp = null, cpk = "", keys = {}, taken = {};
+  cfg.claims = cfg.claims || {};
+  if(SUB) loadKeys("hub-ckey1").then(function(kp){ ckp = kp; return pubOf(kp); }).then(function(p){ cpk = p; broadcast(); });
+  function kidsInGroup(){
+    var g = groups.filter(function(x){ return x.id === cfg.group; })[0];
+    var ids = g ? g.ids : students.map(function(s){ return s.id; });
+    return students.filter(function(s){ return ids.indexOf(s.id) >= 0 && s.av; });
+  }
+  function byAv(av){ return kidsInGroup().filter(function(s){ return s.av === av; })[0] || students.filter(function(s){ return s.av === av; })[0]; }
+  function findSkill(id){
+    var out = null;
+    Object.keys(cfg.lanes).forEach(function(lk){ cfg.lanes[lk].goals.forEach(function(g){ g.skills.forEach(function(s){ if(s.id === id) out = {lane:lk, goal:g, skill:s}; }); }); });
+    return out;
+  }
+  function goalById(lk, gid){ var L = cfg.lanes[lk]; return L ? L.goals.filter(function(g){ return g.id === gid; })[0] || null : null; }
+  function skillOf(sid){
+    var a = cfg.asg[sid]; if(!a || !a.skill) return null;
+    var f = findSkill(a.skill); return f ? f.skill : null;
+  }
+  function goalOf(sid){ var a = cfg.asg[sid]; return a ? goalById(a.lane, a.goal) : null; }
+  function warmState(){ var id = cfg.warm.cur; cfg.warm.st[id] = cfg.warm.st[id] || W.fresh(id); return cfg.warm.st[id]; }
+
+  /* ---- relay ---- */
+  $("cCode").textContent = cfg.code;
+  var link = location.origin + location.pathname + "#" + cfg.code;
+  $("cLink").textContent = link;
+  $("cCopy").onclick = function(){ try{ navigator.clipboard.writeText(link); $("cCopy").textContent = "Copied ✓"; setTimeout(function(){ $("cCopy").textContent = "Copy student link"; }, 1500); }catch(e){} };
+  room = T.Room(roomOf(cfg.code), {
+    onStatus:function(s){ $("cDot").className = "dot" + (s === "open" ? " on" : ""); $("cStatus").textContent = s === "open" ? "connected" : s === "blocked" ? "relay blocked: only tabs on this computer will hear you" : s + "…"; },
+    onOpen:function(){ broadcast(); },
+    onX:onMsg
+  });
+  function stateMsg(){
+    return {g:"hub", t:"st", mode:cfg.mode, kids:kidsInGroup().map(function(s){ return s.av; }), warm:cfg.mode === "warm" ? warmState() : null, game:cfg.game,
+            play:"group", pulled:cfg.pull, pairs:cfg.pullMode === "pairs" ? cfg.pairs : [], pk:cpk, turn:turnMsg()};
+  }
+  function keyFor(av){
+    var pk = cfg.claims[av]; if(!pk || !ckp) return Promise.resolve(null);
+    if(keys[av] && keys[av].pk === pk) return keys[av].k;
+    var k = derive(ckp.privateKey, pk); keys[av] = {pk:pk, k:k}; return k;
+  }
+  function mineFor(s){
+    var sk = skillOf(s.id), g = goalOf(s.id), out = {goal:g ? g.name : "", skill:sk ? sk.name : ""};
+    if(cfg.own[s.id] && OWN_OK.test(cfg.own[s.id])) out.game = {u:cfg.own[s.id], n:ownName(cfg.own[s.id])};
+    if(sk && PAGES[sk.id]) out.page = PAGES[sk.id];
+    if(sk){ if(sk.set) out.set = sk.set; else out.own = (sk.own || []).map(function(q){ return {p:q.p, s:q.s, c:q.c, r:q.r}; }); }
+    return out;
+  }
+  function sendMine(s){
+    keyFor(s.av).then(function(k){ if(!k) return; return seal(k, mineFor(s)).then(function(x){ room.send("x", {g:"hub", t:"me", a:s.av, iv:x.iv, ct:x.ct}, false); }); }).catch(function(){});
+  }
+  function broadcast(){
+    if(!room) return;
+    room.send("x", stateMsg(), false);
+    kidsInGroup().forEach(function(s){ if(cfg.claims[s.av]) sendMine(s); });
+    svPost();
+  }
+  setInterval(broadcast, 2500);
+
+  function onMsg(m){
+    if(!m || m.g !== "hub" || !m.a) return;
+    if(m.t === "hello"){
+      if(!m.pk) return;
+      if(!cfg.claims[m.a]){ cfg.claims[m.a] = m.pk; save(); }
+      if(cfg.claims[m.a] === m.pk){ delete taken[m.a]; var s0 = byAv(m.a); if(s0) sendMine(s0); room.send("x", stateMsg(), false); }
+      else { taken[m.a] = Date.now(); room.send("x", {g:"hub", t:"taken", a:m.a, pk:m.pk}, false); renderTaken(); }
+      var L0 = live[m.a] = live[m.a] || {r:0, n:0, ledge:null, seen:0}; if(cfg.claims[m.a] === m.pk) L0.seen = Date.now();
+      return;
+    }
+    if(m.t === "ans" || m.t === "help"){
+      keyFor(m.a).then(function(k){ return unseal(k, m); }).then(function(o){ if(o){ o.t = m.t; o.a = m.a; o.g = "hub"; handle(o); } });
+      return;
+    }
+    handle(m);
+  }
+  function handle(m){
+    var L = live[m.a] = live[m.a] || {r:0, n:0, ledge:null, seen:0};
+    L.seen = Date.now();
+    if(m.t === "pos") L.ledge = m.n;
+    if(m.t === "w" && cfg.mode === "warm"){
+      var ws = warmState();
+      if(W.apply(ws, m.act || {}, m.a)){
+        save(); broadcast();
+        renderToday();
+        if(W.isDone(ws)) setTimeout(function(){ if(W.isDone(ws)){ W.next(ws); save(); broadcast(); renderToday(); } }, 5000);
+      }
+    }
+    if(m.t === "ans"){
+      var s = byAv(m.a), sk = s && skillOf(s.id);
+      L.n++; if(m.ok) L.r++;
+      if(s && sk){
+        var day = today(), st = cfg.stats[s.id] = cfg.stats[s.id] || {}, k = st[sk.id] = st[sk.id] || {}, d = k[day] = k[day] || {r:0, n:0};
+        d.n++; if(m.ok) d.r++; save();
+      }
+    }
+    if(m.t === "help"){ helps = helps.filter(function(h){ return h.a !== m.a; }); helps.push({a:m.a, q:m.q, at:Date.now()}); renderHelp(); try{ navigator.vibrate && navigator.vibrate(80); }catch(e){} }
+    renderLive();
+  }
+
+  /* ---- Today ---- */
+  $("cGroup").innerHTML = (groups.length ? groups : [{id:"", name:"All my students"}]).map(function(g){ return '<option value="' + esc(g.id) + '">' + esc(g.name) + '</option>'; }).join("");
+  $("cGroup").value = cfg.group;
+  $("cGroup").onchange = function(){ cfg.group = this.value; save(); broadcast(); renderAll(); };
+  var WDESC = {ws:"Find the hidden words together. Tap the first letter, then the last.", ss:"Put the story strips in order, as a team."};
+  var OWNCARD = {icon:"🎮", name:"Their own game"};
+  function gName(id){ return id === "own" ? OWNCARD.name : G[id] ? G[id].name : "the game"; }
+  var GDESC = {own:"Each student plays the game you pick for them in step 3, inside the hub. Pull and help still work.", climb:"3D climb up a real mountain. Miss a jump, answer a question to get back on. Every 5th ledge is a ⭐ checkpoint."};
+  function renderCards(){
+    var w = [{id:"auto", icon:"🔁", name:"Take turns", d:"A different warm-up each day. Each one picks up where the team stopped."}].concat(W.LIST.map(function(x){ return {id:x.id, icon:x.icon, name:x.name, d:WDESC[x.id] || ""}; }));
+    $("warmCards").innerHTML = w.map(function(x){ return '<button type="button" class="gcard' + (cfg.warm.pick === x.id ? " picked" : "") + '" data-w="' + x.id + '"><span class="ic">' + x.icon + '</span><b>' + esc(x.name) + '</b><span>' + esc(x.d) + '</span></button>'; }).join("");
+    $("gameCards").innerHTML = [["own", OWNCARD]].concat(Object.keys(G).map(function(k){ return [k, G[k]]; })).map(function(kv){ var k = kv[0], Gk = kv[1]; return '<button type="button" class="gcard' + (cfg.game === k ? " picked" : "") + '" data-g="' + k + '"><span class="ic">' + Gk.icon + '</span><b>' + esc(Gk.name) + '</b><span>' + esc(GDESC[k] || "") + '</span></button>'; }).join("") +
+      '<div class="gcard soon"><span class="ic">➕</span><b>More games</b><span>New games show up here as they are built.</span></div>';
+    $("warmCards").querySelectorAll("[data-w]").forEach(function(b){ b.onclick = function(){ cfg.warm.pick = b.dataset.w; if(b.dataset.w !== "auto") cfg.warm.cur = b.dataset.w; save(); broadcast(); renderCards(); renderToday(); }; });
+    $("gameCards").querySelectorAll("[data-g]").forEach(function(b){ b.onclick = function(){ cfg.game = b.dataset.g; save(); broadcast(); renderCards(); renderToday(); }; });
+  }
+  $("cWarmNew").onclick = function(){ W.next(warmState()); save(); broadcast(); renderToday(); };
+  function setMode(m){
+    if(m === "warm" && cfg.warm.pick === "auto" && cfg.warm.day !== today()){
+      var ids = W.LIST.map(function(w){ return w.id; }), i = ids.indexOf(cfg.warm.cur);
+      cfg.warm.cur = cfg.warm.day ? ids[(i + 1) % ids.length] : (cfg.warm.cur || ids[0]); cfg.warm.day = today();
+    }
+    cfg.mode = m; save(); broadcast(); renderToday();
+  }
+  $("mWarm").onclick = function(){ setMode("warm"); };
+  $("mGame").onclick = function(){ cfg.pull = []; cfg.pullMode = ""; setMode("game"); renderPairs(); renderLive(); };
+  $("mIdle").onclick = function(){ setMode("idle"); };
+
+  /* ---- Pull to Zoom: the whole group, or pairs. Pulled students see "Come to Zoom"; their game waits. ---- */
+  function groupAvs(){ return kidsInGroup().map(function(s){ return s.av; }); }
+  function setPull(list, modeName){
+    cfg.pull = list; cfg.pullMode = modeName; save(); broadcast(); renderToday(); renderPairs(); renderLive();
+    /* the result shows at the top of the page; bring it into view so she sees the pull happened */
+    if(list.length || modeName === "pairs"){ try{ $("liveCard").scrollIntoView({behavior:"smooth", block:"start"}); }catch(e){} }
+  }
+  var pullNote = "";
+  $("mPullAll").onclick = function(){
+    var avs = groupAvs();
+    if(!avs.length){ pullNote = "There's no one to pull: this group has no students with an animal yet. Add them on your Turn Timer coach page first."; setPull([], ""); return; }
+    pullNote = ""; setPull(avs, "all");
+  };
+  $("mPullPairs").onclick = function(){ if(!cfg.pairs.length) mixPairs(); setPull([], "pairs"); };
+  $("mSendBack").onclick = function(){ setPull([], cfg.pullMode === "pairs" ? "pairs" : ""); };
+  var pairSel = "";
+  function inPair(av){ for(var i = 0; i < cfg.pairs.length; i++) if(cfg.pairs[i].indexOf(av) >= 0) return i; return -1; }
+  function mixPairs(){
+    var avs = groupAvs();
+    for(var i = avs.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)), t = avs[i]; avs[i] = avs[j]; avs[j] = t; }
+    cfg.pairs = []; for(var k = 0; k < avs.length; k += 2) cfg.pairs.push(avs.slice(k, k + 2));
+    if(cfg.pairs.length > 1 && cfg.pairs[cfg.pairs.length - 1].length === 1) cfg.pairs[cfg.pairs.length - 2].push(cfg.pairs.pop()[0]);   // the odd one out makes a three
+    save(); broadcast();
+  }
+  function isPulled(av){ return cfg.pull.indexOf(av) >= 0; }
+  function renderPairs(){
+    var box = $("pairBox");
+    if(pullNote && !cfg.pull.length){ box.hidden = false; box.innerHTML = '<b>' + esc(pullNote) + '</b>'; $("liveCard").hidden = false; return; }
+    if(cfg.pullMode === "all" && cfg.pull.length){
+      box.hidden = false;
+      var here = cfg.pull.filter(function(a){ var L = live[a]; return L && L.seen && Date.now() - L.seen < 15000; }).length;
+      box.innerHTML = '<b>👋 The whole group is with you on Zoom.</b><div class="small">' + (here ? "Their screens say “Come to Zoom”. Their game waits." : "No one has joined yet. When they do, their screens will say “Come to Zoom”.") + '</div><div class="row"><button class="btn go sm" id="pbBack">↩ Send everyone back</button></div>';
+      $("pbBack").onclick = function(){ setPull([], ""); };
+      return;
+    }
+    if(cfg.pullMode !== "pairs"){ box.hidden = true; box.innerHTML = ""; return; }
+    box.hidden = false;
+    var avs = groupAvs();
+    cfg.pairs = cfg.pairs.map(function(p){ return p.filter(function(a){ return avs.indexOf(a) >= 0; }); }).filter(function(p){ return p.length > 1; });
+    var solo = avs.filter(function(a){ return inPair(a) < 0; });
+    var btn = function(a){ return '<button type="button" class="' + (pairSel === a ? "sel" : "") + '" data-a="' + esc(a) + '" aria-label="' + esc(a) + '">' + esc(a) + '</button>'; };
+    box.innerHTML = '<div class="row" style="justify-content:space-between"><b>👋 Pairs</b><span class="row"><button class="btn sm" id="pbMix">Mix pairs</button><button class="btn sm" id="pbDone">Close pairs</button></span></div>' +
+      '<div class="small">Tap one animal, then another, to make a pair. Tap “Pull” to bring a pair to Zoom, and “Send back” when you’re done.</div>' +
+      cfg.pairs.map(function(p, i){
+        var on = p.every(isPulled);
+        return '<div class="pairline"><span class="pairs pairgrp">' + p.map(btn).join("") + '</span>' + (on ? '<span class="now pulled">with you on Zoom</span><button class="btn go sm" data-back="' + i + '">↩ Send back</button>' : '<button class="btn pull sm" data-pull="' + i + '">👋 Pull</button>') + '</div>';
+      }).join("") +
+      (solo.length ? '<div class="pairline"><span class="small muted">Not in a pair:</span><span class="pairs">' + solo.map(btn).join("") + '</span></div>' : "");
+    box.querySelectorAll("[data-a]").forEach(function(b){ b.onclick = function(){
+      var a = b.dataset.a;
+      if(!pairSel){ pairSel = a; renderPairs(); return; }
+      if(pairSel === a){ pairSel = ""; renderPairs(); return; }
+      [pairSel].forEach(function(x){ var si = inPair(x); if(si >= 0) cfg.pairs[si].splice(cfg.pairs[si].indexOf(x), 1); });
+      cfg.pairs = cfg.pairs.filter(function(p){ return p.length; });
+      var i = inPair(a);
+      if(i >= 0) cfg.pairs[i].push(pairSel); else cfg.pairs.push([a, pairSel]);
+      pairSel = ""; save(); broadcast(); renderPairs();
+    }; });
+    box.querySelectorAll("[data-pull]").forEach(function(b){ b.onclick = function(){ var p = cfg.pairs[+b.dataset.pull] || []; setPull(cfg.pull.concat(p.filter(function(a){ return !isPulled(a); })), "pairs"); }; });
+    box.querySelectorAll("[data-back]").forEach(function(b){ b.onclick = function(){ var p = cfg.pairs[+b.dataset.back] || []; setPull(cfg.pull.filter(function(a){ return p.indexOf(a) < 0; }), "pairs"); }; });
+    $("pbMix").onclick = function(){ mixPairs(); renderPairs(); };
+    $("pbDone").onclick = function(){ setPull([], ""); };
+  }
+  /* ---- Turns: one student reads to you on Zoom for a set time; everyone's screen shows whose turn it is ---- */
+  function turnLeft(){ return cfg.turn ? Math.max(0, Math.ceil(cfg.turn.secs - (Date.now() - cfg.turn.at) / 1000)) : 0; }
+  /* turns go only to students who are here now, so one room can hold everyone */
+  function hereAvs(){ var now = Date.now(); return groupAvs().filter(function(a){ var L = live[a]; return L && L.seen && now - L.seen < 15000; }); }
+  function nextAfter(av){ var avs = hereAvs(); if(!avs.length) return ""; var all = groupAvs(), i = all.indexOf(av); for(var k = 1; k <= all.length; k++){ var c = all[(i + k) % all.length]; if(avs.indexOf(c) >= 0) return c; } return avs[0]; }
+  function turnMsg(){ if(!cfg.turn) return null; var nx = nextAfter(cfg.turn.who); return {who:cfg.turn.who, left:turnLeft(), secs:cfg.turn.secs, next:nx !== cfg.turn.who ? nx : ""}; }
+  function startTurn(av){
+    if(!av){ $("tStat").textContent = "There's no one in this group to read yet."; return; }
+    cfg.turn = {who:av, secs:+$("tSecs").value || 60, at:Date.now()};
+    setPull([av], "one"); renderTurn();
+  }
+  $("tStart").onclick = function(){ var first = cfg.pull[0] || hereAvs()[0]; if(!first){ $("tStat").textContent = "No one has joined yet. Turns start once a student is here."; return; } startTurn(first); };
+  $("tNext").onclick = function(){ if(cfg.turn) startTurn(nextAfter(cfg.turn.who)); };
+  $("tAgain").onclick = function(){ if(cfg.turn) startTurn(cfg.turn.who); };
+  $("tStop").onclick = function(){ cfg.turn = null; setPull([], ""); renderTurn(); };
+  function renderTurn(){
+    var on = !!cfg.turn, left = turnLeft();
+    $("tStart").hidden = on; $("tNext").hidden = $("tAgain").hidden = $("tStop").hidden = !on;
+    if(on){
+      var nx = nextAfter(cfg.turn.who);
+      $("tStat").textContent = cfg.turn.who + (left ? " is reading · " + Math.floor(left / 60) + ":" + String(left % 60).padStart(2, "0") : " · ⏰ time's up") + (nx && nx !== cfg.turn.who ? " · next: " + nx : "");
+    } else $("tStat").textContent = "One student reads to you while the others play. Everyone's screen shows whose turn it is.";
+  }
+  setInterval(function(){ if(cfg.turn){ renderTurn(); } }, 1000);
+  function liveVis(){ $("liveCard").hidden = cfg.mode === "idle" && !cfg.turn && !cfg.pull.length && !helps.length && !Object.keys(taken).length && cfg.pullMode !== "pairs"; }
+  function renderToday(){
+    $("mWarm").classList.toggle("on", cfg.mode === "warm"); $("mIdle").classList.toggle("on", cfg.mode === "idle"); $("mGame").classList.toggle("on", cfg.mode === "game");
+    $("mPullAll").classList.toggle("on", cfg.pullMode === "all" && cfg.pull.length > 0); $("mPullPairs").classList.toggle("on", cfg.pullMode === "pairs");
+    $("mSendBack").hidden = !cfg.pull.length;
+    liveVis();
+    var gname = gName(cfg.game);
+    $("mGame").textContent = cfg.mode === "game" ? "🚀 " + gname + " is on" : "🚀 Start " + gname;
+    var noSk = kidsInGroup().filter(function(s){ return cfg.game === "own" ? !cfg.own[s.id] : !skillOf(s.id); }).length;
+    $("cMode").textContent = (cfg.mode === "warm" ? "Warm-up is on." : cfg.mode === "game" ? gname + " is on." : "Paused: students see “Hold on, your coach is getting ready.”") + (cfg.pull.length ? " " + cfg.pull.length + " with you on Zoom." : "") +
+      (cfg.mode === "game" && noSk ? " " + noSk + (noSk === 1 ? " student has" : " students have") + (cfg.game === "own" ? " no game picked yet (step 3, Their game)." : " no skill picked yet, so they get no questions (step 3).") : "");
+    var w = W.LIST.filter(function(x){ return x.id === cfg.warm.cur; })[0];
+    $("cWarmProg").textContent = (w ? "Today: " + w.icon + " " + w.name + " · " : "") + W.progress(warmState()) + (cfg.warm.pick === "auto" ? " · switches each new day" : "");
+  }
+
+  /* ---- Live ---- */
+  function renderLive(){
+    var now = Date.now();
+    $("liveRows").innerHTML = kidsInGroup().map(function(s){
+      var L = live[s.av] || {}, sk = skillOf(s.id), on = L.seen && now - L.seen < 15000;
+      var helpOn = helps.some(function(x){ return x.a === s.av; });
+      var nowTxt = !on ? '<span class="now muted">not here yet</span>' : cfg.pull.indexOf(s.av) >= 0 ? '<span class="now pulled">👋 with you on Zoom</span>' : helpOn ? '<span class="now help">🙋 needs help</span>' :
+        '<span class="now">' + (cfg.mode === "warm" ? "warm-up" : cfg.mode === "game" ? (cfg.game === "own" ? (ownName(cfg.own[s.id] || "") || "no game picked") : gName(cfg.game)) : "waiting") + '</span>';
+      return '<tr><td class="av">' + esc(s.av) + '</td><td>' + '<span class="dot' + (on ? " on" : "") + '"></span> ' + esc(s.name) + '</td><td class="small">' + (sk ? esc(sk.name) : '<span class="muted">none yet</span>') +
+        '</td><td>' + (L.n ? L.r + " of " + L.n + " <span class='muted small'>(" + Math.round(100 * L.r / L.n) + "%)</span>" : "–") + '</td><td>' + (L.ledge != null ? L.ledge : "–") + '</td><td>' + nowTxt + '</td><td>' +
+        (cfg.pull.indexOf(s.av) >= 0 ? '<button class="btn go sm" data-oneback="' + esc(s.av) + '">↩ Send back</button>' : on ? '<button class="btn pull sm" data-one="' + esc(s.av) + '">👋 Pull</button>' : "") + '</td></tr>';
+    }).join("") || '<tr><td colspan="7" class="muted">No students with an animal in this group yet.</td></tr>';
+    /* pull ONE student (e.g. a 1:1 check) while the others keep playing */
+    $("liveRows").querySelectorAll("[data-one]").forEach(function(b){ b.onclick = function(){ setPull(cfg.pull.concat([b.dataset.one]), cfg.pullMode === "pairs" ? "pairs" : (cfg.pullMode || "one")); }; });
+    $("liveRows").querySelectorAll("[data-oneback]").forEach(function(b){ b.onclick = function(){ var a = b.dataset.oneback; if(cfg.turn && cfg.turn.who === a){ cfg.turn = null; renderTurn(); } setPull(cfg.pull.filter(function(x){ return x !== a; }), cfg.pullMode); }; });
+  }
+  setInterval(renderLive, 5000);
+  var QUICK = ["I see you! I'm coming to you soon.", "Skip it for now and keep going. We'll look at it together.", "Great job asking! Try your best one, then keep going."];
+  function renderHelp(){
+    $("helpQ").innerHTML = helps.map(function(h, i){
+      var s = byAv(h.a), q = h.q || {};
+      return '<div class="help"><div><b>' + esc(h.a) + " " + esc(s ? s.name : "") + '</b> needs help</div>' +
+        (q.p ? '<div class="small">' + esc(q.p) + (q.s ? ' <b>' + esc(q.s) + '</b>' : "") + (q.say ? ' (word: <b>' + esc(q.say) + '</b>)' : "") + '<br>' + (q.c || []).map(esc).join(" · ") + '</div>' : "") +
+        '<div class="row">' + QUICK.map(function(t, j){ return '<button class="btn sm" data-h="' + i + '" data-q="' + j + '">' + esc(t.split(/[.!]/)[0]) + '</button>'; }).join("") + '</div>' +
+        '<div class="row"><input type="text" maxlength="120" placeholder="Or write a short note (no names)" data-hi="' + i + '"><button class="btn sm" data-hs="' + i + '">Send</button><button class="btn sm" data-hd="' + i + '">Done</button></div></div>';
+    }).join("");
+    $("helpQ").querySelectorAll("[data-q]").forEach(function(b){ b.onclick = function(){ reply(+b.dataset.h, QUICK[+b.dataset.q]); }; });
+    $("helpQ").querySelectorAll("[data-hs]").forEach(function(b){ b.onclick = function(){ var inp = $("helpQ").querySelector('[data-hi="' + b.dataset.hs + '"]'); if(inp.value.trim()) reply(+b.dataset.hs, inp.value.trim()); }; });
+    $("helpQ").querySelectorAll("[data-hd]").forEach(function(b){ b.onclick = function(){ helps.splice(+b.dataset.hd, 1); renderHelp(); }; });
+    liveVis();
+    document.title = helps.length ? "(" + helps.length + " 🙋) Reading Hub" : "Reading Hub · coach";
+  }
+  function reply(i, text){
+    var h = helps[i]; if(!h) return;
+    keyFor(h.a).then(function(k){ if(k) return seal(k, {m:text}).then(function(x){ room.send("x", {g:"hub", t:"reply", a:h.a, iv:x.iv, ct:x.ct}, false); }); });
+    helps.splice(i, 1); renderHelp();
+  }
+  function renderTaken(){
+    var now = Date.now();
+    $("takenQ").innerHTML = Object.keys(taken).filter(function(a){ return now - taken[a] < 120000; }).map(function(a){
+      var s = byAv(a);
+      return '<div class="taken"><span class="av">' + esc(a) + '</span><span class="small">A second device tried to join as ' + esc(s ? s.name : "this animal") + '. It was kept out.</span><button class="btn sm" data-free="' + esc(a) + '">Free ' + esc(a) + ' for a new device</button><button class="btn sm" data-tk="' + esc(a) + '">OK</button></div>';
+    }).join("");
+    $("takenQ").querySelectorAll("[data-free]").forEach(function(b){ b.onclick = function(){ var a = b.dataset.free; delete cfg.claims[a]; delete keys[a]; delete taken[a]; save(); renderTaken(); }; });
+    $("takenQ").querySelectorAll("[data-tk]").forEach(function(b){ b.onclick = function(){ delete taken[b.dataset.tk]; renderTaken(); }; });
+  }
+
+  /* ---- Assignments: lane > goal > skill ---- */
+  $("allKids").onchange = renderAsg; $("hereOnly").onchange = renderAsg;
+  /* Like Meg's hub: set each student as they join. "Joined today" = their device checked in since this page opened. */
+  var joined = {};
+  function isHere(s){ var L = live[s.av]; return !!(L && L.seen && Date.now() - L.seen < 15000); }
+  function asgList(){
+    var base = $("allKids").checked ? students : kidsInGroup();
+    base.forEach(function(s){ if(isHere(s)) joined[s.id] = 1; });
+    var j = base.filter(function(s){ return joined[s.id]; });
+    if($("hereOnly").checked){
+      $("asgNote").textContent = j.length ? "Showing the " + j.length + " who joined today. Set everyone changes only them." : "No one has joined yet. Everyone is shown until someone joins.";
+      if(j.length) return j;
+    } else $("asgNote").textContent = "";
+    return base.slice().sort(function(a, b){ return (joined[b.id] ? 1 : 0) - (joined[a.id] ? 1 : 0); });
+  }
+  var lastJoinKey = "";
+  setInterval(function(){
+    (($("allKids").checked ? students : kidsInGroup())).forEach(function(s){ if(isHere(s)) joined[s.id] = 1; });
+    var k = Object.keys(joined).sort().join(",");
+    if(k !== lastJoinKey && !(document.activeElement && document.activeElement.closest && document.activeElement.closest("#asgRows"))){ lastJoinKey = k; renderAsg(); }
+  }, 3000);
+  function opt(v, label, sel){ return '<option value="' + esc(v) + '"' + (v === sel ? " selected" : "") + '>' + esc(label) + '</option>'; }
+  function laneOpts(sel){ return opt("", "–", sel) + Object.keys(cfg.lanes).map(function(k){ return opt(k, cfg.lanes[k].name, sel); }).join(""); }
+  function goalOpts(lane, sel){ var L = cfg.lanes[lane]; if(!L) return opt("", "pick a lane first", ""); if(!L.goals.length) return opt("", "no goals yet", ""); return opt("", "–", sel) + L.goals.map(function(g){ return opt(g.id, g.name, sel); }).join(""); }
+  function skillOpts(lane, gid, sel){ var g = goalById(lane, gid); if(!g) return opt("", "pick a goal first", ""); if(!g.skills.length) return opt("", "no skills yet", ""); return opt("", "–", sel) + g.skills.map(function(s){ return opt(s.id, s.name, sel); }).join(""); }
+  function renderAsg(){
+    var list = asgList();
+    $("asgRows").innerHTML = list.map(function(s){
+      var a = cfg.asg[s.id] || {};
+      return '<tr><td class="av">' + esc(s.av || "") + '</td><td><span class="dot' + (isHere(s) ? " on" : "") + '"></span> ' + esc(s.name) + '</td><td><input type="text" data-grade="' + esc(s.id) + '" value="' + esc(cfg.grade[s.id] || "") + '" placeholder="e.g. G2" aria-label="Grade for ' + esc(s.name) + '"></td><td><select data-lane="' + esc(s.id) + '" aria-label="Lane for ' + esc(s.name) + '">' + laneOpts(a.lane) + '</select></td>' +
+        '<td><select data-goal="' + esc(s.id) + '" aria-label="Goal for ' + esc(s.name) + '" style="max-width:240px">' + goalOpts(a.lane, a.goal) + '</select></td>' +
+        '<td><select data-skill="' + esc(s.id) + '" aria-label="Skill for ' + esc(s.name) + '" style="max-width:240px">' + skillOpts(a.lane, a.goal, a.skill) + '</select></td>' +
+        '<td><select data-own="' + esc(s.id) + '" aria-label="Their game for ' + esc(s.name) + '" style="max-width:260px">' + opt("", "–", cfg.own[s.id] || "") + ownOptions().map(function(o){ return opt(o.v, o.n, cfg.own[s.id] || ""); }).join("") + '</select></td><td>' + statusPill(s.id) + '</td></tr>';
+    }).join("") || '<tr><td colspan="8" class="muted">No students yet.</td></tr>';
+    $("asgRows").querySelectorAll("[data-grade]").forEach(function(el){ el.onchange = function(){ cfg.grade[el.dataset.grade] = el.value.trim(); save(); }; });
+    renderSetAll();
+    $("asgRows").querySelectorAll("[data-lane]").forEach(function(el){ el.onchange = function(){ cfg.asg[el.dataset.lane] = {lane:el.value, goal:"", skill:""}; save(); broadcast(); renderAll(); }; });
+    $("asgRows").querySelectorAll("[data-goal]").forEach(function(el){ el.onchange = function(){ var a = cfg.asg[el.dataset.goal] = cfg.asg[el.dataset.goal] || {}; a.goal = el.value; a.skill = ""; save(); broadcast(); renderAll(); }; });
+    $("asgRows").querySelectorAll("[data-own]").forEach(function(el){ el.onchange = function(){ if(el.value) cfg.own[el.dataset.own] = el.value; else delete cfg.own[el.dataset.own]; save(); broadcast(); renderAll(); }; });
+    $("asgRows").querySelectorAll("[data-skill]").forEach(function(el){ el.onchange = function(){ var a = cfg.asg[el.dataset.skill] = cfg.asg[el.dataset.skill] || {}; a.skill = el.value; save(); broadcast(); renderAll(); }; });
+  }
+
+  var sa = {lane:"", goal:"", skill:""};
+  function renderSetAll(){
+    $("saLane").innerHTML = laneOpts(sa.lane); $("saGoal").innerHTML = goalOpts(sa.lane, sa.goal); $("saSkill").innerHTML = skillOpts(sa.lane, sa.goal, sa.skill);
+  }
+  $("saLane").onchange = function(){ sa = {lane:this.value, goal:"", skill:""}; renderSetAll(); };
+  $("saGoal").onchange = function(){ sa.goal = this.value; sa.skill = ""; renderSetAll(); };
+  $("saSkill").onchange = function(){ sa.skill = this.value; };
+  $("saGo").onclick = function(){
+    if(!sa.lane) return;
+    asgList().forEach(function(s){ cfg.asg[s.id] = {lane:sa.lane, goal:sa.goal, skill:sa.skill}; });
+    save(); broadcast(); renderAll();
+  };
+
+  /* ---- Lanes > goals > skills ---- */
+  var openQ = {};
+  function renderLanes(){
+    $("lanes").innerHTML = Object.keys(cfg.lanes).map(function(lk){
+      var L = cfg.lanes[lk];
+      return '<div class="lane"><h3>' + esc(L.name) + '</h3>' + L.goals.map(function(g, gi){
+        var gp = lk + "|" + gi;
+        return '<div class="goal"><div class="row"><span class="label">Goal</span><b>' + esc(g.name) + '</b></div>' + (g.skills.length ? "" : '<div class="small muted">No skills yet. Add them on your Roster\'s Lanes tab.</div>') +
+          g.skills.map(function(s, i){
+            var p = gp + "|" + i;
+            var src = '<select data-src="' + p + '" aria-label="Where the questions come from"><option value="">My own questions</option>' + BUILT.map(function(b){ return '<option value="' + b.id + '"' + (s.set === b.id ? " selected" : "") + '>Built-in: ' + esc(b.name) + '</option>'; }).join("") + '</select>';
+            var own = s.set ? "" : '<div class="qed">' + (s.own || []).map(function(q, j){
+                return '<div class="ownq"><span>' + esc(q.p) + (q.s ? " <b>" + esc(q.s) + "</b>" : "") + ' → <b>' + esc(q.c[q.r]) + '</b></span><button class="btn sm danger" data-qdel="' + p + '|' + j + '">×</button></div>';
+              }).join("") + (openQ[p] ? qForm(p) : '<button class="btn sm" data-qopen="' + p + '">+ Write a question</button>') + '<div class="small muted">' + (s.own || []).length + ' question' + ((s.own || []).length === 1 ? "" : "s") + (!(s.own || []).length ? ": students with this skill get no questions until you add some" : "") + '</div></div>';
+            var pg = PAGES[s.id] ? '<div class="small">Independent practice: <a href="' + PAGES[s.id].u + '" target="_blank" rel="noopener">' + esc(PAGES[s.id].n) + ' ↗</a> (a button on the student\'s screen)</div>' : "";
+            return '<div class="skill"><div><b>' + esc(s.name) + '</b></div>' + src + pg + own + '</div>';
+          }).join("") + '</div>';
+      }).join("") + (L.goals.length ? "" : '<div class="small muted">No goals yet. Add them on your Roster\'s Lanes tab.</div>') + '</div>';
+    }).join("");
+    var lanes = $("lanes");
+    function at(v){ var p = v.split("|"), L = cfg.lanes[p[0]], g = L && L.goals[+p[1]]; return {lk:p[0], L:L, gi:+p[1], g:g, i:+p[2], s:g && g.skills[+p[2]], j:+p[3]}; }
+    function sure(el){ if(el.dataset.sure !== "1"){ el.dataset.sure = "1"; el.textContent = "Tap again to delete"; return false; } return true; }
+    lanes.querySelectorAll("[data-gname]").forEach(function(el){ el.onchange = function(){ var x = at(el.dataset.gname); x.g.name = el.value.trim() || "Goal"; save(); broadcast(); renderAsg(); renderProg(); }; });
+    lanes.querySelectorAll("[data-gdel]").forEach(function(el){ el.onclick = function(){
+      if(!sure(el)) return; var x = at(el.dataset.gdel), gone = x.L.goals.splice(x.gi, 1)[0];
+      Object.keys(cfg.asg).forEach(function(k){ if(cfg.asg[k].goal === gone.id){ cfg.asg[k].goal = ""; cfg.asg[k].skill = ""; } });
+      save(); broadcast(); renderAll();
+    }; });
+    lanes.querySelectorAll("[data-gadd]").forEach(function(el){ el.onclick = function(){
+      var inp = lanes.querySelector('[data-gnew="' + el.dataset.gadd + '"]'), n = inp.value.trim(); if(!n) return;
+      cfg.lanes[el.dataset.gadd].goals.push({id:uid(), name:n, skills:[]}); save(); renderAll();
+    }; });
+    lanes.querySelectorAll("[data-sname]").forEach(function(el){ el.onchange = function(){ var x = at(el.dataset.sname); x.s.name = el.value.trim() || "Skill"; save(); broadcast(); renderAsg(); renderProg(); }; });
+    lanes.querySelectorAll("[data-src]").forEach(function(el){ el.onchange = function(){ var x = at(el.dataset.src); x.s.set = el.value; x.s.own = x.s.own || []; save(); broadcast(); renderLanes(); }; });
+    lanes.querySelectorAll("[data-sdel]").forEach(function(el){ el.onclick = function(){
+      if(!sure(el)) return; var x = at(el.dataset.sdel), gone = x.g.skills.splice(x.i, 1)[0];
+      Object.keys(cfg.asg).forEach(function(k){ if(cfg.asg[k].skill === gone.id) cfg.asg[k].skill = ""; });
+      save(); broadcast(); renderAll();
+    }; });
+    lanes.querySelectorAll("[data-sadd]").forEach(function(el){ el.onclick = function(){
+      var inp = lanes.querySelector('[data-snew="' + el.dataset.sadd + '"]'), n = inp.value.trim(); if(!n) return;
+      at(el.dataset.sadd).g.skills.push({id:uid(), name:n, set:"", own:[]}); save(); renderAll();
+    }; });
+    lanes.querySelectorAll("[data-qopen]").forEach(function(el){ el.onclick = function(){ openQ[el.dataset.qopen] = true; renderLanes(); }; });
+    lanes.querySelectorAll("[data-qdel]").forEach(function(el){ el.onclick = function(){ var x = at(el.dataset.qdel); x.s.own.splice(x.j, 1); save(); broadcast(); renderLanes(); }; });
+    lanes.querySelectorAll("[data-qsave]").forEach(function(el){ el.onclick = function(){
+      var x = at(el.dataset.qsave), f = el.closest(".qf"), p = f.querySelector(".qp").value.trim(), s = f.querySelector(".qs").value.trim();
+      var c = [].map.call(f.querySelectorAll(".qc"), function(i){ return i.value.trim(); }), r = [].map.call(f.querySelectorAll(".qr"), function(i){ return i.checked; }).indexOf(true);
+      var msg = f.querySelector(".qerr");
+      if(!p){ msg.textContent = "Write the question."; return; }
+      if(c.filter(Boolean).length < 2){ msg.textContent = "Write at least 2 answers (4 is best)."; return; }
+      if(r < 0 || !c[r]){ msg.textContent = "Tap the circle next to the right answer."; return; }
+      x.s.own = x.s.own || []; x.s.own.push({p:p, s:s, c:c, r:r}); save(); broadcast(); renderLanes();
+    }; });
+    lanes.querySelectorAll("[data-qclose]").forEach(function(el){ el.onclick = function(){ openQ[el.dataset.qclose] = false; renderLanes(); }; });
+  }
+  function qForm(k){
+    var nm = "r" + k.replace(/\W/g, "_");
+    return '<div class="qf qed"><input type="text" class="qp" placeholder="Question, e.g. Which word has the long a sound?"><input type="text" class="qs" placeholder="Big word to show (optional)">' +
+      '<div class="ans">' + [0,1,2,3].map(function(n){ return '<input type="radio" name="' + nm + '" class="qr" aria-label="Right answer"><input type="text" class="qc" placeholder="Answer ' + (n + 1) + '">'; }).join("") + '</div>' +
+      '<div class="small muted">Tap the circle next to the right answer. Students see the answers in a mixed order.</div><div class="small qerr" style="color:var(--bad)"></div>' +
+      '<div class="row"><button class="btn sm main" data-qsave="' + k + '">Add question</button><button class="btn sm" data-qclose="' + k + '">Close</button></div></div>';
+  }
+
+  /* ---- Progress and the (unsettled) rule ---- */
+  ["rPct","rRow","rMin","rMax"].forEach(function(id){
+    var key = {rPct:"pct", rRow:"row", rMin:"min", rMax:"max"}[id];
+    $(id).value = cfg.rule[key];
+    $(id).onchange = function(){ var v = +this.value; if(v > 0){ cfg.rule[key] = v; save(); renderAll(); } };
+  });
+  function sessions(sid, skid){ var k = (cfg.stats[sid] || {})[skid] || {}; return Object.keys(k).sort().map(function(d){ return {d:d, r:k[d].r, n:k[d].n}; }); }
+  function status(sid){
+    var sk = skillOf(sid); if(!sk) return null;
+    var all = sessions(sid, sk.id).filter(function(x){ return x.n >= cfg.rule.min; }), rule = cfg.rule;
+    var last = all.slice(-rule.row), ready = last.length >= rule.row && last.every(function(x){ return 100 * x.r / x.n >= rule.pct; });
+    if(ready) return {c:"ok", t:"Ready for a check ✓"};
+    if(all.length >= rule.max) return {c:"warn", t:"Check anyway (" + all.length + " sessions)"};
+    return {c:"", t:all.length + " of " + rule.max + " sessions"};
+  }
+  function statusPill(sid){ var s = status(sid); return s ? '<span class="pill ' + s.c + '">' + esc(s.t) + '</span>' : ""; }
+  function renderProg(){
+    var list = $("allKids").checked ? students : kidsInGroup();
+    $("progRows").innerHTML = '<table><thead><tr><th></th><th>Student</th><th>Skill</th><th>Sessions (first try)</th><th>Status</th></tr></thead><tbody>' + list.map(function(s){
+      var sk = skillOf(s.id); if(!sk) return "";
+      var ss = sessions(s.id, sk.id);
+      return '<tr><td class="av">' + esc(s.av || "") + '</td><td>' + esc(s.name) + '</td><td class="small">' + esc(sk.name) + '</td><td class="small">' +
+        (ss.map(function(x){ return '<span class="pill">' + nice(x.d) + ": " + x.r + "/" + x.n + " (" + Math.round(100 * x.r / x.n) + "%)" + (x.n < cfg.rule.min ? " · few" : "") + '</span>'; }).join(" ") || '<span class="muted">no practice yet</span>') +
+        '</td><td>' + statusPill(s.id) + '</td></tr>';
+    }).join("") + '</tbody></table>';
+  }
+  $("copyRes").onclick = function(){
+    var lines = ["Reading Hub results, copied " + nice(today())];
+    students.forEach(function(s){
+      var st = cfg.stats[s.id]; if(!st) return;
+      Object.keys(st).forEach(function(skid){
+        var fs0 = findSkill(skid), sk = fs0 && fs0.skill, lane = fs0 ? cfg.lanes[fs0.lane].name + " › " + fs0.goal.name : "";
+        lines.push(s.name + " · " + lane + " › " + (sk ? sk.name : skid) + ": " + sessions(s.id, skid).map(function(x){ return nice(x.d) + " " + x.r + "/" + x.n; }).join(", "));
+      });
+    });
+    try{ navigator.clipboard.writeText(lines.join("\n")); $("copyMsg").textContent = "Copied. Paste it to Claude to add to your My Reading Roster page."; }catch(e){ $("copyMsg").textContent = "Could not copy."; }
+  };
+
+  /* ---- Student view: a watch-only copy of one student's screen, inside her coach page ---- */
+  var svAv = "";
+  function renderSv(){
+    var kids = kidsInGroup();
+    $("svAv").innerHTML = kids.map(function(s){ return '<option value="' + esc(s.av) + '">' + esc(s.av + " " + s.name) + '</option>'; }).join("") || '<option value="">No students yet</option>';
+    if(svAv && kids.some(function(s){ return s.av === svAv; })) $("svAv").value = svAv;
+  }
+  function svPost(){
+    if(!$("svBox") || $("svBox").hidden || !svAv) return;
+    var s = byAv(svAv);
+    try{ $("svFrame").contentWindow.postMessage({hubWatch:{mine:s ? mineFor(s) : null}}, location.origin); }catch(e){}
+  }
+  $("svOpen").onclick = function(){
+    svAv = $("svAv").value; if(!svAv) return;
+    var nobc = /[?&]nobc/.test(location.search) ? "&nobc" : "", s = byAv(svAv);
+    $("svFrame").src = location.pathname + "?watch=1" + nobc + "&av=" + encodeURIComponent(svAv) + "#" + cfg.code;
+    $("svTitle").textContent = "👀 What " + svAv + (s ? " " + s.name : "") + " sees";
+    $("svBox").hidden = false;
+    setTimeout(svPost, 1200); setTimeout(svPost, 3000);
+  };
+  $("svClose").onclick = function(){ $("svBox").hidden = true; $("svFrame").src = "about:blank"; };
+
+  function renderAll(){ renderSv(); renderCards(); renderToday(); renderPairs(); renderLive(); renderHelp(); renderTaken(); renderAsg(); renderLanes(); renderProg(); }
+  renderAll();
+  window.addEventListener("storage", function(e){ if(e.key === "tt-coach2"){ tt = store("tt-coach2") || {}; students = tt.students || []; groups = tt.groups || []; renderAll(); kRender(); } });
+}
+
+/* ================================================================= STUDENT */
+function student(){
+  $("student").hidden = false;
+  var saved = store("hub-student1") || {code:"", av:""};
+  var hash = (location.hash || "").replace("#", "").toUpperCase();
+  if(/^[A-Z]{4}$/.test(hash) && hash !== saved.code) saved = {code:hash, av:""};
+  /* Watch mode: the coach page's Student view. It listens only: never claims the animal, never sends,
+     and never touches the real student's saved place. The coach page hands it the student's goal and skill. */
+  var WATCH = /[?&]watch=1/.test(location.search);
+  if(WATCH){
+    saved = {code:hash, av:decodeURIComponent((location.search.match(/[?&]av=([^&]*)/) || [])[1] || "")};
+    var wn = document.createElement("div"); wn.className = "watchnote"; wn.textContent = "Student view: what " + saved.av + " sees. Nothing you tap here is sent.";
+    $("student").insertBefore(wn, $("student").firstChild);
+    window.addEventListener("message", function(e){ if(e.origin !== location.origin || !e.data || !e.data.hubWatch) return; mine = e.data.hubWatch.mine; renderGoal(); });
+  }
+  var room = null, st = null, lastSt = 0, mode = "", game = null, gameId = "", friends = {}, card = null, modalOpen = false;
+  var kp = null, myPk = "", cKey = null, cPk = "", mine = null, lastMe = 0, lastHello = 0;
+  if(SUB && !WATCH) loadKeys("hub-skey1").then(function(k){ kp = k; return pubOf(k); }).then(function(p){ myPk = p; hello(); });
+  function hello(){ if(WATCH) return; if(!myPk || !saved.av || !room) return; lastHello = Date.now(); send("hello", {pk:myPk}); }
+  function sendLocked(t, obj){
+    if(!cKey || !saved.av) return;
+    cKey.then(function(k){ return seal(k, obj); }).then(function(x){ send(t, {iv:x.iv, ct:x.ct}); }).catch(function(){});
+  }
+
+  function persist(){ if(!WATCH) store("hub-student1", saved); }
+  function send(t, o){ if(WATCH) return; o = o || {}; o.g = "hub"; o.t = t; o.a = saved.av; if(room && saved.av) room.send("x", o, false); }
+
+  function showJoin(){
+    $("sJoin").hidden = false; ["sWait","sWarm","sGame"].forEach(function(id){ $(id).hidden = true; }); $("sHelp").hidden = true;
+    $("sJoin").innerHTML = '<div class="join"><div class="big">Join your reading group</div><div>Type your room code</div><input id="jCode" maxlength="4" autocomplete="off" spellcheck="false" value="' + esc(saved.code || "") + '"><button class="btn main" id="jGo">Go</button></div>';
+    $("jGo").onclick = function(){ var v = $("jCode").value.trim().toUpperCase(); if(/^[A-Z]{4}$/.test(v)){ saved = {code:v, av:""}; persist(); connect(); } };
+  }
+  function showPick(){
+    $("sJoin").hidden = false; ["sWait","sWarm","sGame"].forEach(function(id){ $(id).hidden = true; }); $("sHelp").hidden = true;
+    var kids = st ? st.kids : [];
+    $("sJoin").innerHTML = '<div class="join"><div class="big">Tap your animal</div>' + (kids.length ? '<div class="avs">' + kids.map(function(a){ return '<button type="button" data-a="' + esc(a) + '">' + esc(a) + '</button>'; }).join("") + '</div>' : '<div class="muted">Waiting for your coach to open the room…</div>') + '</div>';
+    $("sJoin").querySelectorAll("[data-a]").forEach(function(b){ b.onclick = function(){
+      saved.av = b.dataset.a; persist();
+      if(!WATCH) store("tt-join2", {code:saved.code, av:saved.av, at:Date.now()});   // so the turn timer card already knows you
+      mine = null; lastMe = 0; hello(); render();
+    }; });
+  }
+  function connect(){
+    persist();
+    if(room) room.close();
+    room = T.Room(roomOf(saved.code), {
+      onStatus:function(s){ $("sStatus").textContent = s === "open" ? "" : s === "blocked" ? "Can't reach your coach. Tell your coach in Zoom chat." : "connecting…"; },
+      onOpen:function(){ hello(); },
+      onX:onMsg
+    });
+    render();
+  }
+  function onMsg(m){
+    if(!m || m.g !== "hub") return;
+    if(m.t === "st"){
+      st = m; lastSt = Date.now(); $("sStatus").textContent = "";
+      if(m.turn){ turnLeft0 = m.turn.left; turnAt = Date.now(); }
+      if(kp && m.pk && m.pk !== cPk){ cPk = m.pk; cKey = derive(kp.privateKey, m.pk); mine = null; hello(); }
+      /* Say hello again if our goal/skill is stale, and at least every 7 s anyway: the coach page only
+         counts a student as "here" for 15 s after their last message, and an idle student sends nothing else. */
+      else if(saved.av && Date.now() - lastHello > (Date.now() - lastMe > 8000 ? 5000 : 7000)) hello();
+      render();
+    }
+    else if(m.t === "pos" && m.a && m.a !== saved.av){ friends[m.a] = {n:m.n, at:Date.now()}; }
+    else if(m.t === "me" && m.a === saved.av && cKey){ cKey.then(function(k){ return unseal(k, m); }).then(function(o){ if(o){ mine = o; lastMe = Date.now(); renderGoal(); if(st && st.mode === "game" && st.game === "own") showOwn(); } }); }
+    else if(m.t === "reply" && m.a === saved.av && cKey){ cKey.then(function(k){ return unseal(k, m); }).then(function(o){ if(o) toast("💬 Your coach: " + o.m); }); }
+    else if(m.t === "taken" && m.a === saved.av && m.pk === myPk){
+      saved.av = ""; persist(); mine = null; render();
+      toast("That animal is already in the room. Tap your own animal. If it's yours, tell your coach.");
+    }
+  }
+  var turnAt = 0, turnLeft0 = 0;
+  function renderTurnBar(){
+    var t = st && st.turn, bar = $("sTurn");
+    if(!t || !saved.av){ bar.hidden = true; $("sPullClock").textContent = ""; return; }
+    var left = Math.max(0, turnLeft0 - Math.floor((Date.now() - turnAt) / 1000)), clock = Math.floor(left / 60) + ":" + String(left % 60).padStart(2, "0");
+    var mine = t.who === saved.av;
+    $("sPullClock").textContent = mine ? (left ? clock : "⏰") : "";
+    bar.hidden = mine;
+    if(!mine) bar.innerHTML = esc(t.who) + ' is reading · <span class="t">' + (left ? clock : "time's up") + '</span>' + (t.next === saved.av ? '<span class="nx">' + esc(saved.av) + ' You\'re next! Get ready.</span>' : "");
+  }
+  setInterval(renderTurnBar, 500);
+  function renderPull(){
+    var on = !!(st && saved.av && (st.pulled || []).indexOf(saved.av) >= 0);
+    $("sPull").hidden = !on;
+    if(on){
+      var mine = (st.pairs || []).filter(function(p){ return p.indexOf(saved.av) >= 0; })[0] || [];
+      var others = mine.filter(function(a){ return a !== saved.av; });
+      $("sPullWith").textContent = others.length ? "With " + others.join(" ") : "";
+      /* alone or in a pair: unmute and talk. The whole group: just look (the coach keeps everyone muted). */
+      var few = (st.pulled || []).length <= 3 && st.pulled.length < (st.kids || []).length || (st.pulled || []).length === 1;
+      $("sPullSteps").innerHTML = few ? "🎙️ Unmute yourself.<br>👀 Look at your coach on Zoom." : "👀 Look at your coach on Zoom.";
+    }
+  }
+  function renderGoal(){
+    var show = !!(mine && saved.av && (mine.goal || mine.skill));
+    $("sGoal").hidden = !show;
+    if(show) $("sGoal").innerHTML = (mine.goal ? '<b>🎯 My goal: ' + esc(mine.goal) + '</b>' : "") + (mine.skill ? '<span>Today\'s skill: ' + esc(mine.skill) + '</span>' : "") +
+      /* a skill's own practice page (only pages on this site), e.g. Scoop Practice for reading in scoops */
+      (mine.page && /^[a-z0-9-]+\.html$/.test(mine.page.u) ? '<a class="stu-page" href="' + mine.page.u + '" target="_blank" rel="noopener">' + esc(mine.page.n) + ' ↗</a>' : "");
+  }
+  function render(){
+    $("sMe").textContent = saved.av || "";
+    renderGoal();
+    if(!saved.code) return showJoin();
+    if(!st) { $("sJoin").hidden = false; $("sJoin").innerHTML = '<div class="join"><div class="big">Connecting…</div><div class="muted">Your coach\'s page needs to be open.</div></div>'; return; }
+    if(!saved.av || st.kids.indexOf(saved.av) < 0) return showPick();
+    renderPull();
+    $("sJoin").hidden = true; $("sHelp").hidden = false;
+    var m = st.mode;
+    $("sWait").hidden = m !== "idle"; $("sWarm").hidden = m !== "warm"; $("sGame").hidden = m !== "game";
+    if(m === "warm") W.render($("sWarm"), st.warm, function(act){ send("w", {act:act}); }, saved.av);
+    if(m === "game" && st.game === "own"){ if(game){ game.stop(); game = null; gameId = ""; } showOwn(); }
+    else if(m === "game"){ hideOwn(); if(!game || gameId !== st.game) startGame(st.game); }
+    else { hideOwn(true); if(game){ game.stop(); game = null; gameId = ""; } }
+    mode = m;
+  }
+  setInterval(function(){ if(st && Date.now() - lastSt > 12000){ $("sStatus").textContent = "Waiting for your coach…"; } }, 4000);
+
+  /* ---- "Their own game": the page the coach picked, inside the hub ---- */
+  var ownSrc = "";
+  function showOwn(){
+    var box = $("sGame"), gm = mine && mine.game;
+    if(!gm || !OWN_OK.test(gm.u)){ ownSrc = ""; box.innerHTML = '<div class="card"><div class="big">Your coach is picking your game… 🎮</div></div>'; return; }
+    if(gm.u === ownSrc && box.querySelector("iframe.own")) return;
+    ownSrc = gm.u;
+    box.innerHTML = '<div class="ownbar"><b>🎮 ' + esc(gm.n) + '</b><a href="' + gm.u + '" target="_blank" rel="noopener">Open in its own tab ↗</a></div><iframe class="own" title="' + esc(gm.n) + '" src="' + gm.u + '"></iframe>';
+  }
+  function hideOwn(keep){ if(!keep && ownSrc){ ownSrc = ""; $("sGame").innerHTML = ""; } }
+
+  /* ---- the game, and the question every game shares ---- */
+  function startGame(id){
+    if(game) game.stop();
+    var g = G[id] || G.climb; if(!g) return;
+    gameId = id;
+    game = g.start($("sGame"), {
+      me:saved.av,
+      load:function(){ return store((WATCH ? "hub-gw-" : "hub-g-") + id); },
+      save:function(v){ store((WATCH ? "hub-gw-" : "hub-g-") + id, v); },
+      pos:function(n){ send("pos", {n:n}); },
+      friends:function(){
+        var out = {}, now = Date.now(), ok = function(a){ return st && st.kids.indexOf(a) >= 0; };
+        if(st && st.play === "pairs"){ var mineP = (st.pairs || []).filter(function(p){ return p.indexOf(saved.av) >= 0; })[0] || []; ok = function(a){ return mineP.indexOf(a) >= 0; }; }
+        Object.keys(friends).forEach(function(a){ if(now - friends[a].at < 15000 && ok(a)) out[a] = friends[a].n; });
+        return out;
+      },
+      modal:function(){ return modalOpen; },
+      ask:ask
+    });
+  }
+  function nextQ(){
+    var a = mine;
+    if(!a || (!a.set && !(a.own && a.own.length))) return null;
+    if(a.set) return Q.make(a.set);
+    return Q.fromOwn(a.own);
+  }
+  var curQ = null;
+  function ask(title, cb){
+    /* Highlighter skills (hub-mark.js): mark first, then answer. */
+    if(mine && mine.set && window.HubMark && HubMark.has(mine.set)){
+      var pre = WATCH ? "hub-gw-" : "hub-g-";
+      var r = HubMark.ask({box:$("qBox"), title:title, set:mine.set, kind:/Checkpoint/.test(title) ? "ckpt" : "miss",
+        store:function(k, v){ return v === undefined ? store(pre + k) : store(pre + k, v); },
+        speak:Q.speak, setQ:function(q){ curQ = q; },
+        first:function(ok){ sendLocked("ans", {ok:ok}); },
+        open:function(){ $("qModal").hidden = false; modalOpen = true; },
+        close:function(v){ $("qModal").hidden = true; modalOpen = false; curQ = null; cb(v); }});
+      if(r === "later"){ toast("Keep climbing! Your reading stop is at the next ⭐."); setTimeout(function(){ cb(null); }, 600); ask.skip = null; return; }
+      ask.skip = r.skip; return;
+    }
+    var q = nextQ();
+    if(!q){ toast("Keep going! 🎉"); setTimeout(function(){ cb(null); }, 600); return; }
+    curQ = q; modalOpen = true;
+    var tries = 0, done = false, box = $("qBox");
+    box.innerHTML = '<div class="qtitle">' + esc(title) + '</div><div class="qprompt">' + esc(q.prompt) + '</div>' +
+      (q.show ? '<div class="qshow">' + esc(q.show) + '</div>' : "") +
+      '<div class="qrow">' + (q.say ? '<button class="say" id="qSay">🔊 Hear the word</button>' : '<button class="say" id="qRead">🔊 Read the question</button>') + '</div>' +
+      '<div class="qchoices' + (q.choices.some(function(x){ return String(x).length > 16; }) ? " long" : "") + '">' + q.choices.map(function(c, i){ return '<button type="button" data-i="' + i + '">' + esc(c) + '</button>'; }).join("") + '</div>' +
+      '<div class="qmsg" id="qMsg" aria-live="polite"></div><div class="qrow" id="qAfter"></div>';
+    $("qModal").hidden = false;
+    if($("qSay")){ $("qSay").onclick = function(){ Q.speak(q.say); }; setTimeout(function(){ Q.speak(q.say); }, 250); }
+    if($("qRead")) $("qRead").onclick = function(){ Q.speak(q.prompt); };
+    box.querySelectorAll(".qchoices button").forEach(function(b){
+      b.onclick = function(){
+        if(done || b.classList.contains("wrong")) return;
+        var right = q.choices[+b.dataset.i] === q.ans; tries++;
+        if(tries === 1) sendLocked("ans", {ok:right});
+        if(right){ b.classList.add("right"); $("qMsg").textContent = tries === 1 ? "Yes! 🎉" : "You got it! 👍"; done = true; setTimeout(function(){ close(tries === 1); }, 900); return; }
+        b.classList.add("wrong");
+        if(tries === 1){ $("qMsg").textContent = "Not quite. Try again!"; return; }
+        done = true;
+        box.querySelectorAll(".qchoices button").forEach(function(x){ if(q.choices[+x.dataset.i] === q.ans) x.classList.add("right"); });
+        $("qMsg").textContent = "The answer is " + q.ans + ".";
+        $("qAfter").innerHTML = '<button class="btn main" id="qGo">Keep going</button>'; $("qGo").onclick = function(){ close(false); };
+      };
+    });
+    function close(v){ $("qModal").hidden = true; modalOpen = false; curQ = null; cb(v); }
+    ask.skip = function(){ if(!done){ done = true; close(null); } };
+  }
+  $("sHelp").onclick = function(){
+    var q = curQ;
+    sendLocked("help", {q:q ? {p:q.prompt, s:q.show || "", say:q.say || "", c:q.choices} : null});
+    toast("✋ Your coach got your message. Keep trying, or skip for now.");
+    if(modalOpen && !$("qSkip")){ var a = $("qAfter"); a.insertAdjacentHTML("beforeend", '<button class="btn" id="qSkip">Skip for now</button>'); $("qSkip").onclick = function(){ if(ask.skip) ask.skip(); }; }
+  };
+  function toast(t){ $("toastMsg").textContent = t; $("toast").hidden = false; clearTimeout(toast.t); toast.t = setTimeout(function(){ $("toast").hidden = true; }, 9000); }
+  $("toastX").onclick = function(){ $("toast").hidden = true; };
+
+  if(saved.code) connect(); else showJoin();
+}
+})();
+</script>
+</body>
+</html>
