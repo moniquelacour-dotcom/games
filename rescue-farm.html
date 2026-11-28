@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Grandma and Grandpa's Land Rescue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&family=Baloo+2:wght@700;800&display=swap">
+<style>
+/* Grandma and Grandpa's Land Rescue. Tools are earned in Read the Signs (every 3 first-try right answers = 1 tool, key rescue-tools.v1).
+   Tap-based, plays alone on any computer. No names, no timer, no sound. Animal facts checked 27 Nov 2026. */
+:root{--bg:#f4f1e8;--card:#fffdf7;--ink:#2b2a22;--muted:#6a6656;--line:#e2dccb;--accent:#3f7a3a;--accent-ink:#fff;
+  --good:#2f7a45;--good-soft:#e2f2e5;--warn:#9a5b12;--warn-soft:#fbeedb;--lock:#b9b3a2;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;--body:"Lexend","Segoe UI",Arial,sans-serif}
+@media (prefers-color-scheme: dark){:root{--bg:#191a15;--card:#24251e;--ink:#eeeadb;--muted:#b4ae9a;--line:#3a3b31;--accent:#7cc173;--accent-ink:#13200f;
+  --good:#8fd6a0;--good-soft:#1e3324;--warn:#f0b56a;--warn-soft:#3a2c18;--lock:#5c5a4e;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:19px/1.5 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 48px}
+[hidden]{display:none!important}
+main{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1{font-family:var(--display);font-size:2.2rem;margin:0;line-height:1.1}
+h2{font-family:var(--display);font-size:1.5rem;margin:0;line-height:1.2}
+p{margin:0}
+.small{font-size:.88rem;color:var(--muted)}
+.card{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{font:inherit;font-weight:700;border-radius:999px;padding:10px 18px;cursor:pointer;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:none;color:var(--ink);border-color:var(--line)}
+button:focus-visible{outline:3px solid var(--warn);outline-offset:2px}
+.pack{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.tool{font:inherit;font-size:.82rem;font-weight:700;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:16px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;line-height:1.15}
+.tool .ic{font-size:1.9rem;line-height:1.1;height:2.1rem;display:flex;align-items:center}
+.tool.off{opacity:.45;border-style:dashed}
+.tool.off .ic{filter:grayscale(1)}
+button.tool{cursor:pointer}
+button.tool:disabled{cursor:default}
+button.tool.picked-bad{border-color:var(--warn);background:var(--warn-soft)}
+button.tool.picked-good{border-color:var(--good);background:var(--good-soft)}
+.mapwrap{border-radius:20px;overflow:hidden;border:2px solid var(--line);background:#cfe3a6}
+.mapwrap svg{display:block;width:100%;height:auto}
+.spot{cursor:pointer}
+.spot:focus{outline:none}
+.spot:focus-visible .spotlabel rect{stroke:#9a5b12;stroke-width:4}
+.badge{animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+@media (prefers-reduced-motion: reduce){.badge{animation:none}}
+.scene{border-radius:20px;overflow:hidden;border:2px solid var(--line)}
+.scene svg{display:block;width:100%;height:auto}
+.blanket{transition:opacity .6s}
+.door{transition:transform .9s ease}
+.door.up{transform:translateY(-78px)}
+.walker{transition:transform 1.4s ease}
+.walker.out{transform:translateX(112px)}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choice{font:inherit;text-align:left;font-weight:600;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:10px 14px;cursor:pointer}
+.choice.bad{border-color:var(--warn);background:var(--warn-soft)}
+.choice.good{border-color:var(--good);background:var(--good-soft)}
+.fb{font-weight:600;border-radius:14px;padding:10px 14px}
+.fb.good{background:var(--good-soft);color:var(--ink);border-left:6px solid var(--good)}
+.fb.bad{background:var(--warn-soft);color:var(--ink);border-left:6px solid var(--warn)}
+.fact{border-left:6px solid var(--accent);padding:8px 12px;background:var(--bg);border-radius:10px}
+.steps{display:flex;gap:6px;flex-wrap:wrap}
+.pip{font-size:.75rem;font-weight:700;border-radius:999px;padding:2px 10px;border:2px solid var(--line);color:var(--muted)}
+.pip.now{border-color:var(--accent);color:var(--ink)}
+.pip.done{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.chk{cursor:pointer}
+.chk circle.ring{fill:rgba(255,230,120,.35);stroke:#e0a400;stroke-width:3}
+.chk.done circle.ring{fill:rgba(120,200,140,.4);stroke:#2f7a45}
+.drawbox{display:flex;flex-direction:column;gap:10px}
+canvas{width:100%;max-width:640px;aspect-ratio:4/3;background:#fffef6;border:2px solid var(--line);border-radius:16px;touch-action:none;cursor:crosshair}
+.swatch{width:38px;height:38px;border-radius:50%;border:3px solid var(--line);cursor:pointer;padding:0}
+.swatch[aria-pressed="true"]{border-color:var(--ink);transform:scale(1.1)}
+.safety{font-size:.9rem;border:2px dashed var(--warn);border-radius:14px;padding:8px 12px;background:var(--warn-soft)}
+.homes{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.home{border:2px solid var(--line);border-radius:16px;padding:8px;background:var(--card);display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;font-size:.9rem;font-weight:600}
+.home img{width:100%;border-radius:10px;border:1px solid var(--line)}
+@media (max-width:560px){.pack{grid-template-columns:repeat(3,1fr)}h1{font-size:1.8rem}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+(function(){
+"use strict";
+var SAVE="grandpas-land.v1", TOOLS_KEY="rescue-tools.v1", PER_TOOL=3;
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
+
+/* ---------- saved state ---------- */
+var S={done:{}};
+try{ var sv=JSON.parse(localStorage.getItem(SAVE)||"null"); if(sv&&sv.done) S.done=sv.done; }catch(e){}
+function save(){ try{ localStorage.setItem(SAVE,JSON.stringify(S)); }catch(e){} }
+function toolInfo(){ var k=null; try{ k=JSON.parse(localStorage.getItem(TOOLS_KEY)||"null"); }catch(e){}
+  if(!k||typeof k!=="object") k={}; return {earned:Math.min(+k.earned||0,TOOLS.length), rights:+k.rights||0}; }
+
+/* ---------- tools (earned in this order) ---------- */
+var BLANKET_IC='<svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><rect x="3" y="6" width="26" height="20" rx="3" fill="#b8473a"/><path d="M3 12h26M3 20h26M11 6v20M21 6v20" stroke="#f1d36b" stroke-width="2.4"/></svg>';
+var TOOLS=[
+  {id:"gloves", name:"Thick gloves", ic:"🧤"},
+  {id:"blanket",name:"Old blanket", ic:BLANKET_IC},
+  {id:"boots",  name:"Mud boots",   ic:"🥾"},
+  {id:"light",  name:"Flashlight",  ic:"🔦"},
+  {id:"rope",   name:"Long rope",   ic:"🪢"},
+  {id:"spy",    name:"Spyglass",    ic:"🔭"}
+];
+function toolById(id){ for(var i=0;i<TOOLS.length;i++) if(TOOLS[i].id===id) return TOOLS[i]; }
+function hasTool(id){ var n=toolInfo().earned; for(var i=0;i<n;i++) if(TOOLS[i].id===id) return true; return false; }
+
+/* ---------- places on the land ---------- */
+var PLACES={
+  woods: {name:"The woods",  x:150,y:115, homes:[[95,150],[200,150],[140,190],[60,110],[235,100]]},
+  barn:  {name:"The barn",   x:425,y:118, homes:[[380,205],[470,205],[425,225],[350,175],[500,175]]},
+  creek: {name:"The creek",  x:668,y:250, homes:[[640,330],[700,170],[650,410],[690,90],[630,250]]},
+  garden:{name:"The garden", x:165,y:365, homes:[[90,410],[240,410],[165,445],[70,330],[260,330]]},
+  field: {name:"The field",  x:460,y:365, homes:[[390,415],[530,415],[460,445],[370,320],[550,320]]}
+};
+var ORDERP=["woods","barn","creek","garden","field"];
+
+/* ---------- animals: drawn facing right in a 200 x 100 box ---------- */
+var ART={
+  possum:function(){ return ''+
+    '<path d="M42 70 C20 74 6 66 4 54 C3 46 10 44 12 50" fill="none" stroke="#e7a8b0" stroke-width="5" stroke-linecap="round"/>'+
+    '<rect x="56" y="78" width="9" height="17" rx="4" fill="#3a3436"/><rect x="72" y="80" width="9" height="15" rx="4" fill="#3a3436"/>'+
+    '<rect x="104" y="80" width="9" height="15" rx="4" fill="#3a3436"/><rect x="118" y="78" width="9" height="17" rx="4" fill="#3a3436"/>'+
+    '<ellipse cx="88" cy="62" rx="50" ry="27" fill="#bdb7ae"/><ellipse cx="88" cy="55" rx="44" ry="16" fill="#cfcac2"/>'+
+    '<circle cx="134" cy="37" r="8.5" fill="#2b2627"/>'+
+    '<ellipse cx="141" cy="55" rx="22" ry="17" fill="#f3f0ea"/><path d="M150 46 L186 59 L150 68 Z" fill="#f3f0ea"/>'+
+    '<circle cx="186" cy="59" r="4" fill="#e89aa6"/><circle cx="153" cy="52" r="3.2" fill="#141414"/><circle cx="154" cy="51" r="1" fill="#fff"/>'; },
+  raccoon:function(){ return ''+
+    '<path d="M48 62 C28 56 14 44 8 30" fill="none" stroke="#9a938d" stroke-width="18" stroke-linecap="round"/>'+
+    '<path d="M48 62 C28 56 14 44 8 30" fill="none" stroke="#2e2a28" stroke-width="18" stroke-dasharray="7 7"/>'+
+    '<rect x="58" y="78" width="10" height="17" rx="4" fill="#2e2a28"/><rect x="74" y="80" width="10" height="15" rx="4" fill="#2e2a28"/>'+
+    '<rect x="106" y="80" width="10" height="15" rx="4" fill="#2e2a28"/><rect x="121" y="78" width="10" height="17" rx="4" fill="#2e2a28"/>'+
+    '<ellipse cx="92" cy="60" rx="50" ry="29" fill="#8e8781"/>'+
+    '<path d="M128 34 L136 18 L146 32 Z" fill="#a7a09a" stroke="#eee" stroke-width="2"/>'+
+    '<circle cx="146" cy="50" r="22" fill="#a7a09a"/><path d="M160 46 L182 58 L160 66 Z" fill="#e0dbd6"/>'+
+    '<circle cx="181" cy="58" r="4.2" fill="#141414"/>'+
+    '<ellipse cx="151" cy="48" rx="17" ry="7.5" fill="#2a2624"/><circle cx="156" cy="47" r="3.2" fill="#141414"/><circle cx="157" cy="46" r="1.2" fill="#fff"/>'+
+    '<path d="M134 40 Q150 36 166 41" fill="none" stroke="#eeeae5" stroke-width="2.5"/>'; },
+  skunk:function(){ return ''+
+    '<path d="M52 66 C26 62 10 40 18 18 C24 4 46 6 54 18 C60 28 52 40 60 50 Z" fill="#1d1b1c"/>'+
+    '<path d="M50 60 C34 54 22 38 26 22 C30 14 40 14 44 20" fill="none" stroke="#f4f2ee" stroke-width="5" stroke-linecap="round"/>'+
+    '<rect x="62" y="78" width="9" height="17" rx="4" fill="#1d1b1c"/><rect x="77" y="80" width="9" height="15" rx="4" fill="#1d1b1c"/>'+
+    '<rect x="108" y="80" width="9" height="15" rx="4" fill="#1d1b1c"/><rect x="122" y="78" width="9" height="17" rx="4" fill="#1d1b1c"/>'+
+    '<ellipse cx="96" cy="62" rx="48" ry="27" fill="#1d1b1c"/>'+
+    '<path d="M54 52 C80 34 116 34 142 50" fill="none" stroke="#f4f2ee" stroke-width="7" stroke-linecap="round"/>'+
+    '<ellipse cx="146" cy="60" rx="21" ry="16" fill="#1d1b1c"/><path d="M158 54 L176 64 L158 70 Z" fill="#1d1b1c"/>'+
+    '<path d="M136 46 L160 58" stroke="#f4f2ee" stroke-width="4" stroke-linecap="round"/>'+
+    '<circle cx="176" cy="64" r="3.4" fill="#4a4446"/><circle cx="152" cy="62" r="3" fill="#0a0a0a"/><circle cx="153" cy="61" r="1.1" fill="#fff"/>'+
+    '<circle cx="138" cy="47" r="5" fill="#1d1b1c"/>'; },
+  groundhog:function(){ return ''+
+    '<ellipse cx="42" cy="72" rx="13" ry="7" fill="#4d3624"/>'+
+    '<rect x="58" y="80" width="12" height="15" rx="5" fill="#4d3624"/><rect x="76" y="82" width="12" height="13" rx="5" fill="#4d3624"/>'+
+    '<rect x="108" y="82" width="12" height="13" rx="5" fill="#4d3624"/><rect x="124" y="80" width="12" height="15" rx="5" fill="#4d3624"/>'+
+    '<ellipse cx="95" cy="62" rx="53" ry="31" fill="#8a6440"/><ellipse cx="102" cy="76" rx="36" ry="13" fill="#b38a5e"/>'+
+    '<circle cx="139" cy="36" r="5.5" fill="#4d3624"/>'+
+    '<circle cx="149" cy="52" r="20" fill="#7a5636"/><ellipse cx="166" cy="58" rx="10" ry="8" fill="#b38a5e"/>'+
+    '<circle cx="174" cy="55" r="3.2" fill="#222"/><rect x="166" y="64" width="5" height="6" rx="1" fill="#fff"/>'+
+    '<circle cx="155" cy="47" r="3.2" fill="#111"/><circle cx="156" cy="46" r="1.1" fill="#fff"/>'; },
+  squirrel:function(){ return ''+
+    '<path d="M76 74 C30 84 6 34 40 12 C62 0 86 22 68 38 C58 46 64 60 78 62 Z" fill="#9b9590" stroke="#d6d1cb" stroke-width="3"/>'+
+    '<rect x="86" y="82" width="8" height="13" rx="4" fill="#6f6964"/><rect x="112" y="82" width="8" height="13" rx="4" fill="#6f6964"/>'+
+    '<ellipse cx="102" cy="70" rx="30" ry="21" fill="#8f8984"/><ellipse cx="114" cy="75" rx="15" ry="13" fill="#efeae2"/>'+
+    '<path d="M128 40 L131 25 L139 38 Z" fill="#8f8984"/>'+
+    '<circle cx="136" cy="51" r="15" fill="#8f8984"/><circle cx="150" cy="54" r="2.4" fill="#333"/>'+
+    '<circle cx="141" cy="47" r="3" fill="#111"/><circle cx="142" cy="46" r="1" fill="#fff"/>'+
+    '<ellipse cx="123" cy="80" rx="5" ry="4" fill="#6f6964"/>'; }
+};
+function animalSvg(id,w,h){ return '<svg viewBox="0 0 200 100" width="'+w+'" height="'+h+'" aria-hidden="true">'+ART[id]()+'</svg>'; }
+
+/* ---------- the five rescues (facts checked 27 Nov 2026) ---------- */
+var CALM={q:"First, help it feel calm. Which tool?", right:"blanket",
+  good:"Yes! Lay the blanket over the trap, slowly. Under a blanket it is dark and quiet, and animals feel safer when they cannot see you.",
+  bad:"Not yet. A scared animal needs to feel safe first. Which tool could make the trap dark and quiet?"};
+var ANIMALS=[
+ {id:"possum", name:"Possum", place:"woods", need:2,
+  where:"by the woodpile at the edge of the woods",
+  story:"Grandpa found a possum in the live trap by the woodpile. It is safe, but it is scared, and it wants to go home.",
+  fact:"A possum mom carries her babies in a pouch, like a kangaroo. Possums are the only pouch animals in the United States.",
+  tool:{q:"Next, keep your hands safe. Which tool?", right:"gloves",
+    good:"Yes! Thick gloves keep your hands safe. A scared wild animal can bite or scratch.", hint:"What keeps your hands safe?"},
+  open:{q:"Grandpa lifts the door. Where should you stand?", opts:[
+    {t:"Behind the trap, away from the door.", ok:true, why:"Yes! The door is the way out. Stay behind the trap so the path is clear."},
+    {t:"Right in front of the door.", why:"The door is the way out. If you stand there, the possum is stuck."},
+    {t:"Close by, holding a snack for it.", why:"Never feed a wild animal. It can find its own food."}]},
+  flop:{q:"The possum walks out. Then it flops over! It lies very still with its mouth open. What is going on?", opts:[
+    {t:"It is playing possum. Stay quiet and wait.", ok:true, why:"Yes! When a possum is very scared, its body freezes. It cannot help it. It can stay still for minutes or even hours. When it feels safe, it gets up."},
+    {t:"It is hurt. Pick it up.", why:"Never pick up a wild animal. A possum playing dead is not hurt. It is scared."},
+    {t:"Poke it to wake it up.", why:"Poking scares it more. Give it quiet time."}]},
+  checks:{eye:[153,52], leg:[121,90], tail:[14,56]},
+  homes:{good:["woods"], goodWhy:"A hollow log in the woods is a great place to hide. Possums move around and use lots of different hiding spots.",
+    bad:{barn:"Grandpa is in the barn every day. A possum wants a quiet hiding spot.", creek:"The creek is wet and muddy. A dry hollow log is better.", garden:"Too close to the house. The woods are quieter.", field:"The open field has no place to hide. A possum likes a hollow log or a brush pile."}}},
+ {id:"raccoon", name:"Raccoon", place:"creek", need:3,
+  where:"down by the creek",
+  story:"There is a raccoon in the live trap down by the creek. The ground is wet and squishy.",
+  fact:"A raccoon's front paws can feel things really well. It can find food in the dark just by touch.",
+  tool:{q:"The ground by the creek is deep mud. Which tool do you need?", right:"boots",
+    good:"Yes! Mud boots keep your feet dry so you can walk to the trap slowly and quietly.", hint:"What helps you walk in deep mud?"},
+  open:{q:"Grandma props the door open. What do you do?", opts:[
+    {t:"Step back and wait quietly.", ok:true, why:"Yes! Give it time. It will walk out when it is ready."},
+    {t:"Clap so it hurries.", why:"Loud noise scares it. Let it take its time."},
+    {t:"Reach in to help it out.", why:"Never reach into a trap. A scared raccoon could bite."}]},
+  checks:{eye:[156,47], leg:[126,90], tail:[14,36]},
+  homes:{good:["woods"], goodWhy:"A hollow tree in the woods makes a cozy den. Raccoons love hollow trees.",
+    bad:{barn:"Raccoons do sleep in old barns. But Grandpa uses this barn every day. Pick a quieter spot.", creek:"It was caught here. A den up in a hollow tree is safer.", garden:"Too close to the house and Grandma's plants.", field:"The open field has no trees for a den."}}},
+ {id:"groundhog", name:"Groundhog", place:"barn", need:4,
+  where:"in a dark corner of the barn",
+  story:"A groundhog was digging a hole under the barn floor. Now it is in the trap, in a dark corner.",
+  fact:"Groundhogs sleep all winter in their burrows. That is called hibernating. A burrow has more than one door.",
+  tool:{q:"The corner is dark. Which tool helps you see?", right:"light",
+    good:"Yes! Shine the flashlight on the ground, not in its eyes.", hint:"What helps you see in the dark?"},
+  open:{q:"Grandpa lifts the door. What do you do?", opts:[
+    {t:"Stand back and keep the path clear.", ok:true, why:"Yes! It can see the way out and walk away."},
+    {t:"Shine the light right in its eyes.", why:"Bright light in its eyes scares it. Point the light at the ground."},
+    {t:"Block the door with your boot.", why:"Then it cannot get out. Keep the path clear."}]},
+  checks:{eye:[155,47], leg:[130,90], tail:[38,72]},
+  homes:{good:["field"], goodWhy:"The far edge of the field has grass to eat and soft dirt to dig a burrow, away from the barn.",
+    bad:{barn:"A burrow under a barn can make the floor weak. That's why it needs a new home.", creek:"Too wet for a burrow. It needs dry dirt.", garden:"It would eat Grandma's vegetables!", woods:"Groundhogs like to be near grass to eat. The field is better."}}},
+ {id:"skunk", name:"Skunk", place:"field", need:5,
+  where:"at the edge of the field",
+  story:"Uh oh. There is a skunk in the trap at the edge of the field. You have to be very calm and very slow.",
+  fact:"Before a skunk sprays, it usually stamps its feet and lifts its tail. That means: back away!",
+  tool:{q:"You do not want to be close when the door opens. Which tool helps?", right:"rope",
+    good:"Yes! Tie the rope to the door. Then Grandpa can open it from far away.", hint:"What could open the door while you stay far away?"},
+  open:{q:"The rope is tied on. What now?", opts:[
+    {t:"Go far back. Grandpa pulls the rope.", ok:true, why:"Yes! You are far away when the door opens. The skunk may wait in the trap until dark. That's OK. It leaves when it is ready."},
+    {t:"Peek under the blanket first.", why:"If it gets scared, it may stamp, lift its tail, and spray. Leave the blanket on."},
+    {t:"Shake the trap so it hurries.", why:"Shaking scares it, and a scared skunk sprays. Slow and quiet is best."}]},
+  checks:{eye:[152,62], leg:[126,90], tail:[30,16]},
+  homes:{good:["field","woods"], goodWhy:"Far away from the house, with room to dig a den. Skunks eat bugs and grubs they dig up.",
+    bad:{barn:"Skunks under a barn would make everyone nervous. Pick a spot far from people.", creek:"Too wet. Skunks make dens in dry spots.", garden:"Skunks dig for grubs. Grandma's garden would get dug up!"}}},
+ {id:"squirrel", name:"Squirrel", place:"garden", need:6,
+  where:"by the bird feeder in the garden",
+  story:"A squirrel got into the live trap by the bird feeder. It is zipping back and forth.",
+  fact:"Squirrels bury nuts to eat later. A nut that never gets dug up can grow into a new tree!",
+  tool:{q:"Squirrels are very fast. Which tool lets you check on it from far away?", right:"spy",
+    good:"Yes! With the spyglass you can watch it from far away. Then it stays calm.", hint:"What helps you see things that are far away?"},
+  open:{q:"Grandma opens the door. What do you do?", opts:[
+    {t:"Stand still and let it zip away.", ok:true, why:"Yes! It runs off fast. Then you check on it with the spyglass."},
+    {t:"Try to catch it as it runs.", why:"Never grab a wild animal. Let it go."},
+    {t:"Chase it to the woods.", why:"Chasing scares it. It will find its way."}]},
+  checks:{eye:[141,47], leg:[116,90], tail:[38,20]},
+  homes:{good:["woods"], goodWhy:"A leaf nest high in a tree. A squirrel's leaf nest is called a drey.",
+    bad:{barn:"Squirrels need trees for their nests.", creek:"Squirrels need tall trees, not water.", garden:"Too close to the house and the bird feeder. The woods have trees for nests.", field:"The field has no trees for a nest."}}}
+];
+function animalById(id){ for(var i=0;i<ANIMALS.length;i++) if(ANIMALS[i].id===id) return ANIMALS[i]; }
+
+/* ---------- land map ---------- */
+function mapSvg(mode){
+  var t=toolInfo().earned, h='';
+  h+='<svg viewBox="0 0 800 480" role="img" aria-label="Map of Grandma and Grandpa\'s land">';
+  h+='<rect width="800" height="480" fill="#cfe3a6"/>';
+  h+='<path d="M0 250 Q200 240 330 262 T800 250" fill="none" stroke="#e5d8a8" stroke-width="16" stroke-linecap="round" opacity=".8"/>';
+  h+='<rect x="320" y="285" width="285" height="180" rx="18" fill="#ead27a"/>';
+  for(var i=0;i<8;i++) h+='<path d="M'+(334+i*34)+' 296 v160" stroke="#d6b84f" stroke-width="5"/>';
+  h+='<rect x="30" y="285" width="270" height="180" rx="18" fill="#9b7350"/>';
+  for(var r=0;r<5;r++){ h+='<path d="M48 '+(310+r*32)+' h234" stroke="#7d5a3c" stroke-width="7" stroke-linecap="round"/>';
+    for(var c=0;c<8;c++) h+='<circle cx="'+(60+c*30)+'" cy="'+(303+r*32)+'" r="7" fill="#5fa04e"/>'; }
+  h+='<path d="M660 0 C610 90 720 160 660 250 C600 340 710 400 660 480" fill="none" stroke="#6fb3d9" stroke-width="40" stroke-linecap="round"/>';
+  h+='<path d="M660 0 C610 90 720 160 660 250 C600 340 710 400 660 480" fill="none" stroke="#a9d6ef" stroke-width="8" stroke-dasharray="14 22"/>';
+  var trees=[[50,60],[110,40],[175,55],[240,40],[285,80],[70,130],[135,105],[205,120],[265,145],[40,190],[105,190],[170,175],[230,200]];
+  trees.forEach(function(p){ h+='<rect x="'+(p[0]-4)+'" y="'+(p[1]+18)+'" width="8" height="16" fill="#6b4a2f"/><circle cx="'+p[0]+'" cy="'+p[1]+'" r="24" fill="#3f7a3a"/><circle cx="'+(p[0]-7)+'" cy="'+(p[1]-6)+'" r="10" fill="#4f9147"/>'; });
+  h+='<path d="M360 80 L425 30 L490 80 Z" fill="#7c2b22"/><rect x="365" y="78" width="120" height="110" fill="#b13a2e"/>';
+  h+='<rect x="400" y="120" width="50" height="68" fill="#7c2b22"/><path d="M400 120 L450 188 M450 120 L400 188" stroke="#f3e7d7" stroke-width="4"/>';
+  h+='<rect x="520" y="60" width="70" height="55" fill="#f1e6cf"/><path d="M512 62 L555 28 L598 62 Z" fill="#5e6b78"/><rect x="547" y="85" width="16" height="30" fill="#8a5a3b"/>';
+  ORDERP.forEach(function(pid){
+    var P=PLACES[pid], a=null; ANIMALS.forEach(function(A){ if(A.place===pid) a=A; });
+    var tag='', clickable=false;
+    if(mode==="home"){ clickable=true; }
+    else if(a && !S.done[a.id]){
+      if(t>=a.need){ tag='<g class="badge"><circle cx="'+(P.x+70)+'" cy="'+(P.y-34)+'" r="18" fill="#e9a41b" stroke="#fff" stroke-width="3"/><text x="'+(P.x+70)+'" y="'+(P.y-27)+'" text-anchor="middle" font-size="22" font-weight="800" fill="#fff">!</text></g>'; clickable=true; }
+      else tag='<g><circle cx="'+(P.x+70)+'" cy="'+(P.y-34)+'" r="16" fill="#8d8774" stroke="#fff" stroke-width="3"/><text x="'+(P.x+70)+'" y="'+(P.y-28)+'" text-anchor="middle" font-size="16">🔒</text></g>';
+    }
+    var w=P.name.length*11+28;
+    h+='<g class="spot" '+(clickable?'tabindex="0" role="button" data-place="'+pid+'" aria-label="'+esc(P.name)+'"':'')+'>';
+    if(mode==="home") h+='<circle cx="'+P.x+'" cy="'+P.y+'" r="70" fill="rgba(255,255,255,.18)" stroke="#fff" stroke-width="4" stroke-dasharray="10 8"/>';
+    h+='<g class="spotlabel"><rect x="'+(P.x-w/2)+'" y="'+(P.y-16)+'" width="'+w+'" height="32" rx="16" fill="#fffdf7" stroke="#2b2a22" stroke-width="2"/><text x="'+P.x+'" y="'+(P.y+6)+'" text-anchor="middle" font-family="Lexend,Segoe UI,Arial" font-size="17" font-weight="700" fill="#2b2a22">'+esc(P.name)+'</text></g>'+tag+'</g>';
+  });
+  var used={};
+  ANIMALS.forEach(function(A){ var d=S.done[A.id]; if(!d) return; var P=PLACES[d.home]; var k=used[d.home]||0; used[d.home]=k+1;
+    var pos=P.homes[k%P.homes.length];
+    h+='<g pointer-events="none"><ellipse cx="'+pos[0]+'" cy="'+(pos[1]+14)+'" rx="34" ry="8" fill="rgba(0,0,0,.18)"/><svg x="'+(pos[0]-40)+'" y="'+(pos[1]-22)+'" width="80" height="40" viewBox="0 0 200 100">'+ART[A.id]()+'</svg></g>'; });
+  h+='</svg>'; return h;
+}
+
+/* ---------- pack ---------- */
+function packHtml(pickable, state){
+  var n=toolInfo().earned;
+  return '<div class="pack">'+TOOLS.map(function(T,i){
+    var on=i<n, cls='tool'+(on?'':' off')+(state&&state[T.id]?' '+state[T.id]:'');
+    var inner='<span class="ic">'+T.ic+'</span>'+esc(T.name);
+    if(pickable) return '<button type="button" class="'+cls+'" data-tool="'+T.id+'"'+(on?'':' disabled')+'>'+inner+'</button>';
+    return '<div class="'+cls+'">'+inner+'</div>'; }).join('')+'</div>';
+}
+function nextToolLine(){
+  var ti=toolInfo();
+  if(ti.earned>=TOOLS.length) return 'Your pack is full!';
+  var left=PER_TOOL-(ti.rights%PER_TOOL); if(left<=0||left>PER_TOOL) left=PER_TOOL;
+  return 'Next tool: <b>'+left+' more</b> right on the first try in <a href="read-the-signs.html#pick">Read the Signs</a>, game 2.';
+}
+
+/* ---------- screens ---------- */
+var R=null; // current rescue
+function home(){
+  R=null;
+  var ti=toolInfo(), doneN=Object.keys(S.done).length, h='';
+  h+='<header class="card" style="gap:8px"><h1>🐾 Grandma and Grandpa\'s Land Rescue</h1>';
+  h+='<p>Some animals got into Grandma and Grandpa\'s live traps. They are safe, but they want to go home. Use your tools to set them free, then find each one a good new home on the land.</p>';
+  h+='<p class="safety">🧑‍🌾 In real life, only a grown-up opens a trap, and you never touch a wild animal. In this game you are Grandma and Grandpa\'s helper.</p></header>';
+  h+='<section class="card"><div class="row" style="justify-content:space-between"><h2>Your pack</h2><span class="small">'+ti.earned+' of '+TOOLS.length+' tools</span></div>'+packHtml(false)+'<p class="small">'+nextToolLine()+'</p></section>';
+  h+='<section class="card"><div class="row" style="justify-content:space-between"><h2>The land</h2><span class="small">'+doneN+' of '+ANIMALS.length+' animals home</span></div>';
+  h+='<p class="small">Tap a place with a <b style="color:#c98a00">!</b> to start a rescue. 🔒 means you need more tools.</p>';
+  h+='<div class="mapwrap">'+mapSvg("play")+'</div>';
+  var locked=ANIMALS.filter(function(A){ return !S.done[A.id] && ti.earned<A.need; });
+  if(locked.length){ var A=locked[0]; h+='<p class="small">Next rescue opens at '+A.need+' tools.</p>'; }
+  h+='</section>';
+  var drawn=ANIMALS.filter(function(A){ return S.done[A.id]; });
+  if(drawn.length){
+    h+='<section class="card"><h2>New homes</h2><div class="homes">'+drawn.map(function(A){ var d=S.done[A.id];
+      return '<div class="home">'+(d.pic?'<img alt="Drawing of the '+esc(A.name.toLowerCase())+'\'s new home" src="'+d.pic+'">':animalSvg(A.id,120,60))+esc(A.name)+' · '+esc(PLACES[d.home].name.replace("The ","the "))+'</div>'; }).join('')+'</div></section>';
+  }
+  if(doneN===ANIMALS.length) h+='<section class="card"><h2>🎉 Every animal is home!</h2><p>Grandma and Grandpa say thank you. You were calm, slow and careful every time.</p></section>';
+  h+='<p class="small" style="text-align:center"><button type="button" class="btn ghost" id="reset" style="font-size:.8rem;padding:6px 12px">Start the rescues over (keeps your tools)</button></p>';
+  $("app").innerHTML=h;
+  Array.prototype.forEach.call(document.querySelectorAll("[data-place]"),function(g){
+    function go(){ var pid=g.getAttribute("data-place"); ANIMALS.forEach(function(A){ if(A.place===pid&&!S.done[A.id]) start(A.id); }); }
+    g.addEventListener("click",go); g.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); go(); } }); });
+  $("reset").addEventListener("click",function(){ if(confirm("Start all the rescues over? Your tools stay in your pack.")){ S.done={}; save(); home(); } });
+  window.scrollTo(0,0);
+}
+
+var STEPS=["Meet","Calm","Tool","Open","Check","New home","Draw"];
+function start(id){ R={a:animalById(id), step:"meet", picked:{}, fb:null, flopDone:false, checked:{}, home:null}; scene(); window.scrollTo(0,0); }
+
+function sceneSvg(){
+  var A=R.a, s=R.step, h='<svg viewBox="0 0 400 240" role="img" aria-label="'+esc(A.name)+' in a live trap">';
+  var bg={woods:'#cfe0b8',barn:'#5a3a2a',creek:'#cfe3c4',garden:'#d9e9bf',field:'#efe0a0'}[A.place];
+  h+='<rect width="400" height="240" fill="'+bg+'"/>';
+  if(A.place==="woods"){ [[30,40],[90,20],[330,30],[380,60]].forEach(function(p){ h+='<rect x="'+(p[0]-5)+'" y="'+p[1]+'" width="10" height="120" fill="#6b4a2f"/><circle cx="'+p[0]+'" cy="'+p[1]+'" r="34" fill="#3f7a3a"/>'; });
+    h+='<g><rect x="300" y="170" width="90" height="14" rx="7" fill="#8a5a3b"/><rect x="306" y="156" width="80" height="14" rx="7" fill="#9b6a48"/></g>'; }
+  if(A.place==="barn"){ for(var i=0;i<10;i++) h+='<path d="M'+(i*42)+' 0 v205" stroke="#4a2f22" stroke-width="3"/>'; h+='<rect x="0" y="0" width="400" height="240" fill="#000" opacity="'+(R.light?0:.38)+'" style="transition:opacity .6s"/>'; }
+  if(A.place==="creek"){ h+='<path d="M0 60 C120 40 260 90 400 55 L400 105 C260 130 120 90 0 110 Z" fill="#6fb3d9"/><ellipse cx="200" cy="215" rx="190" ry="22" fill="#7b5a3a" opacity=".55"/>'; }
+  if(A.place==="garden"){ for(var r=0;r<3;r++) for(var c=0;c<9;c++) h+='<circle cx="'+(20+c*45)+'" cy="'+(30+r*28)+'" r="9" fill="#5fa04e"/>'; h+='<rect x="340" y="40" width="8" height="120" fill="#6b4a2f"/><path d="M320 40 h48 l-10 18 h-28 z" fill="#c9a96b"/>'; }
+  if(A.place==="field"){ for(var j=0;j<14;j++) h+='<path d="M'+(j*30)+' 205 q6 -30 12 0" stroke="#c9a33b" stroke-width="4" fill="none"/>'; }
+  h+='<rect x="0" y="205" width="400" height="35" fill="'+(A.place==="barn"?'#3a271c':'#8a6a45')+'"/>';
+  var out=!R.justOpened&&(s==="check"||s==="home"||s==="draw"||(s==="open"&&R.fb&&R.fb.ok)||s==="flop");
+  // animal
+  h+='<g class="walker'+(out?' out':'')+'"><g transform="translate(106,108) scale(0.9)">'+ART[A.id]()+'</g></g>';
+  // cage
+  h+='<g fill="none" stroke="#9aa1a8" stroke-width="2.5"><rect x="100" y="100" width="190" height="105" rx="4"/>';
+  for(var x=112;x<290;x+=12) h+='<path d="M'+x+' 100 v105"/>';
+  for(var y=112;y<205;y+=12) h+='<path d="M100 '+y+' h190"/>';
+  h+='</g><path d="M100 100 h190" stroke="#6d747b" stroke-width="5"/><rect x="180" y="88" width="30" height="12" rx="4" fill="#6d747b"/>';
+  h+='<g class="door'+(out?' up':'')+'"><rect x="286" y="100" width="8" height="105" fill="#7d858c"/>';
+  for(var dy=108;dy<205;dy+=12) h+='<path d="M286 '+dy+' h8" stroke="#5d646a" stroke-width="2"/>'; h+='</g>';
+  if(R.rope) h+='<path d="M294 104 C330 80 360 120 400 95" fill="none" stroke="#c9a96b" stroke-width="4"/>';
+  // blanket: covers the top and back of the trap, the door end stays open
+  var bl=R.calm?1:0;
+  h+='<g class="blanket" style="opacity:'+bl+'"><path d="M94 96 H284 V150 Q262 160 240 150 Q214 162 190 150 Q164 162 140 152 Q118 160 108 152 L94 210 Z" fill="#b8473a"/>';
+  h+='<path d="M94 116 H284 M94 136 H284 M130 96 V158 M170 96 V158 M210 96 V158 M250 96 V158" stroke="#f1d36b" stroke-width="3" opacity=".75"/></g>';
+  h+='</svg>'; return h;
+}
+
+function checkSvg(){
+  var A=R.a, h='<svg viewBox="0 0 400 220" role="img" aria-label="Check that the '+esc(A.name.toLowerCase())+' is OK">';
+  h+='<rect width="400" height="220" fill="#e9f1dc"/><rect y="190" width="400" height="30" fill="#b9cf95"/>';
+  var flopped=(A.id==="possum"&&!R.flopDone);
+  if(flopped) h+='<g transform="translate(300,196) rotate(180) scale(1.25,1.0)">'+ART[A.id]()+'</g>';
+  else{
+    h+='<g transform="translate(50,42) scale(1.5)">'+ART[A.id]()+'</g>';
+    var C=A.checks, labels={eye:"Eyes",leg:"Legs",tail:"Tail"};
+    ["eye","leg","tail"].forEach(function(k){ var p=C[k], cx=50+p[0]*1.5, cy=42+p[1]*1.5, d=R.checked[k];
+      h+='<g class="chk'+(d?' done':'')+'" tabindex="0" role="button" data-chk="'+k+'" aria-label="Check the '+labels[k].toLowerCase()+'">';
+      h+='<circle class="ring" cx="'+cx+'" cy="'+cy+'" r="20"/>';
+      if(d) h+='<text x="'+cx+'" y="'+(cy+7)+'" text-anchor="middle" font-size="20" font-weight="800" fill="#2f7a45">✓</text>';
+      h+='</g>'; });
+  }
+  h+='</svg>'; return h;
+}
+var CHECKSAY={eye:"Eyes are bright and open. ✓", leg:"Walking on all four legs. ✓", tail:"Tail looks fine. ✓"};
+
+function pips(){ var idx={meet:0,calm:1,tool:2,open:3,flop:4,check:4,home:5,draw:6}[R.step];
+  return '<div class="steps">'+STEPS.map(function(s,i){ return '<span class="pip'+(i<idx?' done':(i===idx?' now':''))+'">'+s+'</span>'; }).join('')+'</div>'; }
+
+function scene(){
+  var A=R.a, s=R.step, h='';
+  h+='<div class="row" style="justify-content:space-between"><button type="button" class="btn ghost" id="back">← Back to the map</button>'+pips()+'</div>';
+  if(s==="check"||s==="flop") h+='<div class="scene">'+checkSvg()+'</div>';
+  else if(s==="home") h+='<div class="mapwrap">'+mapSvg("home")+'</div>';
+  else if(s!=="draw") h+='<div class="scene">'+sceneSvg()+'</div>';
+  h+='<section class="card">';
+  if(s==="meet"){
+    h+='<h2>A '+esc(A.name.toLowerCase())+' '+esc(A.where)+'</h2><p>'+esc(A.story)+'</p><p class="fact">🔎 <b>Animal fact:</b> '+esc(A.fact)+'</p>';
+    h+='<div class="row"><button type="button" class="btn" id="go">Let\'s help ▶</button></div>';
+  } else if(s==="calm"||s==="tool"){
+    var Q=(s==="calm")?CALM:A.tool;
+    h+='<h2>'+esc(Q.q)+'</h2><p class="small">Tap a tool in your pack.</p>'+packHtml(!(R.fb&&R.fb.ok),R.picked);
+    if(R.fb) h+='<p class="fb '+(R.fb.ok?'good':'bad')+'">'+esc(R.fb.t)+'</p>';
+    if(R.fb&&R.fb.ok) h+='<div class="row"><button type="button" class="btn" id="go">Next ▶</button></div>';
+  } else if(s==="open"||s==="flop"){
+    var O=(s==="open")?A.open:A.flop;
+    h+='<h2>'+esc(O.q)+'</h2><div class="choices">'+O.opts.map(function(o,i){ var st=R.picked[i]; return '<button type="button" class="choice'+(st?' '+st:'')+'" data-opt="'+i+'"'+(R.fb&&R.fb.ok?' disabled':'')+'>'+esc(o.t)+'</button>'; }).join('')+'</div>';
+    if(R.fb) h+='<p class="fb '+(R.fb.ok?'good':'bad')+'">'+esc(R.fb.t)+'</p>';
+    if(R.fb&&R.fb.ok) h+='<div class="row"><button type="button" class="btn" id="go">Next ▶</button></div>';
+  } else if(s==="check"){
+    var n=Object.keys(R.checked).length;
+    h+='<h2>Is it OK? Check it from a safe distance.</h2><p>Tap the yellow circles: eyes, legs, tail.</p>';
+    if(n) h+='<p class="fb good">'+["eye","leg","tail"].filter(function(k){return R.checked[k];}).map(function(k){return CHECKSAY[k];}).join(' ')+'</p>';
+    if(n===3) h+='<p>The '+esc(A.name.toLowerCase())+' is OK! Now it needs a good new home on the land.</p><div class="row"><button type="button" class="btn" id="go">Find a new home ▶</button></div>';
+  } else if(s==="home"){
+    h+='<h2>Pick a good new home for the '+esc(A.name.toLowerCase())+'.</h2><p class="small">Tap a place on the map.</p>';
+    if(R.fb) h+='<p class="fb '+(R.fb.ok?'good':'bad')+'">'+esc(R.fb.t)+'</p>';
+    if(R.fb&&R.fb.ok) h+='<div class="row"><button type="button" class="btn" id="go">Draw its new home ▶</button><button type="button" class="btn ghost" id="skipdraw">Skip drawing</button></div>';
+  } else if(s==="draw"){
+    h+='<h2>Draw the '+esc(A.name.toLowerCase())+'\'s new home</h2><p class="small">'+esc(PLACES[R.home].name)+'. Add a log, a nest, a burrow, flowers, anything you like.</p>';
+    h+='<div class="drawbox"><canvas id="cv" width="640" height="480"></canvas><div class="row" id="sw"></div>';
+    h+='<div class="row"><button type="button" class="btn ghost" id="thin">Thin</button><button type="button" class="btn ghost" id="thick">Thick</button><button type="button" class="btn ghost" id="clear">Clear</button><button type="button" class="btn" id="done">Done ✓</button></div></div>';
+  }
+  h+='</section>';
+  $("app").innerHTML=h; wire();
+}
+
+function finish(pic){ S.done[R.a.id]={home:R.home, pic:pic||null}; save(); home(); }
+
+function wire(){
+  var A=R.a, s=R.step;
+  $("back").addEventListener("click",home);
+  var go=$("go");
+  if(go) go.addEventListener("click",function(){
+    var nx={meet:"calm",calm:"tool",tool:"open",open:(A.id==="possum"?"flop":"check"),flop:"check",check:"home",home:"draw"}[s];
+    if(s==="tool"&&A.id==="groundhog") R.light=true;
+    R.step=nx; R.picked={}; R.fb=null; scene(); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-tool]"),function(b){ b.addEventListener("click",function(){
+    var Q=(s==="calm")?CALM:A.tool, id=b.getAttribute("data-tool");
+    if(id===Q.right){ R.picked[id]="picked-good"; R.fb={ok:true,t:(s==="calm")?CALM.good:Q.good}; if(s==="calm") R.calm=true; if(id==="rope") R.rope=true; if(id==="light") R.light=true; }
+    else { R.picked[id]="picked-bad"; R.fb={ok:false,t:(s==="calm")?CALM.bad:("Hmm, not the "+toolById(id).name.toLowerCase()+" this time. "+(A.tool.hint||"Think about what this rescue needs."))}; }
+    scene(); }); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-opt]"),function(b){ b.addEventListener("click",function(){
+    var O=(s==="open")?A.open:A.flop, i=+b.getAttribute("data-opt"), o=O.opts[i];
+    R.picked[i]=o.ok?"good":"bad"; R.fb={ok:!!o.ok,t:o.why};
+    if(o.ok&&s==="open") R.justOpened=true;
+    scene();
+    if(R.justOpened){ R.justOpened=false; setTimeout(function(){ var w=document.querySelector(".walker"), d=document.querySelector(".door"); if(d) d.classList.add("up"); setTimeout(function(){ if(w) w.classList.add("out"); },500); },60); }
+    if(o.ok&&s==="flop"){ R.flopDone=true; }
+  }); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-chk]"),function(g){
+    function hit(){ R.checked[g.getAttribute("data-chk")]=true; scene(); }
+    g.addEventListener("click",hit); g.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); hit(); } }); });
+  if(s==="home") Array.prototype.forEach.call(document.querySelectorAll("[data-place]"),function(g){
+    function pickp(){ if(R.fb&&R.fb.ok) return; var pid=g.getAttribute("data-place");
+      if(A.homes.good.indexOf(pid)>=0){ R.home=pid; R.fb={ok:true,t:"Yes! "+A.homes.goodWhy}; }
+      else R.fb={ok:false,t:(A.homes.bad[pid]||"Try another place.")+" Try another place."};
+      scene(); }
+    g.addEventListener("click",pickp); g.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); pickp(); } }); });
+  var sk=$("skipdraw"); if(sk) sk.addEventListener("click",function(){ finish(null); });
+  if(s==="draw") drawPad();
+}
+
+/* ---------- drawing pad (mouse, pen or finger) ---------- */
+function drawPad(){
+  var cv=$("cv"), ctx=cv.getContext("2d"), color="#3f7a3a", size=8, drawing=false, last=null, marks=0;
+  ctx.fillStyle="#fffef6"; ctx.fillRect(0,0,cv.width,cv.height); ctx.lineCap="round"; ctx.lineJoin="round";
+  var COLORS=["#3f7a3a","#8a5a3b","#2b2a22","#6fb3d9","#e9a41b","#d9534f","#9b59b6","#ffffff"];
+  $("sw").innerHTML=COLORS.map(function(c){ return '<button type="button" class="swatch" data-c="'+c+'" aria-label="Color" aria-pressed="'+(c===color)+'" style="background:'+c+'"></button>'; }).join('');
+  Array.prototype.forEach.call(document.querySelectorAll(".swatch"),function(b){ b.addEventListener("click",function(){ color=b.getAttribute("data-c");
+    Array.prototype.forEach.call(document.querySelectorAll(".swatch"),function(x){ x.setAttribute("aria-pressed",String(x===b)); }); }); });
+  function pt(e){ var r=cv.getBoundingClientRect(); return [(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]; }
+  function dot(p){ ctx.fillStyle=color; ctx.beginPath(); ctx.arc(p[0],p[1],size/2,0,Math.PI*2); ctx.fill(); }
+  cv.addEventListener("pointerdown",function(e){ drawing=true; last=pt(e); dot(last); marks++; try{cv.setPointerCapture(e.pointerId);}catch(x){} });
+  cv.addEventListener("pointermove",function(e){ if(!drawing) return; var p=pt(e); ctx.strokeStyle=color; ctx.lineWidth=size; ctx.beginPath(); ctx.moveTo(last[0],last[1]); ctx.lineTo(p[0],p[1]); ctx.stroke(); last=p; });
+  ["pointerup","pointercancel","pointerleave"].forEach(function(ev){ cv.addEventListener(ev,function(){ drawing=false; }); });
+  $("thin").addEventListener("click",function(){ size=4; }); $("thick").addEventListener("click",function(){ size=16; });
+  $("clear").addEventListener("click",function(){ ctx.fillStyle="#fffef6"; ctx.fillRect(0,0,cv.width,cv.height); marks=0; });
+  $("done").addEventListener("click",function(){
+    var pic=null;
+    if(marks){ var t=document.createElement("canvas"); t.width=320; t.height=240; t.getContext("2d").drawImage(cv,0,0,320,240);
+      try{ pic=t.toDataURL("image/jpeg",.7); }catch(x){} }
+    finish(pic); });
+}
+
+document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&R) home(); });
+window.addEventListener("storage",function(e){ if(e.key===TOOLS_KEY&&!R) home(); });
+var lastT=toolInfo().earned;
+window.addEventListener("focus",function(){ var t=toolInfo().earned; if(!R&&t!==lastT){ lastT=t; home(); } });
+home();
+})();
+</script>
+</body>
+</html>

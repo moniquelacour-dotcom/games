@@ -131,6 +131,11 @@ function meet(){
   Array.prototype.forEach.call(document.querySelectorAll("[data-ex]"),function(b){ b.addEventListener("click",function(){ say(b.getAttribute("data-ex")); }); });
 }
 
+/* Rescue tools: every 3 first-try right picks earns one tool for Grandma and Grandpa's Land Rescue (rescue-farm.html). */
+var TOOLS_KEY="rescue-tools.v1", TOOL_MAX=6, earnedNow=false;
+function readTools(){ var k=null; try{ k=JSON.parse(localStorage.getItem(TOOLS_KEY)||"null"); }catch(e){} if(!k||typeof k!=="object") k={}; k.earned=+k.earned||0; k.rights=+k.rights||0; return k; }
+function addRight(){ var k=readTools(); if(k.earned>=TOOL_MAX) return false; k.rights++; var got=false; if(k.rights%3===0){ k.earned++; got=true; } try{ localStorage.setItem(TOOLS_KEY,JSON.stringify(k)); }catch(e){} return got; }
+function toolLine(){ var k=readTools(); if(k.earned>=TOOL_MAX) return "🎒 Rescue tools: "+k.earned+" (your pack is full!)"; return "🎒 Rescue tools: "+k.earned+" · next one in "+(3-k.rights%3)+" more right on the first try"; }
 function newPick(){ pickOrder=shuffle(DATA.PICKS); pi=0; pickStars=0; picked=null; }
 function pick(){
   if(pi>=pickOrder.length){
@@ -142,12 +147,14 @@ function pick(){
   h+='<p class="pickline">'+esc(P.t)+end+'</p>';
   h+='<p>Which sign goes at the end?</p><div class="choices">'+[".","?","!"].map(function(ch){ var S=SIGN[ch];
       return '<button type="button" class="choice '+S.k+'" data-c="'+ch+'"'+(right?" disabled":"")+'><span>'+S.icon+'</span>'+ch+' '+S.name.split(" ")[0]+'</button>'; }).join("")+'</div>';
+  h+='<p class="small">'+toolLine()+'</p>';
   h+='<p class="fb'+(right?" good":"")+'" id="fb">'+(right?"✅ Yes! Now read it out loud. "+SIGN[P.a].say:(picked?"Hmm, try another sign.":""))+'</p>';
+  if(right&&earnedNow) h+='<p class="fb good">🎒 You earned a new rescue tool! <a href="rescue-farm.html">Grandma and Grandpa\x27s Land Rescue</a></p>';
   if(right) h+='<div class="row"><button type="button" class="btn" id="next">Next sentence ▶</button></div>';
   h+='</div>';
   $("pane").innerHTML=h;
   Array.prototype.forEach.call(document.querySelectorAll("[data-c]"),function(b){ b.addEventListener("click",function(){
-    var c=b.getAttribute("data-c"); if(c===P.a && picked!==P.a && picked===null) pickStars++; picked=c; pick(); }); });
+    var c=b.getAttribute("data-c"); earnedNow=false; if(c===P.a && picked!==P.a && picked===null){ pickStars++; earnedNow=addRight(); } picked=c; pick(); }); });
   var n=$("next"); if(n) n.addEventListener("click",function(){ pi++; picked=null; pick(); });
 }
 
@@ -176,6 +183,7 @@ function storyPane(){
 function wireStories(){ Array.prototype.forEach.call(document.querySelectorAll("[data-s]"),function(b){ b.addEventListener("click",function(){
   var id=b.getAttribute("data-s"); story=DATA.STORIES.filter(function(s){return s.id===id;})[0]; si=0; stars=0; storyPane(); var c=document.querySelector(".card"); if(c) c.scrollIntoView({behavior:"smooth",block:"start"}); }); }); }
 
+if(location.hash==="#pick"){ mode="pick"; newPick(); }
 render();
 })();
 </script>
