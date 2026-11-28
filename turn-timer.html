@@ -168,6 +168,16 @@ cfg.cur = cfg.cur || cfg.groups[0].id;
 var S = T.store("tt-coach2-state") || fresh();
 function fresh(){ return {ph:"wait", i:0, endAt:0, left:0, run:false, switchAt:0}; }
 function save(){ T.store("tt-coach2", cfg); T.store("tt-coach2-state", S); }
+/* The Reading Hub edits the same student list. When it does (in another tab), take its students and groups
+   so this page never saves an old copy over them. */
+window.addEventListener("storage", function(e){
+  if(e.key !== "tt-coach2" || !e.newValue) return;
+  try{ var n = JSON.parse(e.newValue); }catch(x){ return; }
+  if(n.students) cfg.students = n.students;
+  if(n.groups && n.groups.length) cfg.groups = n.groups;
+  if(!cfg.groups.some(function(g){ return g.id === cfg.cur; })) cfg.cur = cfg.groups[0].id;
+  if(typeof paint === "function") paint();
+});
 
 var SAMPLE = [
   "Deep under the ice of Antarctica, scientists discovered a hidden lake.",
